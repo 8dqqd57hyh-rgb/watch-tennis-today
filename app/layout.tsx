@@ -82,11 +82,11 @@ export default function RootLayout({
     </a>
 
     <a
-      href="mailto:contact@watchtennistoday.com"
-      className="hover:text-white transition-colors"
-    >
-      Contact
-    </a>
+  href="/contact"
+  className="hover:text-white transition-colors"
+>
+  Contact
+</a>
   </div>
 </footer>
   <Analytics />
