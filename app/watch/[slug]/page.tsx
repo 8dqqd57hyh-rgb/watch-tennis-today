@@ -13,6 +13,8 @@ type Match = {
   }[];
 };
 
+export const dynamic = "force-dynamic";
+
 function slugify(text: string) {
   return text
     .toLowerCase()
@@ -38,13 +40,7 @@ async function getMatches(): Promise<Match[]> {
 }
 
 export async function generateStaticParams() {
-  const matches = await getMatches();
-
-  return matches.map((match) => ({
-    slug: slugify(
-      `${match.player1}-vs-${match.player2}`
-    ),
-  }));
+  return [];
 }
 
 export async function generateMetadata({
