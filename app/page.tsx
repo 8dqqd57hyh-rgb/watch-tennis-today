@@ -30,6 +30,35 @@ function slugify(text: string) {
     .replace(/\s+/g, "-");
 }
 
+function playerSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, " ")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+}
+
+function matchSlug(match: Match) {
+  const readablePart = `${match.player1}-vs-${match.player2}`
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return `${encodeURIComponent(match.id)}--${readablePart}`;
+}
+
+function splitPlayers(name: string) {
+  return name
+    .split("/")
+    .map((player) => player.trim())
+    .filter(Boolean);
+}
+
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [nextGrandSlam, setNextGrandSlam] = useState<any>(null);
@@ -252,9 +281,21 @@ setNextGrandSlam(slamData);
 
                 <div className="space-y-3 mb-6">
                   <div>
-                    <p className="text-2xl font-bold">
-                      {match.player1}
-                    </p>
+                    <div className="flex flex-wrap gap-x-2 gap-y-1">
+  {splitPlayers(match.player1).map((player, index) => (
+    <span key={player} className="text-2xl font-bold">
+      <a
+        href={`/player/${playerSlug(player)}`}
+        className="hover:text-green-400 transition-colors"
+      >
+        {player}
+      </a>
+      {index < splitPlayers(match.player1).length - 1 && (
+        <span className="text-zinc-500"> /</span>
+      )}
+    </span>
+  ))}
+</div>
                   </div>
 
                   <div className="text-zinc-500 font-semibold">
@@ -262,9 +303,21 @@ setNextGrandSlam(slamData);
                   </div>
 
                   <div>
-                    <p className="text-2xl font-bold">
-                      {match.player2}
-                    </p>
+                  <div className="flex flex-wrap gap-x-2 gap-y-1">
+  {splitPlayers(match.player2).map((player, index) => (
+    <span key={player} className="text-2xl font-bold">
+      <a
+        href={`/player/${playerSlug(player)}`}
+        className="hover:text-green-400 transition-colors"
+      >
+        {player}
+      </a>
+      {index < splitPlayers(match.player2).length - 1 && (
+        <span className="text-zinc-500"> /</span>
+      )}
+    </span>
+  ))}
+</div>
                   </div>
                 </div>
 
@@ -327,9 +380,7 @@ setNextGrandSlam(slamData);
         </a>
       ))}
       <a
-  href={`/watch/${encodeURIComponent(match.id)}--${slugify(
-  `${match.player1}-vs-${match.player2}`
-)}`}
+  href={`/watch/${matchSlug(match)}`}
   className="block mt-6 bg-white text-black text-center font-black px-5 py-4 rounded-2xl hover:bg-zinc-200 transition-all"
 >
   Open Match Page

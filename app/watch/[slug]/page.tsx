@@ -88,8 +88,12 @@ export default async function MatchPage({
 
 const decodedSlug = decodeURIComponent(slug);
 
-const match = matches.find((item) =>
-  decodedSlug.startsWith(item.id)
+const matchIdFromSlug = decodedSlug.match(
+  /^sr:sport_event:\d+/
+)?.[0];
+
+const match = matches.find(
+  (item) => item.id === matchIdFromSlug
 );
 
   if (!match) {
