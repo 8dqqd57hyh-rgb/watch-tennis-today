@@ -22,6 +22,13 @@ type Match = {
   watchProviders: WatchProvider[];
 };
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\s+/g, "-");
+}
+
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [nextGrandSlam, setNextGrandSlam] = useState<any>(null);
@@ -318,7 +325,16 @@ setNextGrandSlam(slamData);
           </span>
         </a>
       ))}
+      <a
+  href={`/watch/${slugify(
+    `${match.player1}-vs-${match.player2}`
+  )}`}
+  className="block mt-6 bg-white text-black text-center font-black px-5 py-4 rounded-2xl hover:bg-zinc-200 transition-all"
+>
+  Open Match Page
+</a>
     </div>
+    
   ) : (
     <p className="text-sm text-zinc-500">
       No trusted official source found yet.
