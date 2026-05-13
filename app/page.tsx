@@ -212,6 +212,33 @@ setNextGrandSlam(slamData);
   📺 TV Schedule
 </a>
 
+<a
+  href="/live-tennis"
+  className="inline-block mt-5 ml-3 bg-red-500 text-white font-bold px-5 py-3 rounded-2xl hover:bg-red-400 transition-all"
+>
+  🔴 Live Tennis
+</a>
+<div className="mb-12">
+  <h2 className="text-3xl font-black mb-5">
+    🌍 Watch Tennis by Country
+  </h2>
+
+  <div className="flex flex-wrap gap-3">
+    {[
+      "poland",
+      "uk",
+      "usa",
+    ].map((country) => (
+      <a
+        key={country}
+        href={`/watch-tennis-in/${country}`}
+        className="bg-zinc-900 border border-zinc-800 hover:border-green-500 px-5 py-3 rounded-2xl font-bold transition-all hover:scale-[1.03]"
+      >
+        {country.toUpperCase()}
+      </a>
+    ))}
+  </div>
+</div>
             <p className="text-zinc-400 mt-3 text-lg">
               Live and upcoming tennis matches
             </p>
