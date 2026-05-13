@@ -88,10 +88,8 @@ export default async function MatchPage({
 
 const decodedSlug = decodeURIComponent(slug);
 
-const matchId = decodedSlug.split("--")[0];
-
-const match = matches.find(
-  (item) => item.id === matchId
+const match = matches.find((item) =>
+  decodedSlug.startsWith(item.id)
 );
 
   if (!match) {
