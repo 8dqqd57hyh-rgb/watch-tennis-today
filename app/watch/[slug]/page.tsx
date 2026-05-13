@@ -1,3 +1,7 @@
+import { headers } from "next/headers";
+
+export const dynamic = "force-dynamic";
+
 type Match = {
   id: string;
   player1: string;
@@ -13,8 +17,6 @@ type Match = {
   }[];
 };
 
-export const dynamic = "force-dynamic";
-
 function slugify(text: string) {
   return text
     .toLowerCase()
@@ -22,19 +24,31 @@ function slugify(text: string) {
     .replace(/\s+/g, "-");
 }
 
-async function getMatches(): Promise<Match[]> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "http://localhost:3000";
+async function getBaseUrl() {
+  const headersList = await headers();
+  const host = headersList.get("host");
 
-  const response = await fetch(
-    `${baseUrl}/api/matches`,
-    {
-      next: {
-        revalidate: 60,
-      },
-    }
-  );
+  if (!host) {
+    return "http://localhost:3000";
+  }
+
+  const protocol = host.includes("localhost")
+    ? "http"
+    : "https";
+
+  return `${protocol}://${host}`;
+}
+
+async function getMatches(): Promise<Match[]> {
+  const baseUrl = await getBaseUrl();
+
+  const response = await fetch(`${baseUrl}/api/matches`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [];
+  }
 
   return response.json();
 }
@@ -63,22 +77,27 @@ export default async function MatchPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
   const matches = await getMatches();
 
   const match = matches.find(
     (item) =>
-      slugify(
-        `${item.player1}-vs-${item.player2}`
-      ) === slug
+      slugify(`${item.player1}-vs-${item.player2}`) === slug
   );
 
   if (!match) {
     return (
       <main className="min-h-screen bg-black text-white p-10">
-        <h1 className="text-4xl font-black">
+        <a href="/" className="text-zinc-400 hover:text-white">
+          ← Back
+        </a>
+
+        <h1 className="text-4xl font-black mt-8">
           Match not found
         </h1>
+
+        <p className="text-zinc-400 mt-3">
+          This match may have finished or is no longer available in the current schedule.
+        </p>
       </main>
     );
   }
@@ -86,10 +105,7 @@ export default async function MatchPage({
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
-        <a
-          href="/"
-          className="text-zinc-400 hover:text-white"
-        >
+        <a href="/" className="text-zinc-400 hover:text-white">
           ← Back
         </a>
 
@@ -117,7 +133,6 @@ export default async function MatchPage({
               <p className="text-zinc-500 text-sm mb-2">
                 Tournament
               </p>
-
               <p className="text-2xl font-bold">
                 {match.tournament}
               </p>
@@ -127,7 +142,6 @@ export default async function MatchPage({
               <p className="text-zinc-500 text-sm mb-2">
                 Score
               </p>
-
               <p className="text-2xl font-bold">
                 {match.score}
               </p>
@@ -137,11 +151,8 @@ export default async function MatchPage({
               <p className="text-zinc-500 text-sm mb-2">
                 Start Time
               </p>
-
               <p className="text-xl font-semibold">
-                {new Date(
-                  match.startTime
-                ).toLocaleString()}
+                {new Date(match.startTime).toLocaleString()}
               </p>
             </div>
           </div>
@@ -151,18 +162,24 @@ export default async function MatchPage({
               📺 Where to Watch
             </h2>
 
-            <div className="space-y-4">
-              {match.watchProviders.map((provider) => (
-                <a
-                  key={provider.name}
-                  href={provider.url}
-                  target="_blank"
-                  className="block bg-green-500 text-black rounded-2xl px-5 py-4 font-black hover:bg-green-400 transition-all"
-                >
-                  {provider.name}
-                </a>
-              ))}
-            </div>
+            {match.watchProviders.length > 0 ? (
+              <div className="space-y-4">
+                {match.watchProviders.map((provider) => (
+                  <a
+                    key={provider.name}
+                    href={provider.url}
+                    target="_blank"
+                    className="block bg-green-500 text-black rounded-2xl px-5 py-4 font-black hover:bg-green-400 transition-all"
+                  >
+                    {provider.name}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-zinc-400">
+                No trusted watch source found yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
