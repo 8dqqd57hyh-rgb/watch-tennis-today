@@ -87,6 +87,12 @@ export default function RootLayout({
 >
   Contact
 </a>
+<a
+  href="/disclaimer"
+  className="hover:text-white transition-colors"
+>
+  Disclaimer
+</a>
   </div>
 </footer>
   <Analytics />
