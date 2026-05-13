@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+
 type WatchProvider = {
   name: string;
   url: string;
@@ -326,9 +327,9 @@ setNextGrandSlam(slamData);
         </a>
       ))}
       <a
-  href={`/watch/${slugify(
-    `${match.player1}-vs-${match.player2}`
-  )}`}
+  href={`/watch/${encodeURIComponent(match.id)}--${slugify(
+  `${match.player1}-vs-${match.player2}`
+)}`}
   className="block mt-6 bg-white text-black text-center font-black px-5 py-4 rounded-2xl hover:bg-zinc-200 transition-all"
 >
   Open Match Page

@@ -64,11 +64,18 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
 
-  return {
-    title: `${slug.replaceAll("-", " ")} | Watch Tennis Today`,
-    description:
-      "Watch tennis match streams, TV channels, broadcasters and live schedules.",
-  };
+  const decodedSlug = decodeURIComponent(slug);
+
+const readableTitle = decodedSlug
+  .split("-")
+  .slice(1)
+  .join(" ");
+
+return {
+  title: `${readableTitle || "Watch Tennis Match"} | Watch Tennis Today`,
+  description:
+    "Watch tennis match streams, TV channels, broadcasters and live schedules.",
+};
 }
 
 export default async function MatchPage({
@@ -79,10 +86,13 @@ export default async function MatchPage({
   const { slug } = await params;
   const matches = await getMatches();
 
-  const match = matches.find(
-    (item) =>
-      slugify(`${item.player1}-vs-${item.player2}`) === slug
-  );
+const decodedSlug = decodeURIComponent(slug);
+
+const matchId = decodedSlug.split("--")[0];
+
+const match = matches.find(
+  (item) => item.id === matchId
+);
 
   if (!match) {
     return (
