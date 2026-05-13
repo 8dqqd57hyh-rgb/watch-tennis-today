@@ -128,13 +128,59 @@ function isImportantTournament(tournament: string) {
   );
 }
 
-function isImportantMatch(match: Match) {
-  const tournamentSlug = slugify(match.tournament);
+function containsBadPlaceholder(text: string) {
+  const slug = slugify(text);
 
-  const players = [
+  if (/qf\d+/i.test(slug)) return true;
+  if (/r\d+p\d+/i.test(slug)) return true;
+
+  return false;
+}
+
+function hasTooManyInitials(text: string) {
+  const slug = slugify(text);
+
+  const parts = slug.split("-");
+
+  const singleLetters = parts.filter(
+    (part) => part.length === 1
+  );
+
+  return singleLetters.length >= 2;
+}
+
+function isGoodPlayerName(name: string) {
+  if (containsBadPlaceholder(name)) {
+    return false;
+  }
+
+  if (hasTooManyInitials(name)) {
+    return false;
+  }
+
+  return true;
+}
+
+function isImportantMatch(match: Match) {
+  const allPlayers = [
     ...splitPlayers(match.player1),
     ...splitPlayers(match.player2),
-  ].map(slugify);
+  ];
+
+  // фильтр мусора
+  const allPlayersValid = allPlayers.every(
+    isGoodPlayerName
+  );
+
+  if (!allPlayersValid) {
+    return false;
+  }
+
+  const tournamentSlug = slugify(
+    match.tournament
+  );
+
+  const players = allPlayers.map(slugify);
 
   const hasTopPlayer = players.some((player) =>
     TOP_PLAYERS.has(player)
@@ -146,7 +192,8 @@ function isImportantMatch(match: Match) {
   const isLive = match.status === "LIVE";
 
   const isAtpOrWta =
-    match.category === "ATP" || match.category === "WTA";
+    match.category === "ATP" ||
+    match.category === "WTA";
 
   return (
     isLive ||
