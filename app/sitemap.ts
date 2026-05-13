@@ -22,27 +22,43 @@ function isGoodPlayerSlug(player: string) {
 
   if (!slug) return false;
 
-  // убрать placeholders типа qf1, qf2, qualifier, bye
+  // placeholders
   if (/^qf\d+$/i.test(slug)) return false;
-  if (["q", "qualifier", "bye", "tbd"].includes(slug)) return false;
+  if (/^r\d+p\d+$/i.test(slug)) return false;
 
-  // убрать слишком короткие/мусорные slugs
-  if (slug.length < 5) return false;
+  const blocked = [
+    "q",
+    "qualifier",
+    "bye",
+    "tbd",
+    "unknown",
+  ];
 
-  // убрать initials-only типа "pavic-m", "eikeri-u", "skupski-n"
+  if (blocked.includes(slug)) return false;
+
+  // слишком короткий
+  if (slug.length < 6) return false;
+
   const parts = slug.split("-");
+
+  // если фамилия только 1 буква
   const lastPart = parts[parts.length - 1];
 
-  if (parts.length === 2 && lastPart.length === 1) {
+  if (lastPart.length === 1) {
     return false;
   }
 
-  // убрать типа "cho-i-h", "dev-s-d-p"
-  const singleLetterParts = parts.filter(
-    (part) => part.length === 1
+  // слишком много single-letter частей
+  const singleLetters = parts.filter(
+    (p) => p.length === 1
   );
 
-  if (singleLetterParts.length >= 2) {
+  if (singleLetters.length >= 1) {
+    return false;
+  }
+
+  // минимум имя + фамилия
+  if (parts.length < 2) {
     return false;
   }
 
