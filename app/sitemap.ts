@@ -68,9 +68,27 @@ export default async function sitemap() {
     })
   );
 
-  return [
-    ...staticPages,
-    ...playerPages,
-    ...tournamentPages,
-  ];
+  const matchPages = matches.map((match) => {
+  const readablePart = `${match.player1}-vs-${match.player2}`
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return {
+    url: `${baseUrl}/watch/${encodeURIComponent(
+      match.id
+    )}--${readablePart}`,
+    lastModified: new Date(),
+  };
+});
+
+ return [
+  ...staticPages,
+  ...playerPages,
+  ...tournamentPages,
+  ...matchPages,
+];
 }
