@@ -43,30 +43,41 @@ export default async function sitemap() {
     lastModified: new Date(),
   }));
 
-  const playerPages = matches.flatMap(
-    (match) => {
-      const players = [
-        ...match.player1.split("/"),
-        ...match.player2.split("/"),
-      ];
+  const uniquePlayers = [
+  ...new Set(
+    matches.flatMap((match) => [
+      ...match.player1
+        .split("/")
+        .map((p) => slugify(p.trim())),
 
-      return players.map((player) => ({
-        url: `${baseUrl}/player/${slugify(
-          player.trim()
-        )}`,
-        lastModified: new Date(),
-      }));
-    }
-  );
+      ...match.player2
+        .split("/")
+        .map((p) => slugify(p.trim())),
+    ])
+  ),
+];
 
-  const tournamentPages = matches.map(
-    (match) => ({
-      url: `${baseUrl}/tournament/${slugify(
-        match.tournament
-      )}`,
-      lastModified: new Date(),
-    })
-  );
+const playerPages = uniquePlayers.map(
+  (player) => ({
+    url: `${baseUrl}/player/${player}`,
+    lastModified: new Date(),
+  })
+);
+
+  const uniqueTournaments = [
+  ...new Set(
+    matches.map((match) =>
+      slugify(match.tournament)
+    )
+  ),
+];
+
+const tournamentPages = uniqueTournaments.map(
+  (tournament) => ({
+    url: `${baseUrl}/tournament/${tournament}`,
+    lastModified: new Date(),
+  })
+);
 
   const matchPages = matches.map((match) => {
   const readablePart = `${match.player1}-vs-${match.player2}`
