@@ -327,9 +327,17 @@ setNextGrandSlam(slamData);
                       Tournament
                     </p>
 
-                    <p className="font-semibold">
-                      {match.tournament}
-                    </p>
+                    <a
+  href={`/tournament/${match.tournament
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")}`}
+  className="font-semibold hover:text-green-400 transition-colors"
+>
+  {match.tournament}
+</a>
                   </div>
 
                   <div>
