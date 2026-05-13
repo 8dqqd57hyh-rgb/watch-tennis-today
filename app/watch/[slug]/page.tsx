@@ -64,18 +64,25 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
 
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug =
+    decodeURIComponent(slug);
 
-const readableTitle = decodedSlug
-  .split("-")
-  .slice(1)
-  .join(" ");
+  const readableTitle = decodedSlug
+    .split("--")[1]
+    ?.replace(/-/g, " ");
 
-return {
-  title: `${readableTitle || "Watch Tennis Match"} | Watch Tennis Today`,
-  description:
-    "Watch tennis match streams, TV channels, broadcasters and live schedules.",
-};
+  return {
+    title: `${
+      readableTitle || "Tennis Match"
+    } Live Stream & TV Schedule | Watch Tennis Today`,
+
+    description:
+      "Watch live tennis streams, TV broadcasters, schedules and official streaming platforms for ATP, WTA and Grand Slam matches.",
+
+    alternates: {
+      canonical: `https://watchtennistoday.com/watch/${slug}`,
+    },
+  };
 }
 
 export default async function MatchPage({

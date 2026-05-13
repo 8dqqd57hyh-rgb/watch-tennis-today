@@ -55,11 +55,23 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
 
-  const playerName = formatName(slug);
+  const playerName = slug
+    .split("-")
+    .map(
+      (part) =>
+        part.charAt(0).toUpperCase() +
+        part.slice(1)
+    )
+    .join(" ");
 
   return {
-    title: `${playerName} Live Stream & TV Schedule | Watch Tennis Today`,
-    description: `Watch ${playerName} live tennis matches, streaming options, TV channels and tournament schedule.`,
+    title: `${playerName} Live Matches, Streams & Schedule | Watch Tennis Today`,
+
+    description: `Watch ${playerName} live tennis matches, TV channels, streams, tournament schedule and latest results.`,
+
+    alternates: {
+      canonical: `https://watchtennistoday.com/player/${slug}`,
+    },
   };
 }
 
