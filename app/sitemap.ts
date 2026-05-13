@@ -146,7 +146,7 @@ function hasTooManyInitials(text: string) {
     (part) => part.length === 1
   );
 
-  return singleLetters.length >= 2;
+  return singleLetters.length >= 1;
 }
 
 function isGoodPlayerName(name: string) {
