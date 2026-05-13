@@ -65,6 +65,30 @@ export default function RootLayout({
   </header>
 
   {children}
+  <footer className="border-t border-zinc-800 mt-20">
+  <div className="max-w-7xl mx-auto px-6 py-8 flex flex-wrap gap-6 text-sm text-zinc-400">
+    <a
+      href="/about"
+      className="hover:text-white transition-colors"
+    >
+      About
+    </a>
+
+    <a
+      href="/privacy-policy"
+      className="hover:text-white transition-colors"
+    >
+      Privacy Policy
+    </a>
+
+    <a
+      href="mailto:contact@watchtennistoday.com"
+      className="hover:text-white transition-colors"
+    >
+      Contact
+    </a>
+  </div>
+</footer>
   <Analytics />
 </body>
     </html>
