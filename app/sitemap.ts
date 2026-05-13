@@ -43,7 +43,7 @@ export default async function sitemap() {
     lastModified: new Date(),
   }));
 
-  const uniquePlayers = [
+ const uniquePlayers = [
   ...new Set(
     matches.flatMap((match) => [
       ...match.player1
@@ -55,7 +55,7 @@ export default async function sitemap() {
         .map((p) => slugify(p.trim())),
     ])
   ),
-];
+].filter((player) => !/^qf\d+$/i.test(player));
 
 const playerPages = uniquePlayers.map(
   (player) => ({
