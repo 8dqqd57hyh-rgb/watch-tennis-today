@@ -5,7 +5,66 @@ type Match = {
   tournament: string;
   category?: string;
   status?: string;
+  startTime?: string;
 };
+
+const BASE_URL = "https://watchtennistoday.com";
+
+const TOP_PLAYERS = new Set([
+  "sinner-jannik",
+  "alcaraz-carlos",
+  "djokovic-novak",
+  "medvedev-daniil",
+  "zverev-alexander",
+  "rublev-andrey",
+  "fritz-taylor",
+  "de-minaur-alex",
+  "tsitsipas-stefanos",
+  "ruud-casper",
+  "draper-jack",
+  "berrettini-matteo",
+  "rune-holger",
+
+  "swiatek-iga",
+  "sabalenka-aryna",
+  "gauff-coco",
+  "rybakina-elena",
+  "pegula-jessica",
+  "keys-madison",
+  "paolini-jasmine",
+  "navarro-emma",
+  "andreeva-mirra",
+  "osaka-naomi",
+  "ostapenko-jelena",
+  "svitolina-elina",
+]);
+
+const IMPORTANT_TOURNAMENT_KEYWORDS = [
+  "atp-rome",
+  "wta-rome",
+  "roland-garros",
+  "french-open",
+  "wimbledon",
+  "us-open",
+  "australian-open",
+  "indian-wells",
+  "miami",
+  "madrid",
+  "monte-carlo",
+  "cincinnati",
+  "canada",
+  "paris",
+  "doha",
+  "dubai",
+  "stuttgart",
+  "halle",
+  "queens",
+  "tokyo",
+  "beijing",
+  "shanghai",
+  "wta-finals",
+  "atp-finals",
+];
 
 function slugify(text: string) {
   return text
@@ -17,12 +76,18 @@ function slugify(text: string) {
     .replace(/^-|-$/g, "");
 }
 
+function splitPlayers(name: string) {
+  return name
+    .split("/")
+    .map((player) => player.trim())
+    .filter(Boolean);
+}
+
 function isGoodPlayerSlug(player: string) {
   const slug = slugify(player);
 
   if (!slug) return false;
 
-  // placeholders
   if (/^qf\d+$/i.test(slug)) return false;
   if (/^r\d+p\d+$/i.test(slug)) return false;
 
@@ -35,34 +100,61 @@ function isGoodPlayerSlug(player: string) {
   ];
 
   if (blocked.includes(slug)) return false;
-
-  // слишком короткий
   if (slug.length < 6) return false;
 
   const parts = slug.split("-");
 
-  // если фамилия только 1 буква
-  const lastPart = parts[parts.length - 1];
+  if (parts.length < 2) return false;
 
-  if (lastPart.length === 1) {
-    return false;
-  }
-
-  // слишком много single-letter частей
   const singleLetters = parts.filter(
-    (p) => p.length === 1
+    (part) => part.length === 1
   );
 
-  if (singleLetters.length >= 1) {
-    return false;
-  }
-
-  // минимум имя + фамилия
-  if (parts.length < 2) {
-    return false;
-  }
+  if (singleLetters.length > 0) return false;
 
   return true;
+}
+
+function isImportantTournament(tournament: string) {
+  const slug = slugify(tournament);
+
+  if (!slug) return false;
+
+  if (slug.includes("utr-ptt")) return false;
+  if (slug.includes("itf")) return false;
+
+  return IMPORTANT_TOURNAMENT_KEYWORDS.some((keyword) =>
+    slug.includes(keyword)
+  );
+}
+
+function isImportantMatch(match: Match) {
+  const tournamentSlug = slugify(match.tournament);
+
+  const players = [
+    ...splitPlayers(match.player1),
+    ...splitPlayers(match.player2),
+  ].map(slugify);
+
+  const hasTopPlayer = players.some((player) =>
+    TOP_PLAYERS.has(player)
+  );
+
+  const hasImportantTournament =
+    isImportantTournament(match.tournament);
+
+  const isLive = match.status === "LIVE";
+
+  const isAtpOrWta =
+    match.category === "ATP" || match.category === "WTA";
+
+  return (
+    isLive ||
+    hasTopPlayer ||
+    hasImportantTournament ||
+    isAtpOrWta ||
+    tournamentSlug.includes("grand-slam")
+  );
 }
 
 function matchSlug(match: Match) {
@@ -78,12 +170,9 @@ function matchSlug(match: Match) {
 }
 
 async function getMatches(): Promise<Match[]> {
-  const response = await fetch(
-    "https://watchtennistoday.com/api/matches",
-    {
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${BASE_URL}/api/matches`, {
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     return [];
@@ -95,7 +184,7 @@ async function getMatches(): Promise<Match[]> {
 export default async function sitemap() {
   const matches = await getMatches();
 
-  const baseUrl = "https://watchtennistoday.com";
+  const now = new Date();
 
   const staticPages = [
     "",
@@ -104,30 +193,43 @@ export default async function sitemap() {
     "/watch-tennis-in/uk",
     "/watch-tennis-in/usa",
   ].map((path) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: new Date(),
+    url: `${BASE_URL}${path}`,
+    lastModified: now,
+    changeFrequency: "hourly" as const,
+    priority: path === "" ? 1 : 0.8,
   }));
+
+  const importantMatches = matches.filter(isImportantMatch);
+
+  const playersFromImportantMatches = importantMatches.flatMap(
+    (match) => [
+      ...splitPlayers(match.player1),
+      ...splitPlayers(match.player2),
+    ]
+  );
 
   const uniquePlayers = [
     ...new Set(
-      matches.flatMap((match) => [
-        ...match.player1.split("/"),
-        ...match.player2.split("/"),
-      ])
+      playersFromImportantMatches
+        .filter(isGoodPlayerSlug)
+        .map(slugify)
+        .filter((player) => TOP_PLAYERS.has(player))
     ),
-  ]
-    .map((player) => player.trim())
-    .filter(isGoodPlayerSlug)
-    .map((player) => slugify(player));
+  ];
 
   const playerPages = uniquePlayers.map((player) => ({
-    url: `${baseUrl}/player/${player}`,
-    lastModified: new Date(),
+    url: `${BASE_URL}/player/${player}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.7,
   }));
 
   const uniqueTournaments = [
     ...new Set(
       matches
+        .filter((match) =>
+          isImportantTournament(match.tournament)
+        )
         .map((match) => slugify(match.tournament))
         .filter(Boolean)
     ),
@@ -135,14 +237,18 @@ export default async function sitemap() {
 
   const tournamentPages = uniqueTournaments.map(
     (tournament) => ({
-      url: `${baseUrl}/tournament/${tournament}`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/tournament/${tournament}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.75,
     })
   );
 
-  const matchPages = matches.map((match) => ({
-    url: `${baseUrl}/watch/${matchSlug(match)}`,
-    lastModified: new Date(),
+  const matchPages = importantMatches.map((match) => ({
+    url: `${BASE_URL}/watch/${matchSlug(match)}`,
+    lastModified: now,
+    changeFrequency: "hourly" as const,
+    priority: match.status === "LIVE" ? 0.8 : 0.5,
   }));
 
   return [
