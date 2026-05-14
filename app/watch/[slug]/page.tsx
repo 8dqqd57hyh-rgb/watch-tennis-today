@@ -176,6 +176,28 @@ const match = matches.find(
             </div>
           </div>
 
+<section className="mt-16 text-zinc-300 space-y-6">
+  <h2 className="text-3xl font-black">
+    Watch {match.player1} vs {match.player2} Live
+  </h2>
+
+  <p>
+    Watch {match.player1} vs {match.player2} live from{" "}
+    {match.tournament}. Find official TV broadcasters,
+    streaming platforms, match schedule and live tennis coverage.
+  </p>
+
+  <p>
+    This {match.category} tennis match starts on{" "}
+    {new Date(match.startTime).toLocaleString()}.
+  </p>
+
+  <p>
+    Watch Tennis Today provides updated ATP, WTA and Grand Slam
+    streaming information for tennis fans worldwide.
+  </p>
+</section>
+
           <div>
             <h2 className="text-3xl font-black mb-5">
               📺 Where to Watch
