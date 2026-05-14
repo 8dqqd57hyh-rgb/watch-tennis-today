@@ -110,13 +110,7 @@ const safeMatches = Array.isArray(matchesData)
 
 setMatches(safeMatches);
 
-        const slamResponse = await fetch(
-          "/api/next-grand-slam"
-        );
-
-        const slamData = await slamResponse.json();
-
-        setNextGrandSlam(slamData);
+       
       } catch (error) {
         console.error("Failed to load matches");
       } finally {
