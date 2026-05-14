@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 function readableCountry(country: string) {
   return country
@@ -48,12 +49,12 @@ const broadcasters: Record<
   usa: [
     {
       name: "Tennis Channel",
-      url: "https://www.tennischannel.com/",
+      url: affiliateLinks.tennisChannel,
       note: "Major ATP and WTA broadcaster",
     },
     {
       name: "ESPN",
-      url: "https://www.espn.com/tennis/",
+     url: affiliateLinks.espn,
       note: "Grand Slam coverage",
     },
   ],
