@@ -365,6 +365,43 @@ const livePlayers = [
             <p className="text-zinc-400 mt-3 text-lg">
               Live and upcoming tennis matches
             </p>
+            <div className="mb-12 mt-10 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+  <h2 className="text-3xl font-black mb-4">
+    🔔 Get Tennis Match Alerts
+  </h2>
+
+  <p className="text-zinc-400 mb-6 max-w-2xl">
+    Get notified about live tennis matches, Grand Slams, ATP and WTA schedules,
+    streaming updates and featured matches.
+  </p>
+
+  <form
+    action="https://formspree.io/f/xeenwwbk"
+    method="POST"
+    className="flex flex-col md:flex-row gap-4"
+  >
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Your email address"
+      className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
+    />
+
+    <input
+      type="hidden"
+      name="source"
+      value="homepage-email-signup"
+    />
+
+    <button
+      type="submit"
+      className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
+    >
+      Notify Me
+    </button>
+  </form>
+</div>
           </div>
 
           <input
