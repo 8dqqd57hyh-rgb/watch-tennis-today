@@ -3,6 +3,23 @@ import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
+const PLAYERS = [
+  "sinner-jannik",
+  "alcaraz-carlos",
+  "djokovic-novak",
+  "swiatek-iga",
+  "sabalenka-aryna",
+  "gauff-coco",
+  "zverev-alexander",
+  "medvedev-daniil",
+];
+
+export async function generateStaticParams() {
+  return PLAYERS.map((slug) => ({
+    slug,
+  }));
+}
+
 type Match = {
   id: string;
   player1: string;
@@ -75,19 +92,24 @@ async function getBaseUrl() {
   return `${protocol}://${host}`;
 }
 
-async function getMatches(): Promise<
-  Match[]
-> {
+async function getMatches(): Promise<Match[]> {
   const baseUrl = await getBaseUrl();
 
-  const response = await fetch(
-    `${baseUrl}/api/matches`,
-    {
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${baseUrl}/api/matches`, {
+    cache: "no-store",
+  });
 
-  return response.json();
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.matches)) {
+    return data.matches;
+  }
+
+  return [];
 }
 
 export default async function PlayerPage({
