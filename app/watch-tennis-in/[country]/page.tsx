@@ -296,6 +296,34 @@ export default async function CountryPage({
             </div>
           </div>
         </section>
+        <section className="mt-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+  <h2 className="text-3xl font-black mb-4">
+    Explore More Tennis Coverage
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a
+      href="/live-tennis"
+      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Live Tennis Today
+    </a>
+
+    <a
+      href="/tournament"
+      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Tennis Tournaments
+    </a>
+
+    <a
+      href="/best-ways-to-watch-tennis-online"
+      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Best Ways to Watch Tennis Online
+    </a>
+  </div>
+</section>
       </div>
     </main>
   );
