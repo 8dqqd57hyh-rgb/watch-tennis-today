@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AdSlot from "@/app/components/AdSlot";
+import EmailSignup from "@/app/components/EmailSignup";
 
 function readableCountry(country: string) {
   return country
@@ -258,6 +259,8 @@ export default async function CountryPage({
 </p>
           </div>
         </section>
+
+        <EmailSignup />
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-4">

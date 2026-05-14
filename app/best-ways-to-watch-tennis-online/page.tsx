@@ -5,6 +5,7 @@ export const metadata = {
 };
 
 import AdSlot from "@/app/components/AdSlot";
+import EmailSignup from "@/app/components/EmailSignup";
 
 const countries = [
   ["Poland", "/watch-tennis-in/poland"],
@@ -146,6 +147,7 @@ export default function BestWaysPage() {
               View Live Tennis
             </a>
           </div>
+          <EmailSignup />
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h2 className="text-3xl font-black mb-5">

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import EmailSignup from "@/app/components/EmailSignup";
 
 export const dynamic = "force-dynamic";
 
@@ -280,6 +281,7 @@ export default async function PlayerPage({
             </div>
           </div>
         </section>
+        <EmailSignup />
 
         <script
           type="application/ld+json"
