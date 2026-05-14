@@ -234,17 +234,21 @@ export default async function sitemap() {
   const now = new Date();
 
   const staticPages = [
-    "",
-    "/live-tennis",
-    "/watch-tennis-in/poland",
-    "/watch-tennis-in/uk",
-    "/watch-tennis-in/usa",
-  ].map((path) => ({
-    url: `${BASE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: "hourly" as const,
-    priority: path === "" ? 1 : 0.8,
-  }));
+  "",
+  "/live-tennis",
+  "/watch-tennis-in/poland",
+  "/watch-tennis-in/uk",
+  "/watch-tennis-in/usa",
+  "/about",
+  "/contact",
+  "/privacy-policy",
+  "/terms",
+].map((path) => ({
+  url: `${BASE_URL}${path}`,
+  lastModified: now,
+  changeFrequency: "weekly" as const,
+  priority: path === "" ? 1 : 0.6,
+}));
 
   const importantMatches = matches.filter(isImportantMatch);
 
@@ -256,13 +260,13 @@ export default async function sitemap() {
   );
 
   const uniquePlayers = [
-    ...new Set(
-      playersFromImportantMatches
-        .filter(isGoodPlayerSlug)
-        .map(slugify)
-        .filter((player) => TOP_PLAYERS.has(player))
-    ),
-  ];
+  ...new Set(
+    playersFromImportantMatches
+      .filter(isGoodPlayerName)
+      .map(slugify)
+      .filter((player) => TOP_PLAYERS.has(player))
+  ),
+];
 
   const playerPages = uniquePlayers.map((player) => ({
     url: `${BASE_URL}/player/${player}`,
