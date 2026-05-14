@@ -22,7 +22,7 @@ export default function ContactPage() {
           </p>
 
           <a
-            href="mailto:contact@watchtennistoday.com"
+            href="mailto:anzhalika_sokalava@icloud.com"
             className="inline-block bg-green-500 text-black font-black px-5 py-3 rounded-2xl hover:bg-green-400 transition-all"
           >
             anzhalika_sokalava@icloud.com
