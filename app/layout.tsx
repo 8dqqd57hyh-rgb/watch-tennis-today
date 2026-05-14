@@ -68,6 +68,26 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-black">
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Watch Tennis Today",
+      url: "https://watchtennistoday.com",
+      description:
+        "Live tennis matches, schedules, broadcasters and streaming information for ATP, WTA and Grand Slam tournaments.",
+      potentialAction: {
+        "@type": "SearchAction",
+        target:
+          "https://watchtennistoday.com/?search={search_term_string}",
+        "query-input":
+          "required name=search_term_string",
+      },
+    }),
+  }}
+/>
   <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur">
     <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <a
