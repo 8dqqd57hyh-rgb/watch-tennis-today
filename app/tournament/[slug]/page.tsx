@@ -294,6 +294,54 @@ export default async function TournamentPage({
           </div>
         </section>
       </div>
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+
+      "@type": "SportsEvent",
+
+      name: tournamentName,
+
+      sport: "Tennis",
+
+      url: `https://watchtennistoday.com/tournament/${slug}`,
+
+      eventAttendanceMode:
+        "https://schema.org/OnlineEventAttendanceMode",
+
+      description:
+        `Watch ${tournamentName} live tennis matches, streaming options and TV schedule.`,
+
+      organizer: {
+        "@type": "Organization",
+        name: "Watch Tennis Today",
+      },
+
+      subEvent: tournamentMatches.slice(0, 10).map((match) => ({
+        "@type": "SportsEvent",
+
+        name: `${match.player1} vs ${match.player2}`,
+
+        startDate: match.startTime,
+
+        sport: "Tennis",
+
+        competitor: [
+          {
+            "@type": "Person",
+            name: match.player1,
+          },
+          {
+            "@type": "Person",
+            name: match.player2,
+          },
+        ],
+      })),
+    }),
+  }}
+/>
     </main>
   );
 }

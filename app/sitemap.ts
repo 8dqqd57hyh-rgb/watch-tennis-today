@@ -1,3 +1,5 @@
+import type { MetadataRoute } from "next";
+
 type Match = {
   id: string;
   player1: string;
@@ -24,7 +26,6 @@ const TOP_PLAYERS = new Set([
   "draper-jack",
   "berrettini-matteo",
   "rune-holger",
-
   "swiatek-iga",
   "sabalenka-aryna",
   "gauff-coco",
@@ -42,6 +43,7 @@ const TOP_PLAYERS = new Set([
 const IMPORTANT_TOURNAMENT_KEYWORDS = [
   "atp-rome",
   "wta-rome",
+  "rome",
   "roland-garros",
   "french-open",
   "wimbledon",
@@ -83,51 +85,6 @@ function splitPlayers(name: string) {
     .filter(Boolean);
 }
 
-function isGoodPlayerSlug(player: string) {
-  const slug = slugify(player);
-
-  if (!slug) return false;
-
-  if (/^qf\d+$/i.test(slug)) return false;
-  if (/^r\d+p\d+$/i.test(slug)) return false;
-
-  const blocked = [
-    "q",
-    "qualifier",
-    "bye",
-    "tbd",
-    "unknown",
-  ];
-
-  if (blocked.includes(slug)) return false;
-  if (slug.length < 6) return false;
-
-  const parts = slug.split("-");
-
-  if (parts.length < 2) return false;
-
-  const singleLetters = parts.filter(
-    (part) => part.length === 1
-  );
-
-  if (singleLetters.length > 0) return false;
-
-  return true;
-}
-
-function isImportantTournament(tournament: string) {
-  const slug = slugify(tournament);
-
-  if (!slug) return false;
-
-  if (slug.includes("utr-ptt")) return false;
-  if (slug.includes("itf")) return false;
-
-  return IMPORTANT_TOURNAMENT_KEYWORDS.some((keyword) =>
-    slug.includes(keyword)
-  );
-}
-
 function containsBadPlaceholder(text: string) {
   const slug = slugify(text);
 
@@ -139,26 +96,37 @@ function containsBadPlaceholder(text: string) {
 
 function hasTooManyInitials(text: string) {
   const slug = slugify(text);
-
   const parts = slug.split("-");
 
-  const singleLetters = parts.filter(
-    (part) => part.length === 1
-  );
-
-  return singleLetters.length >= 1;
+  return parts.some((part) => part.length === 1);
 }
 
 function isGoodPlayerName(name: string) {
-  if (containsBadPlaceholder(name)) {
-    return false;
-  }
+  if (containsBadPlaceholder(name)) return false;
+  if (hasTooManyInitials(name)) return false;
 
-  if (hasTooManyInitials(name)) {
-    return false;
-  }
+  const slug = slugify(name);
+
+  if (!slug) return false;
+  if (slug.length < 6) return false;
+
+  const blocked = ["q", "qualifier", "bye", "tbd", "unknown"];
+
+  if (blocked.includes(slug)) return false;
 
   return true;
+}
+
+function isImportantTournament(tournament: string) {
+  const slug = slugify(tournament);
+
+  if (!slug) return false;
+  if (slug.includes("utr-ptt")) return false;
+  if (slug.includes("itf")) return false;
+
+  return IMPORTANT_TOURNAMENT_KEYWORDS.some((keyword) =>
+    slug.includes(keyword)
+  );
 }
 
 function isImportantMatch(match: Match) {
@@ -167,157 +135,128 @@ function isImportantMatch(match: Match) {
     ...splitPlayers(match.player2),
   ];
 
-  // фильтр мусора
-  const allPlayersValid = allPlayers.every(
-    isGoodPlayerName
-  );
-
-  if (!allPlayersValid) {
+  if (!allPlayers.every(isGoodPlayerName)) {
     return false;
   }
 
-  const tournamentSlug = slugify(
-    match.tournament
-  );
-
   const players = allPlayers.map(slugify);
 
-  const hasTopPlayer = players.some((player) =>
-    TOP_PLAYERS.has(player)
-  );
-
-  const hasImportantTournament =
-    isImportantTournament(match.tournament);
-
+  const hasTopPlayer = players.some((player) => TOP_PLAYERS.has(player));
+  const hasImportantTournament = isImportantTournament(match.tournament);
   const isLive = match.status === "LIVE";
+  const isAtpOrWta = match.category === "ATP" || match.category === "WTA";
 
-  const isAtpOrWta =
-    match.category === "ATP" ||
-    match.category === "WTA";
-
-  return (
-    isLive ||
-    hasTopPlayer ||
-    hasImportantTournament ||
-    isAtpOrWta ||
-    tournamentSlug.includes("grand-slam")
-  );
+  return isLive || hasTopPlayer || hasImportantTournament || isAtpOrWta;
 }
 
 function matchSlug(match: Match) {
-  const readablePart = `${match.player1}-vs-${match.player2}`
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/\//g, "-")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
+  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
   const numericId = match.id.split(":").pop();
 
-return `${readablePart}-${numericId}`;
+  return `${readablePart}-${numericId}`;
 }
 
 async function getMatches(): Promise<Match[]> {
-  const response = await fetch(`${BASE_URL}/api/matches`, {
-    cache: "no-store",
-  });
+  try {
+    const response = await fetch(`${BASE_URL}/api/matches`, {
+      cache: "no-store",
+    });
 
-  if (!response.ok) {
+    if (!response.ok) return [];
+
+    const data = await response.json();
+
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.matches)) return data.matches;
+
+    return [];
+  } catch {
     return [];
   }
-
-  return response.json();
 }
 
-export default async function sitemap() {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const matches = await getMatches();
-
   const now = new Date();
 
-  const staticPages = [
-  "",
-  "/live-tennis",
-  "/watch-tennis-in/poland",
-  "/watch-tennis-in/uk",
-  "/watch-tennis-in/usa",
-  "/watch-tennis-in/germany",
-"/watch-tennis-in/france",
-"/watch-tennis-in/spain",
-"/watch-tennis-in/italy",
-"/watch-tennis-in/canada",
-"/watch-tennis-in/australia",
-"/watch-tennis-in/india",
-  "/about",
-  "/contact",
-  "/privacy-policy",
-  "/terms",
-"/disclaimer",
-"/advertise",
-"/watch-player-live/jannik-sinner",
-"/watch-player-live/iga-swiatek",
-"/watch-player-live/carlos-alcaraz",
-"/watch-player-live/novak-djokovic",
-"/watch-player-live/aryna-sabalenka",
-"/tournament",
-"/best-ways-to-watch-tennis-online",
-].map((path) => ({
-  url: `${BASE_URL}${path}`,
-  lastModified: now,
-  changeFrequency: "weekly" as const,
-  priority: path === "" ? 1 : 0.6,
-}));
+  const staticPages: MetadataRoute.Sitemap = [
+    "",
+    "/live-tennis",
+    "/watch-tennis-in/poland",
+    "/watch-tennis-in/uk",
+    "/watch-tennis-in/usa",
+    "/watch-tennis-in/germany",
+    "/watch-tennis-in/france",
+    "/watch-tennis-in/spain",
+    "/watch-tennis-in/italy",
+    "/watch-tennis-in/canada",
+    "/watch-tennis-in/australia",
+    "/watch-tennis-in/india",
+    "/about",
+    "/contact",
+    "/privacy-policy",
+    "/terms",
+    "/disclaimer",
+    "/advertise",
+    "/watch-player-live/jannik-sinner",
+    "/watch-player-live/iga-swiatek",
+    "/watch-player-live/carlos-alcaraz",
+    "/watch-player-live/novak-djokovic",
+    "/watch-player-live/aryna-sabalenka",
+    "/tournament",
+    "/best-ways-to-watch-tennis-online",
+  ].map((path) => ({
+    url: `${BASE_URL}${path}`,
+    lastModified: now,
+    changeFrequency: "hourly",
+    priority: path === "" ? 1 : 0.9,
+  }));
 
   const importantMatches = matches.filter(isImportantMatch);
 
-  const playersFromImportantMatches = importantMatches.flatMap(
-    (match) => [
-      ...splitPlayers(match.player1),
-      ...splitPlayers(match.player2),
-    ]
-  );
-
   const uniquePlayers = [
-  ...new Set(
-    playersFromImportantMatches
-      .filter(isGoodPlayerName)
-      .map(slugify)
-      .filter((player) => TOP_PLAYERS.has(player))
-  ),
-];
+    ...new Set(
+      importantMatches
+        .flatMap((match) => [
+          ...splitPlayers(match.player1),
+          ...splitPlayers(match.player2),
+        ])
+        .filter(isGoodPlayerName)
+        .map(slugify)
+        .filter((player) => TOP_PLAYERS.has(player))
+    ),
+  ];
 
-  const playerPages = uniquePlayers.map((player) => ({
+  const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
     url: `${BASE_URL}/player/${player}`,
     lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.7,
+    changeFrequency: "hourly",
+    priority: 0.9,
   }));
 
   const uniqueTournaments = [
     ...new Set(
       matches
-        .filter((match) =>
-          isImportantTournament(match.tournament)
-        )
+        .filter((match) => isImportantTournament(match.tournament))
         .map((match) => slugify(match.tournament))
         .filter(Boolean)
     ),
   ];
 
-  const tournamentPages = uniqueTournaments.map(
+  const tournamentPages: MetadataRoute.Sitemap = uniqueTournaments.map(
     (tournament) => ({
       url: `${BASE_URL}/tournament/${tournament}`,
       lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.75,
+      changeFrequency: "hourly",
+      priority: 0.9,
     })
   );
 
-  const matchPages = importantMatches.map((match) => ({
+  const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
     url: `${BASE_URL}/watch/${matchSlug(match)}`,
     lastModified: now,
-    changeFrequency: "hourly" as const,
-    priority: match.status === "LIVE" ? 0.8 : 0.5,
+    changeFrequency: "hourly",
+    priority: 0.9,
   }));
 
   return [
