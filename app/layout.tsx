@@ -16,8 +16,45 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Watch Tennis Today",
+
   description:
     "Live tennis matches, schedules, broadcasters and where to watch ATP, WTA and Grand Slam tournaments.",
+
+  openGraph: {
+    title: "Watch Tennis Today",
+
+    description:
+      "Live ATP, WTA and Grand Slam tennis matches, schedules and streaming information.",
+
+    url: "https://watchtennistoday.com",
+
+    siteName: "Watch Tennis Today",
+
+    images: [
+      {
+        url: "https://watchtennistoday.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Watch Tennis Today",
+      },
+    ],
+
+    locale: "en_US",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+
+    title: "Watch Tennis Today",
+
+    description:
+      "Live ATP, WTA and Grand Slam tennis matches, schedules and streaming information.",
+
+    images: [
+      "https://watchtennistoday.com/og-image.png",
+    ],
+  },
 };
 
 export default function RootLayout({
