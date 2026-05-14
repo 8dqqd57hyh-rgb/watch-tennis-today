@@ -1,214 +1,168 @@
 import { NextResponse } from "next/server";
 
-function getCleanGrandSlamName(name: string) {
+export const dynamic = "force-dynamic";
+
+type ApiTennisEvent = {
+  event_date?: string;
+  event_time?: string;
+  tournament_name?: string;
+};
+
+const GRAND_SLAMS = [
+  "Australian Open",
+  "French Open",
+  "Roland Garros",
+  "Wimbledon",
+  "US Open",
+];
+
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeGrandSlam(name: string) {
   const lower = name.toLowerCase();
 
-  if (lower.includes("wimbledon")) return "Wimbledon";
-  if (lower.includes("australian open")) return "Australian Open";
+  if (lower.includes("wimbledon")) {
+    return "Wimbledon";
+  }
+
+  if (lower.includes("australian")) {
+    return "Australian Open";
+  }
 
   if (
-    lower.includes("french open") ||
-    lower.includes("roland garros")
+    lower.includes("roland garros") ||
+    lower.includes("french open")
   ) {
     return "French Open";
   }
 
-  if (
-    lower.includes("us open") ||
-    lower.includes("u.s. open")
-  ) {
+  if (lower.includes("us open")) {
     return "US Open";
   }
 
   return name;
 }
 
-function isGrandSlamSeason(name: string) {
+function isGrandSlam(name?: string) {
+  if (!name) return false;
+
   const lower = name.toLowerCase();
 
-  return (
-    lower.includes("wimbledon") ||
-    lower.includes("australian open") ||
-    lower.includes("french open") ||
-    lower.includes("roland garros") ||
-    lower.includes("us open") ||
-    lower.includes("u.s. open")
+  return GRAND_SLAMS.some((slam) =>
+    lower.includes(slam.toLowerCase())
   );
 }
 
-function isSinglesSeason(name: string) {
-  const lower = name.toLowerCase();
+async function fetchFixtures(
+  apiKey: string,
+  dateStart: string,
+  dateStop: string
+) {
+  const url =
+    `https://api.api-tennis.com/tennis/?method=get_fixtures` +
+    `&APIkey=${apiKey}` +
+    `&date_start=${dateStart}` +
+    `&date_stop=${dateStop}` +
+    `&timezone=Europe/Warsaw`;
 
-  return (
-    lower.includes("men singles") ||
-    lower.includes("women singles") ||
-    lower.includes("mens singles") ||
-    lower.includes("womens singles") ||
-    lower.includes("men's singles") ||
-    lower.includes("women's singles")
-  );
-}
+  const response = await fetch(url, {
+    cache: "no-store",
+  });
 
-function isValidDate(value?: string) {
-  if (!value) return false;
+  if (!response.ok) {
+    throw new Error("Failed to fetch fixtures");
+  }
 
-  return Number.isFinite(new Date(value).getTime());
+  const data = await response.json();
+
+  if (data.success !== 1 || !Array.isArray(data.result)) {
+    return [];
+  }
+
+  return data.result as ApiTennisEvent[];
 }
 
 export async function GET() {
-  const apiKey = process.env.SPORTRADAR_API_KEY;
+  const apiKey = process.env.API_TENNIS_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Missing API key" },
+      { error: "Missing API_TENNIS_KEY" },
       { status: 500 }
     );
   }
 
   try {
-    const response = await fetch(
-      `https://api.sportradar.com/tennis/trial/v3/en/seasons.json?api_key=${apiKey}`,
-      { next: { revalidate: 86400  } }
-    );
-
-    if (!response.ok) {
-  const errorText = await response.text();
-
-  if (response.status === 429) {
-  return NextResponse.json({
-    name: "French Open",
-    year: 2026,
-    startDate: "2026-05-18",
-    endDate: "2026-06-07",
-    menSeason: true,
-    womenSeason: true,
-    source: "fallback-limit",
-  });
-}
-
-if (process.env.NODE_ENV === "development") {
-  return NextResponse.json({
-    name: "French Open",
-    year: 2026,
-    startDate: "2026-05-18",
-    endDate: "2026-06-07",
-    menSeason: true,
-    womenSeason: true,
-    source: "dev-static",
-  });
-}
-
-  return NextResponse.json(
-    {
-      error: "Failed to fetch seasons from Sportradar",
-      status: response.status,
-      statusText: response.statusText,
-      details: errorText,
-    },
-    { status: response.status }
-  );
-}
-
-    const data = await response.json();
-    const possibleSlams = data.seasons.filter((season: any) => {
-  const name = (season.name || "").toLowerCase();
-
-  return (
-    name.includes("roland") ||
-    name.includes("french") ||
-    name.includes("wimbledon") ||
-    name.includes("australian") ||
-    name.includes("us open")
-  );
-});
-
-console.log(
-  possibleSlams.map((season: any) => ({
-    name: season.name,
-    start: season.start_date,
-    end: season.end_date,
-  }))
-);
     const today = new Date();
 
-    const slamSingles = data.seasons
-      .filter((season: any) => {
-        const name = season.name || "";
+    const future = new Date();
+    future.setDate(today.getDate() + 365);
 
-        return (
-          isGrandSlamSeason(name) &&
-          isSinglesSeason(name) &&
-          isValidDate(season.start_date) &&
-          isValidDate(season.end_date)
-        );
-      })
-      .filter(
-        (season: any) =>
-          new Date(season.end_date).getTime() >= today.getTime()
-      );
-
-    const grouped = new Map();
-
-    slamSingles.forEach((season: any) => {
-      const cleanName = getCleanGrandSlamName(season.name || "");
-      const key = `${cleanName}-${season.year}`;
-
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          name: cleanName,
-          year: season.year,
-          startDate: season.start_date,
-          endDate: season.end_date,
-          menSeason: null,
-          womenSeason: null,
-        });
-      }
-
-      const item = grouped.get(key);
-
-      if (
-        new Date(season.start_date).getTime() <
-        new Date(item.startDate).getTime()
-      ) {
-        item.startDate = season.start_date;
-      }
-
-      if (
-        new Date(season.end_date).getTime() >
-        new Date(item.endDate).getTime()
-      ) {
-        item.endDate = season.end_date;
-      }
-
-      const lowerName = (season.name || "").toLowerCase();
-
-      if (
-        lowerName.includes("men singles") ||
-        lowerName.includes("mens singles") ||
-        lowerName.includes("men's singles")
-      ) {
-        item.menSeason = season;
-      }
-
-      if (
-        lowerName.includes("women singles") ||
-        lowerName.includes("womens singles") ||
-        lowerName.includes("women's singles")
-      ) {
-        item.womenSeason = season;
-      }
-    });
-
-    const tournaments = Array.from(grouped.values()).sort(
-      (a: any, b: any) =>
-        new Date(a.startDate).getTime() -
-        new Date(b.startDate).getTime()
+    const fixtures = await fetchFixtures(
+      apiKey,
+      formatDate(today),
+      formatDate(future)
     );
 
-    return NextResponse.json(tournaments[0] || null);
+    const grandSlamMatches = fixtures.filter((event) =>
+      isGrandSlam(event.tournament_name)
+    );
+
+    if (grandSlamMatches.length === 0) {
+      return NextResponse.json({
+        name: "Grand Slam",
+        startDate: null,
+        endDate: null,
+      });
+    }
+
+    grandSlamMatches.sort((a, b) => {
+      const aDate = new Date(
+        `${a.event_date}T${a.event_time || "00:00"}`
+      );
+
+      const bDate = new Date(
+        `${b.event_date}T${b.event_time || "00:00"}`
+      );
+
+      return aDate.getTime() - bDate.getTime();
+    });
+
+    const firstMatch = grandSlamMatches[0];
+
+    const slamName = normalizeGrandSlam(
+      firstMatch.tournament_name || "Grand Slam"
+    );
+
+    const sameTournamentMatches = grandSlamMatches.filter(
+      (event) =>
+        normalizeGrandSlam(
+          event.tournament_name || ""
+        ) === slamName
+    );
+
+    const dates = sameTournamentMatches
+      .map((event) => event.event_date)
+      .filter(Boolean)
+      .sort() as string[];
+
+    const startDate = dates[0] || null;
+    const endDate = dates[dates.length - 1] || null;
+
+    return NextResponse.json({
+      name: slamName,
+
+      startDate,
+      endDate,
+
+      menSeason: true,
+      womenSeason: true,
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch grand slam" },
+      { error: "Failed to fetch next Grand Slam" },
       { status: 500 }
     );
   }

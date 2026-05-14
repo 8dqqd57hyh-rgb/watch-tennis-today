@@ -86,7 +86,6 @@ function splitPlayers(name: string) {
 
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
-  const [nextGrandSlam, setNextGrandSlam] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,126 +143,49 @@ setMatches(safeMatches);
     return matchesFilter && matchesSearch;
   });
 
-  const livePlayers = [
-    ...new Set(
-      matches
-        .filter((match) => match.status === "LIVE")
-        .flatMap((match) => [
-          ...splitPlayers(match.player1),
-          ...splitPlayers(match.player2),
-        ])
-        .map((player) => player.trim())
-        .filter(Boolean)
-    ),
-  ].slice(0, 8);
+  const priorityPlayers = [
+  "Jannik Sinner",
+  "Carlos Alcaraz",
+  "Novak Djokovic",
+  "Daniil Medvedev",
+  "Alexander Zverev",
+  "Iga Swiatek",
+  "Aryna Sabalenka",
+  "Coco Gauff",
+];
 
-  const startDate = nextGrandSlam?.startDate
-  ? new Date(nextGrandSlam.startDate)
-  : null;
+const livePlayers = [
+  ...new Set(
+    matches
+      .filter((match) => match.status === "LIVE")
+      .flatMap((match) => [
+        ...splitPlayers(match.player1),
+        ...splitPlayers(match.player2),
+      ])
+      .map((player) => player.trim())
+      .filter(Boolean)
+  ),
+].sort((a, b) => {
+  const aPriority = priorityPlayers.some(
+    (player) => player.toLowerCase() === a.toLowerCase()
+  );
 
-const endDate = nextGrandSlam?.endDate
-  ? new Date(nextGrandSlam.endDate)
-  : null;
+  const bPriority = priorityPlayers.some(
+    (player) => player.toLowerCase() === b.toLowerCase()
+  );
 
-const daysUntilGrandSlam =
-  startDate &&
-  Number.isFinite(startDate.getTime())
-    ? Math.ceil(
-        (startDate.getTime() -
-          new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
-    : null;
+  if (aPriority && !bPriority) return -1;
+  if (!aPriority && bPriority) return 1;
+
+  return a.localeCompare(b);
+});
+
+ 
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-        {nextGrandSlam && (
-          <div className="mb-10 rounded-[2rem] bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 text-black shadow-2xl">
-            <p className="uppercase text-sm font-black tracking-widest opacity-70 mb-3">
-              Next Grand Slam
-            </p>
-
-           <h2 className="text-5xl font-black mb-4">
-  <a
-    href="/french-open-live-stream"
-    className="hover:underline"
-  >
-    🏆 {nextGrandSlam.name}
-  </a>
-</h2>
-
-            <div className="flex flex-wrap gap-3 mb-5">
-              {nextGrandSlam.menSeason && (
-                <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
-                  Men Singles
-                </div>
-              )}
-
-              {nextGrandSlam.womenSeason && (
-                <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
-                  Women Singles
-                </div>
-              )}
-            </div>
-
-            <p className="text-xl font-semibold mb-2">
-  {startDate
-    ? startDate.toLocaleDateString()
-    : "Date coming soon"}
-
-  {" — "}
-
-  {endDate
-    ? endDate.toLocaleDateString()
-    : "Date coming soon"}
-</p>
-
-<p className="text-lg font-bold mb-6">
-  {daysUntilGrandSlam !== null
-    ? `Starts in ${daysUntilGrandSlam} days`
-    : "Schedule update coming soon"}
-</p>
-
-            <div className="space-y-3">
-              <a
-                href="https://www.tennischannel.com/"
-                target="_blank"
-                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-              >
-                Tennis Channel
-
-                <span className="block text-sm opacity-70 mt-1">
-                  Official Grand Slam broadcaster (region dependent)
-                </span>
-              </a>
-
-              <a
-                href="https://www.eurosport.com/tennis/"
-                target="_blank"
-                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-              >
-                Eurosport
-
-                <span className="block text-sm opacity-70 mt-1">
-                  Official broadcaster in many European regions
-                </span>
-              </a>
-
-              <a
-                href="https://www.atptour.com/"
-                target="_blank"
-                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-              >
-                Official Tournament Sources
-
-                <span className="block text-sm opacity-70 mt-1">
-                  Verify exact broadcaster by region
-                </span>
-              </a>
-            </div>
-          </div>
-        )}
+      
 
         <div className="flex flex-col gap-6 mb-10">
           <div>
