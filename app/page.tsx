@@ -95,9 +95,15 @@ export default function Home() {
     async function loadMatches() {
       try {
         const matchesResponse = await fetch("/api/matches");
-        const matchesData = await matchesResponse.json();
+       const matchesData = await matchesResponse.json();
 
-        setMatches(matchesData);
+const safeMatches = Array.isArray(matchesData)
+  ? matchesData
+  : Array.isArray(matchesData.matches)
+    ? matchesData.matches
+    : [];
+
+setMatches(safeMatches);
 
         const slamResponse = await fetch(
           "/api/next-grand-slam"
