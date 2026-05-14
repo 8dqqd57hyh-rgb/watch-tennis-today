@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-
 type WatchProvider = {
   name: string;
   url: string;
@@ -92,18 +91,18 @@ export default function Home() {
   useEffect(() => {
     async function loadMatches() {
       try {
-       const matchesResponse = await fetch("/api/matches");
-const matchesData = await matchesResponse.json();
+        const matchesResponse = await fetch("/api/matches");
+        const matchesData = await matchesResponse.json();
 
-setMatches(matchesData);
+        setMatches(matchesData);
 
-const slamResponse = await fetch(
-  "/api/next-grand-slam"
-);
+        const slamResponse = await fetch(
+          "/api/next-grand-slam"
+        );
 
-const slamData = await slamResponse.json();
+        const slamData = await slamResponse.json();
 
-setNextGrandSlam(slamData);
+        setNextGrandSlam(slamData);
       } catch (error) {
         console.error("Failed to load matches");
       } finally {
@@ -130,139 +129,182 @@ setNextGrandSlam(slamData);
     return matchesFilter && matchesSearch;
   });
 
+  const livePlayers = [
+    ...new Set(
+      matches
+        .filter((match) => match.status === "LIVE")
+        .flatMap((match) => [
+          ...splitPlayers(match.player1),
+          ...splitPlayers(match.player2),
+        ])
+        .map((player) => player.trim())
+        .filter(Boolean)
+    ),
+  ].slice(0, 8);
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {nextGrandSlam && (
-  <div className="mb-10 rounded-[2rem] bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 text-black shadow-2xl">
-    <p className="uppercase text-sm font-black tracking-widest opacity-70 mb-3">
-      Next Grand Slam
-    </p>
+          <div className="mb-10 rounded-[2rem] bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 text-black shadow-2xl">
+            <p className="uppercase text-sm font-black tracking-widest opacity-70 mb-3">
+              Next Grand Slam
+            </p>
 
-    <h2 className="text-5xl font-black mb-4">
-      🏆 {nextGrandSlam.name}
-    </h2>
+            <h2 className="text-5xl font-black mb-4">
+              🏆 {nextGrandSlam.name}
+            </h2>
 
-    <div className="flex flex-wrap gap-3 mb-5">
-      {nextGrandSlam.menSeason && (
-        <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
-          Men Singles
-        </div>
-      )}
+            <div className="flex flex-wrap gap-3 mb-5">
+              {nextGrandSlam.menSeason && (
+                <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
+                  Men Singles
+                </div>
+              )}
 
-      {nextGrandSlam.womenSeason && (
-        <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
-          Women Singles
-        </div>
-      )}
-    </div>
+              {nextGrandSlam.womenSeason && (
+                <div className="bg-black/10 rounded-full px-4 py-2 font-bold">
+                  Women Singles
+                </div>
+              )}
+            </div>
 
-    <p className="text-xl font-semibold mb-2">
-      {new Date(
-        nextGrandSlam.startDate
-      ).toLocaleDateString()}
-      {" — "}
-      {new Date(
-        nextGrandSlam.endDate
-      ).toLocaleDateString()}
-    </p>
+            <p className="text-xl font-semibold mb-2">
+              {new Date(
+                nextGrandSlam.startDate
+              ).toLocaleDateString()}
+              {" — "}
+              {new Date(
+                nextGrandSlam.endDate
+              ).toLocaleDateString()}
+            </p>
 
-    <p className="text-lg font-bold mb-6">
-      Starts in{" "}
-      {Math.ceil(
-        (new Date(nextGrandSlam.startDate).getTime() -
-          new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )}{" "}
-      days
-    </p>
+            <p className="text-lg font-bold mb-6">
+              Starts in{" "}
+              {Math.ceil(
+                (new Date(nextGrandSlam.startDate).getTime() -
+                  new Date().getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )}{" "}
+              days
+            </p>
 
-    <div className="space-y-3">
-      <a
-        href="https://www.tennischannel.com/"
-        target="_blank"
-        className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-      >
-        Tennis Channel
+            <div className="space-y-3">
+              <a
+                href="https://www.tennischannel.com/"
+                target="_blank"
+                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
+              >
+                Tennis Channel
 
-        <span className="block text-sm opacity-70 mt-1">
-          Official Grand Slam broadcaster (region dependent)
-        </span>
-      </a>
+                <span className="block text-sm opacity-70 mt-1">
+                  Official Grand Slam broadcaster (region dependent)
+                </span>
+              </a>
 
-      <a
-        href="https://www.eurosport.com/tennis/"
-        target="_blank"
-        className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-      >
-        Eurosport
+              <a
+                href="https://www.eurosport.com/tennis/"
+                target="_blank"
+                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
+              >
+                Eurosport
 
-        <span className="block text-sm opacity-70 mt-1">
-          Official broadcaster in many European regions
-        </span>
-      </a>
+                <span className="block text-sm opacity-70 mt-1">
+                  Official broadcaster in many European regions
+                </span>
+              </a>
 
-      <a
-        href="https://www.atptour.com/"
-        target="_blank"
-        className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
-      >
-        Official Tournament Sources
+              <a
+                href="https://www.atptour.com/"
+                target="_blank"
+                className="block rounded-2xl bg-black text-white px-5 py-4 font-bold hover:scale-[1.02] transition-all"
+              >
+                Official Tournament Sources
 
-        <span className="block text-sm opacity-70 mt-1">
-          Verify exact broadcaster by region
-        </span>
-      </a>
-    </div>
-  </div>
-)}
+                <span className="block text-sm opacity-70 mt-1">
+                  Verify exact broadcaster by region
+                </span>
+              </a>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-6 mb-10">
           <div>
             <h1 className="text-5xl font-black">
               🎾 Watch Tennis Today
             </h1>
+
             <a
-  href="/watch"
-  className="inline-block mt-5 bg-green-500 text-black font-bold px-5 py-3 rounded-2xl hover:bg-green-400 transition-all"
->
-  📺 Where to watch
-</a>
+              href="/watch"
+              className="inline-block mt-5 bg-green-500 text-black font-bold px-5 py-3 rounded-2xl hover:bg-green-400 transition-all"
+            >
+              📺 Where to watch
+            </a>
 
-<a
-  href="/tv-schedule"
-  className="inline-block mt-5 ml-3 bg-zinc-800 text-white font-bold px-5 py-3 rounded-2xl hover:bg-zinc-700 transition-all"
->
-  📺 TV Schedule
-</a>
+            <a
+              href="/tv-schedule"
+              className="inline-block mt-5 ml-3 bg-zinc-800 text-white font-bold px-5 py-3 rounded-2xl hover:bg-zinc-700 transition-all"
+            >
+              📺 TV Schedule
+            </a>
 
-<a
-  href="/live-tennis"
-  className="inline-block mt-5 ml-3 bg-red-500 text-white font-bold px-5 py-3 rounded-2xl hover:bg-red-400 transition-all"
->
-  🔴 Live Tennis
-</a>
-<div className="mb-12">
-   <h2 className="text-3xl font-black mb-5">
-    🌍 Watch Tennis by Country
-  </h2>
+            <a
+              href="/live-tennis"
+              className="inline-block mt-5 ml-3 bg-red-500 text-white font-bold px-5 py-3 rounded-2xl hover:bg-red-400 transition-all"
+            >
+              🔴 Live Tennis
+            </a>
 
-  <p className="text-zinc-400 mb-6 max-w-3xl">
-    Find official tennis broadcasters, TV channels and streaming options by
-    country. Check where to watch ATP, WTA and Grand Slam tennis legally.
-  </p>
+            <div className="mb-12 mt-10">
+              <h2 className="text-3xl font-black mb-5">
+                🌍 Watch Tennis by Country
+              </h2>
 
-  <div className="flex flex-wrap gap-3">
-    {countries.map((country) => (
-      <a
-        key={country}
-        href={`/watch-tennis-in/${country}`}
-        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-      >
-        {readableCountry(country)}
-      </a>
-    ))}
-  </div>
-</div>
+              <p className="text-zinc-400 mb-6 max-w-3xl">
+                Find official tennis broadcasters, TV channels and streaming
+                options by country. Check where to watch ATP, WTA and Grand Slam
+                tennis legally.
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                {countries.map((country) => (
+                  <a
+                    key={country}
+                    href={`/watch-tennis-in/${country}`}
+                    className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+                  >
+                    {readableCountry(country)}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {livePlayers.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-3xl font-black mb-5">
+                  🔴 Live Players Now
+                </h2>
+
+                <p className="text-zinc-400 mb-6 max-w-3xl">
+                  Players currently competing in live tennis matches.
+                  Follow their match pages, schedules and streaming information.
+                </p>
+
+                <div className="flex flex-wrap gap-3">
+                  {livePlayers.map((player) => (
+                    <a
+                      key={player}
+                      href={`/player/${playerSlug(player)}`}
+                      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-red-500 hover:text-red-400 transition-all"
+                    >
+                      🔴 {player}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <p className="text-zinc-400 mt-3 text-lg">
               Live and upcoming tennis matches
             </p>
@@ -333,20 +375,22 @@ setNextGrandSlam(slamData);
                 <div className="space-y-3 mb-6">
                   <div>
                     <div className="flex flex-wrap gap-x-2 gap-y-1">
-  {splitPlayers(match.player1).map((player, index) => (
-    <span key={player} className="text-2xl font-bold">
-      <a
-        href={`/player/${playerSlug(player)}`}
-        className="hover:text-green-400 transition-colors"
-      >
-        {player}
-      </a>
-      {index < splitPlayers(match.player1).length - 1 && (
-        <span className="text-zinc-500"> /</span>
-      )}
-    </span>
-  ))}
-</div>
+                      {splitPlayers(match.player1).map((player, index) => (
+                        <span key={player} className="text-2xl font-bold">
+                          <a
+                            href={`/player/${playerSlug(player)}`}
+                            className="hover:text-green-400 transition-colors"
+                          >
+                            {player}
+                          </a>
+
+                          {index <
+                            splitPlayers(match.player1).length - 1 && (
+                            <span className="text-zinc-500"> /</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="text-zinc-500 font-semibold">
@@ -354,21 +398,23 @@ setNextGrandSlam(slamData);
                   </div>
 
                   <div>
-                  <div className="flex flex-wrap gap-x-2 gap-y-1">
-  {splitPlayers(match.player2).map((player, index) => (
-    <span key={player} className="text-2xl font-bold">
-      <a
-        href={`/player/${playerSlug(player)}`}
-        className="hover:text-green-400 transition-colors"
-      >
-        {player}
-      </a>
-      {index < splitPlayers(match.player2).length - 1 && (
-        <span className="text-zinc-500"> /</span>
-      )}
-    </span>
-  ))}
-</div>
+                    <div className="flex flex-wrap gap-x-2 gap-y-1">
+                      {splitPlayers(match.player2).map((player, index) => (
+                        <span key={player} className="text-2xl font-bold">
+                          <a
+                            href={`/player/${playerSlug(player)}`}
+                            className="hover:text-green-400 transition-colors"
+                          >
+                            {player}
+                          </a>
+
+                          {index <
+                            splitPlayers(match.player2).length - 1 && (
+                            <span className="text-zinc-500"> /</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -379,16 +425,16 @@ setNextGrandSlam(slamData);
                     </p>
 
                     <a
-  href={`/tournament/${match.tournament
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")}`}
-  className="font-semibold hover:text-green-400 transition-colors"
->
-  {match.tournament}
-</a>
+                      href={`/tournament/${match.tournament
+                        .toLowerCase()
+                        .replace(/,/g, "")
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/-+/g, "-")
+                        .replace(/^-|-$/g, "")}`}
+                      className="font-semibold hover:text-green-400 transition-colors"
+                    >
+                      {match.tournament}
+                    </a>
                   </div>
 
                   <div>
@@ -414,44 +460,45 @@ setNextGrandSlam(slamData);
                   </div>
 
                   <div className="pt-4 border-t border-zinc-800">
-  <p className="text-zinc-500 text-sm mb-3">
-    Where to watch
-  </p>
+                    <p className="text-zinc-500 text-sm mb-3">
+                      Where to watch
+                    </p>
 
-  {match.watchProviders.length > 0 ? (
-    <div className="space-y-3">
-      {match.watchProviders.map((provider) => (
-        <a
-          key={provider.name}
-          href={provider.url}
-          target="_blank"
-          className="block rounded-2xl bg-green-500 text-black px-4 py-3 font-bold hover:bg-green-400 transition-all"
-        >
-          {provider.name}
+                    {match.watchProviders.length > 0 ? (
+                      <div className="space-y-3">
+                        {match.watchProviders.map((provider) => (
+                          <a
+                            key={provider.name}
+                            href={provider.url}
+                            target="_blank"
+                            className="block rounded-2xl bg-green-500 text-black px-4 py-3 font-bold hover:bg-green-400 transition-all"
+                          >
+                            {provider.name}
 
-          <span className="block text-xs font-normal mt-1">
-            {provider.accessType} · {provider.verificationStatus}
-          </span>
+                            <span className="block text-xs font-normal mt-1">
+                              {provider.accessType} ·{" "}
+                              {provider.verificationStatus}
+                            </span>
 
-          <span className="block text-xs font-normal mt-1 opacity-80">
-            {provider.note}
-          </span>
-        </a>
-      ))}
-      <a
-  href={`/watch/${matchSlug(match)}`}
-  className="block mt-6 bg-white text-black text-center font-black px-5 py-4 rounded-2xl hover:bg-zinc-200 transition-all"
->
-  Open Match Page
-</a>
-    </div>
-    
-  ) : (
-    <p className="text-sm text-zinc-500">
-      No trusted official source found yet.
-    </p>
-  )}
-</div>
+                            <span className="block text-xs font-normal mt-1 opacity-80">
+                              {provider.note}
+                            </span>
+                          </a>
+                        ))}
+
+                        <a
+                          href={`/watch/${matchSlug(match)}`}
+                          className="block mt-6 bg-white text-black text-center font-black px-5 py-4 rounded-2xl hover:bg-zinc-200 transition-all"
+                        >
+                          Open Match Page
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-zinc-500">
+                        No trusted official source found yet.
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
