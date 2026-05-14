@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
 import { playerUrl } from "@/data/playerSlugs";
 
+
 export const dynamic = "force-dynamic";
 
 type WatchProvider = {
