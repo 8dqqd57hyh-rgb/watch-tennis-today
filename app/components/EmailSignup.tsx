@@ -9,20 +9,26 @@ export default function EmailSignup() {
         Get notified about Grand Slam schedules, live tennis matches and where to watch them.
       </p>
 
-      <form className="flex flex-col md:flex-row gap-3">
-        <input
-          type="email"
-          placeholder="Your email"
-          className="flex-1 rounded-2xl px-5 py-4 text-black"
-        />
+      <form
+  action="https://formspree.io/f/xeenwwbk"
+  method="POST"
+  className="flex flex-col md:flex-row gap-3"
+>
+  <input
+    type="email"
+    name="email"
+    required
+    placeholder="Your email"
+    className="flex-1 rounded-2xl px-5 py-4 text-black"
+  />
 
-        <button
-          type="submit"
-          className="bg-black text-white px-6 py-4 rounded-2xl font-black"
-        >
-          Notify Me
-        </button>
-      </form>
+  <button
+    type="submit"
+    className="bg-black text-white px-6 py-4 rounded-2xl font-black"
+  >
+    Notify Me
+  </button>
+</form>
     </section>
   );
 }
