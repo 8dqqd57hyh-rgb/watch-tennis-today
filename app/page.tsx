@@ -151,9 +151,14 @@ export default function Home() {
               Next Grand Slam
             </p>
 
-            <h2 className="text-5xl font-black mb-4">
-              🏆 {nextGrandSlam.name}
-            </h2>
+           <h2 className="text-5xl font-black mb-4">
+  <a
+    href="/french-open-live-stream"
+    className="hover:underline"
+  >
+    🏆 {nextGrandSlam.name}
+  </a>
+</h2>
 
             <div className="flex flex-wrap gap-3 mb-5">
               {nextGrandSlam.menSeason && (
