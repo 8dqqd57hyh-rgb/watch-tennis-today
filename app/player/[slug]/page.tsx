@@ -225,6 +225,42 @@ export default async function PlayerPage({
       ))}
   </div>
 </section>
+<section className="mt-12 space-y-6">
+  <h2 className="text-2xl font-semibold">
+    FAQ about {playerName}
+  </h2>
+
+  <div>
+    <h3 className="font-semibold">
+      Where can I watch {playerName} live?
+    </h3>
+
+    <p>
+      You can watch {playerName} live on official tennis broadcasters,
+      streaming platforms and sports TV channels depending on your country.
+    </p>
+  </div>
+
+  <div>
+    <h3 className="font-semibold">
+      When is the next {playerName} match?
+    </h3>
+
+    <p>
+      Upcoming match information for {playerName} is updated regularly on Watch Tennis Today.
+    </p>
+  </div>
+
+  <div>
+    <h3 className="font-semibold">
+      Does Watch Tennis Today stream matches?
+    </h3>
+
+    <p>
+      Watch Tennis Today helps fans find where to watch tennis matches online and on TV.
+    </p>
+  </div>
+</section>
 
       <div className="space-y-4 mb-10">
         {playerMatches.map((match) => (
