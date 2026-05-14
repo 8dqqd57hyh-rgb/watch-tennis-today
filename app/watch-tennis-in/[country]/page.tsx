@@ -166,12 +166,14 @@ export default async function CountryPage({
 
           <div className="mt-5 bg-black rounded-2xl p-5 border border-zinc-800">
             <p className="font-bold mb-2">
-              Future affiliate block
-            </p>
-            <p className="text-zinc-500 text-sm">
-              Later you can add VPN, sports streaming or betting affiliate links
-              here after joining partner programs.
-            </p>
+  Legal streaming notice
+</p>
+
+<p className="text-zinc-500 text-sm">
+  Watch Tennis Today does not host or stream tennis matches. We provide
+  information about official broadcasters, TV channels and legal streaming
+  options.
+</p>
           </div>
         </section>
 
