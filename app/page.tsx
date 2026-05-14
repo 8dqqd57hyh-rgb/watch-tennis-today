@@ -145,6 +145,24 @@ export default function Home() {
     ),
   ].slice(0, 8);
 
+  const startDate = nextGrandSlam?.startDate
+  ? new Date(nextGrandSlam.startDate)
+  : null;
+
+const endDate = nextGrandSlam?.endDate
+  ? new Date(nextGrandSlam.endDate)
+  : null;
+
+const daysUntilGrandSlam =
+  startDate &&
+  Number.isFinite(startDate.getTime())
+    ? Math.ceil(
+        (startDate.getTime() -
+          new Date().getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    : null;
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
@@ -178,24 +196,22 @@ export default function Home() {
             </div>
 
             <p className="text-xl font-semibold mb-2">
-              {new Date(
-                nextGrandSlam.startDate
-              ).toLocaleDateString()}
-              {" — "}
-              {new Date(
-                nextGrandSlam.endDate
-              ).toLocaleDateString()}
-            </p>
+  {startDate
+    ? startDate.toLocaleDateString()
+    : "Date coming soon"}
 
-            <p className="text-lg font-bold mb-6">
-              Starts in{" "}
-              {Math.ceil(
-                (new Date(nextGrandSlam.startDate).getTime() -
-                  new Date().getTime()) /
-                  (1000 * 60 * 60 * 24)
-              )}{" "}
-              days
-            </p>
+  {" — "}
+
+  {endDate
+    ? endDate.toLocaleDateString()
+    : "Date coming soon"}
+</p>
+
+<p className="text-lg font-bold mb-6">
+  {daysUntilGrandSlam !== null
+    ? `Starts in ${daysUntilGrandSlam} days`
+    : "Schedule update coming soon"}
+</p>
 
             <div className="space-y-3">
               <a
