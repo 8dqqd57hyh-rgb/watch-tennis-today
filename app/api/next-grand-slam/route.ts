@@ -90,7 +90,7 @@ if (process.env.NODE_ENV === "development") {
   return NextResponse.json({
     name: "French Open",
     year: 2026,
-    startDate: "2026-05-24",
+    startDate: "2026-05-18",
     endDate: "2026-06-07",
     menSeason: true,
     womenSeason: true,
