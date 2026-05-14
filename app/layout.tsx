@@ -69,14 +69,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-black">
-        <Script
+       <Script
+  id="adsense-script"
   async
   strategy="afterInteractive"
   crossOrigin="anonymous"
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1230772312817142"
 />
-        <script
+
+<Script
+  id="website-schema"
   type="application/ld+json"
+  strategy="afterInteractive"
   dangerouslySetInnerHTML={{
     __html: JSON.stringify({
       "@context": "https://schema.org",
@@ -89,8 +93,7 @@ export default function RootLayout({
         "@type": "SearchAction",
         target:
           "https://watchtennistoday.com/?search={search_term_string}",
-        "query-input":
-          "required name=search_term_string",
+        "query-input": "required name=search_term_string",
       },
     }),
   }}
