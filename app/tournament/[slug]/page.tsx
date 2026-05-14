@@ -91,9 +91,15 @@ export default async function TournamentPage({
   const tournamentName = readableTournament(slug);
   const matches = await getMatches();
 
-  const tournamentMatches = matches.filter(
-    (match) => slugify(match.tournament) === slug
+ const tournamentMatches = matches.filter((match) => {
+  const matchTournamentSlug = slugify(match.tournament);
+
+  return (
+    matchTournamentSlug === slug ||
+    matchTournamentSlug.includes(slug) ||
+    slug.includes(matchTournamentSlug)
   );
+});
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -139,7 +145,48 @@ export default async function TournamentPage({
             </a>
           </div>
         </section>
+<section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
+  <h2 className="text-3xl font-black mb-4">
+    🔔 Get notified about {tournamentName}
+  </h2>
 
+  <p className="text-zinc-400 mb-6">
+    Get live tennis updates, match schedules and streaming information for {tournamentName}.
+  </p>
+
+  <form
+    action="https://formspree.io/f/xeenwwbk"
+    method="POST"
+    className="flex flex-col md:flex-row gap-4"
+  >
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Your email"
+      className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
+    />
+
+    <input
+      type="hidden"
+      name="tournament"
+      value={tournamentName}
+    />
+
+    <input
+      type="hidden"
+      name="source"
+      value="tournament-page"
+    />
+
+    <button
+      type="submit"
+      className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black"
+    >
+      Notify Me
+    </button>
+  </form>
+</section>
         <section className="space-y-6">
           <h2 className="text-3xl font-black">
             {tournamentName} Matches
