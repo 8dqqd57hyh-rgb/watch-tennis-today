@@ -94,8 +94,14 @@ export default function Home() {
   useEffect(() => {
     async function loadMatches() {
       try {
-        const matchesResponse = await fetch("/api/matches");
-       const matchesData = await matchesResponse.json();
+      const matchesResponse = await fetch("/api/matches");
+
+if (!matchesResponse.ok) {
+  setMatches([]);
+  return;
+}
+
+const matchesData = await matchesResponse.json();
 
 const safeMatches = Array.isArray(matchesData)
   ? matchesData

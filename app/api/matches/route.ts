@@ -1,101 +1,75 @@
 import { NextResponse } from "next/server";
 
-type SportradarCompetitor = {
-  name?: string;
+export const dynamic = "force-dynamic";
+
+type ApiTennisMatch = {
+  event_key: string;
+  event_date: string;
+  event_time: string;
+  event_first_player: string;
+  event_second_player: string;
+  event_final_result: string;
+  event_game_result: string;
+  event_status: string;
+  event_type_type: string;
+  tournament_name: string;
+  event_live: string;
+  scores?: {
+    score_first: string;
+    score_second: string;
+    score_set: string;
+  }[];
 };
-
-type SportradarSportEvent = {
-  id: string;
-  start_time?: string;
-  competitors?: SportradarCompetitor[];
-  tournament?: {
-    name?: string;
-  };
-  sport_event_context?: {
-    category?: {
-      name?: string;
-    };
-    competition?: {
-      name?: string;
-    };
-  };
-};
-
-type SportradarSummary = {
-  sport_event: SportradarSportEvent;
-  sport_event_status?: {
-    status?: string;
-    home_score?: number;
-    away_score?: number;
-    period_scores?: {
-      home_score?: number;
-      away_score?: number;
-      number?: number;
-      type?: string;
-    }[];
-  };
-};
-
-function normalizeStatus(status?: string) {
-  if (status === "live" || status === "started") return "LIVE";
-  if (status === "not_started" || status === "match_about_to_start") return "UPCOMING";
-  if (status === "closed" || status === "ended") return "FINISHED";
-  if (status === "cancelled") return "CANCELLED";
-  if (status === "delayed") return "DELAYED";
-  if (status === "suspended") return "SUSPENDED";
-
-  return "UPCOMING";
-}
-
-function normalizeCategory(categoryName?: string, tournamentName?: string) {
-  const value = `${categoryName || ""} ${tournamentName || ""}`.toLowerCase();
-
-  if (value.includes("atp challenger")) return "CHALLENGER";
-  if (value.includes("atp")) return "ATP";
-  if (value.includes("wta")) return "WTA";
-  if (value.includes("itf")) return "ITF";
-  if (value.includes("utr")) return "UTR";
-
-  return "UNKNOWN";
-}
 
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-function formatScore(status?: SportradarSummary["sport_event_status"]) {
-  if (!status) return "-";
+function normalizeCategory(eventType?: string) {
+  const value = (eventType || "").toLowerCase();
 
-  if (status.period_scores && status.period_scores.length > 0) {
-    return status.period_scores
-      .map((set) => `${set.home_score ?? 0}-${set.away_score ?? 0}`)
+  if (value.includes("challenger")) return "CHALLENGER";
+  if (value.includes("atp")) return "ATP";
+  if (value.includes("wta")) return "WTA";
+  if (value.includes("itf")) return "ITF";
+
+  return "UNKNOWN";
+}
+
+function normalizeStatus(match: ApiTennisMatch) {
+  if (match.event_live === "1") return "LIVE";
+
+  const status = (match.event_status || "").toLowerCase();
+
+  if (status.includes("finished")) return "FINISHED";
+  if (status.includes("cancel")) return "CANCELLED";
+  if (status.includes("retired")) return "RETIRED";
+
+  return "UPCOMING";
+}
+
+function formatScore(match: ApiTennisMatch) {
+  if (match.scores && match.scores.length > 0) {
+    return match.scores
+      .map((set) => `${set.score_first}-${set.score_second}`)
       .join(", ");
   }
 
-  if (
-    status.home_score !== undefined &&
-    status.away_score !== undefined
-  ) {
-    return `${status.home_score}-${status.away_score}`;
+  if (match.event_final_result && match.event_final_result !== "-") {
+    return match.event_final_result;
+  }
+
+  if (match.event_game_result && match.event_game_result !== "-") {
+    return match.event_game_result;
   }
 
   return "-";
 }
 
-async function fetchDailyMatches(date: string, apiKey: string) {
-  const url = `https://api.sportradar.com/tennis/trial/v3/en/schedules/${date}/summaries.json?api_key=${apiKey}`;
+function getStartTime(match: ApiTennisMatch) {
+  if (!match.event_date || !match.event_time) return null;
 
-  const response = await fetch(url, {
-    next: { revalidate: 60 },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch matches for ${date}`);
-  }
-
-  const data = await response.json();
-
-  return data.summaries || [];
+  return `${match.event_date}T${match.event_time}:00`;
 }
 
 function getWatchProviders(category: string, tournament: string) {
@@ -159,12 +133,32 @@ function getWatchProviders(category: string, tournament: string) {
   return [];
 }
 
+async function fetchApiTennis(method: string, apiKey: string, params = "") {
+  const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
+
+  const response = await fetch(url, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API-Tennis request failed: ${method}`);
+  }
+
+  const data = await response.json();
+
+  if (data.success !== 1) {
+    return [];
+  }
+
+  return Array.isArray(data.result) ? data.result : [];
+}
+
 export async function GET() {
-  const apiKey = process.env.SPORTRADAR_API_KEY;
+  const apiKey = process.env.API_TENNIS_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Missing SPORTRADAR_API_KEY in .env.local" },
+      { error: "Missing API_TENNIS_KEY in .env.local" },
       { status: 500 }
     );
   }
@@ -174,57 +168,65 @@ export async function GET() {
 
   tomorrow.setDate(today.getDate() + 1);
 
-  const dates = [formatDate(today), formatDate(tomorrow)];
+  const dateStart = formatDate(today);
+  const dateStop = formatDate(tomorrow);
 
   try {
-    const results = await Promise.all(
-      dates.map((date) => fetchDailyMatches(date, apiKey))
+    const [liveMatches, fixtureMatches] = await Promise.all([
+      fetchApiTennis("get_livescore", apiKey),
+      fetchApiTennis(
+        "get_fixtures",
+        apiKey,
+        `&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw`
+      ),
+    ]);
+
+    const allMatches: ApiTennisMatch[] = [...liveMatches, ...fixtureMatches];
+
+    const uniqueMatches = Array.from(
+      new Map(allMatches.map((match) => [match.event_key, match])).values()
     );
 
-    const summaries: SportradarSummary[] = results.flat();
+    const matches = uniqueMatches
+      .map((match) => {
+        const category = normalizeCategory(match.event_type_type);
+        const tournament = match.tournament_name || "Unknown tournament";
 
-    const matches = summaries.map((summary) => {
-      const event = summary.sport_event;
-      const status = summary.sport_event_status;
+        return {
+          id: String(match.event_key),
+          player1: match.event_first_player || "Unknown player",
+          player2: match.event_second_player || "Unknown player",
+          tournament,
+          category,
+          status: normalizeStatus(match),
+          score: formatScore(match),
+          startTime: getStartTime(match),
+          watchProviders: getWatchProviders(category, tournament),
+        };
+      })
+      .filter(
+        (match) =>
+          match.status !== "FINISHED" &&
+          match.status !== "CANCELLED" &&
+          match.status !== "RETIRED"
+      )
+      .sort((a, b) => {
+        if (a.status === "LIVE" && b.status !== "LIVE") return -1;
+        if (a.status !== "LIVE" && b.status === "LIVE") return 1;
 
-      const tournament =
-        event.sport_event_context?.competition?.name ||
-        event.tournament?.name ||
-        "Unknown tournament";
+        if (!a.startTime) return 1;
+        if (!b.startTime) return -1;
 
-      const category = normalizeCategory(
-        event.sport_event_context?.category?.name,
-        tournament
-      );
+        return (
+          new Date(a.startTime).getTime() -
+          new Date(b.startTime).getTime()
+        );
+      });
 
-      return {
-        id: event.id,
-        player1: event.competitors?.[0]?.name || "Unknown player",
-        player2: event.competitors?.[1]?.name || "Unknown player",
-        tournament,
-        category,
-        status: normalizeStatus(status?.status),
-        score: formatScore(status),
-        startTime: event.start_time || null,
-        watchProviders: getWatchProviders(category, tournament),
-      };
-    });
-
-    const usefulMatches = matches.filter(
-      (match) => match.status !== "FINISHED" && match.status !== "CANCELLED"
-    );
-
-    usefulMatches.sort((a, b) => {
-      if (!a.startTime) return 1;
-      if (!b.startTime) return -1;
-
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
-
-    return NextResponse.json(usefulMatches);
+    return NextResponse.json(matches);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch daily matches from Sportradar" },
+      { error: "Failed to fetch matches from API-Tennis" },
       { status: 500 }
     );
   }

@@ -43,7 +43,17 @@ async function getMatches(): Promise<Match[]> {
     return [];
   }
 
-  return response.json();
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.matches)) {
+    return data.matches;
+  }
+
+  return [];
 }
 
 function getMatchIdFromSlug(slug: string) {
@@ -106,10 +116,25 @@ export default async function MatchPage({
   const decodedSlug = decodeURIComponent(slug);
 
   const matches = await getMatches();
+  console.log("WATCH PAGE MATCHES DEBUG", {
+  isArray: Array.isArray(matches),
+  count: matches.length,
+  firstMatch: matches[0],
+});
 
-  const matchIdFromSlug = getMatchIdFromSlug(decodedSlug);
+const numericIdFromSlug = decodedSlug.match(/(\d+)$/)?.[1];
 
-  const match = matches.find((item) => item.id === matchIdFromSlug);
+const match = matches.find((item) => {
+  const itemNumericId = item.id?.split(":").pop();
+
+  return itemNumericId === numericIdFromSlug;
+});
+console.log("MATCH DEBUG", {
+  decodedSlug,
+  numericIdFromSlug,
+  foundMatch: match?.id,
+  firstIds: matches.slice(0, 5).map((item) => item.id),
+});
 
   if (!match) {
     return (
