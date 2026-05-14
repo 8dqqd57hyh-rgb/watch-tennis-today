@@ -251,6 +251,7 @@ export default async function sitemap() {
   "/privacy-policy",
   "/terms",
 "/disclaimer",
+"/tournament",
 "/best-ways-to-watch-tennis-online",
 ].map((path) => ({
   url: `${BASE_URL}${path}`,

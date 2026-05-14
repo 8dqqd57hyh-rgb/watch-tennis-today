@@ -113,6 +113,13 @@ export default function RootLayout({
         </a>
 
         <a
+  href="/tournament"
+  className="text-zinc-300 hover:text-white"
+>
+  Tournaments
+</a>
+
+        <a
           href="/watch-tennis-in/poland"
           className="text-zinc-300 hover:text-white"
         >
