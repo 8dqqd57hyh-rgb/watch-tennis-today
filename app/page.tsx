@@ -93,6 +93,31 @@ function hasPriorityPlayer(match: Match) {
   );
 }
 
+function uniquePlayers(matches: Match[]) {
+  const players = matches.flatMap((match) => [
+    ...splitPlayers(match.player1),
+    ...splitPlayers(match.player2),
+  ]);
+
+  return [...new Set(players)]
+    .filter(Boolean)
+    .sort((a, b) => {
+      const aPriority = priorityPlayers.some(
+        (player) => player.toLowerCase() === a.toLowerCase()
+      );
+
+      const bPriority = priorityPlayers.some(
+        (player) => player.toLowerCase() === b.toLowerCase()
+      );
+
+      if (aPriority && !bPriority) return -1;
+      if (!aPriority && bPriority) return 1;
+
+      return a.localeCompare(b);
+    })
+    .slice(0, 40);
+}
+
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
@@ -127,6 +152,8 @@ export default function Home() {
 
     loadMatches();
   }, []);
+
+  const seoPlayers = uniquePlayers(matches);
 
   const filteredMatches = matches.filter((match) => {
     const matchesFilter =
@@ -370,36 +397,29 @@ export default function Home() {
               </div>
             )}
 
-            <div className="mb-12">
-              <h2 className="text-3xl font-black mb-5">
-                ⭐ Popular Tennis Players
-              </h2>
+            {seoPlayers.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-3xl font-black mb-5">
+                  ⭐ Popular Tennis Players
+                </h2>
 
-              <p className="text-zinc-400 mb-6 max-w-3xl">
-                Follow popular tennis players, upcoming matches, live scores and official streaming information.
-              </p>
+                <p className="text-zinc-400 mb-6 max-w-3xl">
+                  Follow tennis players, live matches, schedules and streaming information.
+                </p>
 
-              <div className="flex flex-wrap gap-3">
-                {[
-                  ["Jannik Sinner", "sinner-jannik"],
-                  ["Carlos Alcaraz", "alcaraz-carlos"],
-                  ["Novak Djokovic", "djokovic-novak"],
-                  ["Iga Swiatek", "swiatek-iga"],
-                  ["Aryna Sabalenka", "sabalenka-aryna"],
-                  ["Coco Gauff", "gauff-coco"],
-                  ["Alexander Zverev", "zverev-alexander"],
-                  ["Daniil Medvedev", "medvedev-daniil"],
-                ].map(([name, slug]) => (
-                  <a
-                    key={slug}
-                    href={`/player/${slug}`}
-                    className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-                  >
-                    {name} matches
-                  </a>
-                ))}
+                <div className="flex flex-wrap gap-3">
+                  {seoPlayers.map((player) => (
+                    <a
+                      key={player}
+                      href={`/player/${playerSlug(player)}`}
+                      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+                    >
+                      {player} live matches
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <p className="text-zinc-400 mt-3 text-lg">
               Live and upcoming tennis matches

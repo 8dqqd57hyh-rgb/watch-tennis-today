@@ -192,6 +192,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-in/canada",
     "/watch-tennis-in/australia",
     "/watch-tennis-in/india",
+    "/watch-tennis-live-today",
     "/about",
     "/contact",
     "/privacy-policy",
