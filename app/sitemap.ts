@@ -110,9 +110,22 @@ function isGoodPlayerName(name: string) {
   if (!slug) return false;
   if (slug.length < 6) return false;
 
-  const blocked = ["q", "qualifier", "bye", "tbd", "unknown"];
+  const blocked = [
+    "q",
+    "qualifier",
+    "bye",
+    "tbd",
+    "unknown",
+  ];
 
   if (blocked.includes(slug)) return false;
+
+  const parts = name
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+
+  if (parts.length < 2) return false;
 
   return true;
 }
@@ -209,30 +222,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((path) => ({
     url: `${BASE_URL}${path}`,
     lastModified: now,
-    changeFrequency: "hourly",
+    changeFrequency: "hourly" as const,
     priority: path === "" ? 1 : 0.9,
   }));
 
   const importantMatches = matches.filter(isImportantMatch);
 
-  const uniquePlayers = [
-    ...new Set(
-      importantMatches
-        .flatMap((match) => [
-          ...splitPlayers(match.player1),
-          ...splitPlayers(match.player2),
-        ])
-        .filter(isGoodPlayerName)
-        .map(slugify)
-        .filter((player) => TOP_PLAYERS.has(player))
-    ),
-  ];
+  const dynamicPlayers = [
+  ...new Set(
+    importantMatches
+      .flatMap((match) => [
+        ...splitPlayers(match.player1),
+        ...splitPlayers(match.player2),
+      ])
+      .filter(isGoodPlayerName)
+      .map(slugify)
+      .filter(Boolean)
+  ),
+];
+
+const uniquePlayers = [
+  ...new Set([
+    ...Array.from(TOP_PLAYERS),
+    ...dynamicPlayers,
+  ]),
+].slice(0, 120);
 
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
     url: `${BASE_URL}/player/${player}`,
     lastModified: now,
-    changeFrequency: "hourly",
-    priority: 0.9,
+    changeFrequency: "hourly" as const,
+    priority: TOP_PLAYERS.has(player) ? 0.9 : 0.75,
   }));
 
   const uniqueTournaments = [
@@ -248,7 +268,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     (tournament) => ({
       url: `${BASE_URL}/tournament/${tournament}`,
       lastModified: now,
-      changeFrequency: "hourly",
+      changeFrequency: "hourly" as const,
       priority: 0.9,
     })
   );
@@ -256,7 +276,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
     url: `${BASE_URL}/watch/${matchSlug(match)}`,
     lastModified: now,
-    changeFrequency: "hourly",
+    changeFrequency: "hourly" as const,
     priority: 0.9,
   }));
 
