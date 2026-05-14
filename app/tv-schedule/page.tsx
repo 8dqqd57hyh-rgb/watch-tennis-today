@@ -49,6 +49,18 @@ export default function TvSchedulePage() {
           ← Back to matches
         </a>
 
+        <section className="mt-8 mb-10">
+  <h1 className="text-5xl font-black mb-4">
+    📺 Tennis TV Schedule Today
+  </h1>
+
+  <p className="text-zinc-400 text-lg leading-relaxed">
+    Check today&apos;s tennis TV schedule, live matches and official
+    broadcaster information. Tennis coverage depends on your country,
+    tournament and subscription platform.
+  </p>
+</section>
+
         <h1 className="text-5xl font-black mb-3">
           📺 Tennis TV Schedule
         </h1>
@@ -56,6 +68,24 @@ export default function TvSchedulePage() {
         <p className="text-zinc-400 text-lg mb-10">
           Trusted TV channels and official schedule pages for tennis broadcasts.
         </p>
+
+        <section className="bg-gradient-to-br from-green-500 to-lime-400 text-black rounded-3xl p-6 mb-10">
+  <h2 className="text-3xl font-black mb-3">
+    🎾 Looking for live tennis streams?
+  </h2>
+
+  <p className="font-semibold mb-5">
+    Find live ATP, WTA, Challenger and Grand Slam matches with official
+    broadcaster links and streaming availability.
+  </p>
+
+  <a
+    href="/live-tennis"
+    className="inline-block bg-black text-white px-5 py-3 rounded-2xl font-black"
+  >
+    View Live Tennis
+  </a>
+</section>
 
         {loading ? (
           <p className="text-zinc-400">Loading channels...</p>

@@ -93,6 +93,12 @@ export default function RootLayout({
 >
   Disclaimer
 </a>
+<a
+  href="/best-ways-to-watch-tennis-online"
+  className="hover:text-white transition-colors"
+>
+  Watch Online Guide
+</a>
   </div>
 </footer>
   <Analytics />
