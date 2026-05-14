@@ -424,6 +424,47 @@ export default async function MatchPage({
             </section>
           ) : null}
 
+<section className="mt-16">
+  <h2 className="text-3xl font-black mb-5">
+    🎾 Player Pages
+  </h2>
+
+  <p className="text-zinc-400 mb-6 max-w-3xl">
+    Explore live tennis matches, schedules,
+    rankings and streaming coverage for featured players.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <a
+      href={playerUrl(match.player1)}
+      className="bg-zinc-950 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-3">
+        {match.player1}
+      </h3>
+
+      <p className="text-zinc-400">
+        Live matches, streaming info and schedule
+      </p>
+    </a>
+
+    <a
+      href={playerUrl(match.player2)}
+      className="bg-zinc-950 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-3">
+        {match.player2}
+      </h3>
+
+      <p className="text-zinc-400">
+        Live matches, streaming info and schedule
+      </p>
+    </a>
+
+  </div>
+</section>
+
           <section className="mt-16 border-t border-zinc-800 pt-8">
             <h2 className="text-2xl font-black mb-5">More Tennis Coverage</h2>
 
