@@ -193,6 +193,26 @@ export default async function PlayerPage({
 
   return (
     <main className="max-w-4xl mx-auto p-4">
+        <nav className="text-sm text-zinc-400 mb-6 flex flex-wrap gap-2">
+  <a href="/" className="hover:text-white">
+    Home
+  </a>
+
+  <span>/</span>
+
+  <a
+    href="/live-tennis"
+    className="hover:text-white"
+  >
+    Players
+  </a>
+
+  <span>/</span>
+
+  <span className="text-white">
+    {playerName}
+  </span>
+</nav>
       <h1 className="text-3xl font-bold mb-6">
         {playerName} Live Matches &
         Streaming
@@ -424,6 +444,39 @@ export default async function PlayerPage({
           Follow upcoming matches and watch tennis online on Watch Tennis Today.
         </p>
       </section>
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+
+      "@type": "BreadcrumbList",
+
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://watchtennistoday.com",
+        },
+
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Players",
+          item: "https://watchtennistoday.com/live-tennis",
+        },
+
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: playerName,
+          item: `https://watchtennistoday.com/player/${slug}`,
+        },
+      ],
+    }),
+  }}
+/>
     </main>
   );
 }

@@ -70,6 +70,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const tournament = readableTournament(slug);
 
   return {
@@ -89,38 +90,93 @@ export default async function TournamentPage({
   const { slug } = await params;
 
   const tournamentName = readableTournament(slug);
+
   const matches = await getMatches();
 
- const tournamentMatches = matches.filter((match) => {
-  const matchTournamentSlug = slugify(match.tournament);
+  const relatedTournaments = [
+    {
+      name: "French Open",
+      slug: "french-open",
+    },
 
-  const cleanPageSlug = slug
-    .replace("-women-doubles", "")
-    .replace("-men-doubles", "")
-    .replace("-women-singles", "")
-    .replace("-men-singles", "")
-    .replace("-doubles", "")
-    .replace("-singles", "");
+    {
+      name: "Wimbledon",
+      slug: "wimbledon",
+    },
 
-  const pageWords = cleanPageSlug
-    .split("-")
-    .filter((word) => word.length > 2);
+    {
+      name: "US Open",
+      slug: "us-open",
+    },
 
-  const matchedWords = pageWords.filter((word) =>
-    matchTournamentSlug.includes(word)
-  );
+    {
+      name: "Australian Open",
+      slug: "australian-open",
+    },
 
-  return (
-    matchTournamentSlug === slug ||
-    matchTournamentSlug.includes(cleanPageSlug) ||
-    cleanPageSlug.includes(matchTournamentSlug) ||
-    matchedWords.length >= 2
-  );
-});
+    {
+      name: "Madrid Open",
+      slug: "madrid",
+    },
+
+    {
+      name: "Monte Carlo Masters",
+      slug: "monte-carlo",
+    },
+  ].filter((tournament) => tournament.slug !== slug);
+
+  const tournamentMatches = matches.filter((match) => {
+    const matchTournamentSlug = slugify(match.tournament);
+
+    const cleanPageSlug = slug
+      .replace("-women-doubles", "")
+      .replace("-men-doubles", "")
+      .replace("-women-singles", "")
+      .replace("-men-singles", "")
+      .replace("-doubles", "")
+      .replace("-singles", "");
+
+    const pageWords = cleanPageSlug
+      .split("-")
+      .filter((word) => word.length > 2);
+
+    const matchedWords = pageWords.filter((word) =>
+      matchTournamentSlug.includes(word)
+    );
+
+    return (
+      matchTournamentSlug === slug ||
+      matchTournamentSlug.includes(cleanPageSlug) ||
+      cleanPageSlug.includes(matchTournamentSlug) ||
+      matchedWords.length >= 2
+    );
+  });
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
+
+        <nav className="text-sm text-zinc-400 mb-6 flex flex-wrap gap-2">
+          <a href="/" className="hover:text-white">
+            Home
+          </a>
+
+          <span>/</span>
+
+          <a
+            href="/tournament"
+            className="hover:text-white"
+          >
+            Tournament
+          </a>
+
+          <span>/</span>
+
+          <span className="text-white">
+            {tournamentName}
+          </span>
+        </nav>
+
         <a href="/" className="text-zinc-400 hover:text-white">
           ← Back
         </a>
@@ -129,45 +185,45 @@ export default async function TournamentPage({
           🏆 {tournamentName}
         </h1>
 
-     <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-  <h2 className="text-3xl font-black mb-5">
-    📺 Watch {tournamentName} Live
-  </h2>
+        <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <h2 className="text-3xl font-black mb-5">
+            📺 Watch {tournamentName} Live
+          </h2>
 
-  <div className="space-y-5 text-zinc-300 leading-8">
-    <p>
-      Follow live tennis matches, streaming information and TV coverage for{" "}
-      {tournamentName}. Watch Tennis Today helps fans find ATP, WTA and Grand
-      Slam coverage in one place.
-    </p>
+          <div className="space-y-5 text-zinc-300 leading-8">
+            <p>
+              Follow live tennis matches, streaming information and TV coverage for{" "}
+              {tournamentName}. Watch Tennis Today helps fans find ATP, WTA and Grand
+              Slam coverage in one place.
+            </p>
 
-    <p>
-      Check tournament schedules, featured players, live scores and official
-      streaming options for {tournamentName}.
-    </p>
+            <p>
+              Check tournament schedules, featured players, live scores and official
+              streaming options for {tournamentName}.
+            </p>
 
-    <p>
-      Coverage availability may vary depending on country, broadcaster rights
-      and tournament distribution agreements.
-    </p>
-  </div>
+            <p>
+              Coverage availability may vary depending on country, broadcaster rights
+              and tournament distribution agreements.
+            </p>
+          </div>
 
-  <div className="mt-8 flex flex-wrap gap-3">
-    <a
-      href="/live-tennis"
-      className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
-    >
-      Live Tennis Schedule
-    </a>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="/live-tennis"
+              className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
+            >
+              Live Tennis Schedule
+            </a>
 
-    <a
-      href="/watch"
-      className="rounded-2xl bg-zinc-800 px-5 py-3 font-black text-white hover:bg-zinc-700 transition-all"
-    >
-      Watch Tennis
-    </a>
-  </div>
-</section>
+            <a
+              href="/watch"
+              className="rounded-2xl bg-zinc-800 px-5 py-3 font-black text-white hover:bg-zinc-700 transition-all"
+            >
+              Watch Tennis
+            </a>
+          </div>
+        </section>
 
         <p className="text-zinc-400 text-lg mb-10">
           Watch {tournamentName} live tennis matches, TV schedule and streaming
@@ -202,48 +258,50 @@ export default async function TournamentPage({
             </a>
           </div>
         </section>
-<section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
-  <h2 className="text-3xl font-black mb-4">
-    🔔 Get notified about {tournamentName}
-  </h2>
 
-  <p className="text-zinc-400 mb-6">
-    Get live tennis updates, match schedules and streaming information for {tournamentName}.
-  </p>
+        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
+          <h2 className="text-3xl font-black mb-4">
+            🔔 Get notified about {tournamentName}
+          </h2>
 
-  <form
-    action="https://formspree.io/f/xeenwwbk"
-    method="POST"
-    className="flex flex-col md:flex-row gap-4"
-  >
-    <input
-      type="email"
-      name="email"
-      required
-      placeholder="Your email"
-      className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
-    />
+          <p className="text-zinc-400 mb-6">
+            Get live tennis updates, match schedules and streaming information for {tournamentName}.
+          </p>
 
-    <input
-      type="hidden"
-      name="tournament"
-      value={tournamentName}
-    />
+          <form
+            action="https://formspree.io/f/xeenwwbk"
+            method="POST"
+            className="flex flex-col md:flex-row gap-4"
+          >
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Your email"
+              className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
+            />
 
-    <input
-      type="hidden"
-      name="source"
-      value="tournament-page"
-    />
+            <input
+              type="hidden"
+              name="tournament"
+              value={tournamentName}
+            />
 
-    <button
-      type="submit"
-      className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black"
-    >
-      Notify Me
-    </button>
-  </form>
-</section>
+            <input
+              type="hidden"
+              name="source"
+              value="tournament-page"
+            />
+
+            <button
+              type="submit"
+              className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black"
+            >
+              Notify Me
+            </button>
+          </form>
+        </section>
+
         <section className="space-y-6">
           <h2 className="text-3xl font-black">
             {tournamentName} Matches
@@ -257,8 +315,7 @@ export default async function TournamentPage({
 
               <p className="text-zinc-400 mb-5">
                 There are no current matches listed for {tournamentName}. Check
-                the live tennis schedule for today&apos;s ATP, WTA and
-                Challenger matches.
+                the live tennis schedule for today&apos;s ATP, WTA and Challenger matches.
               </p>
 
               <a
@@ -272,22 +329,24 @@ export default async function TournamentPage({
 
           {tournamentMatches.map((match) => (
             <a
-  key={match.id}
-  href={`/watch/${matchSlug(match)}`}
-  className="block bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 hover:scale-[1.01] transition-all"
->
+              key={match.id}
+              href={`/watch/${matchSlug(match)}`}
+              className="block bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 hover:scale-[1.01] transition-all"
+            >
               <div className="flex justify-between mb-4">
-               {match.status === "LIVE" ? (
-  <span className="bg-red-500 text-white text-xs font-black px-3 py-1 rounded-full animate-pulse">
-    🔴 LIVE NOW
-  </span>
-) : (
-  <span className="bg-zinc-700 text-white text-xs font-black px-3 py-1 rounded-full">
-    {match.status}
-  </span>
-)}
+                {match.status === "LIVE" ? (
+                  <span className="bg-red-500 text-white text-xs font-black px-3 py-1 rounded-full animate-pulse">
+                    🔴 LIVE NOW
+                  </span>
+                ) : (
+                  <span className="bg-zinc-700 text-white text-xs font-black px-3 py-1 rounded-full">
+                    {match.status}
+                  </span>
+                )}
 
-                <span className="text-zinc-400">{match.category}</span>
+                <span className="text-zinc-400">
+                  {match.category}
+                </span>
               </div>
 
               <h3 className="text-3xl font-black mb-3">
@@ -298,15 +357,44 @@ export default async function TournamentPage({
                 {match.player2}
               </h3>
 
-              <p className="text-zinc-400 mb-3">{match.tournament}</p>
+              <p className="text-zinc-400 mb-3">
+                {match.tournament}
+              </p>
 
               <p className="mb-6">
                 {new Date(match.startTime).toLocaleString()}
               </p>
-
-              
             </a>
           ))}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-3xl font-black mb-5">
+            🏆 Related Tennis Tournaments
+          </h2>
+
+          <p className="text-zinc-400 mb-6 max-w-3xl">
+            Explore more ATP, WTA and Grand Slam tennis tournaments,
+            live schedules and streaming coverage.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {relatedTournaments.map((tournament) => (
+              <a
+                key={tournament.slug}
+                href={`/tournament/${tournament.slug}`}
+                className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
+              >
+                <h3 className="text-2xl font-black mb-3">
+                  {tournament.name}
+                </h3>
+
+                <p className="text-zinc-400">
+                  Live matches, TV schedule and streaming information.
+                </p>
+              </a>
+            ))}
+          </div>
         </section>
 
         <section className="mt-10 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
@@ -338,54 +426,89 @@ export default async function TournamentPage({
           </div>
         </section>
       </div>
+
       <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
 
-      "@type": "SportsEvent",
+            "@type": "SportsEvent",
 
-      name: tournamentName,
+            name: tournamentName,
 
-      sport: "Tennis",
+            sport: "Tennis",
 
-      url: `https://watchtennistoday.com/tournament/${slug}`,
+            url: `https://watchtennistoday.com/tournament/${slug}`,
 
-      eventAttendanceMode:
-        "https://schema.org/OnlineEventAttendanceMode",
+            eventAttendanceMode:
+              "https://schema.org/OnlineEventAttendanceMode",
 
-      description:
-        `Watch ${tournamentName} live tennis matches, streaming options and TV schedule.`,
+            description:
+              `Watch ${tournamentName} live tennis matches, streaming options and TV schedule.`,
 
-      organizer: {
-        "@type": "Organization",
-        name: "Watch Tennis Today",
-      },
+            organizer: {
+              "@type": "Organization",
+              name: "Watch Tennis Today",
+            },
 
-      subEvent: tournamentMatches.slice(0, 10).map((match) => ({
-        "@type": "SportsEvent",
+            subEvent: tournamentMatches.slice(0, 10).map((match) => ({
+              "@type": "SportsEvent",
 
-        name: `${match.player1} vs ${match.player2}`,
+              name: `${match.player1} vs ${match.player2}`,
 
-        startDate: match.startTime,
+              startDate: match.startTime,
 
-        sport: "Tennis",
+              sport: "Tennis",
 
-        competitor: [
-          {
-            "@type": "Person",
-            name: match.player1,
-          },
-          {
-            "@type": "Person",
-            name: match.player2,
-          },
-        ],
-      })),
-    }),
-  }}
-/>
+              competitor: [
+                {
+                  "@type": "Person",
+                  name: match.player1,
+                },
+                {
+                  "@type": "Person",
+                  name: match.player2,
+                },
+              ],
+            })),
+          }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+
+            "@type": "BreadcrumbList",
+
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://watchtennistoday.com",
+              },
+
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Tournament",
+                item: "https://watchtennistoday.com/tournament",
+              },
+
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: tournamentName,
+                item: `https://watchtennistoday.com/tournament/${slug}`,
+              },
+            ],
+          }),
+        }}
+      />
     </main>
   );
 }
