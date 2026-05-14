@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
+import { playerUrl } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
 
@@ -165,12 +166,22 @@ export default async function MatchPage({
           </div>
 
           <h1 className="text-5xl font-black leading-tight mb-6">
-            {match.player1}
-            <br />
-            vs
-            <br />
-            {match.player2}
-          </h1>
+  <a
+    href={playerUrl(match.player1)}
+    className="hover:text-green-400 transition-colors"
+  >
+    {match.player1}
+  </a>
+  <br />
+  vs
+  <br />
+  <a
+    href={playerUrl(match.player2)}
+    className="hover:text-green-400 transition-colors"
+  >
+    {match.player2}
+  </a>
+</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             <div>
