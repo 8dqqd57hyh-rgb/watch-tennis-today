@@ -94,10 +94,27 @@ export default async function TournamentPage({
  const tournamentMatches = matches.filter((match) => {
   const matchTournamentSlug = slugify(match.tournament);
 
+  const cleanPageSlug = slug
+    .replace("-women-doubles", "")
+    .replace("-men-doubles", "")
+    .replace("-women-singles", "")
+    .replace("-men-singles", "")
+    .replace("-doubles", "")
+    .replace("-singles", "");
+
+  const pageWords = cleanPageSlug
+    .split("-")
+    .filter((word) => word.length > 2);
+
+  const matchedWords = pageWords.filter((word) =>
+    matchTournamentSlug.includes(word)
+  );
+
   return (
     matchTournamentSlug === slug ||
-    matchTournamentSlug.includes(slug) ||
-    slug.includes(matchTournamentSlug)
+    matchTournamentSlug.includes(cleanPageSlug) ||
+    cleanPageSlug.includes(matchTournamentSlug) ||
+    matchedWords.length >= 2
   );
 });
 

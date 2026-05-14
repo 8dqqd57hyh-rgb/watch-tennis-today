@@ -18,7 +18,7 @@ type Match = {
     url: string;
   }[];
 };
-<AdSlot />
+
 async function getBaseUrl() {
   const headersList = await headers();
   const host = headersList.get("host");
@@ -223,7 +223,50 @@ export default async function MatchPage({
               streaming information for tennis fans worldwide.
             </p>
           </section>
+          <AdSlot />
+<section className="mt-16 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+  <h2 className="text-3xl font-black mb-4">
+    🔔 Get Match Alerts
+  </h2>
 
+  <p className="text-zinc-400 mb-6">
+    Get notified before {match.player1} vs {match.player2} starts,
+    including live stream updates and tennis schedule alerts.
+  </p>
+
+  <form
+    action="https://formspree.io/f/xeenwwbk"
+    method="POST"
+    className="flex flex-col md:flex-row gap-4"
+  >
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Your email"
+      className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
+    />
+
+    <input
+      type="hidden"
+      name="match"
+      value={`${match.player1} vs ${match.player2}`}
+    />
+
+    <input
+      type="hidden"
+      name="source"
+      value="match-page"
+    />
+
+    <button
+      type="submit"
+      className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
+    >
+      Notify Me
+    </button>
+  </form>
+</section>
           <div className="mt-16">
             <h2 className="text-3xl font-black mb-5">📺 Where to Watch</h2>
 
@@ -245,7 +288,60 @@ export default async function MatchPage({
               <p className="text-zinc-400">No trusted watch source found yet.</p>
             )}
           </div>
+<section className="mt-16">
+  <h2 className="text-3xl font-black mb-6">
+    🎾 More Live Tennis Matches
+  </h2>
 
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {matches
+      .filter(
+        (item) =>
+          item.id !== match.id &&
+          item.status !== "finished"
+      )
+      .slice(0, 6)
+      .map((item) => {
+        const relatedMatchSlug = `${item.player1
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")}-vs-${item.player2
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")}-${
+          item.id.split(":").pop()
+        }`;
+
+        return (
+          <a
+            key={item.id}
+            href={`/watch/${relatedMatchSlug}`}
+            className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
+          >
+            <div className="flex justify-between mb-3">
+              <span className="font-black">
+                {item.status}
+              </span>
+
+              <span className="text-zinc-500">
+                {item.category}
+              </span>
+            </div>
+
+            <h3 className="text-2xl font-black mb-2">
+              {item.player1}
+              <br />
+              vs
+              <br />
+              {item.player2}
+            </h3>
+
+            <p className="text-zinc-400">
+              {item.tournament}
+            </p>
+          </a>
+        );
+      })}
+  </div>
+</section>
           <section className="mt-16 border-t border-zinc-800 pt-8">
             <h2 className="text-2xl font-black mb-5">
               More Tennis Coverage
