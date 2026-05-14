@@ -119,6 +119,13 @@ export default function RootLayout({
       Privacy Policy
     </a>
 
+<a
+  href="/terms"
+  className="hover:text-white transition-colors"
+>
+  Terms
+</a>
+
     <a
   href="/contact"
   className="hover:text-white transition-colors"
