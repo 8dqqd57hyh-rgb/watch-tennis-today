@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import AdSlot from "@/app/components/AdSlot";
 
 function readableCountry(country: string) {
   return country
@@ -11,6 +12,7 @@ function readableCountry(country: string) {
     )
     .join(" ");
 }
+<AdSlot />
 
 const broadcasters: Record<
   string,

@@ -119,6 +119,7 @@ export default function RootLayout({
   Tournaments
 </a>
 
+
         <a
           href="/watch-tennis-in/poland"
           className="text-zinc-300 hover:text-white"
@@ -171,6 +172,7 @@ export default function RootLayout({
 >
   Watch Online Guide
 </a>
+<a href="/advertise">Advertise</a>
   </div>
 </footer>
   <Analytics />

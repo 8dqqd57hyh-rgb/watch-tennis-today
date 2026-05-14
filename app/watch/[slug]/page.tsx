@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import AdSlot from "@/app/components/AdSlot";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ type Match = {
     url: string;
   }[];
 };
-
+<AdSlot />
 async function getBaseUrl() {
   const headersList = await headers();
   const host = headersList.get("host");

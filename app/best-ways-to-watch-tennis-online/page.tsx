@@ -4,6 +4,8 @@ export const metadata = {
     "Best legal ways to watch tennis online, including ATP, WTA, Grand Slam broadcasters, tennis streaming services and country-based TV coverage.",
 };
 
+import AdSlot from "@/app/components/AdSlot";
+
 const countries = [
   ["Poland", "/watch-tennis-in/poland"],
   ["UK", "/watch-tennis-in/uk"],
@@ -16,7 +18,7 @@ const countries = [
   ["Australia", "/watch-tennis-in/australia"],
   ["India", "/watch-tennis-in/india"],
 ];
-
+<AdSlot />
 export default function BestWaysPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">

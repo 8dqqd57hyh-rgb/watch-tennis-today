@@ -253,6 +253,7 @@ export default async function sitemap() {
   "/privacy-policy",
   "/terms",
 "/disclaimer",
+"/advertise",
 "/tournament",
 "/best-ways-to-watch-tennis-online",
 ].map((path) => ({
