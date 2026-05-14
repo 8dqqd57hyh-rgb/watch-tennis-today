@@ -254,6 +254,11 @@ export default async function sitemap() {
   "/terms",
 "/disclaimer",
 "/advertise",
+"/watch-player-live/jannik-sinner",
+"/watch-player-live/iga-swiatek",
+"/watch-player-live/carlos-alcaraz",
+"/watch-player-live/novak-djokovic",
+"/watch-player-live/aryna-sabalenka",
 "/tournament",
 "/best-ways-to-watch-tennis-online",
 ].map((path) => ({
