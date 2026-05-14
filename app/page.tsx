@@ -238,9 +238,36 @@ export default function Home() {
 
         <div className="flex flex-col gap-6 mb-10">
           <div>
-            <h1 className="text-5xl font-black">
-              🎾 Watch Tennis Today
-            </h1>
+            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
+  Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
+</h1>
+<p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-10">
+  Find live tennis matches today, official TV broadcasters, streaming platforms,
+  ATP and WTA schedules, Grand Slam coverage and country-based tennis viewing
+  options.
+</p>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+  <a
+    href="/live-tennis"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
+  >
+    Live Tennis Today
+  </a>
+
+  <a
+    href="/tournament"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
+  >
+    Tennis Tournaments
+  </a>
+
+  <a
+    href="/best-ways-to-watch-tennis-online"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
+  >
+    Best Ways to Watch Tennis Online
+  </a>
+</div>
 
             <a
               href="/watch"
