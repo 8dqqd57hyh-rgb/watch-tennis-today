@@ -197,6 +197,49 @@ export default function BestWaysPage() {
           </div>
         </section>
       </div>
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Can I watch tennis online legally?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes. Tennis can be watched legally through official broadcasters and streaming services.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Where can I watch ATP and WTA matches?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ATP and WTA matches are available through TV channels and streaming platforms depending on your country.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What is the best way to watch tennis without cable?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "The best option is usually a legal sports streaming service that includes tennis coverage in your region.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Does Watch Tennis Today stream matches?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "No. Watch Tennis Today does not host or stream tennis matches. The site helps users find schedules and legal streaming options.",
+          },
+        },
+      ],
+    }),
+  }}
+/>
     </main>
   );
 }
