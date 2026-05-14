@@ -113,7 +113,9 @@ function matchSlug(match: Match) {
     `${match.player1}-vs-${match.player2}`
   );
 
-  return `${encodeURIComponent(match.id)}--${readablePart}`;
+  const numericId = match.id.split(":").pop();
+
+  return `${readablePart}-${numericId}`;
 }
 
 const playerMatches = matches.filter((match) => {
