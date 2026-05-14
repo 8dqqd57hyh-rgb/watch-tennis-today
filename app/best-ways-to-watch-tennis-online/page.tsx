@@ -1,13 +1,26 @@
 export const metadata = {
-  title: "Best Ways to Watch Tennis Online | Watch Tennis Today",
+  title: "Best Ways to Watch Tennis Online | ATP, WTA & Grand Slam Streams",
   description:
-    "Best legal ways to watch tennis online, including official broadcasters, tennis streaming services and country-based TV coverage.",
+    "Best legal ways to watch tennis online, including ATP, WTA, Grand Slam broadcasters, tennis streaming services and country-based TV coverage.",
 };
+
+const countries = [
+  ["Poland", "/watch-tennis-in/poland"],
+  ["UK", "/watch-tennis-in/uk"],
+  ["USA", "/watch-tennis-in/usa"],
+  ["Germany", "/watch-tennis-in/germany"],
+  ["France", "/watch-tennis-in/france"],
+  ["Spain", "/watch-tennis-in/spain"],
+  ["Italy", "/watch-tennis-in/italy"],
+  ["Canada", "/watch-tennis-in/canada"],
+  ["Australia", "/watch-tennis-in/australia"],
+  ["India", "/watch-tennis-in/india"],
+];
 
 export default function BestWaysPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <a href="/" className="text-zinc-400 hover:text-white">
           ← Back
         </a>
@@ -20,17 +33,22 @@ export default function BestWaysPage() {
           The best way to watch tennis online depends on your country,
           tournament and subscription. ATP, WTA, Grand Slam and Challenger
           matches may be shown by different broadcasters around the world.
+          This guide helps you find legal tennis streams, official TV channels
+          and live tennis schedules.
         </p>
 
         <section className="space-y-6">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h2 className="text-3xl font-black mb-3">
-              1. Official Broadcasters
+              1. Official Tennis Broadcasters
             </h2>
+
             <p className="text-zinc-400 leading-relaxed">
               Many tennis matches are available through official TV broadcasters
-              such as Eurosport, Tennis Channel, Sky Sports, ESPN and regional
-              sports networks. Availability depends on local rights.
+              such as Eurosport, Tennis Channel, Sky Sports, ESPN, BBC and
+              regional sports networks. Broadcast rights vary by country, so the
+              same tournament may appear on different platforms depending on
+              where you live.
             </p>
           </div>
 
@@ -38,41 +56,74 @@ export default function BestWaysPage() {
             <h2 className="text-3xl font-black mb-3">
               2. Tennis Streaming Platforms
             </h2>
+
             <p className="text-zinc-400 leading-relaxed">
               Some ATP and WTA matches are available through dedicated tennis
-              streaming platforms or official tournament services. Always check
-              whether the service is available in your country.
+              streaming services, sports subscriptions or official tournament
+              platforms. Before subscribing, check whether the service includes
+              ATP Tour, WTA Tour, Grand Slam tournaments or only selected events.
             </p>
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h2 className="text-3xl font-black mb-3">
-              3. Country Guides
+              3. How to Watch ATP Tennis Online
             </h2>
+
+            <p className="text-zinc-400 leading-relaxed">
+              ATP tennis coverage is usually available through national sports
+              broadcasters, tennis-specific channels and selected streaming
+              platforms. Masters 1000 events, ATP 500 tournaments and ATP Finals
+              often have stronger TV coverage than smaller Challenger events.
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-3xl font-black mb-3">
+              4. How to Watch WTA Tennis Online
+            </h2>
+
+            <p className="text-zinc-400 leading-relaxed">
+              WTA matches may be shown on tennis channels, sports networks and
+              regional streaming services. Coverage depends on tournament level,
+              player popularity and local broadcasting agreements.
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-3xl font-black mb-3">
+              5. How to Watch Grand Slam Tennis
+            </h2>
+
+            <p className="text-zinc-400 leading-relaxed">
+              Grand Slam tournaments usually have the widest TV and streaming
+              coverage. The Australian Open, Roland Garros, Wimbledon and US
+              Open are often shown by major broadcasters, but the exact platform
+              depends on your country.
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-3xl font-black mb-3">
+              6. Country Guides
+            </h2>
+
             <p className="text-zinc-400 leading-relaxed mb-4">
               Tennis rights vary by country, so country-specific guides are
-              often the easiest way to find where to watch.
+              often the easiest way to find where to watch ATP, WTA and Grand
+              Slam tennis legally.
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <a
-                href="/watch-tennis-in/poland"
-                className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
-              >
-                Poland
-              </a>
-              <a
-                href="/watch-tennis-in/uk"
-                className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
-              >
-                UK
-              </a>
-              <a
-                href="/watch-tennis-in/usa"
-                className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
-              >
-                USA
-              </a>
+              {countries.map(([name, href]) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
+                >
+                  {name}
+                </a>
+              ))}
             </div>
           </div>
 
@@ -80,9 +131,10 @@ export default function BestWaysPage() {
             <h2 className="text-3xl font-black mb-3">
               Watch Live Tennis Today
             </h2>
+
             <p className="font-semibold mb-5">
-              Check live and upcoming tennis matches with broadcaster links and
-              schedule information.
+              Check live and upcoming tennis matches with broadcaster links,
+              start times and schedule information.
             </p>
 
             <a
@@ -91,6 +143,57 @@ export default function BestWaysPage() {
             >
               View Live Tennis
             </a>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <h2 className="text-3xl font-black mb-5">
+              Frequently Asked Questions
+            </h2>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-black mb-2">
+                  Can I watch tennis online legally?
+                </h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  Yes. Tennis can be watched legally through official
+                  broadcasters, sports streaming platforms and tournament
+                  partners.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-black mb-2">
+                  Where can I watch ATP and WTA matches?
+                </h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  ATP and WTA matches are available through different TV
+                  channels and streaming platforms depending on your country and
+                  the tournament.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-black mb-2">
+                  What is the best way to watch tennis without cable?
+                </h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  The best option is usually a legal sports streaming service
+                  that includes tennis coverage in your region.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-black mb-2">
+                  Does Watch Tennis Today stream matches?
+                </h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  No. Watch Tennis Today does not host or stream tennis matches.
+                  It helps users find schedules, official broadcasters and legal
+                  streaming options.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </div>
