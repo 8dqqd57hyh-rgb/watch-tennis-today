@@ -68,8 +68,9 @@ export async function generateMetadata({
     decodeURIComponent(slug);
 
   const readableTitle = decodedSlug
-    .split("--")[1]
-    ?.replace(/-/g, " ");
+  .split("-")
+  .slice(0, -1)
+  .join(" ");
 
   return {
     title: `${
@@ -95,9 +96,13 @@ export default async function MatchPage({
 
 const decodedSlug = decodeURIComponent(slug);
 
-const matchIdFromSlug = decodedSlug.match(
-  /^sr:sport_event:\d+/
-)?.[0];
+const numericId = decodedSlug
+  .split("-")
+  .pop();
+
+const matchIdFromSlug = numericId
+  ? `sr:sport_event:${numericId}`
+  : null;
 
 const match = matches.find(
   (item) => item.id === matchIdFromSlug
