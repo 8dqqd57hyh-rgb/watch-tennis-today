@@ -32,14 +32,25 @@ async function getBaseUrl() {
 async function getMatches(): Promise<Match[]> {
   const baseUrl = await getBaseUrl();
 
-  const response = await fetch(
-    `${baseUrl}/api/matches`,
-    {
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${baseUrl}/api/matches`, {
+    cache: "no-store",
+  });
 
-  return response.json();
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.matches)) {
+    return data.matches;
+  }
+
+  return [];
 }
 
 function matchSlug(match: Match) {

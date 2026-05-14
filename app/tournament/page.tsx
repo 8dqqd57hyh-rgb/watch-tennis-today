@@ -33,7 +33,21 @@ async function getMatches(): Promise<Match[]> {
     cache: "no-store",
   });
 
-  return response.json();
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.matches)) {
+    return data.matches;
+  }
+
+  return [];
 }
 
 function slugify(text: string) {
