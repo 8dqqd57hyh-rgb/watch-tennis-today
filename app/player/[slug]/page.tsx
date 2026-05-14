@@ -111,7 +111,22 @@ async function getMatches(): Promise<Match[]> {
 
   return [];
 }
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
+function getMatchSlug(match: Match) {
+  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
+  const numericId = match.id.split(":").pop();
+
+  return `${readablePart}-${numericId}`;
+}
 export default async function PlayerPage({
   params,
 }: {
@@ -164,8 +179,19 @@ export default async function PlayerPage({
           <p className="font-semibold">
             {match.player1} vs {match.player2}
           </p>
+          
           <p>{match.tournament}</p>
-          <p>{match.status}</p>
+          <p><div className="flex items-center gap-2">
+  {match.status === "LIVE" ? (
+    <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+      LIVE NOW
+    </span>
+  ) : (
+    <span className="bg-zinc-700 text-white text-xs font-bold px-2 py-1 rounded-full">
+      {match.status}
+    </span>
+  )}
+</div></p>
         </div>
       ))}
     </div>
@@ -285,24 +311,71 @@ export default async function PlayerPage({
 </section>
 
       <div className="space-y-4 mb-10">
-        {playerMatches.map((match) => (
-          <div
-            key={match.id}
-            className="border rounded-xl p-4"
-          >
-            <div className="font-semibold">
-              {match.player1} vs{" "}
-              {match.player2}
-            </div>
-
-            <div>
-              {match.tournament}
-            </div>
-
-            <div>{match.status}</div>
-          </div>
-        ))}
+  {playerMatches.map((match) => (
+    <a
+      key={match.id}
+      href={`/watch/${getMatchSlug(match)}`}
+      className="block border rounded-xl p-4 hover:bg-gray-50 transition"
+    >
+      <div className="font-semibold">
+        {match.player1} vs {match.player2}
       </div>
+
+      <div>{match.tournament}</div>
+
+      <div className="mt-2">
+        {match.status === "LIVE" ? (
+          <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            LIVE NOW
+          </span>
+        ) : (
+          <span className="bg-zinc-700 text-white text-xs font-bold px-2 py-1 rounded-full">
+            {match.status}
+          </span>
+        )}
+      </div>
+    </a>
+  ))}
+</div>
+<section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+  <h2 className="text-3xl font-black mb-5">
+    📺 Where to Watch {playerName} Live
+  </h2>
+
+  <div className="space-y-5 text-zinc-300 leading-8">
+    <p>
+      Tennis fans can watch {playerName} live on official sports broadcasters,
+      streaming platforms and tennis TV services depending on country and
+      tournament rights.
+    </p>
+
+    <p>
+      Coverage may include ATP Tour events, WTA tournaments, Grand Slams,
+      Masters events and international competitions featuring {playerName}.
+    </p>
+
+    <p>
+      Watch Tennis Today helps fans find match schedules, live tennis coverage,
+      streaming options and TV channels for upcoming {playerName} matches.
+    </p>
+  </div>
+
+  <div className="mt-8 flex flex-wrap gap-3">
+    <a
+      href="/watch"
+      className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
+    >
+      Watch Tennis Live
+    </a>
+
+    <a
+      href="/live-tennis"
+      className="rounded-2xl bg-zinc-800 px-5 py-3 font-black text-white hover:bg-zinc-700 transition-all"
+    >
+      Live Tennis Schedule
+    </a>
+  </div>
+</section>
 
       <section className="space-y-4 text-sm leading-7">
         <h2 className="text-2xl font-semibold">

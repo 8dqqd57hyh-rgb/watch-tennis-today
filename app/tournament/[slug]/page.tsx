@@ -129,6 +129,46 @@ export default async function TournamentPage({
           🏆 {tournamentName}
         </h1>
 
+     <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+  <h2 className="text-3xl font-black mb-5">
+    📺 Watch {tournamentName} Live
+  </h2>
+
+  <div className="space-y-5 text-zinc-300 leading-8">
+    <p>
+      Follow live tennis matches, streaming information and TV coverage for{" "}
+      {tournamentName}. Watch Tennis Today helps fans find ATP, WTA and Grand
+      Slam coverage in one place.
+    </p>
+
+    <p>
+      Check tournament schedules, featured players, live scores and official
+      streaming options for {tournamentName}.
+    </p>
+
+    <p>
+      Coverage availability may vary depending on country, broadcaster rights
+      and tournament distribution agreements.
+    </p>
+  </div>
+
+  <div className="mt-8 flex flex-wrap gap-3">
+    <a
+      href="/live-tennis"
+      className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
+    >
+      Live Tennis Schedule
+    </a>
+
+    <a
+      href="/watch"
+      className="rounded-2xl bg-zinc-800 px-5 py-3 font-black text-white hover:bg-zinc-700 transition-all"
+    >
+      Watch Tennis
+    </a>
+  </div>
+</section>
+
         <p className="text-zinc-400 text-lg mb-10">
           Watch {tournamentName} live tennis matches, TV schedule and streaming
           options. Find ATP, WTA and Grand Slam match coverage, start times and
@@ -231,12 +271,21 @@ export default async function TournamentPage({
           )}
 
           {tournamentMatches.map((match) => (
-            <div
-              key={match.id}
-              className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6"
-            >
+            <a
+  key={match.id}
+  href={`/watch/${matchSlug(match)}`}
+  className="block bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 hover:scale-[1.01] transition-all"
+>
               <div className="flex justify-between mb-4">
-                <span className="font-bold">{match.status}</span>
+               {match.status === "LIVE" ? (
+  <span className="bg-red-500 text-white text-xs font-black px-3 py-1 rounded-full animate-pulse">
+    🔴 LIVE NOW
+  </span>
+) : (
+  <span className="bg-zinc-700 text-white text-xs font-black px-3 py-1 rounded-full">
+    {match.status}
+  </span>
+)}
 
                 <span className="text-zinc-400">{match.category}</span>
               </div>
@@ -255,13 +304,8 @@ export default async function TournamentPage({
                 {new Date(match.startTime).toLocaleString()}
               </p>
 
-              <a
-                href={`/watch/${matchSlug(match)}`}
-                className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
-              >
-                Watch Match
-              </a>
-            </div>
+              
+            </a>
           ))}
         </section>
 
