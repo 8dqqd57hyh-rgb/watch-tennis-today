@@ -71,7 +71,9 @@ function matchSlug(match: Match) {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
-  return `${encodeURIComponent(match.id)}--${readablePart}`;
+ const numericId = match.id.split(":").pop();
+
+return `${readablePart}-${numericId}`;
 }
 
 function splitPlayers(name: string) {

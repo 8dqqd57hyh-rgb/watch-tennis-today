@@ -264,6 +264,44 @@ export default async function MatchPage({
           </section>
         </div>
       </div>
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+
+      name: `${match.player1} vs ${match.player2}`,
+
+      sport: "Tennis",
+
+      startDate: match.startTime,
+
+      eventStatus:
+        match.status === "live"
+          ? "https://schema.org/EventInProgress"
+          : "https://schema.org/EventScheduled",
+
+      competitor: [
+        {
+          "@type": "SportsTeam",
+          name: match.player1,
+        },
+        {
+          "@type": "SportsTeam",
+          name: match.player2,
+        },
+      ],
+
+      location: {
+        "@type": "Place",
+        name: match.tournament,
+      },
+
+      url: `https://watchtennistoday.com/watch/${slug}`,
+    }),
+  }}
+/>
     </main>
   );
 }
