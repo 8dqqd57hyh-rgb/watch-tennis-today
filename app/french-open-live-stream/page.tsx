@@ -185,6 +185,67 @@ export default function FrenchOpenLiveStreamPage() {
           </p>
         </section>
       </div>
+      <section className="mt-12">
+  <h2 className="text-3xl font-black mb-5">
+    🎾 Related Tennis Guides
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <a
+      href="/best-ways-to-watch-tennis-online"
+      className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-2">
+        Best Ways to Watch Tennis Online
+      </h3>
+
+      <p className="text-zinc-400">
+        Official broadcasters, streaming services and legal ways to watch ATP and WTA tennis.
+      </p>
+    </a>
+
+    <a
+      href="/watch-tennis-in/poland"
+      className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-2">
+        Watch Tennis in Poland
+      </h3>
+
+      <p className="text-zinc-400">
+        TV channels, broadcasters and streaming services available in Poland.
+      </p>
+    </a>
+
+    <a
+      href="/live-tennis"
+      className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-2">
+        Live Tennis Matches Today
+      </h3>
+
+      <p className="text-zinc-400">
+        Follow live ATP, WTA and Challenger tennis matches happening right now.
+      </p>
+    </a>
+
+    <a
+      href="/watch-tennis-in/usa"
+      className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+    >
+      <h3 className="text-2xl font-black mb-2">
+        Watch Tennis in USA
+      </h3>
+
+      <p className="text-zinc-400">
+        Find where to watch Grand Slam and ATP/WTA matches in the United States.
+      </p>
+    </a>
+
+  </div>
+</section>
     </main>
   );
 }
