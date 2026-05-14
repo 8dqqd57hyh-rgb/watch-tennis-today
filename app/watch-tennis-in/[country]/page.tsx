@@ -57,6 +57,81 @@ const broadcasters: Record<
       note: "Grand Slam coverage",
     },
   ],
+
+  germany: [
+  {
+    name: "Sky Deutschland",
+    url: "https://sport.sky.de/tennis",
+    note: "ATP and Grand Slam coverage",
+  },
+  {
+    name: "Eurosport Germany",
+    url: "https://www.eurosport.de/tennis/",
+    note: "Major ATP, WTA and Grand Slam tournaments",
+  },
+],
+france: [
+  {
+    name: "Eurosport France",
+    url: "https://www.eurosport.fr/tennis/",
+    note: "ATP, WTA and Grand Slam coverage",
+  },
+  {
+    name: "France TV",
+    url: "https://www.france.tv/sport/tennis/",
+    note: "Roland Garros coverage",
+  },
+],
+spain: [
+  {
+    name: "Movistar Plus+",
+    url: "https://www.movistarplus.es/deportes/tenis/",
+    note: "ATP and WTA coverage",
+  },
+],
+italy: [
+  {
+    name: "Sky Italia",
+    url: "https://sport.sky.it/tennis",
+    note: "ATP, WTA and Grand Slam coverage",
+  },
+  {
+    name: "SuperTennis",
+    url: "https://www.supertennis.tv/",
+    note: "Italian tennis channel",
+  },
+],
+canada: [
+  {
+    name: "TSN",
+    url: "https://www.tsn.ca/tennis",
+    note: "ATP and Grand Slam coverage",
+  },
+  {
+    name: "Sportsnet",
+    url: "https://www.sportsnet.ca/tennis/",
+    note: "Tennis coverage in Canada",
+  },
+],
+australia: [
+  {
+    name: "Stan Sport",
+    url: "https://www.stan.com.au/sport",
+    note: "Grand Slam and ATP coverage",
+  },
+  {
+    name: "9Now",
+    url: "https://www.9now.com.au/",
+    note: "Australian Open coverage",
+  },
+],
+india: [
+  {
+    name: "Sony LIV",
+    url: "https://www.sonyliv.com/",
+    note: "ATP and Grand Slam coverage",
+  },
+],
 };
 
 export async function generateMetadata({

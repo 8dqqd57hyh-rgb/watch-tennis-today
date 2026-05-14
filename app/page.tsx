@@ -30,6 +30,29 @@ function slugify(text: string) {
     .replace(/\s+/g, "-");
 }
 
+const countries = [
+  "poland",
+  "uk",
+  "usa",
+  "germany",
+  "france",
+  "spain",
+  "italy",
+  "canada",
+  "australia",
+  "india",
+];
+
+function readableCountry(country: string) {
+  return country
+    .split("-")
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+}
+
 function playerSlug(name: string) {
   return name
     .toLowerCase()
@@ -219,22 +242,23 @@ setNextGrandSlam(slamData);
   🔴 Live Tennis
 </a>
 <div className="mb-12">
-  <h2 className="text-3xl font-black mb-5">
+   <h2 className="text-3xl font-black mb-5">
     🌍 Watch Tennis by Country
   </h2>
 
+  <p className="text-zinc-400 mb-6 max-w-3xl">
+    Find official tennis broadcasters, TV channels and streaming options by
+    country. Check where to watch ATP, WTA and Grand Slam tennis legally.
+  </p>
+
   <div className="flex flex-wrap gap-3">
-    {[
-      "poland",
-      "uk",
-      "usa",
-    ].map((country) => (
+    {countries.map((country) => (
       <a
         key={country}
         href={`/watch-tennis-in/${country}`}
-        className="bg-zinc-900 border border-zinc-800 hover:border-green-500 px-5 py-3 rounded-2xl font-bold transition-all hover:scale-[1.03]"
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
       >
-        {country.toUpperCase()}
+        {readableCountry(country)}
       </a>
     ))}
   </div>
