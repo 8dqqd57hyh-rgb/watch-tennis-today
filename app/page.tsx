@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { withTracking } from "@/app/lib/tracking";
 
 type WatchProvider = {
   name: string;
@@ -503,7 +504,7 @@ export default function Home() {
                         {match.watchProviders.map((provider) => (
                           <a
                             key={provider.name}
-                            href={provider.url}
+                            href={withTracking(provider.url, "homepage_match_card")}
                             target="_blank"
                             className="block rounded-2xl bg-green-500 text-black px-4 py-3 font-bold hover:bg-green-400 transition-all"
                           >
