@@ -177,6 +177,7 @@ export default async function CountryPage({
             services available in {readable}. This guide helps you check where
             to watch ATP, WTA, Challenger and Grand Slam tennis matches legally.
           </p>
+
         </section>
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
@@ -199,6 +200,9 @@ export default async function CountryPage({
                   </h3>
 
                   <p className="text-zinc-400">{broadcaster.note}</p>
+                  <span className="inline-block mt-4 bg-green-500 text-black px-4 py-2 rounded-2xl font-black">
+    Visit official broadcaster
+  </span>
                 </a>
               ))}
             </div>
