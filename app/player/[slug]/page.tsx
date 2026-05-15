@@ -56,18 +56,11 @@ type Match = {
 };
 
 function formatPlayerName(slug?: string) {
-  if (!slug) {
-    return "Tennis Player";
-  }
+  if (!slug) return "Tennis Player";
 
   return slug
     .split("-")
-    .reverse()
-    .map(
-      (part) =>
-        part.charAt(0).toUpperCase() +
-        part.slice(1)
-    )
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }
 
@@ -165,27 +158,22 @@ export default async function PlayerPage({
 
   const matches = await getMatches();
 
-  const playerMatches = matches.filter(
-    (match) =>
-      match.player1
-        .toLowerCase()
-        .includes(
-          playerName
-            .split(" ")
-            .reverse()
-            .join(" ")
-            .toLowerCase()
-        ) ||
-      match.player2
-        .toLowerCase()
-        .includes(
-          playerName
-            .split(" ")
-            .reverse()
-            .join(" ")
-            .toLowerCase()
-        )
-  );
+  function playerMatchesSlug(slug: string, match: Match) {
+  const parts = slug.toLowerCase().split("-");
+  const lastName = parts[parts.length - 1];
+
+  const text = `${match.player1} ${match.player2}`
+    .toLowerCase()
+    .replace(/[^a-zа-яё0-9\s.-]/gi, " ");
+
+  return text.includes(lastName);
+}
+
+
+
+ const playerMatches = matches.filter((match) =>
+  playerMatchesSlug(slug, match)
+);
 
   const relatedPlayers = PLAYERS
     .filter((playerSlug) => playerSlug !== slug)
@@ -217,6 +205,42 @@ export default async function PlayerPage({
         {playerName} Live Matches &
         Streaming
       </h1>
+
+      {playerMatches.some(
+  (match) => match.status === "LIVE"
+) ? (
+  <section className="mb-8 rounded-2xl border border-red-500 bg-red-500/10 p-6">
+    <div className="flex flex-wrap items-center gap-3 mb-4">
+      <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">
+        🔴 LIVE NOW
+      </span>
+
+      <span className="text-red-300 font-bold">
+        {playerName} is currently playing live
+      </span>
+    </div>
+
+    <p className="text-zinc-300 mb-5 leading-8">
+      Follow the live match, score updates, streaming information and current
+      tournament coverage for {playerName}.
+    </p>
+
+    <div className="flex flex-wrap gap-3">
+      {playerMatches
+        .filter((match) => match.status === "LIVE")
+        .slice(0, 2)
+        .map((match) => (
+          <a
+            key={match.id}
+            href={`/watch/${getMatchSlug(match)}`}
+            className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white hover:bg-red-400 transition-all"
+          >
+            Watch Live Match →
+          </a>
+        ))}
+    </div>
+  </section>
+) : null}
 
       <section className="mb-10 rounded-xl border p-5">
         <h2 className="text-2xl font-semibold mb-3">

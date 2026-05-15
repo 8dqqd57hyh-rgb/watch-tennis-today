@@ -424,6 +424,29 @@ export default function Home() {
                 </div>
               </div>
             )}
+            
+      <div className="mb-12">
+  <h2 className="text-3xl font-black mb-5">
+    ⭐ Trending Tennis Players
+  </h2>
+
+  <p className="text-zinc-400 mb-6 max-w-3xl">
+    Follow trending ATP and WTA players, live tennis matches,
+    schedules and streaming coverage.
+  </p>
+
+  <div className="flex flex-wrap gap-3">
+    {priorityPlayers.map((player) => (
+      <a
+        key={player}
+        href={`/player/${playerSlug(player)}`}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
+      >
+        ⭐ {player}
+      </a>
+    ))}
+  </div>
+</div>
 
             {seoPlayers.length > 0 && (
               <div className="mb-12">
@@ -608,6 +631,17 @@ export default function Home() {
 
                   <div className="pt-4 border-t border-zinc-800">
                     <p className="text-zinc-500 text-sm mb-3">Where to watch</p>
+
+                    <div className="mb-3">
+  <a
+    href={affiliateLinks.nordvpn}
+    target="_blank"
+    rel="nofollow sponsored noopener noreferrer"
+    className="inline-flex items-center rounded-full bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400 hover:bg-green-500/20 transition-all"
+  >
+    🌍 Traveling? Stream more securely
+  </a>
+</div>
 
                     {match.watchProviders.length > 0 ? (
                       <div className="space-y-3">
