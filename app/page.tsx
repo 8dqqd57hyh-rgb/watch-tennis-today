@@ -308,7 +308,7 @@ export default function Home() {
   </p>
 </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 mb-12">
               <a
                 href="/live-tennis"
                 className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
@@ -349,6 +349,13 @@ export default function Home() {
   className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-orange-500 hover:text-orange-400 transition-all"
 >
   🔥 Tennis Trending Now
+</a>
+
+<a
+  href="/players"
+  className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
+>
+  ⭐ Tennis Players
 </a>
             </div>
 

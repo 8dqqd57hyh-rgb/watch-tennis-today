@@ -170,6 +170,14 @@ export default function LiveNowPlayersPage() {
                   </a>
                 ))}
               </div>
+              <div className="mt-6">
+  <a
+    href="/players"
+    className="inline-flex items-center rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+  >
+    Explore More Tennis Players →
+  </a>
+</div>
             </section>
 
             <section className="mb-14">
