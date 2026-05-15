@@ -306,6 +306,40 @@ export default async function MatchPage({
             )}
           </section>
 
+          <section className="mt-10 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+  <h2 className="text-3xl font-black mb-4">
+    🌍 Watching from another country?
+  </h2>
+
+  <p className="text-zinc-400 mb-6">
+    Tennis broadcasting rights depend on your location. Check official streaming
+    services and country-based tennis TV guides before the match starts.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a
+      href="/watch-tennis-in/usa"
+      className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Watch in USA
+    </a>
+
+    <a
+      href="/watch-tennis-in/uk"
+      className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Watch in UK
+    </a>
+
+    <a
+      href="/watch-tennis-in/poland"
+      className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+    >
+      Watch in Poland
+    </a>
+  </div>
+</section>
+
           <section className="mt-16 text-zinc-300 space-y-6">
             <h2 className="text-3xl font-black">
               Watch {matchTitle} Live Stream and TV Schedule

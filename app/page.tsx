@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
+import { affiliateLinks } from "@/lib/affiliate";
 
 type WatchProvider = {
   name: string;
@@ -620,6 +621,47 @@ export default function Home() {
             ))}
           </div>
         )}
+
+        <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
+  <div className="max-w-3xl">
+    <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
+      🌍 Tennis streaming tip
+    </div>
+
+    <h2 className="text-4xl font-black leading-tight mb-5">
+      Watching tennis while traveling?
+    </h2>
+
+    <p className="text-zinc-300 text-lg leading-8 mb-8">
+      Some ATP, WTA and Grand Slam streams may be unavailable depending on your
+      country. A VPN can help you access your usual tennis streaming services
+      more securely while abroad.
+    </p>
+
+    <div className="flex flex-wrap gap-4">
+      <a
+        href={affiliateLinks.nordvpn}
+        target="_blank"
+        rel="nofollow sponsored noopener noreferrer"
+        className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
+      >
+        Try NordVPN
+      </a>
+
+      <a
+        href="/best-ways-to-watch-tennis-online"
+        className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
+      >
+        Learn more
+      </a>
+    </div>
+
+    <p className="mt-5 text-sm text-zinc-500">
+      Affiliate disclosure: we may earn a commission if you purchase through
+      links on this page.
+    </p>
+  </div>
+</section>
 
         <section className="mt-16 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
           <h2 className="text-3xl font-black mb-5">
