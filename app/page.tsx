@@ -431,6 +431,50 @@ export default function Home() {
                 </div>
               </div>
             )}
+            {matches.length > 0 && (
+  <section className="mb-12">
+    <h2 className="text-3xl font-black mb-5">
+      🕒 Recently Updated Matches
+    </h2>
+
+    <p className="text-zinc-400 mb-6 max-w-3xl">
+      Recently updated live and upcoming tennis match pages with streaming,
+      score and schedule information.
+    </p>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {matches.slice(0, 6).map((match) => (
+        <a
+          key={match.id}
+          href={`/watch/${matchSlug(match)}`}
+          className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
+        >
+          <div className="flex justify-between mb-3">
+            <span className="font-black text-green-400">
+              Updated
+            </span>
+
+            <span className="text-zinc-500">
+              {match.category}
+            </span>
+          </div>
+
+          <h3 className="text-2xl font-black mb-3">
+            {match.player1}
+            <br />
+            vs
+            <br />
+            {match.player2}
+          </h3>
+
+          <p className="text-zinc-400">
+            {match.tournament}
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
             
       <div className="mb-12">
   <h2 className="text-3xl font-black mb-5">
@@ -464,6 +508,18 @@ export default function Home() {
                 <p className="text-zinc-400 mb-6 max-w-3xl">
                   Follow tennis players, live matches, schedules and streaming information.
                 </p>
+                <div className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
+  <div className="flex flex-wrap items-center gap-3 mb-3">
+    <span className="rounded-full bg-green-500/20 px-3 py-1 text-sm font-bold text-green-400">
+      📅 Daily tennis hub
+    </span>
+  </div>
+
+  <p className="text-zinc-300 leading-7">
+    Check back daily for live ATP, WTA, Challenger and Grand Slam tennis
+    matches, streaming updates, TV schedules and trending players.
+  </p>
+</div>
 
                 <div className="flex flex-wrap gap-3">
                   {seoPlayers.map((player) => (

@@ -99,18 +99,63 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const decodedSlug = decodeURIComponent(slug);
+
+  const matchId = getMatchIdFromSlug(decodedSlug);
 
   const readableTitle = decodedSlug
     .replace(/-\d+$/, "")
     .replace(/-/g, " ");
 
+  const matches = await getMatches();
+
+  const match = matches.find(
+    (item) => String(item.id) === matchId
+  );
+
+  const isLiveMatch =
+    match?.status?.toUpperCase() === "LIVE";
+
   return {
-    title: `${readableTitle} Live Stream & TV Schedule | Watch Tennis Today`,
-    description:
-      "Find where to watch this tennis match live, including official streaming options, TV schedule, match time, tournament details and live score updates.",
+    title: isLiveMatch
+      ? `🔴 LIVE: ${readableTitle} — Score, Stream & TV Schedule | Watch Tennis Today`
+      : `${readableTitle} Live Stream & TV Schedule | Watch Tennis Today`,
+
+    description: isLiveMatch
+      ? `Watch ${readableTitle} live now. Follow live score updates, official tennis streams, TV schedule and tournament coverage.`
+      : "Find where to watch this tennis match live, including official streaming options, TV schedule, match time, tournament details and live score updates.",
+
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
+    },
+
+    openGraph: {
+      title: isLiveMatch
+        ? `🔴 LIVE: ${readableTitle}`
+        : `${readableTitle} Live Stream`,
+
+      description: isLiveMatch
+        ? `Live tennis score updates, streams and TV schedule.`
+        : "Official tennis streaming and TV schedule information.",
+
+      url: `https://watchtennistoday.com/watch/${slug}`,
+
+      siteName: "Watch Tennis Today",
+
+      type: "website",
+    },
+
+    twitter: {
+      card: "summary_large_image",
+
+      title: isLiveMatch
+        ? `🔴 LIVE: ${readableTitle}`
+        : `${readableTitle} Live Stream`,
+
+      description: isLiveMatch
+        ? `Live tennis score updates and streaming info.`
+        : "Official tennis streaming and TV schedule information.",
     },
   };
 }
