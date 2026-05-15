@@ -202,11 +202,89 @@ export default function Home() {
     .filter((match) => match.status === "LIVE" && hasPriorityPlayer(match))
     .slice(0, 4);
 
+    const featuredMatch =
+  topLiveMatches[0] ||
+  matches.find(
+    (match) =>
+      match.category === "ATP" ||
+      match.category === "WTA"
+  ) ||
+  matches[0];
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-6 mb-10">
           <div>
+            {featuredMatch ? (
+  <section className="mb-12 rounded-[2.5rem] border border-red-500 bg-gradient-to-br from-zinc-900 to-black p-8 overflow-hidden relative">
+    <div className="absolute top-0 right-0 w-72 h-72 bg-red-500/10 blur-3xl" />
+
+    <div className="relative z-10">
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">
+          🔴 FEATURED MATCH
+        </span>
+
+        <span className="text-zinc-400">
+          {featuredMatch.category}
+        </span>
+
+        <span className="text-zinc-500">•</span>
+
+        <span className="text-zinc-400">
+          {featuredMatch.tournament}
+        </span>
+      </div>
+
+      <h2 className="text-5xl md:text-7xl font-black leading-tight mb-6">
+        {featuredMatch.player1}
+        <br />
+        vs
+        <br />
+        {featuredMatch.player2}
+      </h2>
+
+      <div className="flex flex-wrap gap-6 mb-8 text-lg">
+        <div>
+          <p className="text-zinc-500 text-sm mb-1">
+            Status
+          </p>
+
+          <p className="font-black text-red-400">
+            {featuredMatch.status}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-zinc-500 text-sm mb-1">
+            Score
+          </p>
+
+          <p className="font-black">
+            {featuredMatch.score || "-"}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-4">
+        <a
+          href={`/watch/${matchSlug(featuredMatch)}`}
+          className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
+        >
+          Watch Match →
+        </a>
+
+        <a
+          href="/live-tennis"
+          className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
+        >
+          More Live Tennis
+        </a>
+      </div>
+    </div>
+  </section>
+) : null}
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
             </h1>
