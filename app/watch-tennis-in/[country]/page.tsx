@@ -13,7 +13,6 @@ function readableCountry(country: string) {
     )
     .join(" ");
 }
-<AdSlot />
 
 const broadcasters: Record<
   string,
@@ -259,6 +258,55 @@ export default async function CountryPage({
 </p>
           </div>
         </section>
+
+        <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
+  <div className="max-w-3xl">
+    <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
+      🌍 Tennis streaming abroad
+    </div>
+
+    <h2 className="text-3xl font-black mb-5">
+      Watching tennis outside your home country?
+    </h2>
+
+    <p className="text-zinc-300 leading-8 mb-6">
+      Tennis broadcasters and streaming services may vary depending on your
+      location. If you travel often during ATP, WTA or Grand Slam tournaments,
+      NordVPN can help keep your connection private while checking tennis
+      streams on public Wi-Fi.
+    </p>
+
+    <div className="flex flex-wrap gap-4 mb-8">
+      <a
+        href={affiliateLinks.nordvpn}
+        target="_blank"
+        rel="nofollow sponsored noopener noreferrer"
+        className="inline-block rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+      >
+        Try NordVPN
+      </a>
+
+      <a
+        href="/best-vpn-for-tennis-streaming"
+        className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+      >
+        Best VPN for Tennis Streaming
+      </a>
+
+      <a
+        href="/how-to-watch-tennis-safely-abroad"
+        className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+      >
+        Tennis Streaming Safety Guide
+      </a>
+    </div>
+
+    <p className="text-sm text-zinc-500">
+      Affiliate disclosure: we may earn a commission if you purchase through
+      links on this page.
+    </p>
+  </div>
+</section>
 
         <EmailSignup />
 
