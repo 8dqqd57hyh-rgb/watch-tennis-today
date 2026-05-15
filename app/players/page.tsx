@@ -52,6 +52,27 @@ export default function PlayersPage() {
             schedules, tournament coverage and player match pages.
           </p>
         </section>
+        <section className="mb-14 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
+  <h2 className="text-3xl font-black mb-5">
+    ATP & WTA Player Hubs
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <a
+      href="/players/atp"
+      className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-green-500 transition-all"
+    >
+      ATP Tennis Players
+    </a>
+
+    <a
+      href="/players/wta"
+      className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-purple-500 transition-all"
+    >
+      WTA Tennis Players
+    </a>
+  </div>
+</section>
 
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">
