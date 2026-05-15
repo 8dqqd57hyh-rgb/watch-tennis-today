@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+export const dynamic = "force-dynamic";
 
 type Match = {
   id: string;
@@ -196,6 +197,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "",
     "/live-tennis",
     "/watch-tennis-in/poland",
+    "/best-vpn-for-tennis-streaming",
+    "/how-to-watch-tennis-safely-abroad",
     "/watch-tennis-in/uk",
     "/watch-tennis-in/usa",
     "/watch-tennis-in/germany",
