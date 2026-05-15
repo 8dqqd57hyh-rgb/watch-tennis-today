@@ -198,6 +198,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/live-tennis",
     "/players/live-now",
     "/watch-tennis-in/poland",
+    "/tennis-trending-now",
     "/best-vpn-for-tennis-streaming",
     "/how-to-watch-tennis-safely-abroad",
     "/watch-tennis-in/uk",
