@@ -37,13 +37,56 @@ function normalizeCategory(eventType?: string) {
 }
 
 function normalizeStatus(match: ApiTennisMatch) {
-  if (match.event_live === "1") return "LIVE";
-
   const status = (match.event_status || "").toLowerCase();
 
-  if (status.includes("finished")) return "FINISHED";
-  if (status.includes("cancel")) return "CANCELLED";
-  if (status.includes("retired")) return "RETIRED";
+  const hasScore =
+    (match.scores && match.scores.length > 0) ||
+    (match.event_final_result &&
+      match.event_final_result !== "-") ||
+    (match.event_game_result &&
+      match.event_game_result !== "-");
+
+  // suspended / interrupted / delayed
+  if (
+    status.includes("suspended") ||
+    status.includes("interrupted") ||
+    status.includes("delay") ||
+    status.includes("postponed")
+  ) {
+    return "SUSPENDED";
+  }
+
+  // live
+  if (
+    match.event_live === "1" ||
+    status.includes("live") ||
+    status.includes("in progress") ||
+    status.includes("progress")
+  ) {
+    return "LIVE";
+  }
+
+  // finished
+  if (status.includes("finished")) {
+    return "FINISHED";
+  }
+
+  // cancelled
+  if (status.includes("cancel")) {
+    return "CANCELLED";
+  }
+
+  // retired
+  if (status.includes("retired")) {
+    return "RETIRED";
+  }
+
+  // important fallback:
+  // if score already exists but match isn't finished,
+  // it's probably suspended/live — not upcoming
+  if (hasScore) {
+    return "SUSPENDED";
+  }
 
   return "UPCOMING";
 }
