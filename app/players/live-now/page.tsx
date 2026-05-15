@@ -55,12 +55,6 @@ function matchSlug(match: Match) {
   return `${readablePart}-${numericId}`;
 }
 
-export const metadata = {
-  title: "Live Tennis Players Now | ATP & WTA Live Matches",
-  description:
-    "Players currently competing in live ATP, WTA, Challenger and Grand Slam tennis matches.",
-};
-
 export default function LiveNowPlayersPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
