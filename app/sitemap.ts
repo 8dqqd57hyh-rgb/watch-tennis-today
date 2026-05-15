@@ -196,6 +196,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     "",
     "/live-tennis",
+    "/players/live-now",
     "/watch-tennis-in/poland",
     "/best-vpn-for-tennis-streaming",
     "/how-to-watch-tennis-safely-abroad",
