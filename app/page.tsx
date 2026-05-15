@@ -217,7 +217,7 @@ export default function Home() {
               options.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
               <a
                 href="/live-tennis"
                 className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
@@ -238,6 +238,13 @@ export default function Home() {
               >
                 Best Ways to Watch Tennis Online
               </a>
+
+              <a
+  href="/how-to-watch-tennis-safely-abroad"
+  className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
+>
+  How to Watch Tennis Safely Abroad
+</a>
             </div>
 
             <a
