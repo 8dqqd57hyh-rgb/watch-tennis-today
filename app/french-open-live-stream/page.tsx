@@ -1,3 +1,5 @@
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
+
 export const metadata = {
   title:
     "French Open Live Stream & TV Schedule | Watch Tennis Today",
@@ -113,6 +115,45 @@ export default function FrenchOpenLiveStreamPage() {
             ))}
           </div>
         </section>
+
+        <section className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 mb-8">
+  <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
+    🔒 Streaming abroad
+  </div>
+
+  <h2 className="text-3xl font-black mb-5">
+    Watching the French Open while traveling?
+  </h2>
+
+  <p className="text-zinc-300 leading-8 mb-6">
+    French Open streaming availability may depend on your country and local
+    broadcasting rights. NordVPN can help keep your connection private while
+    checking tennis streams on hotel, airport or public Wi-Fi.
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <a
+      href={affiliateLinks.nordvpn}
+      target="_blank"
+      rel="nofollow sponsored noopener noreferrer"
+      className="inline-block rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+    >
+      Try NordVPN
+    </a>
+
+    <a
+      href="/best-vpn-for-tennis-streaming"
+      className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+    >
+      Best VPN for Tennis Streaming
+    </a>
+  </div>
+
+  <p className="mt-5 text-sm text-zinc-500">
+    Affiliate disclosure: we may earn a commission if you purchase through
+    links on this page.
+  </p>
+</section>
 
         <section className="bg-gradient-to-br from-green-500 to-lime-400 text-black rounded-3xl p-6 mb-8">
           <h2 className="text-3xl font-black mb-3">
