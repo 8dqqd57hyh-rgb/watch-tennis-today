@@ -217,6 +217,19 @@ export default function Home() {
               options.
             </p>
 
+            <div className="flex flex-wrap items-center gap-3 mb-10">
+  <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400">
+    ● Live updates
+  </div>
+
+  <p className="text-zinc-500 text-sm">
+    Last updated: {new Date().toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })}
+  </p>
+</div>
+
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
               <a
                 href="/live-tennis"

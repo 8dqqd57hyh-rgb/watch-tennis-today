@@ -254,6 +254,20 @@ export default async function MatchPage({
             options, TV schedule, match time and live score updates.
           </p>
 
+          <div className="flex flex-wrap items-center gap-3 mb-10">
+  <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400">
+    🔴 Live tennis updates
+  </div>
+
+  <p className="text-zinc-500 text-sm">
+    Last updated:{" "}
+    {new Date().toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })}
+  </p>
+</div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div>
               <p className="text-zinc-500 text-sm mb-2">Tournament</p>
