@@ -147,6 +147,12 @@ export default async function WatchPlayerLivePage({ params }: Props) {
 >
   See {player.name} Next Match →
 </a>
+<a
+  href={`/tv-schedule/${slug}`}
+  className="mb-8 inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-black text-white hover:border-green-500 hover:text-green-400 transition-all"
+>
+  See {player.name} TV Schedule →
+</a>
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">

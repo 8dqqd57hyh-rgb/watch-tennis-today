@@ -283,6 +283,15 @@ const uniquePlayers = [
   })
 );
 
+const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
+  (player) => ({
+    url: `${BASE_URL}/tv-schedule/${player}`,
+    lastModified: now,
+    changeFrequency: "hourly" as const,
+    priority: 0.85,
+  })
+);
+
   const uniqueTournaments = [
     ...new Set(
       matches
@@ -310,10 +319,11 @@ const uniquePlayers = [
     priority: 0.9,
   }));
 
-  return [
+ return [
   ...staticPages,
   ...playerPages,
   ...nextMatchPages,
+  ...tvSchedulePages,
   ...tournamentPages,
   ...matchPages,
 ];
