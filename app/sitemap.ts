@@ -153,13 +153,24 @@ function isImportantMatch(match: Match) {
   if (!allPlayers.every(isGoodPlayerName)) {
     return false;
   }
+  if (
+  match.player1.includes("/") ||
+  match.player2.includes("/")
+) {
+  return false;
+}
 
   const players = allPlayers.map(slugify);
 
   const hasTopPlayer = players.some((player) => TOP_PLAYERS.has(player));
   const hasImportantTournament = isImportantTournament(match.tournament);
-  const isLive = match.status === "LIVE";
-  const isAtpOrWta = match.category === "ATP" || match.category === "WTA";
+  const isLive =
+  match.status?.toUpperCase() === "LIVE";
+const category = match.category?.toUpperCase();
+
+const isAtpOrWta =
+  category === "ATP" ||
+  category === "WTA";
 
   return isLive || hasTopPlayer || hasImportantTournament || isAtpOrWta;
 }
