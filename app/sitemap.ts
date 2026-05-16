@@ -226,6 +226,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-player-live/carlos-alcaraz",
     "/watch-player-live/novak-djokovic",
     "/watch-player-live/aryna-sabalenka",
+    "/watch-sinner-live",
+"/watch-swiatek-live",
+"/watch-alcaraz-live",
+"/watch-djokovic-live",
+"/watch-sabalenka-live",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
   ].map((path) => ({
