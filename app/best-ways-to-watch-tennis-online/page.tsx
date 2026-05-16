@@ -19,7 +19,7 @@ const countries = [
   ["Australia", "/watch-tennis-in/australia"],
   ["India", "/watch-tennis-in/india"],
 ];
-<AdSlot />
+
 export default function BestWaysPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -97,7 +97,23 @@ export default function BestWaysPage() {
             <h2 className="text-3xl font-black mb-3">
               5. How to Watch Grand Slam Tennis
             </h2>
+<div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-7">
+  <h2 className="text-3xl font-black mb-3">
+    6. Compare Tennis Streaming Services
+  </h2>
 
+  <p className="text-zinc-400 leading-relaxed mb-5">
+    Compare tennis streaming platforms, VPNs and TV services
+    for ATP, WTA and Grand Slam coverage.
+  </p>
+
+  <a
+    href="/compare"
+    className="inline-block rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400"
+  >
+    Compare Streaming Services →
+  </a>
+</div>
             <p className="text-zinc-400 leading-relaxed">
               Grand Slam tournaments usually have the widest TV and streaming
               coverage. The Australian Open, Roland Garros, Wimbledon and US
