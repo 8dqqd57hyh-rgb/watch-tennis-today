@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
+import VpnPromo from "@/app/components/VpnPromo";
 
 export const dynamic = "force-dynamic";
 
@@ -134,6 +135,11 @@ export default async function WatchPlayerLivePage({ params }: Props) {
           platforms and {player.tour} tennis coverage. Find match schedules,
           live streams and tournament information.
         </p>
+
+        <VpnPromo
+  title={`Watching ${player.name} while traveling?`}
+  text={`${player.name} matches may be geo-blocked depending on your location and broadcaster rights. A VPN can help you safely access your usual tennis streaming services when abroad.`}
+/>
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-5">
