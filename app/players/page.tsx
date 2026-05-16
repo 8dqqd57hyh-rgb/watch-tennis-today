@@ -81,19 +81,29 @@ export default function PlayersPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {players.map((player) => (
-              <a
-                key={player}
-                href={`/player/${playerSlug(player)}`}
-                className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
-              >
-                <h3 className="text-2xl font-black mb-3">
-                  {player}
-                </h3>
+             <a
+  key={player}
+  href={`/player/${playerSlug(player)}`}
+  className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+>
+  <h3 className="text-2xl font-black mb-3">
+    {player}
+  </h3>
 
-                <p className="text-zinc-400">
-                  Live matches, schedules and streaming coverage
-                </p>
-              </a>
+  <p className="text-zinc-400 mb-5">
+    Live matches, schedules and streaming coverage
+  </p>
+
+  <div className="flex flex-wrap gap-3">
+    <span className="inline-block bg-zinc-800 px-4 py-2 rounded-xl font-bold">
+      Player Profile
+    </span>
+
+    <span className="inline-block bg-green-500 text-black px-4 py-2 rounded-xl font-black">
+      Watch Live →
+    </span>
+  </div>
+</a>
             ))}
           </div>
         </section>

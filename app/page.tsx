@@ -854,6 +854,30 @@ export default function Home() {
           </div>
         )}
 
+        <section className="mt-16 rounded-[2rem] border border-yellow-500/40 bg-zinc-900 p-8">
+  <div className="max-w-3xl">
+    <div className="inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400 mb-5">
+      💼 For tennis brands
+    </div>
+
+    <h2 className="text-4xl font-black leading-tight mb-5">
+      Advertise on Watch Tennis Today
+    </h2>
+
+    <p className="text-zinc-300 text-lg leading-8 mb-8">
+      Reach tennis fans looking for live matches, TV schedules, streaming
+      options, player pages and tournament coverage.
+    </p>
+
+    <a
+      href="/advertise"
+      className="inline-flex items-center rounded-2xl bg-yellow-500 px-6 py-4 text-lg font-black text-black hover:bg-yellow-400 transition-all"
+    >
+      View Advertising Options →
+    </a>
+  </div>
+</section>
+
         <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
   <div className="max-w-3xl">
     <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
