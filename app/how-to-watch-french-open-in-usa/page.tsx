@@ -153,6 +153,12 @@ export default function Page() {
               >
                 Watch Tennis in USA
               </a>
+              <a
+  href="/french-open-schedule"
+  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+>
+  French Open Schedule
+</a>
             </div>
           </section>
 

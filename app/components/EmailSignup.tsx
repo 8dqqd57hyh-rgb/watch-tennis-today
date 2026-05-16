@@ -14,6 +14,11 @@ export default function EmailSignup() {
   method="POST"
   className="flex flex-col md:flex-row gap-3"
 >
+    <input
+  type="hidden"
+  name="_redirect"
+  value="https://watchtennistoday.com/newsletter-confirmation"
+/>
   <input
     type="email"
     name="email"

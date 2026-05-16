@@ -314,7 +314,7 @@ export default function Home() {
   </p>
 </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-12">
               <a
                 href="/live-tennis"
                 className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
@@ -362,6 +362,13 @@ export default function Home() {
   className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
 >
   ⭐ Tennis Players
+</a>
+
+<a
+  href="/newsletter"
+  className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
+>
+  🔔 Tennis Newsletter
 </a>
             </div>
 
@@ -658,6 +665,11 @@ export default function Home() {
                 method="POST"
                 className="flex flex-col md:flex-row gap-4"
               >
+                <input
+  type="hidden"
+  name="_redirect"
+  value="https://watchtennistoday.com/newsletter-confirmation"
+/>
                 <input
                   type="email"
                   name="email"

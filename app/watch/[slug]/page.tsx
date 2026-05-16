@@ -464,6 +464,11 @@ export default async function MatchPage({
               method="POST"
               className="flex flex-col md:flex-row gap-4"
             >
+                <input
+  type="hidden"
+  name="_redirect"
+  value="https://watchtennistoday.com/newsletter-confirmation"
+/>
               <input
                 type="email"
                 name="email"

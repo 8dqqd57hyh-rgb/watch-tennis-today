@@ -299,6 +299,11 @@ export default async function PlayerPage({
           method="POST"
           className="flex gap-3"
         >
+            <input
+  type="hidden"
+  name="_redirect"
+  value="https://watchtennistoday.com/newsletter-confirmation"
+/>
           <input
             type="email"
             name="email"
