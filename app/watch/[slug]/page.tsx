@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
 import { playerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/lib/affiliate";
+import AuthorBox from "@/app/components/AuthorBox";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 
 export const dynamic = "force-dynamic";
@@ -589,7 +591,7 @@ export default async function MatchPage({
 
   </div>
 </section>
-
+<AuthorBox />
           <section className="mt-16 border-t border-zinc-800 pt-8">
             <h2 className="text-2xl font-black mb-5">More Tennis Coverage</h2>
 
@@ -632,6 +634,26 @@ export default async function MatchPage({
           __html: JSON.stringify(faqSchema),
         }}
       />
+      <BreadcrumbSchema
+  items={[
+    {
+      name: "Home",
+      url: "https://watchtennistoday.com",
+    },
+    {
+      name: "Watch",
+      url: "https://watchtennistoday.com/watch",
+    },
+    {
+      name: match.tournament,
+      url: `https://watchtennistoday.com/tournament/${tournamentSlug}`,
+    },
+    {
+      name: `${match.player1} vs ${match.player2}`,
+      url: currentUrl,
+    },
+  ]}
+/>
     </main>
   );
 }

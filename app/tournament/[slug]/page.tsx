@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import AuthorBox from "@/app/components/AuthorBox";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 export const dynamic = "force-dynamic";
 
@@ -293,7 +295,7 @@ export default async function Page({ params }: PageProps) {
             How to Watch Tennis Safely Abroad
           </a>
         </section>
-
+<AuthorBox />
         <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-6">{tournamentName} FAQ</h2>
 
@@ -333,6 +335,22 @@ export default async function Page({ params }: PageProps) {
           </div>
         </section>
       </div>
+      <BreadcrumbSchema
+  items={[
+    {
+      name: "Home",
+      url: "https://watchtennistoday.com",
+    },
+    {
+      name: "Tournaments",
+      url: "https://watchtennistoday.com/tournament",
+    },
+    {
+      name: tournamentName,
+      url: `https://watchtennistoday.com/tournament/${slug}`,
+    },
+  ]}
+/>
     </main>
   );
 }
