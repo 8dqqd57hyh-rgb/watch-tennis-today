@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -253,7 +254,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
             ))}
           </div>
         </section>
-
+<RelatedMoneyLinks playerName={player.name} />
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
           <h2 className="text-3xl font-black mb-4">
             Live Tennis Coverage
