@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { playerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/lib/affiliate";
+import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -364,7 +365,7 @@ export default async function VsPage({ params }: Props) {
             </div>
           </section>
         ) : null}
-
+<StreamingLinksGrid />
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-5">FAQ</h2>
 

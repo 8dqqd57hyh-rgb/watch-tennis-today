@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { players } from "@/data/players";
 export const dynamic = "force-dynamic";
 
 type Match = {
@@ -273,6 +274,15 @@ const uniquePlayers = [
     priority: TOP_PLAYERS.has(player) ? 0.9 : 0.75,
   }));
 
+  const nextMatchPages: MetadataRoute.Sitemap = Object.keys(players).map(
+  (player) => ({
+    url: `${BASE_URL}/next-match/${player}`,
+    lastModified: now,
+    changeFrequency: "hourly" as const,
+    priority: 0.85,
+  })
+);
+
   const uniqueTournaments = [
     ...new Set(
       matches
@@ -301,9 +311,10 @@ const uniquePlayers = [
   }));
 
   return [
-    ...staticPages,
-    ...playerPages,
-    ...tournamentPages,
-    ...matchPages,
-  ];
+  ...staticPages,
+  ...playerPages,
+  ...nextMatchPages,
+  ...tournamentPages,
+  ...matchPages,
+];
 }

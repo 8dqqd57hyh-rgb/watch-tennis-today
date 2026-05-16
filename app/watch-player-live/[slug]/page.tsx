@@ -141,7 +141,12 @@ export default async function WatchPlayerLivePage({ params }: Props) {
   title={`Watching ${player.name} while traveling?`}
   text={`${player.name} matches may be geo-blocked depending on your location and broadcaster rights. A VPN can help you safely access your usual tennis streaming services when abroad.`}
 />
-
+<a
+  href={`/next-match/${slug}`}
+  className="mb-8 inline-block rounded-2xl border border-green-500 px-6 py-4 font-black text-green-400 hover:bg-green-500 hover:text-black transition-all"
+>
+  See {player.name} Next Match →
+</a>
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">
