@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { comparisons } from "@/app/data/comparisons";
+import { comparisons } from "@/data/comparisons";
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 
