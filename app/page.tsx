@@ -880,8 +880,8 @@ export default function Home() {
         Try NordVPN
       </a>
 
-      <a
-        href="/best-ways-to-watch-tennis-online"
+   <a
+  href="/best-vpn-for-tennis-streaming"
         className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
       >
         Learn more
