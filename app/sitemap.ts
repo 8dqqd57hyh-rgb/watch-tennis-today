@@ -222,6 +222,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/matches/live-now",
     "/disclaimer",
     "/advertise",
+    "/how-to-watch-french-open-in-usa",
     "/watch-player-live/jannik-sinner",
     "/watch-player-live/iga-swiatek",
     "/watch-player-live/carlos-alcaraz",
