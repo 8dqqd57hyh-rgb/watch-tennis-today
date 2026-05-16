@@ -219,6 +219,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/privacy-policy",
     "/terms",
     "/atp-live-today",
+    "/matches/live-now",
     "/disclaimer",
     "/advertise",
     "/watch-player-live/jannik-sinner",
