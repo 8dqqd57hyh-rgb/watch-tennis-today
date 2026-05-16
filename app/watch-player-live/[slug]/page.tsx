@@ -1,11 +1,85 @@
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+type Match = {
+  id: string;
+  player1: string;
+  player2: string;
+  tournament: string;
+  category: string;
+  status: string;
+  score?: string;
+  startTime?: string | null;
+};
+
+async function getBaseUrl() {
+  const headersList = await headers();
+  const host = headersList.get("host");
+
+  if (!host) return "http://localhost:3000";
+
+  const protocol = host.includes("localhost") ? "http" : "https";
+
+  return `${protocol}://${host}`;
+}
+
+async function getMatches(): Promise<Match[]> {
+  const baseUrl = await getBaseUrl();
+
+  const response = await fetch(`${baseUrl}/api/matches`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) return [];
+
+  const data = await response.json();
+
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.matches)) return data.matches;
+
+  return [];
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function getMatchSlug(match: Match) {
+  return `${slugify(match.player1)}-vs-${slugify(match.player2)}-${match.id}`;
+}
+
+function isLive(match: Match) {
+  return match.status.toUpperCase() === "LIVE";
+}
+
+function playerLastName(name: string) {
+  return name.toLowerCase().split(" ").pop() || name.toLowerCase();
+}
+
+function isPlayerMatch(match: Match, playerName: string) {
+  const lastName = playerLastName(playerName);
+
+  const text = `${match.player1} ${match.player2}`
+    .toLowerCase()
+    .replace(/[^a-z0-9\s.-]/g, " ");
+
+  return text.includes(lastName);
+}
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
@@ -34,6 +108,16 @@ export default async function WatchPlayerLivePage({ params }: Props) {
     notFound();
   }
 
+  const matches = await getMatches();
+
+  const playerMatches = matches
+    .filter((match) => isPlayerMatch(match, player.name))
+    .sort((a, b) => {
+      if (isLive(a) && !isLive(b)) return -1;
+      if (!isLive(a) && isLive(b)) return 1;
+      return 0;
+    });
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
@@ -52,13 +136,79 @@ export default async function WatchPlayerLivePage({ params }: Props) {
         </p>
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
+          <div className="flex flex-wrap items-center gap-3 mb-5">
+            <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">
+              🔴 LIVE
+            </span>
+
+            <h2 className="text-3xl font-black">
+              {player.name} Matches Today
+            </h2>
+          </div>
+
+          {playerMatches.length > 0 ? (
+            <div className="grid gap-4">
+              {playerMatches.map((match) => (
+                <a
+                  key={match.id}
+                  href={`/watch/${getMatchSlug(match)}`}
+                  className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
+                >
+                  <div className="flex flex-wrap justify-between gap-3 mb-4">
+                    <span className="text-zinc-400">
+                      {match.tournament}
+                    </span>
+
+                    <span
+                      className={`text-xs font-black px-3 py-1 rounded-full ${
+                        isLive(match)
+                          ? "bg-red-500 text-white"
+                          : "bg-zinc-700 text-white"
+                      }`}
+                    >
+                      {match.status}
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-black mb-2">
+                    {match.player1}
+                    <br />
+                    vs
+                    <br />
+                    {match.player2}
+                  </h3>
+
+                  <p className="text-zinc-500">
+                    {match.category}
+                    {match.score ? ` · ${match.score}` : ""}
+                  </p>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-zinc-400">
+              No live or upcoming matches found for {player.name} right now.
+              Check back later for updated tennis schedule and streaming
+              information.
+            </p>
+          )}
+
+          <a
+            href="/live-tennis"
+            className="inline-block mt-6 bg-green-500 text-black px-5 py-3 rounded-2xl font-black hover:bg-green-400 transition-all"
+          >
+            View All Live Tennis
+          </a>
+        </section>
+
+        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
           <h2 className="text-3xl font-black mb-4">
             Where to Watch {player.name}
           </h2>
 
           <p className="text-zinc-400 leading-8 mb-6">
             {player.name} matches may be available on {player.tour}{" "}
-broadcasters, Tennis Channel, Eurosport, Sky Sports and regional
+            broadcasters, Tennis Channel, Eurosport, Sky Sports and regional
             sports streaming services depending on your country.
           </p>
 

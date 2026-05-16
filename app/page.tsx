@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/lib/affiliate";
+import {
+  playerSlug,
+  playerUrl,
+  watchPlayerLiveUrl,
+} from "@/data/playerSlugs";
 
 type WatchProvider = {
   name: string;
@@ -55,15 +60,6 @@ function readableCountry(country: string) {
     .join(" ");
 }
 
-function playerSlug(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/\//g, " ")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
 
 function slugify(text: string) {
   return text
@@ -429,7 +425,7 @@ export default function Home() {
                   {livePlayers.map((player) => (
                     <a
                       key={player}
-                      href={`/player/${playerSlug(player)}`}
+                     href={playerUrl(player)}
                       className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-red-500 hover:text-red-400 transition-all"
                     >
                       🔴 {player}
@@ -598,7 +594,7 @@ export default function Home() {
     {priorityPlayers.map((player) => (
       <a
         key={player}
-        href={`/player/${playerSlug(player)}`}
+      href={playerUrl(player)}
         className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
       >
         ⭐ {player}
@@ -633,7 +629,7 @@ export default function Home() {
                   {seoPlayers.map((player) => (
                     <a
                       key={player}
-                      href={`/player/${playerSlug(player)}`}
+                     href={playerUrl(player)}
                       className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
                     >
                       {player} live matches
@@ -738,7 +734,7 @@ export default function Home() {
                     {splitPlayers(match.player1).map((player, index) => (
                       <span key={player} className="text-2xl font-bold">
                         <a
-                          href={`/player/${playerSlug(player)}`}
+                         href={playerUrl(player)}
                           className="hover:text-green-400 transition-colors"
                         >
                           {player}
@@ -757,7 +753,7 @@ export default function Home() {
                     {splitPlayers(match.player2).map((player, index) => (
                       <span key={player} className="text-2xl font-bold">
                         <a
-                          href={`/player/${playerSlug(player)}`}
+                          href={playerUrl(player)}
                           className="hover:text-green-400 transition-colors"
                         >
                           {player}
