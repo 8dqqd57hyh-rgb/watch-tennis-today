@@ -255,7 +255,12 @@ export default async function PlayerPage({
                   {match.player1} vs {match.player2}
                 </p>
 
-                <p>{match.tournament}</p>
+                <a
+  href={`/tournament/${slugify(match.tournament)}`}
+  className="hover:text-green-400 transition-colors"
+>
+  {match.tournament}
+</a>
 
                 <div className="flex items-center gap-2 mt-2">
                   {match.status === "LIVE" ? (
@@ -393,7 +398,12 @@ export default async function PlayerPage({
               {match.player1} vs {match.player2}
             </div>
 
-            <div>{match.tournament}</div>
+           <a
+  href={`/tournament/${slugify(match.tournament)}`}
+  className="hover:text-green-400 transition-colors"
+>
+  {match.tournament}
+</a>
 
             <div className="mt-2">
               {match.status === "LIVE" ? (
