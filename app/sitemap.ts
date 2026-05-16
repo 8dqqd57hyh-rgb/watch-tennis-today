@@ -289,7 +289,9 @@ const uniquePlayers = [
 
   const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
     url: `${BASE_URL}/watch/${matchSlug(match)}`,
-    lastModified: now,
+    lastModified: match.startTime
+  ? new Date(match.startTime)
+  : now,
     changeFrequency: "hourly" as const,
     priority: 0.9,
   }));
