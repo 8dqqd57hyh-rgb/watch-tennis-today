@@ -3,6 +3,21 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
 
+export function generateStaticParams() {
+  return [
+    { country: "usa" },
+    { country: "uk" },
+    { country: "canada" },
+    { country: "australia" },
+    { country: "germany" },
+    { country: "france" },
+    { country: "italy" },
+    { country: "spain" },
+    { country: "poland" },
+    { country: "india" },
+  ];
+}
+
 function readableCountry(country: string) {
   return country
     .split("-")
