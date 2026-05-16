@@ -65,6 +65,16 @@ function playerSlug(name: string) {
     .trim();
 }
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function matchSlug(match: Match) {
   const readablePart = `${match.player1}-vs-${match.player2}`
     .toLowerCase()
@@ -458,7 +468,12 @@ export default function Home() {
                         {match.player2}
                       </h3>
 
-                      <p className="text-zinc-400 mb-4">{match.tournament}</p>
+                      <a
+  href={`/tournament/${slugify(match.tournament)}`}
+  className="text-zinc-400 hover:text-green-400 transition-colors mb-4 inline-block"
+>
+  {match.tournament}
+</a>
 
                       <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
                         Watch Live →
@@ -510,7 +525,12 @@ export default function Home() {
                           {match.player2}
                         </h3>
 
-                        <p className="text-zinc-400">{match.tournament}</p>
+                        <a
+  href={`/tournament/${slugify(match.tournament)}`}
+  className="text-zinc-400 hover:text-green-400 transition-colors inline-block"
+>
+  {match.tournament}
+</a>
                       </a>
                     ))}
                 </div>
@@ -552,9 +572,12 @@ export default function Home() {
             {match.player2}
           </h3>
 
-          <p className="text-zinc-400">
-            {match.tournament}
-          </p>
+         <a
+  href={`/tournament/${slugify(match.tournament)}`}
+  className="text-zinc-400 hover:text-green-400 transition-colors inline-block"
+>
+  {match.tournament}
+</a>
         </a>
       ))}
     </div>

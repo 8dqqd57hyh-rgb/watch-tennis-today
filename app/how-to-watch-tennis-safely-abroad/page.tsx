@@ -21,6 +21,29 @@ export default function HowToWatchTennisSafelyAbroadPage() {
           How to Watch Tennis Safely Abroad
         </h1>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+  <a
+    href="/live-tennis"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-red-500 hover:text-red-400 transition-all"
+  >
+    🔴 Live Tennis Matches
+  </a>
+
+  <a
+    href="/best-ways-to-watch-tennis-online"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
+  >
+    📺 Watch Tennis Online
+  </a>
+
+  <a
+    href="/watch"
+    className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
+  >
+    🌍 Tennis TV Channels
+  </a>
+</div>
+
         <p className="text-zinc-300 text-lg leading-8 mb-8">
           If you travel during ATP, WTA or Grand Slam tournaments, your usual
           tennis streaming service may not work the same way abroad. This guide
