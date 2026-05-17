@@ -5,6 +5,7 @@ import { playerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/lib/affiliate";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 
 export const dynamic = "force-dynamic";
