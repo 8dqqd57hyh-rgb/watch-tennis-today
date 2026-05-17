@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
 import { playerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/lib/affiliate";
@@ -176,8 +176,11 @@ export default async function MatchPage({
 
   const matches = await getMatches();
 
-  const match = matches.find((item) => String(item.id) === matchId);
-  if (!match) notFound();
+ const match = matches.find((item) => String(item.id) === matchId);
+
+if (!match) {
+  redirect("/live-tennis");
+}
 
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
