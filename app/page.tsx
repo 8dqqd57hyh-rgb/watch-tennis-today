@@ -487,8 +487,57 @@ export default function Home() {
                   ))}
                 </div>
               </section>
+              
             )}
+<section className="mb-12">
+  <h2 className="text-3xl font-black mb-5">
+    ⏳ Starting Soon
+  </h2>
 
+  <p className="text-zinc-400 mb-6 max-w-3xl">
+    Upcoming ATP, WTA and Challenger matches starting soon.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    {matches
+      .filter(
+        (match) =>
+          match.status !== "LIVE" &&
+          match.status !== "FINISHED" &&
+          match.status !== "CANCELLED"
+      )
+      .slice(0, 6)
+      .map((match) => (
+        <a
+          key={match.id}
+          href={`/watch/${matchSlug(match)}`}
+          className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 hover:border-yellow-500 transition-all"
+        >
+          <div className="flex justify-between mb-3">
+            <span className="font-black text-yellow-400">
+              UPCOMING
+            </span>
+
+            <span className="text-zinc-500">
+              {match.category}
+            </span>
+          </div>
+
+          <h3 className="text-2xl font-black mb-3">
+            {match.player1}
+            <br />
+            vs
+            <br />
+            {match.player2}
+          </h3>
+
+          <p className="text-zinc-400">
+            {new Date(match.startTime).toLocaleString()}
+          </p>
+        </a>
+      ))}
+  </div>
+</section>
             {matches.length > 0 && (
               <div className="mb-12">
                 <h2 className="text-3xl font-black mb-5">
