@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
+import StickyAffiliateBar from "@/app/components/StickyAffiliateBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -185,6 +186,7 @@ export default function RootLayout({
 <a href="/advertise">Advertise</a>
   </div>
 </footer>
+<StickyAffiliateBar />
   <Analytics />
   <GoogleAnalytics gaId="G-Y9EP52NP5T" />
 </body>
