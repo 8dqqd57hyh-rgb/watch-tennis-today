@@ -238,6 +238,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 "/compare/tennis-tv-vs-eurosport",
 "/compare/espn-vs-tennis-channel",
 "/compare/nordvpn-vs-surfshark-for-tennis",
+"/rome-open-final-live",
     "/disclaimer",
     "/advertise",
     "/newsletter",
