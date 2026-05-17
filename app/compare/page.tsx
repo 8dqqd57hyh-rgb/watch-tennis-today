@@ -1,32 +1,4 @@
-const comparisons = [
-  {
-    title: "Tennis TV vs ESPN+",
-    href: "/compare/tennis-tv-vs-espn",
-    description:
-      "Compare ATP coverage, pricing and streaming availability.",
-  },
-
-  {
-    title: "Tennis TV vs Eurosport",
-    href: "/compare/tennis-tv-vs-eurosport",
-    description:
-      "See which service offers better tennis coverage in Europe.",
-  },
-
-  {
-    title: "NordVPN vs Surfshark for Tennis",
-    href: "/compare/nordvpn-vs-surfshark-for-tennis",
-    description:
-      "Compare VPNs for tennis streaming, speed and travel usage.",
-  },
-
-  {
-    title: "ESPN+ vs Tennis Channel",
-    href: "/compare/espn-vs-tennis-channel",
-    description:
-      "Compare streaming options for ATP, WTA and Grand Slams.",
-  },
-];
+import { comparisons } from "@/data/comparisons";
 
 export const metadata = {
   title: "Tennis Streaming Comparisons | Watch Tennis Today",
@@ -57,8 +29,8 @@ export default function CompareHubPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {comparisons.map((comparison) => (
             <a
-              key={comparison.href}
-              href={comparison.href}
+              key={comparison.slug}
+href={`/compare/${comparison.slug}`}
               className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
             >
               <h2 className="text-2xl font-black mb-3">

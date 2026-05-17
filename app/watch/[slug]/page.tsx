@@ -596,6 +596,7 @@ export default async function MatchPage({
 
   </div>
 </section>
+<RelatedMoneyLinks playerName={match.player1} />
 <AuthorBox />
           <section className="mt-16 border-t border-zinc-800 pt-8">
             <h2 className="text-2xl font-black mb-5">More Tennis Coverage</h2>

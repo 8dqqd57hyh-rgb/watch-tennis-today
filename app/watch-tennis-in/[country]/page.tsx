@@ -177,6 +177,36 @@ export default async function CountryPage({
   const { country } = await params;
   const readable = readableCountry(country);
   const countryBroadcasters = broadcasters[country] || [];
+  const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `Where can I watch tennis in ${readable}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Tennis in ${readable} is usually available through official sports broadcasters, tournament partners and dedicated tennis streaming platforms.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I watch ATP and WTA matches online?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, many ATP and WTA matches are available through official broadcasters, regional streaming platforms or tournament partners.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Are Grand Slam matches available in ${readable}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Grand Slam coverage depends on local TV rights. Wimbledon, Roland Garros, US Open and Australian Open may have different broadcasters in each country.",
+      },
+    },
+  ],
+};
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -394,6 +424,12 @@ export default async function CountryPage({
   </div>
 </section>
       </div>
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(faqSchema),
+  }}
+/>
     </main>
   );
 }

@@ -8,6 +8,7 @@ import {
   playerUrl,
   watchPlayerLiveUrl,
 } from "@/data/playerSlugs";
+import Link from "next/link";
 
 type WatchProvider = {
   name: string;
@@ -537,7 +538,56 @@ export default function Home() {
                       </a>
                     ))}
                 </div>
+                <section className="mb-12">
+  <h2 className="text-3xl font-black mb-5">
+    💸 Best Tennis Streaming Comparisons
+  </h2>
+
+  <p className="text-zinc-400 mb-6 max-w-3xl">
+    Compare tennis streaming services, TV channels and VPNs for ATP, WTA and Grand Slam coverage.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    {[
+      [
+        "Tennis TV vs ESPN+",
+        "/compare/tennis-tv-vs-espn",
+      ],
+      [
+        "Tennis TV vs Eurosport",
+        "/compare/tennis-tv-vs-eurosport",
+      ],
+      [
+        "ESPN+ vs Tennis Channel",
+        "/compare/espn-vs-tennis-channel",
+      ],
+      [
+        "NordVPN vs Surfshark",
+        "/compare/nordvpn-vs-surfshark-for-tennis",
+      ],
+    ].map(([title, href]) => (
+      <a
+        key={href}
+        href={href}
+        className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition-all"
+      >
+        <p className="mb-3 text-xs uppercase tracking-widest text-green-400">
+          Comparison
+        </p>
+
+        <h3 className="text-xl font-black text-white">
+          {title}
+        </h3>
+
+        <p className="mt-3 text-sm text-zinc-400">
+          Compare features, streaming access and viewing options.
+        </p>
+      </a>
+    ))}
+  </div>
+</section>
               </div>
+              
             )}
             {matches.length > 0 && (
   <section className="mb-12">

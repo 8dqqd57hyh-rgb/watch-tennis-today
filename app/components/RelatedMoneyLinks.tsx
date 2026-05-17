@@ -34,6 +34,27 @@ export default function RelatedMoneyLinks({
         </a>
 
         <a
+  href="/compare/tennis-tv-vs-espn"
+  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+>
+  Tennis TV vs ESPN+
+</a>
+
+<a
+  href="/compare/nordvpn-vs-surfshark-for-tennis"
+  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+>
+  NordVPN vs Surfshark for tennis
+</a>
+
+<a
+  href="/compare/espn-vs-tennis-channel"
+  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+>
+  ESPN+ vs Tennis Channel
+</a>
+
+        <a
           href="/watch-tennis-in/usa"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
