@@ -292,6 +292,30 @@ export default function Home() {
     </div>
   </section>
 ) : null}
+<a
+  href="/rome-open-final-live"
+  className="group mb-8 block overflow-hidden rounded-[2rem] border border-red-500 bg-gradient-to-r from-red-600 to-red-500 p-6 transition-all hover:scale-[1.01]"
+>
+  <div className="flex flex-wrap items-center justify-between gap-6">
+    <div>
+      <div className="mb-3 inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-black text-red-500 animate-pulse">
+        🔴 LIVE NOW
+      </div>
+
+      <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+        Rome Open Final
+      </h2>
+
+      <p className="mt-3 text-lg text-red-100">
+        Live stream, score updates and TV schedule →
+      </p>
+    </div>
+
+    <div className="rounded-2xl bg-white px-6 py-4 text-lg font-black text-red-500 group-hover:bg-zinc-100">
+      Watch Final
+    </div>
+  </div>
+</a>
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
             </h1>
