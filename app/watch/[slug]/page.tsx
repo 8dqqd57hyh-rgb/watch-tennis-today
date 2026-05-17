@@ -372,6 +372,30 @@ if (!match) {
             )}
           </section>
 
+          <section className="mt-8 rounded-[2rem] border border-green-500/30 bg-green-500/10 p-6">
+  <p className="mb-2 text-xs font-black uppercase tracking-widest text-green-400">
+    Streaming tip
+  </p>
+
+  <h2 className="mb-3 text-2xl font-black">
+    Can’t access the tennis stream?
+  </h2>
+
+  <p className="mb-5 text-zinc-300 leading-7">
+    Tennis streaming availability depends on your location. If you are traveling,
+    check your usual streaming services securely with a VPN.
+  </p>
+
+  <a
+    href={affiliateLinks.nordvpn}
+    target="_blank"
+    rel="nofollow sponsored noopener noreferrer"
+    className="inline-flex rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+  >
+    Try NordVPN for tennis streaming
+  </a>
+</section>
+
           <section className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
   <div className="max-w-3xl">
     <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
@@ -600,6 +624,7 @@ if (!match) {
 
   </div>
 </section>
+<AdSlot label="Advertisement" />
 <RelatedMoneyLinks playerName={match.player1} />
 <AuthorBox />
           <section className="mt-16 border-t border-zinc-800 pt-8">
