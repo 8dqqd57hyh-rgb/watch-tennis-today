@@ -1,9 +1,13 @@
 type RelatedMoneyLinksProps = {
   playerName?: string;
+  player2Name?: string;
+  tournament?: string;
 };
 
 export default function RelatedMoneyLinks({
   playerName,
+  player2Name,
+  tournament,
 }: RelatedMoneyLinksProps) {
   return (
     <section className="my-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
@@ -26,6 +30,28 @@ export default function RelatedMoneyLinks({
           </a>
         )}
 
+        {playerName && (
+          <a
+            href={`/player/${playerName
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`}
+            className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+          >
+            Watch {playerName} live
+          </a>
+        )}
+
+        {player2Name && (
+          <a
+            href={`/player/${player2Name
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`}
+            className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+          >
+            Watch {player2Name} live
+          </a>
+        )}
+
         <a
           href="/best-ways-to-watch-tennis-online"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
@@ -34,25 +60,25 @@ export default function RelatedMoneyLinks({
         </a>
 
         <a
-  href="/compare/tennis-tv-vs-espn"
-  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
->
-  Tennis TV vs ESPN+
-</a>
+          href="/compare/tennis-tv-vs-espn"
+          className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+        >
+          Tennis TV vs ESPN+
+        </a>
 
-<a
-  href="/compare/nordvpn-vs-surfshark-for-tennis"
-  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
->
-  NordVPN vs Surfshark for tennis
-</a>
+        <a
+          href="/compare/nordvpn-vs-surfshark-for-tennis"
+          className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+        >
+          NordVPN vs Surfshark for tennis
+        </a>
 
-<a
-  href="/compare/espn-vs-tennis-channel"
-  className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
->
-  ESPN+ vs Tennis Channel
-</a>
+        <a
+          href="/compare/espn-vs-tennis-channel"
+          className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
+        >
+          ESPN+ vs Tennis Channel
+        </a>
 
         <a
           href="/watch-tennis-in/usa"
