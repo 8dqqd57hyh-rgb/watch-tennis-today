@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type ApiTennisMatch = {
   event_key: string;
@@ -179,9 +179,9 @@ function getWatchProviders(category: string, tournament: string) {
 async function fetchApiTennis(method: string, apiKey: string, params = "") {
   const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
 
-  const response = await fetch(url, {
-    cache: "no-store",
-  });
+ const response = await fetch(url, {
+  next: { revalidate: 60 },
+});
 
   if (!response.ok) {
     throw new Error(`API-Tennis request failed: ${method}`);
