@@ -179,8 +179,8 @@ function getWatchProviders(category: string, tournament: string) {
 async function fetchApiTennis(method: string, apiKey: string, params = "") {
   const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
 
- const response = await fetch(url, {
-  next: { revalidate: 60 },
+const response = await fetch(url, {
+  cache: "no-store",
 });
 
   if (!response.ok) {
