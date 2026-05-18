@@ -44,7 +44,24 @@ export default function WatchTennisLiveTodayPage() {
         </div>
       </section>
 
-      <LiveTennisPage />
+<section className="max-w-6xl mx-auto px-4 py-10">
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
+    <h2 className="text-3xl font-bold">
+      Live tennis matches right now
+    </h2>
+
+    <p className="text-zinc-300 mt-4 max-w-2xl">
+      See current live tennis matches, scores and match pages in one place.
+    </p>
+
+    <Link
+      href="/live-tennis"
+      className="inline-block mt-6 bg-green-500 text-black px-5 py-3 rounded-xl font-bold hover:bg-green-400 transition"
+    >
+      View Live Matches
+    </Link>
+  </div>
+</section>
 
       <section className="max-w-6xl mx-auto px-4 py-14">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8">
