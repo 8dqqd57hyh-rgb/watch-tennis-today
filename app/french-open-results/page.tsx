@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "French Open Results 2026 | Roland Garros Scores Today",
   description:
@@ -6,17 +8,21 @@ export const metadata = {
 
 export default async function FrenchOpenResultsPage() {
   const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-  const res = await fetch(`${baseUrl}/api/french-open-results`, {
-  next: { revalidate: 300 },
+const res = await fetch(`${baseUrl}/api/french-open-results`, {
+  cache: "no-store",
 });
 
- const data = await res.json();
+let matches: any[] = [];
 
-const matches = Array.isArray(data?.results)
-  ? data.results
-  : [];
+const contentType = res.headers.get("content-type") || "";
+
+if (res.ok && contentType.includes("application/json")) {
+  const data = await res.json();
+
+  matches = Array.isArray(data?.results) ? data.results : [];
+}
 
 
 

@@ -62,65 +62,65 @@ export default function FrenchOpenStreamingCountriesPage() {
   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     {[
       {
-        country: "United States",
-        channels: "TNT Sports, truTV, HBO Max",
-        link: "https://www.tntsports.com/tennis/",
-      },
-      {
-        country: "United Kingdom",
-        channels: "TNT Sports, Eurosport, HBO Max",
-        link: "https://www.tntsports.co.uk/tennis/",
-      },
-      {
-        country: "France",
-        channels: "France TV, Prime Video",
-        link: "https://www.france.tv/sport/tennis/roland-garros/",
-      },
-      {
-        country: "Poland",
-        channels: "Eurosport, Max",
-        link: "https://www.eurosport.pl/tenis/",
-      },
-      {
-        country: "Germany",
-        channels: "Eurosport, Max",
-        link: "https://www.eurosport.de/tennis/",
-      },
-      {
-        country: "Spain",
-        channels: "Eurosport, Max, RTVE",
-        link: "https://www.rtve.es/deportes/tenis/",
-      },
-      {
-        country: "Italy",
-        channels: "Eurosport, Sky Sport",
-        link: "https://sport.sky.it/tennis",
-      },
-      {
-        country: "Canada",
-        channels: "TSN, RDS",
-        link: "https://www.tsn.ca/tennis",
-      },
-      {
-        country: "Australia",
-        channels: "9Now, Stan Sport",
-        link: "https://www.9now.com.au/",
-      },
-      {
-        country: "India",
-        channels: "Sony Sports Network, Sony LIV",
-        link: "https://www.sonyliv.com/",
-      },
-      {
-        country: "Japan",
-        channels: "WOWOW",
-        link: "https://www.wowow.co.jp/sports/tennis/",
-      },
-      {
-        country: "Brazil",
-        channels: "ESPN",
-        link: "https://www.espn.com.br/tenis/",
-      },
+    country: "United States",
+    channels: "TNT Sports, truTV, Max",
+    link: "https://www.max.com/",
+  },
+  {
+    country: "United Kingdom",
+    channels: "TNT Sports, discovery+",
+    link: "https://www.discoveryplus.com/",
+  },
+  {
+    country: "France",
+    channels: "France TV, Prime Video",
+    link: "https://www.france.tv/",
+  },
+  {
+    country: "Poland",
+    channels: "Eurosport, Max",
+    link: "https://www.eurosport.pl/",
+  },
+  {
+    country: "Germany",
+    channels: "Eurosport, discovery+",
+    link: "https://www.eurosport.de/",
+  },
+  {
+    country: "Spain",
+    channels: "Eurosport, RTVE",
+    link: "https://www.rtve.es/deportes/",
+  },
+  {
+    country: "Italy",
+    channels: "Eurosport, Sky Sport",
+    link: "https://sport.sky.it/",
+  },
+  {
+    country: "Canada",
+    channels: "TSN, RDS",
+    link: "https://www.tsn.ca/",
+  },
+  {
+    country: "Australia",
+    channels: "9Now, Stan Sport",
+    link: "https://www.stan.com.au/",
+  },
+  {
+    country: "India",
+    channels: "Sony Sports Network, Sony LIV",
+    link: "https://www.sonyliv.com/",
+  },
+  {
+    country: "Japan",
+    channels: "WOWOW",
+    link: "https://www.wowow.co.jp/",
+  },
+  {
+    country: "Brazil",
+    channels: "ESPN",
+    link: "https://www.espn.com.br/",
+  },
     ].map((item) => (
       <div
         key={item.country}
@@ -134,14 +134,14 @@ export default function FrenchOpenStreamingCountriesPage() {
           {item.channels}
         </h3>
 
-        <a
-          href={item.link}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          className="inline-flex rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400 transition-all"
-        >
-          Official broadcaster →
-        </a>
+       <a
+  href={item.link}
+  target="_blank"
+  rel="noopener noreferrer nofollow"
+  className="inline-flex rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400 transition-all"
+>
+  Visit broadcaster →
+</a>
       </div>
     ))}
   </div>
