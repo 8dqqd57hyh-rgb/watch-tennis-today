@@ -158,6 +158,28 @@ export default async function Page({ params }: PageProps) {
             🌍 Watch Online
           </a>
         </div>
+        <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+  <h2 className="mb-5 text-3xl font-black">
+    Popular Tournament Pages
+  </h2>
+
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <a href="/french-open-live" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
+      <h3 className="text-xl font-black mb-2">French Open Live</h3>
+      <p className="text-zinc-400">Live matches, scores and streaming information.</p>
+    </a>
+
+    <a href="/french-open-results" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
+      <h3 className="text-xl font-black mb-2">French Open Results</h3>
+      <p className="text-zinc-400">Latest Roland Garros match results and updates.</p>
+    </a>
+
+    <a href="/french-open-tv-schedule" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
+      <h3 className="text-xl font-black mb-2">French Open TV Schedule</h3>
+      <p className="text-zinc-400">TV channels, broadcast times and official coverage.</p>
+    </a>
+  </div>
+</section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
