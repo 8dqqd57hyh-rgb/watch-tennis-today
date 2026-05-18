@@ -143,36 +143,42 @@ export default async function ComparePage({ params }: Props) {
         </section>
 
         <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-5 text-3xl font-black">
-            Which One Is Better for Tennis?
-          </h2>
+  <h2 className="mb-5 text-3xl font-black">
+    Which One Is Better for Tennis?
+  </h2>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="mb-3 text-xl font-black">
-                Choose {comparison.left} if...
-              </h3>
+  <div className="grid gap-4 md:grid-cols-2">
+    <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+      <h3 className="mb-3 text-xl font-black">
+        {comparison.left}
+      </h3>
 
-              <ul className="space-y-3 text-zinc-400">
-                <li>• You want regular tennis access.</li>
-                <li>• You prefer streaming on multiple devices.</li>
-                <li>• You mainly follow ATP, WTA or major events.</li>
-              </ul>
-            </div>
+      <p className="text-zinc-300">
+        {comparison.bestForLeft}
+      </p>
+    </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="mb-3 text-xl font-black">
-                Choose {comparison.right} if...
-              </h3>
+    <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+      <h3 className="mb-3 text-xl font-black">
+        {comparison.right}
+      </h3>
 
-              <ul className="space-y-3 text-zinc-400">
-                <li>• It has better rights in your country.</li>
-                <li>• You already use it for other sports.</li>
-                <li>• You want local TV or broadcaster coverage.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+      <p className="text-zinc-300">
+        {comparison.bestForRight}
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-6 rounded-2xl border border-green-500/40 bg-black p-5">
+    <h3 className="mb-3 text-xl font-black text-green-400">
+      Verdict
+    </h3>
+
+    <p className="leading-8 text-zinc-300">
+      {comparison.verdict}
+    </p>
+  </div>
+</section>
 
         <VpnPromo />
 
