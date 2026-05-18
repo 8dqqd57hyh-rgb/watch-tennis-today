@@ -336,6 +336,33 @@ const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
     priority: 0.9,
   }));
 
+// Add French Open / Roland Garros related pages
+const frenchOpenPages = [
+  "/french-open-live",
+  "/french-open-live-stream",
+  "/watch-french-open-online",
+  "/french-open-tv-schedule",
+  "/french-open-today",
+  "/french-open-order-of-play",
+  "/french-open-results",
+  "/french-open-draw",
+  "/french-open-streaming-countries",
+  "/where-to-watch-french-open",
+
+  "/roland-garros-live",
+  "/roland-garros-live-stream",
+  "/watch-roland-garros-online",
+  "/roland-garros-tv-schedule",
+  "/roland-garros-today",
+  "/roland-garros-order-of-play",
+  "/roland-garros-results",
+  "/roland-garros-draw",
+  "/where-to-watch-roland-garros",
+
+  "/roland-garos-live",
+  "/watch-roland-garos-online",
+];
+
  return [
   ...staticPages,
   ...playerPages,
@@ -343,5 +370,11 @@ const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
   ...tvSchedulePages,
   ...tournamentPages,
   ...matchPages,
+  ...frenchOpenPages.map((page) => ({
+    url: `${BASE_URL}${page}`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  })),
 ];
 }

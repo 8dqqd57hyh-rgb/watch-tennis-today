@@ -293,6 +293,54 @@ export default function Home() {
   </section>
 ) : null}
 
+<section className="mb-12 rounded-[2.5rem] border border-orange-500 bg-gradient-to-br from-orange-950/40 to-black p-8">
+  <div className="flex flex-wrap items-center gap-3 mb-5">
+    <span className="bg-orange-500 text-black text-sm font-black px-4 py-2 rounded-full">
+      🎾 GRAND SLAM
+    </span>
+
+    <span className="text-zinc-400">
+      Roland Garros / French Open 2026
+    </span>
+  </div>
+
+  <h2 className="text-5xl md:text-6xl font-black leading-tight mb-6">
+    French Open Live:
+    <br />
+    Matches, Schedule,
+    <br />
+    TV & Streaming
+  </h2>
+
+  <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-8">
+    Follow French Open live matches, today’s schedule, TV channels,
+    streaming platforms, player draws, scores and Grand Slam updates.
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <a
+      href="/french-open-live"
+      className="inline-flex items-center rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
+    >
+      Watch French Open →
+    </a>
+
+    <a
+      href="/french-open-schedule"
+      className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
+    >
+      Today’s Schedule
+    </a>
+
+    <a
+      href="/french-open-tv-schedule"
+      className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
+    >
+      TV Channels
+    </a>
+  </div>
+</section>
+
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
             </h1>
@@ -588,54 +636,51 @@ export default function Home() {
                       </a>
                     ))}
                 </div>
+
+                {/* French Open section inserted below Trending Matches */}
                 <section className="mb-12">
-  <h2 className="text-3xl font-black mb-5">
-    💸 Best Tennis Streaming Comparisons
-  </h2>
+                  <h2 className="text-4xl font-black mb-6">
+                    🎾 French Open Live Matches
+                  </h2>
 
-  <p className="text-zinc-400 mb-6 max-w-3xl">
-    Compare tennis streaming services, TV channels and VPNs for ATP, WTA and Grand Slam coverage.
-  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {matches
+                      .filter((match) =>
+                        match.tournament.toLowerCase().includes("french open") ||
+                        match.tournament.toLowerCase().includes("roland garros")
+                      )
+                      .slice(0, 9)
+                      .map((match) => (
+                        <a
+                          key={match.id}
+                          href={`/watch/${matchSlug(match)}`}
+                          className="bg-zinc-900 border border-orange-500/40 rounded-3xl p-5 hover:border-orange-500 transition-all"
+                        >
+                          <div className="flex justify-between mb-3">
+                            <span className="font-black text-orange-400">
+                              {match.status}
+                            </span>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-    {[
-      [
-        "Tennis TV vs ESPN+",
-        "/compare/tennis-tv-vs-espn",
-      ],
-      [
-        "Tennis TV vs Eurosport",
-        "/compare/tennis-tv-vs-eurosport",
-      ],
-      [
-        "ESPN+ vs Tennis Channel",
-        "/compare/espn-vs-tennis-channel",
-      ],
-      [
-        "NordVPN vs Surfshark",
-        "/compare/nordvpn-vs-surfshark-for-tennis",
-      ],
-    ].map(([title, href]) => (
-      <a
-        key={href}
-        href={href}
-        className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition-all"
-      >
-        <p className="mb-3 text-xs uppercase tracking-widest text-green-400">
-          Comparison
-        </p>
+                            <span className="text-zinc-500">
+                              {match.category}
+                            </span>
+                          </div>
 
-        <h3 className="text-xl font-black text-white">
-          {title}
-        </h3>
+                          <h3 className="text-2xl font-black mb-3">
+                            {match.player1}
+                            <br />
+                            vs
+                            <br />
+                            {match.player2}
+                          </h3>
 
-        <p className="mt-3 text-sm text-zinc-400">
-          Compare features, streaming access and viewing options.
-        </p>
-      </a>
-    ))}
-  </div>
-</section>
+                          <p className="text-zinc-400">
+                            {match.tournament}
+                          </p>
+                        </a>
+                      ))}
+                  </div>
+                </section>
               </div>
               
             )}
