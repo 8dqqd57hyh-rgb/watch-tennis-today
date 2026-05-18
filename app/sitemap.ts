@@ -205,6 +205,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const matches = await getMatches();
   const now = new Date();
 
+
   const staticPages: MetadataRoute.Sitemap = [
     "",
     "/live-tennis",
@@ -292,22 +293,22 @@ const uniquePlayers = [
   }));
 
   const nextMatchPages: MetadataRoute.Sitemap = Object.keys(players).map(
-  (player) => ({
-    url: `${BASE_URL}/next-match/${player}`,
-    lastModified: now,
-    changeFrequency: "hourly" as const,
-    priority: 0.85,
-  })
-);
+    (player) => ({
+      url: `${BASE_URL}/next-match/${player}`,
+      lastModified: now,
+      changeFrequency: "hourly" as const,
+      priority: 0.85,
+    })
+  );
 
-const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
-  (player) => ({
-    url: `${BASE_URL}/tv-schedule/${player}`,
-    lastModified: now,
-    changeFrequency: "hourly" as const,
-    priority: 0.85,
-  })
-);
+  const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
+    (player) => ({
+      url: `${BASE_URL}/tv-schedule/${player}`,
+      lastModified: now,
+      changeFrequency: "hourly" as const,
+      priority: 0.85,
+    })
+  );
 
   const uniqueTournaments = [
     ...new Set(
@@ -352,8 +353,8 @@ const frenchOpenPages = [
 
  return [
   ...staticPages,
-  ...playerPages,
   ...nextMatchPages,
+  ...playerPages,
   ...tvSchedulePages,
   ...tournamentPages,
   ...matchPages,
