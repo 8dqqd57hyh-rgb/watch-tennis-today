@@ -51,8 +51,8 @@ export default function TvSchedulePage() {
 
         <section className="mt-8 mb-10">
   <h1 className="text-5xl font-black mb-4">
-    📺 Tennis TV Schedule Today
-  </h1>
+  Tennis on TV Today | ATP & WTA Schedule
+</h1>
 
   <p className="text-zinc-400 text-lg leading-relaxed">
     Check today&apos;s tennis TV schedule, live matches and official
@@ -61,13 +61,91 @@ export default function TvSchedulePage() {
   </p>
 </section>
 
-        <h1 className="text-5xl font-black mb-3">
-          📺 Tennis TV Schedule
-        </h1>
+<section className="mb-10">
+  <h2 className="text-3xl font-black mb-6">
+    Popular Tennis TV Schedule Pages
+  </h2>
 
-        <p className="text-zinc-400 text-lg mb-10">
-          Trusted TV channels and official schedule pages for tennis broadcasts.
-        </p>
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <a
+      href="/tv-schedule/jannik-sinner"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        Jannik Sinner TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        Match times, TV channels and streaming coverage.
+      </p>
+    </a>
+
+    <a
+      href="/tv-schedule/carlos-alcaraz"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        Carlos Alcaraz TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        Live ATP match schedule and TV coverage.
+      </p>
+    </a>
+
+    <a
+      href="/tv-schedule/novak-djokovic"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        Novak Djokovic TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        Tennis TV listings and streaming information.
+      </p>
+    </a>
+
+    <a
+      href="/tv-schedule/iga-swiatek"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        Iga Swiatek TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        WTA broadcast schedule and live streams.
+      </p>
+    </a>
+
+    <a
+      href="/tv-schedule/aryna-sabalenka"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        Aryna Sabalenka TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        Watch Sabalenka matches live on TV and online.
+      </p>
+    </a>
+
+    <a
+      href="/french-open-tv-schedule"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
+    >
+      <h3 className="text-xl font-black mb-2">
+        French Open TV Schedule
+      </h3>
+
+      <p className="text-zinc-400">
+        Roland Garros TV channels and streaming schedule.
+      </p>
+    </a>
+  </div>
+</section>
 
         <section className="bg-gradient-to-br from-green-500 to-lime-400 text-black rounded-3xl p-6 mb-10">
   <h2 className="text-3xl font-black mb-3">
