@@ -548,6 +548,27 @@ if (!match) {
                   This match is listed under {match.tournament}.
                 </p>
               </div>
+
+              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+  <h3 className="text-xl font-black mb-2">
+    Can I watch {matchTitle} online?
+  </h3>
+  <p className="text-zinc-400">
+    Yes, if the match is covered by an official broadcaster or streaming
+    service in your country. Availability can vary by tournament and region.
+  </p>
+</div>
+
+<div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+  <h3 className="text-xl font-black mb-2">
+    Why is the stream not available in my country?
+  </h3>
+  <p className="text-zinc-400">
+    Tennis streaming rights are usually sold by country or region. If a stream
+    is unavailable, check your local broadcaster or the official tournament
+    website for legal viewing options.
+  </p>
+</div>
             </div>
           </section>
 

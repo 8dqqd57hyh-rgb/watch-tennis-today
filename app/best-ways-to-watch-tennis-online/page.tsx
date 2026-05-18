@@ -68,7 +68,18 @@ export default function BestWaysPage() {
               ATP Tour, WTA Tour, Grand Slam tournaments or only selected events.
             </p>
           </div>
+<div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+  <h2 className="text-3xl font-black mb-3">
+    How to Watch Tennis Without Cable
+  </h2>
 
+  <p className="text-zinc-400 leading-relaxed">
+    You do not always need a traditional cable TV package to watch tennis.
+    Many fans use legal sports streaming services, official broadcaster apps
+    or tournament platforms depending on their country, tournament and
+    subscription.
+  </p>
+</div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h2 className="text-3xl font-black mb-3">
               3. How to Watch ATP Tennis Online

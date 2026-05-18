@@ -408,6 +408,18 @@ export default async function VsPage({ params }: Props) {
                 The site helps fans find schedules and official viewing options.
               </p>
             </div>
+
+            <div>
+  <h3 className="text-xl font-bold mb-2">
+    Can I watch {title} live online?
+  </h3>
+
+  <p className="text-zinc-400">
+    Yes, if the match is covered by an official broadcaster or legal streaming
+    service in your country. Availability depends on tournament rights and your
+    location.
+  </p>
+</div>
           </div>
         </section>
 
@@ -418,25 +430,43 @@ export default async function VsPage({ params }: Props) {
               "@context": "https://schema.org",
               "@type": "FAQPage",
               mainEntity: [
-                {
-                  "@type": "Question",
-                  name: `Where can I watch ${title} live?`,
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "You can check official broadcasters, tournament partners and legal streaming services depending on your country.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: `Does Watch Tennis Today stream matches?`,
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "No. Watch Tennis Today does not host or stream tennis matches. The site helps fans find schedules and official viewing options.",
-                  },
-                },
-              ],
+  {
+    "@type": "Question",
+    name: `Where can I watch ${title} live?`,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text:
+        "You can check official broadcasters, tournament partners and legal streaming services depending on your country.",
+    },
+  },
+  {
+    "@type": "Question",
+    name: `What time does ${title} start?`,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text:
+        "Match time depends on tournament scheduling and may change during the day.",
+    },
+  },
+  {
+    "@type": "Question",
+    name: `Can I watch ${title} live online?`,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text:
+        "Yes, if the match is covered by an official broadcaster or legal streaming service in your country. Availability depends on tournament rights and your location.",
+    },
+  },
+  {
+    "@type": "Question",
+    name: "Does Watch Tennis Today stream matches?",
+    acceptedAnswer: {
+      "@type": "Answer",
+      text:
+        "No. Watch Tennis Today does not host or stream tennis matches. The site helps fans find schedules and official viewing options.",
+    },
+  },
+],
             }),
           }}
         />

@@ -7,8 +7,47 @@ export const metadata = {
 };
 
 export default function BestVpnForTennisStreamingPage() {
+    const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Can I use a VPN to watch tennis abroad?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "A VPN can help protect your connection while traveling, but you should still use official streaming services and follow their terms.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is the best VPN for tennis streaming?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "NordVPN is our pick for tennis fans who want a secure and easy-to-use VPN while watching tennis online.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do I still need a tennis streaming subscription?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Yes. A VPN does not replace official access. You still need a valid subscription or broadcaster access for the tennis service you want to use.",
+      },
+    },
+  ],
+};
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(faqSchema),
+  }}
+/>
       <div className="max-w-4xl mx-auto">
         <a
           href="/"

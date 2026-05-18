@@ -54,12 +54,52 @@ export default async function ComparePage({ params }: Props) {
     notFound();
   }
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Which service is better for watching tennis?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "It depends on your country, the tournament you want to watch and which broadcaster owns the local rights.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I watch Grand Slam tennis with these services?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Grand Slam coverage is usually separate from regular ATP and WTA coverage, so availability depends on your region.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do I need a VPN for tennis streaming?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "You do not need a VPN at home if your chosen service works in your country. A VPN is mainly useful when traveling and accessing your usual subscriptions abroad.",
+      },
+    },
+  ],
+};
+
   const relatedComparisons = comparisons.filter(
     (item) => item.slug !== comparison.slug
   );
 
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(faqSchema),
+  }}
+/>
       <div className="mx-auto max-w-5xl">
         <Link href="/compare" className="text-zinc-400 hover:text-white">
           ← Back to comparisons
