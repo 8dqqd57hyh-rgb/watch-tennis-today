@@ -443,58 +443,7 @@ export default async function GrandSlamLivePage() {
 
         <RelatedMoneyLinks />
 
-        <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-          <h2 className="text-4xl font-black mb-6">Grand Slam Tennis FAQ</h2>
-
-          <div className="space-y-6 text-zinc-300 leading-8">
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                What Grand Slam tennis matches are live today?
-              </h3>
-
-              <p>
-                This page lists Grand Slam matches from the current tennis
-                schedule, including live, upcoming and suspended matches when
-                available.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Where can I watch Grand Slam tennis?
-              </h3>
-
-              <p>
-                Grand Slam matches may be available on official streaming
-                services, sports TV channels and regional broadcasters depending
-                on your country.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Which tournaments are Grand Slams?
-              </h3>
-
-              <p>
-                The four Grand Slam tournaments are Australian Open, French Open,
-                Wimbledon and US Open.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Can I watch Grand Slam tennis while traveling?
-              </h3>
-
-              <p>
-                Yes, but streaming access may differ by country. Use official
-                streaming services and check whether your usual tennis platform
-                works while abroad.
-              </p>
-            </div>
-          </div>
-        </section>
+    
       </div>
     </main>
   );
