@@ -412,6 +412,8 @@ export default async function AtpLiveTodayPage() {
             </div>
           </div>
         </section>
+
+        <VpnPromo />
       </div>
     </main>
   );

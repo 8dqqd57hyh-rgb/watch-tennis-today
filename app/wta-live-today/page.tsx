@@ -417,6 +417,8 @@ export default async function WtaLiveTodayPage() {
             </div>
           </div>
         </section>
+
+        <VpnPromo />
       </div>
     </main>
   );

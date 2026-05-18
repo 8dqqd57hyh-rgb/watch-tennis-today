@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import VpnPromo from "@/app/components/VpnPromo";
 
 type Match = {
   id: string;
@@ -375,6 +376,8 @@ export default function TodayPage() {
             </div>
           </div>
         </section>
+
+        <VpnPromo />
       </div>
 
       <script

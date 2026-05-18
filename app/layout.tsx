@@ -183,6 +183,12 @@ export default function RootLayout({
 >
   Watch Online Guide
 </a>
+<a
+  href="/affiliate-disclosure"
+  className="hover:text-white transition-colors"
+>
+  Affiliate Disclosure
+</a>
 <a href="/advertise">Advertise</a>
   </div>
 </footer>

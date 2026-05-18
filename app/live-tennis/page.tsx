@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import VpnPromo from "@/app/components/VpnPromo";
 
 export const dynamic = "force-dynamic";
 
@@ -144,6 +145,8 @@ export default async function LiveTennisPage() {
             </div>
           ))}
         </div>
+
+        <VpnPromo />
       </div>
     </main>
   );
