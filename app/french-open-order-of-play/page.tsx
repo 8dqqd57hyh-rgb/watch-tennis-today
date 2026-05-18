@@ -133,9 +133,9 @@ export default async function FrenchOpenOrderOfPlayPage() {
   let matches: Match[] = [];
 
   try {
-    const res = await fetch(`${baseUrl}/api/matches`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${baseUrl}/api/french-open-today`, {
+  cache: "no-store",
+});
 
     if (res.ok) {
       const data = await res.json();
