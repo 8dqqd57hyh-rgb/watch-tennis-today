@@ -4,6 +4,7 @@ import { players } from "@/data/players";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import VpnPromo from "@/app/components/VpnPromo";
+import AdSlot from "@/app/components/AdSlot";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,8 @@ export default function NextMatchHubPage() {
             </Link>
           </div>
         </section>
+
+        <AdSlot label="Advertisement" />
 
         <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6 md:p-8">
           <div className="mb-6 flex items-center justify-between gap-4">

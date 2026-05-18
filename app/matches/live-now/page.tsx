@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdSlot from "@/app/components/AdSlot";
 
 type Match = {
   id: string;
@@ -105,7 +106,7 @@ export default function LiveMatchesNowPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-
+        {/* Hero / intro block */}
         <a
           href="/"
           className="text-zinc-400 hover:text-white"
@@ -128,6 +129,9 @@ export default function LiveMatchesNowPage() {
           </p>
         </section>
 
+        <AdSlot label="Advertisement" />
+
+        {/* rest of the page */}
         {loading ? (
           <p className="text-zinc-500 text-xl">
             Loading live tennis matches now...
@@ -255,7 +259,6 @@ export default function LiveMatchesNowPage() {
             </div>
           </div>
         </section>
-
       </div>
     </main>
   );

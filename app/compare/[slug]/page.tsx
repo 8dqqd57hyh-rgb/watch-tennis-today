@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { comparisons } from "@/data/comparisons";
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
+import AdSlot from "@/app/components/AdSlot";
 
 type Props = {
   params: Promise<{
@@ -16,7 +17,9 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const { slug } = await params;
 
-  const comparison = comparisons.find((item) => item.slug === slug);
+ const comparison = comparisons.find(
+  (item) => item.slug === slug
+);
 
   if (!comparison) {
     return {
@@ -43,7 +46,9 @@ export async function generateMetadata({
 export default async function ComparePage({ params }: Props) {
   const { slug } = await params;
 
-  const comparison = comparisons.find((item) => item.slug === slug);
+  const comparison = comparisons.find(
+    (item) => item.slug === slug
+  );
 
   if (!comparison) {
     notFound();
@@ -254,6 +259,8 @@ export default async function ComparePage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        <AdSlot label="Advertisement" />
       </div>
     </main>
   );
