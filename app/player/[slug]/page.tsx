@@ -415,40 +415,7 @@ export default async function PlayerPage({
           Follow upcoming matches and watch tennis online on Watch Tennis Today.
         </p>
       </section>
-      <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-  <h2 className="text-2xl font-bold mb-4">
-    Best ways to watch {playerName} online
-  </h2>
-
-  <p className="text-zinc-400 mb-5">
-    Streaming options for {playerName} matches depend on your country,
-    tournament rights and broadcaster availability.
-  </p>
-
-  <div className="grid gap-3 sm:grid-cols-2">
-    <a
-      href="/best-ways-to-watch-tennis-online"
-      className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-    >
-      How to watch without cable
-    </a>
-
-    <a
-      href="/best-vpn-for-tennis-streaming"
-      className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-    >
-      Tennis TV free trial
-    </a>
-
-    <a href="/watch-tennis-without-cable" className="rounded-xl border border-zinc-800 p-4 hover:border-green-500">
-      Watch tennis without cable
-    </a>
-
-    <a href="/tennis-tv-free-trial" className="rounded-xl border border-zinc-800 p-4 hover:border-green-500">
-      Tennis TV free trial options
-    </a>
-  </div>
-</section>
+     
       <script
   type="application/ld+json"
   dangerouslySetInnerHTML={{
