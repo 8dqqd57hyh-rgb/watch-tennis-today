@@ -137,10 +137,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
           live streams and tournament information.
         </p>
 
-        <VpnPromo
-  title={`Watching ${player.name} while traveling?`}
-  text={`${player.name} matches may be geo-blocked depending on your location and broadcaster rights. A VPN can help you safely access your usual tennis streaming services when abroad.`}
-/>
+    
 <a
   href={`/next-match/${slug}`}
   className="mb-8 inline-block rounded-2xl border border-green-500 px-6 py-4 font-black text-green-400 hover:bg-green-500 hover:text-black transition-all"
@@ -327,6 +324,10 @@ export default async function WatchPlayerLivePage({ params }: Props) {
             </div>
           </div>
         </section>
+        <VpnPromo
+  title={`Watching ${player.name} while traveling?`}
+  text={`${player.name} matches may be geo-blocked depending on your location and broadcaster rights. A VPN can help you safely access your usual tennis streaming services when abroad.`}
+/>
 
         <script
           type="application/ld+json"
