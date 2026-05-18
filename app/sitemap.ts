@@ -364,5 +364,30 @@ const frenchOpenPages = [
     changeFrequency: "daily" as const,
     priority: 0.9,
   })),
+
+  {
+    url: `${BASE_URL}/watch-french-open-in-usa`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  },
+  {
+    url: `${BASE_URL}/watch-french-open-in-uk`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  },
+  {
+    url: `${BASE_URL}/watch-french-open-in-canada`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  },
+  {
+    url: `${BASE_URL}/watch-french-open-in-australia`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  },
 ];
 }

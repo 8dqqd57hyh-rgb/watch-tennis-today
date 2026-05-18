@@ -63,7 +63,7 @@ export default function FrenchOpenStreamingCountriesPage() {
             {countries.map(([country, slug]) => (
               <a
                 key={slug}
-                href={`/watch-tennis-in/${slug}`}
+href={`/watch-french-open-in-${slug}`}
                 className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-orange-500 transition-all"
               >
                 <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">
