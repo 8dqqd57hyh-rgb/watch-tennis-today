@@ -153,6 +153,37 @@ export default async function FrenchOpenOrderOfPlayPage() {
     (match) => !isLive(match) && !isFinished(match)
   );
 
+  const TOP_PLAYERS = [
+    "Jannik Sinner",
+    "Carlos Alcaraz",
+    "Novak Djokovic",
+    "Iga Swiatek",
+    "Aryna Sabalenka",
+    "Coco Gauff",
+    "Daniil Medvedev",
+    "Alexander Zverev",
+    "Holger Rune",
+    "Elena Rybakina",
+  ];
+
+  function playerSlug(name: string) {
+    return name
+      .toLowerCase()
+      .replace(/,/g, "")
+      .replace(/\//g, "-")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  const playersToday = [
+    ...new Set(
+      frenchOpenMatches.flatMap((match) => [match.player1 || "", match.player2 || ""])
+    ),
+  ]
+    .filter((player) => TOP_PLAYERS.includes(player))
+    .slice(0, 8);
+
   const topMatches = [
     ...liveMatches,
     ...upcomingMatches,
@@ -249,6 +280,30 @@ export default async function FrenchOpenOrderOfPlayPage() {
             </div>
           ))}
         </section>
+
+        {playersToday.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-5 text-4xl font-black">
+              Top Players at Roland Garros Today
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {playersToday.map((player) => (
+                <a
+                  key={player}
+                  href={`/watch-player-live/${playerSlug(player)}`}
+                  className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 transition hover:border-orange-500 hover:bg-zinc-900"
+                >
+                  <h3 className="mb-3 text-2xl font-black">{player}</h3>
+
+                  <p className="leading-7 text-zinc-400">
+                    See live scores, schedule, results and streaming options.
+                  </p>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section id="order-of-play" className="mb-12">
           <h2 className="mb-5 text-4xl font-black">

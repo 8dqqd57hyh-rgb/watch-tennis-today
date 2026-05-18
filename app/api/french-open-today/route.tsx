@@ -25,6 +25,7 @@ type ApiTennisFixture = {
   event_live?: string;
   event_qualification?: string;
   scores?: ApiTennisScore[];
+  event_court?: string;
 };
 
 function formatDate(date: Date) {
@@ -161,6 +162,7 @@ export async function GET() {
               : "",
           qualification: match.event_qualification || "",
           scores: match.scores || [],
+          court: match.event_court || "",
         };
       })
       .sort((a, b) => {
