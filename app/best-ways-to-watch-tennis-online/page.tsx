@@ -6,6 +6,7 @@ export const metadata = {
 
 import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
+import VpnPromo from "@/app/components/VpnPromo";
 
 const countries = [
   ["Poland", "/watch-tennis-in/poland"],
@@ -216,6 +217,11 @@ export default function BestWaysPage() {
             </div>
           </div>
         </section>
+
+        <VpnPromo
+          title="Best VPNs for watching tennis"
+          text="VPNs can help if streams are geo-blocked. Compare VPNs for speed, reliability and streaming compatibility."
+        />
       </div>
       <script
   type="application/ld+json"

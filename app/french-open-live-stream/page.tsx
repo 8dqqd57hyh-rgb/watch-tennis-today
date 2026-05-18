@@ -1,4 +1,5 @@
 import { affiliateLinks } from "@/lib/affiliate";
+import VpnPromo from "@/app/components/VpnPromo";
 
 export const metadata = {
   title: "French Open Live Stream 2026 | Watch Roland Garros Online",
@@ -73,29 +74,10 @@ export default function FrenchOpenLiveStreamPage() {
           </div>
         </section>
 
-        <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
-          <h2 className="text-3xl font-black mb-5">
-            🌍 Watch French Open securely while traveling
-          </h2>
-
-          <p className="max-w-3xl text-zinc-300 leading-8 mb-6">
-            French Open streams can vary by country. A VPN can help you access
-            your usual tennis streaming services more securely while abroad.
-          </p>
-
-          <a
-            href={affiliateLinks.nordvpn}
-            target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
-            className="inline-flex rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
-          >
-            Try NordVPN →
-          </a>
-
-          <p className="mt-4 text-sm text-zinc-500">
-            Affiliate disclosure: we may earn a commission from links on this page.
-          </p>
-        </section>
+        <VpnPromo
+          title="Watching French Open streams?"
+          text="French Open streaming availability varies by country. Use a VPN to access your subscriptions securely while traveling."
+        />
 
         <section className="mb-12">
           <h2 className="text-3xl font-black mb-5">

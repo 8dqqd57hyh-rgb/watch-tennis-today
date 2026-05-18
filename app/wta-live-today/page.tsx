@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import VpnPromo from "@/app/components/VpnPromo";
 
 export const dynamic = "force-dynamic";
 

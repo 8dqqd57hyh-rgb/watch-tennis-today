@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import VpnPromo from "@/app/components/VpnPromo";
 
 export const dynamic = "force-dynamic";
 
@@ -380,6 +381,11 @@ export default async function GrandSlamLivePage() {
             Best VPN for Tennis Streaming
           </a>
         </section>
+
+        <VpnPromo
+          title="Watching Grand Slams while traveling?"
+          text="Grand Slam coverage may vary by region. A VPN helps access your subscriptions safely when abroad."
+        />
 
         <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
           <h2 className="text-4xl font-black mb-6">Grand Slam Tennis FAQ</h2>
