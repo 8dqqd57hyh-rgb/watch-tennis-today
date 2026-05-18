@@ -228,39 +228,7 @@ export default function LiveMatchesNowPage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
-              🌍 Tennis streaming tip
-            </div>
-
-            <h2 className="text-4xl font-black leading-tight mb-5">
-              Watching tennis while traveling?
-            </h2>
-
-            <p className="text-zinc-300 text-lg leading-8 mb-8">
-              Some ATP, WTA and Grand Slam streams may be unavailable depending
-              on your country. VPN services are commonly used for more secure
-              access to streaming platforms while abroad.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <a
-                href="/best-vpn-for-tennis-streaming"
-                className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
-              >
-                Best VPN for Tennis Streaming
-              </a>
-
-              <a
-                href="/how-to-watch-tennis-safely-abroad"
-                className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
-              >
-                Learn More
-              </a>
-            </div>
-          </div>
-        </section>
+    
 
         {/* Hero / intro block */}
         <a
@@ -417,8 +385,6 @@ export default function LiveMatchesNowPage() {
         </section>
 
         <RelatedMoneyLinks />
-
-        <VpnPromo />
       </div>
     </main>
   );
