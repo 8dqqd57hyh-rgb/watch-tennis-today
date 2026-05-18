@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdSlot from "@/app/components/AdSlot";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 type Match = {
   id: string;
@@ -414,6 +415,8 @@ export default function LiveMatchesNowPage() {
             </div>
           </div>
         </section>
+
+        <RelatedMoneyLinks />
 
         <VpnPromo />
       </div>

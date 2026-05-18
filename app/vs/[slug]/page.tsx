@@ -4,6 +4,7 @@ import { playerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/lib/affiliate";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -368,6 +369,8 @@ export default async function VsPage({ params }: Props) {
         ) : null}
 
         <StreamingLinksGrid />
+
+        <RelatedMoneyLinks />
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-5">FAQ</h2>

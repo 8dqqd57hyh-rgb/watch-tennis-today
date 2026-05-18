@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -355,76 +356,6 @@ export default async function PlayerPage({
           })}
         </div>
       </section>
-
-      <section className="mt-12 space-y-6">
-        <h2 className="text-2xl font-semibold">
-          FAQ about {playerName}
-        </h2>
-
-        <div>
-          <h3 className="font-semibold">
-            Where can I watch {playerName} live?
-          </h3>
-
-          <p>
-            You can watch {playerName} live on official tennis broadcasters,
-            streaming platforms and sports TV channels depending on your country.
-          </p>
-        </div>
-
-        <div>
-          <h3 className="font-semibold">
-            When is the next {playerName} match?
-          </h3>
-
-          <p>
-            Upcoming match information for {playerName} is updated regularly on Watch Tennis Today.
-          </p>
-        </div>
-
-        <div>
-          <h3 className="font-semibold">
-            Does Watch Tennis Today stream matches?
-          </h3>
-
-          <p>
-            Watch Tennis Today helps fans find where to watch tennis matches online and on TV.
-          </p>
-        </div>
-      </section>
-
-      <div className="space-y-4 mb-10 mt-10">
-        {playerMatches.map((match) => (
-          <a
-            key={match.id}
-            href={`/watch/${getMatchSlug(match)}`}
-            className="block border rounded-xl p-4 hover:bg-gray-50 transition"
-          >
-            <div className="font-semibold">
-              {match.player1} vs {match.player2}
-            </div>
-
-           <a
-  href={`/tournament/${slugify(match.tournament)}`}
-  className="hover:text-green-400 transition-colors"
->
-  {match.tournament}
-</a>
-
-            <div className="mt-2">
-              {match.status === "LIVE" ? (
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  LIVE NOW
-                </span>
-              ) : (
-                <span className="bg-zinc-700 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  {match.status}
-                </span>
-              )}
-            </div>
-          </a>
-        ))}
-      </div>
 
       <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-white">
         <h2 className="text-3xl font-black mb-5">

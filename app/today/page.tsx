@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 type Match = {
   id: string;
@@ -378,43 +379,44 @@ export default function TodayPage() {
         </section>
 
         <VpnPromo />
-      </div>
+        <RelatedMoneyLinks />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: "What tennis matches are on today?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Today's tennis schedule can include ATP, WTA, Challenger, ITF and Grand Slam matches depending on the tournament calendar.",
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: [
+                {
+                  "@type": "Question",
+                  name: "What tennis matches are on today?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Today's tennis schedule can include ATP, WTA, Challenger, ITF and Grand Slam matches depending on the tournament calendar.",
+                  },
                 },
-              },
-              {
-                "@type": "Question",
-                name: "Where can I watch tennis today?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Tennis matches today may be shown by official broadcasters, tournament partners and regional streaming services depending on your country.",
+                {
+                  "@type": "Question",
+                  name: "Where can I watch tennis today?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Tennis matches today may be shown by official broadcasters, tournament partners and regional streaming services depending on your country.",
+                  },
                 },
-              },
-              {
-                "@type": "Question",
-                name: "Does Watch Tennis Today stream matches?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "No. Watch Tennis Today does not host tennis streams. The site helps fans find official schedules, TV channels and legal viewing options.",
+                {
+                  "@type": "Question",
+                  name: "Does Watch Tennis Today stream matches?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "No. Watch Tennis Today does not host tennis streams. The site helps fans find official schedules, TV channels and legal viewing options.",
+                  },
                 },
-              },
-            ],
-          }),
-        }}
-      />
+              ],
+            }),
+          }}
+        />
+      </div>
     </main>
   );
 }

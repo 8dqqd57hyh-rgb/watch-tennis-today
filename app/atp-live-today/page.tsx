@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
+import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -414,6 +415,8 @@ export default async function AtpLiveTodayPage() {
         </section>
 
         <VpnPromo />
+
+        <RelatedMoneyLinks />
       </div>
     </main>
   );
