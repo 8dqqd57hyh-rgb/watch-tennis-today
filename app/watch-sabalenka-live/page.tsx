@@ -91,9 +91,9 @@ export default function WatchSabalenkaLivePage() {
 
           <a
             href="/live-tennis"
-            className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
+            className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
           >
-            View Live Tennis
+            Watch live tennis
           </a>
         </section>
 

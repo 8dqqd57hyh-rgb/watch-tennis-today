@@ -426,12 +426,18 @@ export default async function PlayerPage({
   </p>
 
   <div className="grid gap-3 sm:grid-cols-2">
-    <a href="/best-ways-to-watch-tennis-online" className="rounded-xl border border-zinc-800 p-4 hover:border-green-500">
-      Best ways to watch tennis online
+    <a
+      href="/best-ways-to-watch-tennis-online"
+      className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+    >
+      How to watch without cable
     </a>
 
-    <a href="/best-vpn-for-tennis-streaming" className="rounded-xl border border-zinc-800 p-4 hover:border-green-500">
-      Best VPN for tennis streaming
+    <a
+      href="/best-vpn-for-tennis-streaming"
+      className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+    >
+      Tennis TV free trial
     </a>
 
     <a href="/watch-tennis-without-cable" className="rounded-xl border border-zinc-800 p-4 hover:border-green-500">
