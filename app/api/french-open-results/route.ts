@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type ApiTennisScore = {
   score_first?: string;
@@ -99,10 +101,8 @@ export async function GET() {
     url.searchParams.set("timezone", "Europe/Paris");
 
     const response = await fetch(url.toString(), {
-      next: {
-        revalidate: 300,
-      },
-    });
+  cache: "no-store",
+});
 
     if (!response.ok) {
       return NextResponse.json(
