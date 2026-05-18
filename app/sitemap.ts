@@ -348,19 +348,6 @@ const frenchOpenPages = [
   "/french-open-draw",
   "/french-open-streaming-countries",
   "/where-to-watch-french-open",
-
-  "/roland-garros-live",
-  "/roland-garros-live-stream",
-  "/watch-roland-garros-online",
-  "/roland-garros-tv-schedule",
-  "/roland-garros-today",
-  "/roland-garros-order-of-play",
-  "/roland-garros-results",
-  "/roland-garros-draw",
-  "/where-to-watch-roland-garros",
-
-  "/roland-garos-live",
-  "/watch-roland-garos-online",
 ];
 
  return [
