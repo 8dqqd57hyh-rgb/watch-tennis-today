@@ -93,28 +93,7 @@ function formatDateTime(value: string | null) {
   });
 }
 
-export default async function WtaLiveTodayPage() {
-  const matches = await getMatches();
-
-  const wtaMatches = matches
-    .filter((match) => match.category === "WTA")
-    .sort((a, b) => {
-      const statusDiff = statusPriority(a.status) - statusPriority(b.status);
-
-      if (statusDiff !== 0) return statusDiff;
-
-      if (!a.startTime) return 1;
-      if (!b.startTime) return -1;
-
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
-
-  const liveWtaMatches = wtaMatches.filter((match) => match.status === "LIVE");
-
-  const upcomingWtaMatches = wtaMatches.filter(
-    (match) => match.status !== "LIVE"
-  );
-
+export default function WtaLiveTodayPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
@@ -122,79 +101,54 @@ export default async function WtaLiveTodayPage() {
           <a href="/" className="hover:text-white">
             Home
           </a>
-
           <span>/</span>
-
           <span className="text-white">WTA Live Today</span>
         </nav>
 
         <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
-          🎾 WTA Live Today
+          WTA Live Today
         </h1>
 
         <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-10">
-          Watch WTA tennis live today with live scores, match schedules,
-          tournament updates, TV channels and official streaming options.
+          Live WTA matches, upcoming start times and official ways to watch today’s women’s tennis.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-          <a
-            href="/live-tennis"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-red-500 hover:text-red-400 transition-all"
-          >
-            🔴 Live Tennis
-          </a>
-
-          <a
-            href="/tv-schedule"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
-          >
-            📺 TV Schedule
-          </a>
-
-          <a
-            href="/best-ways-to-watch-tennis-online"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
-          >
-            🌍 Watch Online
-          </a>
-
-          <a
-            href="/best-vpn-for-tennis-streaming"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
-          >
-            🔐 Tennis VPN Guide
-          </a>
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          <a className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black">Live Scores</a>
+          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">Schedule</a>
+          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">How to Watch</a>
         </div>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">WTA matches today</p>
+        {/* WTA-specific highlights */}
+        <section className="mb-10 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+          <h2 className="text-3xl font-black mb-4">Focus: WTA Tour</h2>
 
-            <p className="text-4xl font-black">{wtaMatches.length}</p>
-          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <h3 className="font-black text-lg mb-2">Top WTA players</h3>
+              <p className="text-zinc-400 leading-6">
+                Follow top women’s players, contenders and Grand Slam prospects.
+              </p>
+            </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">Live now</p>
-
-            <p className="text-4xl font-black text-red-400">
-              {liveWtaMatches.length}
-            </p>
-          </div>
-
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">Upcoming / paused</p>
-
-            <p className="text-4xl font-black text-yellow-400">
-              {upcomingWtaMatches.length}
-            </p>
+            <div>
+              <h3 className="font-black text-lg mb-2">WTA 1000 & Contenders</h3>
+              <p className="text-zinc-400 leading-6">
+                Schedules for WTA 1000 events and players to watch in majors.
+              </p>
+            </div>
           </div>
         </section>
+
+        <VpnPromo
+          title="Watching WTA matches while abroad?"
+          text="WTA streaming can be geo-restricted. Consider a VPN to access your legal streaming accounts securely."
+        />
 
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">🔴 WTA Live Now</h2>
 
-          {liveWtaMatches.length > 0 ? (
+          {/* {liveWtaMatches.length > 0 ? (
             <div className="space-y-5">
               {liveWtaMatches.map((match) => (
                 <a
@@ -231,7 +185,7 @@ export default async function WtaLiveTodayPage() {
                 </a>
               ))}
             </div>
-          ) : (
+          ) : ( */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">
                 No WTA matches live right now
@@ -242,7 +196,7 @@ export default async function WtaLiveTodayPage() {
                 schedule for ATP, WTA, Challenger and ITF matches.
               </p>
             </div>
-          )}
+          {/* )} */}
         </section>
 
         <section className="mb-14">
@@ -250,7 +204,7 @@ export default async function WtaLiveTodayPage() {
             ⏰ Upcoming WTA Matches Today
           </h2>
 
-          {upcomingWtaMatches.length > 0 ? (
+          {/* {upcomingWtaMatches.length > 0 ? (
             <div className="space-y-5">
               {upcomingWtaMatches.map((match) => (
                 <a
@@ -287,7 +241,7 @@ export default async function WtaLiveTodayPage() {
                 </a>
               ))}
             </div>
-          ) : (
+          ) : ( */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">
                 No upcoming WTA matches found
@@ -298,7 +252,7 @@ export default async function WtaLiveTodayPage() {
                 Check live tennis or the full TV schedule.
               </p>
             </div>
-          )}
+          {/* )} */}
         </section>
 
         <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">

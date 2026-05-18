@@ -96,23 +96,19 @@ function formatDateTime(value: string | null) {
 export default async function AtpLiveTodayPage() {
   const matches = await getMatches();
 
-  const atpMatches = matches
-    .filter((match) => match.category === "ATP")
-    .sort((a, b) => {
-      const statusDiff = statusPriority(a.status) - statusPriority(b.status);
-
-      if (statusDiff !== 0) return statusDiff;
-
-      if (!a.startTime) return 1;
-      if (!b.startTime) return -1;
-
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
-
-  const liveAtpMatches = atpMatches.filter((match) => match.status === "LIVE");
-  const upcomingAtpMatches = atpMatches.filter(
-    (match) => match.status !== "LIVE"
+  const liveAtpMatches = matches.filter(
+    (m) => (m.status || "").toUpperCase() === "LIVE"
   );
+
+  const upcomingAtpMatches = matches
+    .filter((m) => (m.status || "").toUpperCase() === "UPCOMING")
+    .sort((a, b) => {
+      const pr = statusPriority(a.status) - statusPriority(b.status);
+      if (pr !== 0) return pr;
+      const ta = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const tb = b.startTime ? new Date(b.startTime).getTime() : 0;
+      return ta - tb;
+    });
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -126,64 +122,44 @@ export default async function AtpLiveTodayPage() {
         </nav>
 
         <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
-          🎾 ATP Live Today
+          ATP Live Today
         </h1>
 
         <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-10">
-          Watch ATP tennis live today with live scores, match schedules,
-          tournament updates, TV channels and official streaming options.
+          Live ATP matches, upcoming start times and official ways to watch today’s men’s tennis.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-          <a
-            href="/live-tennis"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-red-500 hover:text-red-400 transition-all"
-          >
-            🔴 Live Tennis
-          </a>
-
-          <a
-            href="/tv-schedule"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
-          >
-            📺 TV Schedule
-          </a>
-
-          <a
-            href="/best-ways-to-watch-tennis-online"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
-          >
-            🌍 Watch Online
-          </a>
-
-          <a
-            href="/best-vpn-for-tennis-streaming"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
-          >
-            🔐 Tennis VPN Guide
-          </a>
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          <a className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black">Live Scores</a>
+          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">Schedule</a>
+          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">How to Watch</a>
         </div>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">ATP matches today</p>
-            <p className="text-4xl font-black">{atpMatches.length}</p>
-          </div>
+        {/* ATP-specific highlights */}
+        <section className="mb-10 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+          <h2 className="text-3xl font-black mb-4">Focus: ATP Tour</h2>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">Live now</p>
-            <p className="text-4xl font-black text-red-400">
-              {liveAtpMatches.length}
-            </p>
-          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <h3 className="font-black text-lg mb-2">Top ATP players</h3>
+              <p className="text-zinc-400 leading-6">
+                Follow leading men’s players, ranked updates and their next matches.
+              </p>
+            </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">Upcoming / paused</p>
-            <p className="text-4xl font-black text-yellow-400">
-              {upcomingAtpMatches.length}
-            </p>
+            <div>
+              <h3 className="font-black text-lg mb-2">Masters & ATP Finals</h3>
+              <p className="text-zinc-400 leading-6">
+                Coverage and schedules for Masters 1000 events and the ATP Finals race.
+              </p>
+            </div>
           </div>
         </section>
+
+        <VpnPromo
+          title="Watching ATP matches while abroad?"
+          text="Some ATP streams are region-locked. A VPN can help you securely access your subscriptions when traveling."
+        />
 
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">🔴 ATP Live Now</h2>
