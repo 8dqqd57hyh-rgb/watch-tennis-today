@@ -1,5 +1,3 @@
-import VpnPromo from "@/app/components/VpnPromo";
-
 export const dynamic = "force-dynamic";
 
 export const metadata = {
