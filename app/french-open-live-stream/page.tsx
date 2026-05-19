@@ -1,5 +1,6 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import VpnPromo from "@/app/components/VpnPromo";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "French Open Live Stream 2026 | Watch Roland Garros Online",
@@ -8,6 +9,8 @@ export const metadata = {
 };
 
 export default function FrenchOpenLiveStreamPage() {
+  redirect("/french-open-live");
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
