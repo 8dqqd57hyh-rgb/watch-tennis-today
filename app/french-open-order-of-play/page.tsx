@@ -326,11 +326,6 @@ export default async function FrenchOpenOrderOfPlayPage() {
           )}
         </section>
 
-        <VpnPromo
-          title="Watching Roland Garros from abroad?"
-          text="Some French Open streams may be geo-restricted. A VPN can help you securely access your usual tennis streaming service while traveling."
-        />
-
         <section className="mb-12">
           <h2 className="mb-5 text-4xl font-black">
             Live French Open matches

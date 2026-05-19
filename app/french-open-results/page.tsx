@@ -248,11 +248,6 @@ export default async function FrenchOpenResultsPage() {
           )}
         </section>
 
-        <VpnPromo
-          title="Watching French Open results while traveling?"
-          text="Some Roland Garros streams may be geo-restricted. A VPN can help you securely access your usual tennis streaming service when you are abroad."
-        />
-
         <section className="mb-12 grid gap-6 lg:grid-cols-2">
           <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
             <h2 className="mb-5 text-3xl font-black">

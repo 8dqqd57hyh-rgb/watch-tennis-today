@@ -1,5 +1,3 @@
-import VpnPromo from "@/app/components/VpnPromo";
-
 export const metadata = {
   title: "French Open TV Schedule 2026 | Roland Garros Channels Today",
   description:
@@ -157,11 +155,6 @@ export default function FrenchOpenTvSchedulePage() {
             </p>
           </div>
         </section>
-
-        <VpnPromo
-          title="Watching French Open on TV while traveling?"
-          text="TV and streaming rights vary by country. A VPN may help you access your subscriptions securely when abroad."
-        />
       </div>
     </main>
   );

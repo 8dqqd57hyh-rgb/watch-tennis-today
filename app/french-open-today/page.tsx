@@ -226,11 +226,6 @@ export default async function FrenchOpenTodayPage() {
           )}
         </section>
 
-        <VpnPromo
-          title="Watching French Open today from abroad?"
-          text="Some Roland Garros streams may be geo-restricted. A VPN can help you securely access your usual tennis streaming service while traveling."
-        />
-
         <section className="mb-12">
           <h2 className="mb-5 text-4xl font-black">
             Upcoming French Open Matches Today
