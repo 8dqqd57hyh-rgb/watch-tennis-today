@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "French Open Streaming Countries 2026 | Watch Roland Garros Worldwide",
+  title: "Where to Watch French Open 2026 | Roland Garros TV & Streaming by Country",
   description:
-    "French Open streaming countries guide for Roland Garros 2026. Find where to watch French Open tennis online by country, TV channel and streaming service.",
+    "Find where to watch the French Open by country, including Roland Garros TV channels, streaming services and official viewing options.",
 };
 
 const countries = [
@@ -17,24 +17,22 @@ const countries = [
   ["India", "india"],
 ];
 
-export default function FrenchOpenStreamingCountriesPage() {
+export default function WhereToWatchFrenchOpenPage() {
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-7xl mx-auto">
-        <section className="mb-12 rounded-[2.5rem] border border-orange-500 bg-gradient-to-br from-orange-950/40 to-black p-8">
-          <div className="mb-5 inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-black">
-            🌍 COUNTRIES
-          </div>
+    <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
+      <div className="mx-auto max-w-7xl">
+        <section className="mb-10 rounded-[2.5rem] border border-orange-500/50 bg-gradient-to-br from-orange-950/50 to-black p-8">
+          <p className="mb-4 inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-black">
+            Where to watch
+          </p>
 
-          <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
-            French Open Streaming
-            <br />
-            Countries
+          <h1 className="mb-6 text-5xl font-black leading-tight md:text-7xl">
+            Where to Watch French Open by Country
           </h1>
 
           <p className="max-w-3xl text-lg leading-8 text-zinc-300 mb-8">
-            Find where to watch French Open online by country, including Roland
-            Garros TV channels, streaming platforms and tennis viewing guides.
+            Find where to watch the French Open by country, including Roland
+            Garros TV channels, streaming services and official viewing options.
           </p>
 
           <div className="flex flex-wrap gap-4">
