@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function FrenchOpenStreamingCountriesRedirect() {
-  redirect("/where-to-watch-");}
+  redirect("/where-to-watch-french-open");
+}
