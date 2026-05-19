@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { playerUrl } from "@/data/playerSlugs";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";

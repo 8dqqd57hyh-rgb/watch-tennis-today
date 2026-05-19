@@ -1,6 +1,6 @@
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const metadata = {
   title: "How to Watch French Open in USA | TV Channel & Streaming Guide",

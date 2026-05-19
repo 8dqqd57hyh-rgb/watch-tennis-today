@@ -1,5 +1,5 @@
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const metadata = {
   title: "You’re Subscribed | Watch Tennis Today",

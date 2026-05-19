@@ -1,4 +1,4 @@
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import VpnPromo from "@/app/components/VpnPromo";
 
 export const metadata = {

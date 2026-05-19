@@ -1,4 +1,4 @@
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const metadata = {
   title: "Watch French Open Online 2026 | Roland Garros Streaming Guide",

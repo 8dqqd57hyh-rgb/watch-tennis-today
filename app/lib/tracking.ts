@@ -1,5 +1,13 @@
 export function withTracking(url: string, source: string) {
-  const separator = url.includes("?") ? "&" : "?";
+  try {
+    const parsed = new URL(url);
 
-  return `${url}${separator}utm_source=watchtennistoday&utm_medium=referral&utm_campaign=${source}`;
+    parsed.searchParams.set("utm_source", "watchtennistoday");
+    parsed.searchParams.set("utm_medium", "affiliate");
+    parsed.searchParams.set("utm_campaign", source);
+
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }

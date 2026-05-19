@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type Match = {
   id: string;

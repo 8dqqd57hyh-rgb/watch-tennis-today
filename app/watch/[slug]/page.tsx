@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
 import { playerUrl } from "@/data/playerSlugs";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";

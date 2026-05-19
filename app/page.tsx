@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import {
   playerSlug,
   playerUrl,

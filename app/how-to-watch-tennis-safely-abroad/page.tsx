@@ -1,4 +1,4 @@
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const metadata = {
   title: "How to Watch Tennis Safely Abroad | Tennis Streaming Guide",

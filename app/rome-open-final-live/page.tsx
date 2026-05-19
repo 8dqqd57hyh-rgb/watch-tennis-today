@@ -1,6 +1,6 @@
 import AdSlot from "@/app/components/AdSlot";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
-import { affiliateLinks } from "@/lib/affiliate";
+import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const dynamic = "force-dynamic";
 
