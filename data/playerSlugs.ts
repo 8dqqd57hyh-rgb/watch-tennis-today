@@ -8,6 +8,23 @@ export function normalizePlayerName(name: string) {
     .trim();
 }
 
+export function playerSlug(name: string) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/,/g, "")
+    .replace(/\//g, " ")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+export function playerUrl(name: string) {
+  return `/player/${playerSlug(name)}`;
+}
+
 export function slugToPlayerName(slug: string) {
   return String(slug || "").replace(/-/g, " ");
 }

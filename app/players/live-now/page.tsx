@@ -1,6 +1,16 @@
 "use client";
 
-import { headers } from "next/headers";
+import React, { useEffect, useState } from "react";
+
+function playerUrl(name?: string) {
+  if (!name) return "/";
+  const slug = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // remove punctuation
+    .replace(/\s+/g, "-"); // spaces to dashes
+  return `/players/${encodeURIComponent(slug)}`;
+}
 
 type Match = {
   id?: string;
@@ -10,26 +20,6 @@ type Match = {
   tournament?: string;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-  if (!host) return "http://localhost:3000";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
-async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-  try {
-    const res = await fetch(`${baseUrl}/api/matches`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data.matches)) return data.matches;
-  } catch {}
-  return [];
-}
-
 function splitPlayers(name?: string) {
   if (!name) return [];
   return name
@@ -38,8 +28,40 @@ function splitPlayers(name?: string) {
     .filter(Boolean);
 }
 
-export default async function LiveNowPlayersPage() {
-  const matches = await getMatches();
+export default function LiveNowPlayersPage() {
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        const res = await fetch("/api/matches");
+        if (!res.ok) {
+          setMatches([]);
+          return;
+        }
+        const data = await res.json();
+        const list: Match[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data.matches)
+          ? data.matches
+          : [];
+        if (mounted) setMatches(list);
+      } catch {
+        if (mounted) setMatches([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const liveMatches = matches.filter(
     (m) => (m.status || "").toUpperCase() === "LIVE"
@@ -67,7 +89,8 @@ export default async function LiveNowPlayersPage() {
           </h1>
 
           <p className="text-zinc-400 text-lg leading-8 max-w-3xl mb-6">
-            Players currently competing in live ATP, WTA, Challenger and Grand Slam tennis matches.
+            Players currently competing in live ATP, WTA, Challenger and Grand
+            Slam tennis matches.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -85,16 +108,21 @@ export default async function LiveNowPlayersPage() {
           </div>
         </section>
 
-        {livePlayers.length === 0 ? (
+        {loading ? (
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-zinc-300">
-            No players are currently live. Check back for updates or visit the live matches page.
+            Loading...
+          </div>
+        ) : livePlayers.length === 0 ? (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-zinc-300">
+            No players are currently live. Check back for updates or visit the
+            live matches page.
           </div>
         ) : (
           <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {livePlayers.map((player) => (
               <a
                 key={player}
-                href={`/player/${player.toLowerCase().replace(/\s+/g, "-")}`}
+                href={playerUrl(player)}
                 className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition-all"
               >
                 <h3 className="text-lg font-black">{player}</h3>
