@@ -203,9 +203,7 @@ export default async function AtpLiveTodayPage() {
             </div>
           ) : (
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
-              <h3 className="text-2xl font-black mb-3">
-                No ATP matches live right now
-              </h3>
+              <h3 className="text-2xl font-black mb-3">No ATP matches live right now</h3>
 
               <p className="text-zinc-400 leading-8">
                 Check upcoming ATP matches below or visit the full live tennis
@@ -216,9 +214,7 @@ export default async function AtpLiveTodayPage() {
         </section>
 
         <section className="mb-14">
-          <h2 className="text-4xl font-black mb-6">
-            ⏰ Upcoming ATP Matches Today
-          </h2>
+          <h2 className="text-4xl font-black mb-6">⏰ Upcoming ATP Matches Today</h2>
 
           {upcomingAtpMatches.length > 0 ? (
             <div className="space-y-5">
@@ -251,17 +247,13 @@ export default async function AtpLiveTodayPage() {
                     {match.tournament}
                   </a>
 
-                  <p className="text-zinc-400">
-                    Start time: {formatDateTime(match.startTime)}
-                  </p>
+                  <p className="text-zinc-400">Start time: {formatDateTime(match.startTime)}</p>
                 </a>
               ))}
             </div>
           ) : (
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
-              <h3 className="text-2xl font-black mb-3">
-                No upcoming ATP matches found
-              </h3>
+              <h3 className="text-2xl font-black mb-3">No upcoming ATP matches found</h3>
 
               <p className="text-zinc-400 leading-8">
                 There may be no ATP matches available in the current schedule.
@@ -293,9 +285,7 @@ export default async function AtpLiveTodayPage() {
         </section>
 
         <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-          <h2 className="text-4xl font-black mb-5">
-            📺 Where to Watch ATP Tennis Today
-          </h2>
+          <h2 className="text-4xl font-black mb-5">📺 Where to Watch ATP Tennis Today</h2>
 
           <p className="text-zinc-300 leading-8 mb-6">
             ATP tennis matches may be available through official ATP streaming
@@ -396,4 +386,5 @@ export default async function AtpLiveTodayPage() {
       </div>
     </main>
   );
+
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import { players } from "@/data/players";
+import { matchContainsExactPlayer } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
 
@@ -158,24 +160,11 @@ export default async function PlayerPage({
 
   const playerName = formatPlayerName(slug);
 
-  const matches = await getMatches();
+  const allMatches = await getMatches();
 
-  function playerMatchesSlug(slug: string, match: Match) {
-  const parts = slug.toLowerCase().split("-");
-  const lastName = parts[parts.length - 1];
-
-  const text = `${match.player1} ${match.player2}`
-    .toLowerCase()
-    .replace(/[^a-zа-яё0-9\s.-]/gi, " ");
-
-  return text.includes(lastName);
-}
-
-
-
- const playerMatches = matches.filter((match) =>
-  playerMatchesSlug(slug, match)
-);
+  const playerMatches = allMatches.filter((match) =>
+    matchContainsExactPlayer(match, slug)
+  );
 
   const relatedPlayers = PLAYERS
     .filter((playerSlug) => playerSlug !== slug)

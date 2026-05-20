@@ -3,12 +3,6 @@
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
-import {
-  playerSlug,
-  playerUrl,
-  watchPlayerLiveUrl,
-} from "@/data/playerSlugs";
-import Link from "next/link";
 
 type WatchProvider = {
   name: string;
@@ -61,7 +55,6 @@ function readableCountry(country: string) {
     .join(" ");
 }
 
-
 function slugify(text: string) {
   return text
     .toLowerCase()
@@ -70,6 +63,12 @@ function slugify(text: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+function playerUrl(name: string) {
+  // Build a player page URL using the existing slugify helper
+  const slug = slugify(name);
+  return `/players/${slug}`;
 }
 
 function matchSlug(match: Match) {

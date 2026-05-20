@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import { matchContainsExactPlayer } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
 
@@ -379,4 +380,5 @@ export default function WtaLiveTodayPage() {
       </div>
     </main>
   );
+
 }

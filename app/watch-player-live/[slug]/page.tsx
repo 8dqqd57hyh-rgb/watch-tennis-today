@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import type { Metadata } from "next";
+import { matchContainsExactPlayer } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +85,7 @@ function isPlayerMatch(match: Match, playerName: string) {
   return text.includes(lastName);
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const player = players[slug as PlayerSlug];
 
@@ -112,13 +114,27 @@ export default async function WatchPlayerLivePage({ params }: Props) {
 
   const matches = await getMatches();
 
-  const playerMatches = matches
-    .filter((match) => isPlayerMatch(match, player.name))
-    .sort((a, b) => {
-      if (isLive(a) && !isLive(b)) return -1;
-      if (!isLive(a) && isLive(b)) return 1;
-      return 0;
-    });
+  // use exact matching helper to find matches for this player slug
+  const playersToday = matches; // keep original list if needed elsewhere
+
+  const liveMatches = matches.filter(isLive);
+  const upcomingMatches = matches.filter(
+    (m) => !isLive(m) && new Date(m.startTime || 0) > new Date()
+  );
+  const completedMatches = matches.filter(
+    (m) => !isLive(m) && new Date(m.startTime || 0) <= new Date()
+  );
+
+  const topMatches = [
+    ...liveMatches,
+    ...upcomingMatches,
+    ...completedMatches,
+  ].slice(0, 12);
+
+  // example usage: filter matches for this player slug
+  const playerMatches = matches.filter((m) =>
+    matchContainsExactPlayer(m, slug)
+  );
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
