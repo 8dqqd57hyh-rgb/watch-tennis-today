@@ -1,20 +1,14 @@
-import FrenchOpenCountryPage from "@/app/components/FrenchOpenCountryPage";
+import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "How to Watch French Open in USA 2026 | TV & Live Stream",
+  title: "Watch French Open in the USA | Watch Tennis Today",
   description:
-    "How to watch the French Open in the USA. Find Roland Garros TV channels, streaming options, TNT Sports coverage, truTV and HBO Max details.",
+    "Find legal French Open viewing options in the USA, including official broadcaster and streaming information.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/where-to-watch-french-open",
+  },
 };
 
-export default function Page() {
-  return (
-    <FrenchOpenCountryPage
-      country="the USA"
-      slug="usa"
-      broadcasters={["TNT", "truTV", "TBS", "HBO Max"]}
-      streaming={["HBO Max", "TNT Sports app", "Live TV streaming services with TNT/truTV"]}
-      timezone="Eastern Time / Pacific Time"
-      note="In the United States, French Open coverage is centered around Warner Bros. Discovery platforms, including TNT, truTV and HBO Max."
-    />
-  );
+export default function WatchFrenchOpenInUsaPage() {
+  redirect("/where-to-watch-french-open#usa");
 }

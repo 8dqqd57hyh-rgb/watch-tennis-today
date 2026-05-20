@@ -1,20 +1,14 @@
-import FrenchOpenCountryPage from "@/app/components/FrenchOpenCountryPage";
+import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "How to Watch French Open in UK 2026 | TV & Live Stream",
+  title: "Watch French Open in the UK | Watch Tennis Today",
   description:
-    "How to watch the French Open in the UK. Find Roland Garros TV channels, TNT Sports, discovery+ and HBO Max streaming options.",
+    "Find legal French Open viewing options in the UK, including official broadcaster and streaming information.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/where-to-watch-french-open",
+  },
 };
 
-export default function Page() {
-  return (
-    <FrenchOpenCountryPage
-      country="the UK"
-      slug="uk"
-      broadcasters={["TNT Sports", "Eurosport coverage via TNT Sports", "HBO Max"]}
-      streaming={["discovery+", "HBO Max", "TNT Sports app"]}
-      timezone="UK time"
-      note="In the UK, Roland Garros coverage is available through TNT Sports and associated streaming platforms."
-    />
-  );
+export default function WatchFrenchOpenInUkPage() {
+  redirect("/where-to-watch-french-open#uk");
 }

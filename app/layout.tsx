@@ -196,6 +196,19 @@ export default function RootLayout({
 >
   Cookie Policy
 </a>
+<a
+  href="/editorial-policy"
+  className="hover:text-white transition-colors"
+>
+  Editorial Policy
+</a>
+
+<a
+  href="/how-we-source-data"
+  className="hover:text-white transition-colors"
+>
+  How We Source Data
+</a>
   </div>
 </footer>
 <StickyAffiliateBar />
