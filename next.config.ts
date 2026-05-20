@@ -1,10 +1,23 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
-  /* config options here */
-
+const nextConfig: NextConfig = {
   async redirects() {
     return [
+      {
+        source: "/french-open-live-stream",
+        destination: "/french-open-live",
+        permanent: true,
+      },
+      {
+        source: "/french-open-streaming-countries",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
+        source: "/french-open-schedule",
+        destination: "/french-open-order-of-play",
+        permanent: true,
+      },
       {
         source: "/roland-garros-live",
         destination: "/french-open-live",
@@ -12,7 +25,7 @@ const nextConfig = {
       },
       {
         source: "/roland-garros-live-stream",
-        destination: "/french-open-live-stream",
+        destination: "/french-open-live",
         permanent: true,
       },
       {
