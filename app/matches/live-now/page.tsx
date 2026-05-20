@@ -140,9 +140,29 @@ export default function LiveMatchesNowPage() {
             Loading live tennis matches now...
           </p>
         ) : liveMatches.length === 0 ? (
-          <p className="text-zinc-500 text-xl">
-            No live tennis matches right now.
-          </p>
+         <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
+  <h2 className="text-3xl font-black mb-4">
+    No live tennis matches right now
+  </h2>
+
+  <p className="text-zinc-300 leading-8 mb-6">
+    There are currently no live ATP, WTA or Grand Slam matches available.
+    Tennis schedules can change because of time zones, tournament sessions
+    and weather delays.
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <a href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      Today's Schedule →
+    </a>
+    <a href="/atp-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      ATP Live →
+    </a>
+    <a href="/wta-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      WTA Live →
+    </a>
+  </div>
+</div>
         ) : (
           <section className="mb-16">
             <h2 className="text-4xl font-black mb-6">

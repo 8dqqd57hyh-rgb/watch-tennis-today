@@ -217,9 +217,32 @@ export default function TodayPage() {
             Loading today&apos;s tennis matches...
           </p>
         ) : todayMatches.length === 0 ? (
-          <p className="text-zinc-500 text-xl">
-            No tennis matches found for today.
-          </p>
+         <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
+  <h2 className="text-3xl font-black mb-4">
+    No tennis matches found for today
+  </h2>
+
+  <p className="text-zinc-300 leading-8 mb-6">
+    There may be no scheduled ATP or WTA matches right now, or the daily
+    schedule may not be available yet. Check live tennis, ATP matches, WTA
+    matches or the TV schedule for more options.
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <a href="/live-tennis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      Live Tennis →
+    </a>
+    <a href="/atp-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      ATP Matches →
+    </a>
+    <a href="/wta-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      WTA Matches →
+    </a>
+    <a href="/tv-schedule" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+      TV Schedule →
+    </a>
+  </div>
+</div>
         ) : (
           <section className="mb-16">
             <h2 className="text-4xl font-black mb-6">
