@@ -53,6 +53,32 @@ function slugify(text: string) {
     .replace(/^-|-$/g, "");
 }
 
+function tournamentMatchesSlug(matchTournament: string, slug: string) {
+  const normalizedTournament = slugify(matchTournament || "");
+
+  const aliases: Record<string, string[]> = {
+    "roland-garros": [
+      "roland-garros",
+      "french-open",
+      "atp-french-open",
+      "wta-french-open",
+      "french-open-men-singles",
+      "french-open-women-singles",
+      "roland-garros-men-singles",
+      "roland-garros-women-singles",
+    ],
+    // add other tournaments aliases here if needed
+  };
+
+  const acceptedSlugs = aliases[slug] || [slug];
+
+  return acceptedSlugs.some(
+    (acceptedSlug) =>
+      normalizedTournament.includes(acceptedSlug) ||
+      acceptedSlug.includes(normalizedTournament)
+  );
+}
+
 function unslugify(slug: string) {
   return slug
     .split("-")
@@ -89,18 +115,15 @@ export default async function Page({ params }: PageProps) {
 
   const matches = await getMatches();
 
-  const tournamentMatches = matches
-    .filter((match) => slugify(match.tournament) === slug)
-    .sort((a, b) => {
-      const statusDiff = statusPriority(a.status) - statusPriority(b.status);
+  const tournamentMatches = matches.filter((match) =>
+    tournamentMatchesSlug(match.tournament || "", slug)
+  );
 
-      if (statusDiff !== 0) return statusDiff;
-
-      if (!a.startTime) return 1;
-      if (!b.startTime) return -1;
-
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
+  // readable name fallback for specific slugs
+  const readableTournamentName =
+    slug === "roland-garros"
+      ? "Roland Garros"
+      : slug.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
 
   const tournamentName = tournamentMatches[0]?.tournament || unslugify(slug);
 
@@ -159,27 +182,40 @@ export default async function Page({ params }: PageProps) {
           </a>
         </div>
         <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-  <h2 className="mb-5 text-3xl font-black">
-    Popular Tournament Pages
-  </h2>
+          <h2 className="mb-5 text-3xl font-black">Popular Tournament Pages</h2>
 
-  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    <a href="/french-open-live" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
-      <h3 className="text-xl font-black mb-2">French Open Live</h3>
-      <p className="text-zinc-400">Live matches, scores and streaming information.</p>
-    </a>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a
+              href="/french-open-live"
+              className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+            >
+              <h3 className="text-xl font-black mb-2">French Open Live</h3>
+              <p className="text-zinc-400">
+                Live matches, scores and streaming information.
+              </p>
+            </a>
 
-    <a href="/french-open-results" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
-      <h3 className="text-xl font-black mb-2">French Open Results</h3>
-      <p className="text-zinc-400">Latest Roland Garros match results and updates.</p>
-    </a>
+            <a
+              href="/french-open-results"
+              className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+            >
+              <h3 className="text-xl font-black mb-2">French Open Results</h3>
+              <p className="text-zinc-400">
+                Latest Roland Garros match results and updates.
+              </p>
+            </a>
 
-    <a href="/french-open-tv-schedule" className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500">
-      <h3 className="text-xl font-black mb-2">French Open TV Schedule</h3>
-      <p className="text-zinc-400">TV channels, broadcast times and official coverage.</p>
-    </a>
-  </div>
-</section>
+            <a
+              href="/french-open-tv-schedule"
+              className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+            >
+              <h3 className="text-xl font-black mb-2">French Open TV Schedule</h3>
+              <p className="text-zinc-400">
+                TV channels, broadcast times and official coverage.
+              </p>
+            </a>
+          </div>
+        </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
@@ -250,32 +286,83 @@ export default async function Page({ params }: PageProps) {
               </a>
             ))
           ) : (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
-              <h2 className="text-3xl font-black mb-4">
-                No {tournamentName} matches found right now
-              </h2>
+            slug === "roland-garros" ? (
+              <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                <h2 className="mb-4 text-3xl font-black">Roland Garros hub</h2>
+                <p className="mb-6 text-zinc-300 max-w-3xl">
+                  Roland Garros matches may not be available in the current live
+                  schedule. Use the pages below for French Open live coverage,
+                  results, TV schedule and country-by-country streaming options.
+                </p>
 
-              <p className="text-zinc-300 leading-8 mb-6">
-                There may be no matches from this tournament in the current
-                schedule. Check live tennis, TV schedule or other tournaments.
-              </p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <a
+                    href="/french-open-live"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">French Open Live</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      Roland Garros live coverage, match links and updates.
+                    </p>
+                  </a>
 
-              <div className="flex flex-wrap gap-4">
-                <a
-                  href="/live-tennis"
-                  className="bg-red-500 text-white px-5 py-3 rounded-2xl font-black hover:bg-red-400 transition-all"
-                >
-                  Check Live Tennis
-                </a>
+                  <a
+                    href="/french-open-results"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">French Open Results</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      Latest match results and completed scores.
+                    </p>
+                  </a>
 
-                <a
-                  href="/tournament"
-                  className="bg-zinc-800 text-white px-5 py-3 rounded-2xl font-black hover:bg-zinc-700 transition-all"
-                >
-                  View Tournaments
-                </a>
+                  <a
+                    href="/french-open-tv-schedule"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">French Open TV Schedule</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      TV channels, broadcast times and official coverage.
+                    </p>
+                  </a>
+
+                  <a
+                    href="/french-open-order-of-play"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">Order of Play</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      Today's Roland Garros schedule and court assignments.
+                    </p>
+                  </a>
+
+                  <a
+                    href="/where-to-watch-french-open"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">Where to Watch</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      Country-by-country Roland Garros TV and streaming guide.
+                    </p>
+                  </a>
+
+                  <a
+                    href="/watch-french-open-online"
+                    className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                  >
+                    <h3 className="text-xl font-black">Watch Online</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-400">
+                      Streaming options and official Roland Garros partners.
+                    </p>
+                  </a>
+                </div>
+              </section>
+            ) : (
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-300">
+                No matches found for this tournament right now. Check back soon
+                for schedule updates.
               </div>
-            </div>
+            )
           )}
         </section>
 
@@ -317,45 +404,8 @@ export default async function Page({ params }: PageProps) {
             How to Watch Tennis Safely Abroad
           </a>
         </section>
-<AuthorBox />
-        <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-6">{tournamentName} FAQ</h2>
-
-          <div className="space-y-6 text-zinc-300 leading-8">
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Where can I watch {tournamentName} live?
-              </h3>
-              <p>
-                {tournamentName} matches may be shown by official broadcasters,
-                sports TV channels and streaming platforms depending on your
-                location.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Does this page show live {tournamentName} matches?
-              </h3>
-              <p>
-                Yes. This page lists matches from {tournamentName} when they are
-                available in the current schedule, including live, suspended and
-                upcoming matches.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl text-white font-black mb-2">
-                Why can tennis streaming options differ by country?
-              </h3>
-              <p>
-                Tennis broadcasting rights are usually sold by region, so TV
-                channels and streaming platforms may differ from country to
-                country.
-              </p>
-            </div>
-          </div>
-        </section>
+        <AuthorBox />
+        
       </div>
       <BreadcrumbSchema
   items={[
@@ -368,7 +418,7 @@ export default async function Page({ params }: PageProps) {
       url: "https://watchtennistoday.com/tournament",
     },
     {
-      name: tournamentName,
+      name: typeof readableTournamentName !== "undefined" ? readableTournamentName : tournamentName,
       url: `https://watchtennistoday.com/tournament/${slug}`,
     },
   ]}
