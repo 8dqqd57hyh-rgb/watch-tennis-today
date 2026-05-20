@@ -1,7 +1,10 @@
 export const metadata = {
-  title: "Advertise & Partnerships | Watch Tennis Today",
+  title: "Advertise With Watch Tennis Today",
   description:
-    "Partner with Watch Tennis Today to reach tennis fans looking for live matches, TV schedules and streaming options.",
+    "Advertising information for brands, tennis services and partners interested in reaching tennis fans through Watch Tennis Today.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/advertise",
+  },
 };
 
 export default function AdvertisePage() {
@@ -12,44 +15,69 @@ export default function AdvertisePage() {
           ← Back
         </a>
 
-        <h1 className="text-5xl font-black mt-8 mb-6">
-          Advertise & Partnerships
+        <h1 className="text-4xl md:text-5xl font-black mt-8">
+          Advertise With Watch Tennis Today
         </h1>
 
-        <p className="text-zinc-300 text-lg leading-8 mb-8">
-          Watch Tennis Today helps tennis fans find live matches, TV channels,
-          tournament schedules and legal streaming options.
+        <p className="text-zinc-300 mt-4 text-lg leading-relaxed">
+          Watch Tennis Today is a tennis information website focused on live
+          match discovery, tournament schedules, legal streaming guides and
+          broadcaster information for tennis fans.
         </p>
 
-        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-6">
-          <h2 className="text-3xl font-black mb-3">
-            Partnership Opportunities
-          </h2>
+        <section className="mt-10 space-y-6 text-zinc-300 leading-relaxed">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Who this site reaches
+            </h2>
+            <p>
+              The audience includes tennis fans looking for live matches,
+              tournament coverage, TV schedules, streaming options and
+              country-specific broadcaster guides.
+            </p>
+          </div>
 
-          <ul className="text-zinc-300 leading-8 list-disc pl-6">
-            <li>Streaming service partnerships</li>
-            <li>Sports media collaborations</li>
-            <li>Affiliate placements</li>
-            <li>Sponsored tennis guides</li>
-            <li>Display advertising</li>
-          </ul>
-        </section>
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Suitable advertising categories
+            </h2>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Sports media and streaming services</li>
+              <li>Tennis equipment and apparel</li>
+              <li>Travel or tournament-related services</li>
+              <li>Sports technology and fan tools</li>
+              <li>Relevant affiliate or sponsorship partnerships</li>
+            </ul>
+          </div>
 
-        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-3">
-            Contact
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Advertising principles
+            </h2>
+            <p>
+              Advertising must be clearly distinguishable from editorial
+              content. Watch Tennis Today does not promote illegal streams,
+              misleading downloads, unsafe redirects or deceptive offers.
+            </p>
+          </div>
 
-          <p className="text-zinc-300 leading-8">
-            For partnerships, sponsorships or advertising inquiries, contact:
-          </p>
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Contact
+            </h2>
+            <p>
+              For advertising, sponsorship or partnership requests, please use
+              the contact page and include a short description of the brand,
+              campaign and target region.
+            </p>
 
-          <a
-            href="mailto:anzhalika_sokalava@icloud.com"
-            className="inline-block mt-5 bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
-          >
-            anzhalika_sokalava@icloud.com
-          </a>
+            <a
+              href="/contact"
+              className="inline-block mt-4 rounded-xl bg-white text-black px-5 py-3 font-semibold hover:bg-zinc-200"
+            >
+              Contact Watch Tennis Today
+            </a>
+          </div>
         </section>
       </div>
     </main>

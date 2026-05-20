@@ -1,19 +1,14 @@
-import WatchPlayerLivePage, {
-  generateMetadata as generatePlayerMetadata,
-} from "../watch-player-live/[slug]/page";
+import { redirect } from "next/navigation";
 
-export async function generateMetadata() {
-  return generatePlayerMetadata({
-    params: Promise.resolve({
-      slug: "novak-djokovic",
-    }),
-  });
-}
+export const metadata = {
+  title: "Watch Novak Djokovic Live | Watch Tennis Today",
+  description:
+    "Find Novak Djokovic live matches, schedules and legal tennis streaming information.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/watch-player-live/novak-djokovic",
+  },
+};
 
 export default function WatchDjokovicLivePage() {
-  return WatchPlayerLivePage({
-    params: Promise.resolve({
-      slug: "novak-djokovic",
-    }),
-  });
+  redirect("/watch-player-live/novak-djokovic");
 }

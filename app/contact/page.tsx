@@ -1,7 +1,7 @@
 export const metadata = {
   title: "Contact | Watch Tennis Today",
   description:
-    "Contact Watch Tennis Today for questions about tennis schedules, broadcaster information, streaming guides and website feedback.",
+    "Contact Watch Tennis Today for corrections, broadcaster updates, advertising questions or general feedback.",
   alternates: {
     canonical: "https://watchtennistoday.com/contact",
   },
@@ -15,49 +15,66 @@ export default function ContactPage() {
           ← Back
         </a>
 
-        <h1 className="text-5xl font-black mt-8 mb-6">Contact</h1>
+        <h1 className="text-4xl md:text-5xl font-black mt-8">
+          Contact Watch Tennis Today
+        </h1>
 
-        <div className="space-y-6 text-zinc-300 leading-relaxed">
-          <p>
-            Watch Tennis Today helps tennis fans find live match information,
-            tournament schedules, broadcaster guides and legal ways to watch
-            tennis online.
-          </p>
+        <p className="text-zinc-300 mt-4 text-lg leading-relaxed">
+          Use this page to contact Watch Tennis Today about corrections,
+          broadcaster updates, partnership requests or general feedback.
+        </p>
 
-          <p>
-            If you notice outdated match information, incorrect broadcaster
-            details, broken links or have suggestions for improving the site,
-            you can contact us by email.
-          </p>
+        <section className="mt-10 space-y-6 text-zinc-300 leading-relaxed">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              What you can contact us about
+            </h2>
 
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-            <h2 className="text-2xl font-black text-white mb-3">
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Incorrect broadcaster or streaming information</li>
+              <li>Outdated match, tournament or schedule details</li>
+              <li>Country-specific tennis viewing updates</li>
+              <li>Advertising or sponsorship questions</li>
+              <li>General website feedback</li>
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-bold text-white mb-2">
               Email
             </h2>
 
             <p>
+              You can contact the site team by email:
+            </p>
+
+            <p className="mt-3">
               <a
                 href="mailto:anzhalika_sokalava@icloud.com"
-                className="text-green-400 hover:text-green-300 font-bold"
+                className="text-white underline underline-offset-4"
               >
                 anzhalika_sokalava@icloud.com
               </a>
             </p>
-          </section>
 
-          <section>
-            <h2 className="text-2xl font-black text-white mb-3">
-              Corrections and updates
+            <p className="mt-4 text-sm text-zinc-400">
+              Please include the page URL and country if your message is about
+              broadcaster availability or schedule corrections.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Editorial corrections
             </h2>
 
             <p>
-              Tennis schedules, match statuses and broadcaster availability can
-              change quickly. We try to keep information useful and accurate,
-              but users should always confirm final availability with official
-              broadcasters, tournaments or streaming providers.
+              Tennis broadcast rights and schedules can change. If you notice
+              incorrect information, please send the relevant page link and the
+              official source where the updated information can be checked.
             </p>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
     </main>
   );

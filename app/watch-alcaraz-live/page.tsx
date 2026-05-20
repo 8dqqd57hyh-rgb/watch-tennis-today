@@ -1,19 +1,14 @@
-import WatchPlayerLivePage, {
-  generateMetadata as generatePlayerMetadata,
-} from "../watch-player-live/[slug]/page";
+import { redirect } from "next/navigation";
 
-export async function generateMetadata() {
-  return generatePlayerMetadata({
-    params: Promise.resolve({
-      slug: "carlos-alcaraz",
-    }),
-  });
-}
+export const metadata = {
+  title: "Watch Carlos Alcaraz Live | Watch Tennis Today",
+  description:
+    "Find Carlos Alcaraz live matches, schedules and legal tennis streaming information.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/watch-player-live/carlos-alcaraz",
+  },
+};
 
 export default function WatchAlcarazLivePage() {
-  return WatchPlayerLivePage({
-    params: Promise.resolve({
-      slug: "carlos-alcaraz",
-    }),
-  });
+  redirect("/watch-player-live/carlos-alcaraz");
 }
