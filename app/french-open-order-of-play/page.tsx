@@ -1,9 +1,7 @@
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "French Open Order of Play 2026 | Roland Garros Schedule Today",
-  description:
-    "French Open order of play for Roland Garros 2026. See today’s Roland Garros schedule, live matches, upcoming matches, results, TV channels and streaming guides.",
+  alternates: { canonical: "https://watchtennistoday.com/french-open-order-of-play" },
 };
 
 type Match = {

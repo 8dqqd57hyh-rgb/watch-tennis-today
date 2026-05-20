@@ -1,9 +1,7 @@
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "French Open Results 2026 | Roland Garros Scores Today",
-  description:
-    "French Open results for Roland Garros 2026. See completed matches, live scores, winners, today’s results, TV schedule and streaming guides.",
+  alternates: { canonical: "https://watchtennistoday.com/french-open-results" },
 };
 
 type Match = {

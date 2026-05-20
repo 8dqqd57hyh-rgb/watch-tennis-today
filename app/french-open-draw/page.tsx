@@ -2,6 +2,7 @@ export const metadata = {
   title: "French Open Draw 2026 | Roland Garros Bracket & Matches",
   description:
     "French Open draw for Roland Garros 2026. Follow tournament brackets, matchups, live matches, results, schedules and streaming guides.",
+  alternates: { canonical: "https://watchtennistoday.com/french-open-draw" },
 };
 
 export default function FrenchOpenDrawPage() {
@@ -129,4 +130,5 @@ export default function FrenchOpenDrawPage() {
       </div>
     </main>
   );
+
 }

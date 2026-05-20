@@ -80,6 +80,10 @@ function formatTime(value: string) {
   });
 }
 
+export const metadata = {
+  alternates: { canonical: "https://watchtennistoday.com/today" },
+};
+
 export default function TodayPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);

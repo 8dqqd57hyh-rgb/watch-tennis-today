@@ -24,9 +24,7 @@ const featuredAtpPlayers = [
 ];
 
 export const metadata = {
-  title: "ATP Live Today | ATP Matches, Schedule & Streaming",
-  description:
-    "Watch ATP tennis live today. Find ATP matches, live scores, schedules, tournaments, TV channels and streaming options.",
+  alternates: { canonical: "https://watchtennistoday.com/atp-live-today" },
 };
 
 async function getBaseUrl() {

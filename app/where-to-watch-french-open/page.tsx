@@ -1,7 +1,5 @@
 export const metadata = {
-  title: "Where to Watch French Open 2026 | Roland Garros TV & Streaming by Country",
-  description:
-    "Find where to watch the French Open by country, including Roland Garros TV channels, streaming services and official viewing options.",
+  alternates: { canonical: "https://watchtennistoday.com/where-to-watch-french-open" },
 };
 
 const countries = [

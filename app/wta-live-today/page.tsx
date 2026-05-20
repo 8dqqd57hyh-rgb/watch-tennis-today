@@ -25,9 +25,7 @@ const featuredWtaPlayers = [
 ];
 
 export const metadata = {
-  title: "WTA Live Today | WTA Matches, Schedule & Streaming",
-  description:
-    "Watch WTA tennis live today. Find WTA matches, live scores, schedules, tournaments, TV channels and streaming options.",
+  alternates: { canonical: "https://watchtennistoday.com/wta-live-today" },
 };
 
 async function getBaseUrl() {

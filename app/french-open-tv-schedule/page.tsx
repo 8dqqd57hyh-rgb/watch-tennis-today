@@ -2,6 +2,7 @@ export const metadata = {
   title: "French Open TV Schedule 2026 | Roland Garros Channels Today",
   description:
     "French Open TV schedule for Roland Garros 2026. Find today’s tennis matches, TV channels, streaming guides and where to watch French Open coverage.",
+  alternates: { canonical: "https://watchtennistoday.com/french-open-tv-schedule" },
 };
 
 export default function FrenchOpenTvSchedulePage() {
