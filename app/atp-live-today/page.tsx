@@ -154,10 +154,6 @@ export default async function AtpLiveTodayPage() {
           </div>
         </section>
 
-        <VpnPromo
-          title="Watching ATP matches while abroad?"
-          text="Some ATP streams are region-locked. A VPN can help you securely access your subscriptions when traveling."
-        />
 
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">🔴 ATP Live Now</h2>

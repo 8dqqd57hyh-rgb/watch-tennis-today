@@ -139,10 +139,6 @@ export default function WtaLiveTodayPage() {
           </div>
         </section>
 
-        <VpnPromo
-          title="Watching WTA matches while abroad?"
-          text="WTA streaming can be geo-restricted. Consider a VPN to access your legal streaming accounts securely."
-        />
 
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">🔴 WTA Live Now</h2>

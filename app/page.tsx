@@ -1030,7 +1030,37 @@ export default function Home() {
   </div>
 </section>
 
-        <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
+      
+
+        <section className="mt-16 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+          <h2 className="text-3xl font-black mb-5">
+            Watch Tennis Today — Live Tennis Matches, Scores and TV Schedule
+          </h2>
+
+          <div className="text-zinc-300 space-y-5 leading-8">
+            <p>
+              Watch Tennis Today helps tennis fans find live tennis matches, official
+              streaming options, TV channels and daily tennis schedules in one place.
+              The site covers ATP, WTA, Grand Slam, Challenger and ITF matches with
+              match status, start times, scores and tournament information.
+            </p>
+
+            <p>
+              You can use Watch Tennis Today to check which tennis matches are live now,
+              where to watch upcoming matches, and which broadcasters or streaming
+              platforms may show tennis in your country. Coverage includes popular
+              players, major tournaments, live match pages and country-based tennis
+              viewing guides.
+            </p>
+
+            <p>
+              The goal is to make tennis easier to follow by combining live match data,
+              tournament schedules, player pages and official watch information for fans
+              around the world.
+            </p>
+          </div>
+        </section>
+          <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
   <div className="max-w-3xl">
     <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
       🌍 Tennis streaming tip
@@ -1070,35 +1100,6 @@ export default function Home() {
     </p>
   </div>
 </section>
-
-        <section className="mt-16 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-          <h2 className="text-3xl font-black mb-5">
-            Watch Tennis Today — Live Tennis Matches, Scores and TV Schedule
-          </h2>
-
-          <div className="text-zinc-300 space-y-5 leading-8">
-            <p>
-              Watch Tennis Today helps tennis fans find live tennis matches, official
-              streaming options, TV channels and daily tennis schedules in one place.
-              The site covers ATP, WTA, Grand Slam, Challenger and ITF matches with
-              match status, start times, scores and tournament information.
-            </p>
-
-            <p>
-              You can use Watch Tennis Today to check which tennis matches are live now,
-              where to watch upcoming matches, and which broadcasters or streaming
-              platforms may show tennis in your country. Coverage includes popular
-              players, major tournaments, live match pages and country-based tennis
-              viewing guides.
-            </p>
-
-            <p>
-              The goal is to make tennis easier to follow by combining live match data,
-              tournament schedules, player pages and official watch information for fans
-              around the world.
-            </p>
-          </div>
-        </section>
       </div>
       <script
   type="application/ld+json"

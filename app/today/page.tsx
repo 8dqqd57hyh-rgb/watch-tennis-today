@@ -380,7 +380,6 @@ export default function TodayPage() {
           </div>
         </section>
 
-        <VpnPromo />
         <RelatedMoneyLinks />
 
         <script
