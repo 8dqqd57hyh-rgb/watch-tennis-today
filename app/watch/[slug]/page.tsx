@@ -304,6 +304,12 @@ if (!match) {
             Where to watch {matchTitle} live, including official streaming
             options, TV schedule, match time and live score updates.
           </p>
+          <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
+  <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
+  embed, or provide unauthorized live streams. We only provide information
+  about official broadcasters and legal streaming platforms available in
+  your region.
+</div>
 
           <div className="flex flex-wrap items-center gap-3 mb-10">
   <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400">

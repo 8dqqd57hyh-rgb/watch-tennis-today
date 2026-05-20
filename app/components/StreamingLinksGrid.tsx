@@ -16,7 +16,7 @@ const links = [
     href: "/wta-live-today",
   },
   {
-    title: "Grand Slam Live Streams",
+    title: "Grand Slam TV & Streaming Guide",
     href: "/grand-slam-live",
   },
   {

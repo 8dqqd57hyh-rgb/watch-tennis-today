@@ -7,7 +7,7 @@ type VpnPromoProps = {
 
 export default function VpnPromo({
   title = "Watching tennis while traveling?",
-  text = "Some tennis streams may be geo-blocked depending on your location. A VPN can help you access your usual streaming services safely when abroad.",
+  text = "Some official tennis streaming services may be unavailable outside your home region. If you are traveling, a VPN can help you securely use your usual subscription.",
 }: VpnPromoProps) {
   return (
     <section className="my-8 rounded-3xl border border-emerald-500/30 bg-emerald-950/30 p-6">
@@ -29,7 +29,7 @@ export default function VpnPromo({
         rel="nofollow sponsored noopener noreferrer"
         className="inline-flex rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-300"
       >
-        Try NordVPN for tennis streaming
+        View VPN Options
       </a>
 
       <p className="mt-3 text-xs text-zinc-500">

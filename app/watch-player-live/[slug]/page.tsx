@@ -152,6 +152,12 @@ export default async function WatchPlayerLivePage({ params }: Props) {
           platforms and {player.tour} tennis coverage. Find match schedules,
           live streams and tournament information.
         </p>
+        <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
+  <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
+  embed, or provide unauthorized live streams. We only provide information
+  about official broadcasters and legal streaming platforms available in
+  your region.
+</div>
 
     
 <a
