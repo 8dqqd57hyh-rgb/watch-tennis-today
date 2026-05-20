@@ -657,100 +657,11 @@ export default function Home() {
                     ))}
                 </div>
 
-                {/* French Open section inserted below Trending Matches */}
-                <section className="mb-12">
-                  <h2 className="text-4xl font-black mb-6">
-                    🎾 French Open Live Matches
-                  </h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {matches
-                      .filter((match) =>
-                        match.tournament.toLowerCase().includes("french open") ||
-                        match.tournament.toLowerCase().includes("roland garros")
-                      )
-                      .slice(0, 9)
-                      .map((match) => (
-                        <a
-                          key={match.id}
-                          href={`/watch/${matchSlug(match)}`}
-                          className="bg-zinc-900 border border-orange-500/40 rounded-3xl p-5 hover:border-orange-500 transition-all"
-                        >
-                          <div className="flex justify-between mb-3">
-                            <span className="font-black text-orange-400">
-                              {match.status}
-                            </span>
-
-                            <span className="text-zinc-500">
-                              {match.category}
-                            </span>
-                          </div>
-
-                          <h3 className="text-2xl font-black mb-3">
-                            {match.player1}
-                            <br />
-                            vs
-                            <br />
-                            {match.player2}
-                          </h3>
-
-                          <p className="text-zinc-400">
-                            {match.tournament}
-                          </p>
-                        </a>
-                      ))}
-                  </div>
-                </section>
+              
               </div>
               
             )}
-            {matches.length > 0 && (
-  <section className="mb-12">
-    <h2 className="text-3xl font-black mb-5">
-      🕒 Recently Updated Matches
-    </h2>
-
-    <p className="text-zinc-400 mb-6 max-w-3xl">
-      Recently updated live and upcoming tennis match pages with streaming,
-      score and schedule information.
-    </p>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      {matches.slice(0, 6).map((match) => (
-        <a
-          key={match.id}
-          href={`/watch/${matchSlug(match)}`}
-          className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
-        >
-          <div className="flex justify-between mb-3">
-            <span className="font-black text-green-400">
-              Updated
-            </span>
-
-            <span className="text-zinc-500">
-              {match.category}
-            </span>
-          </div>
-
-          <h3 className="text-2xl font-black mb-3">
-            {match.player1}
-            <br />
-            vs
-            <br />
-            {match.player2}
-          </h3>
-
-         <a
-  href={`/tournament/${slugify(match.tournament)}`}
-  className="text-zinc-400 hover:text-green-400 transition-colors inline-block"
->
-  {match.tournament}
-</a>
-        </a>
-      ))}
-    </div>
-  </section>
-)}
+           
             
       <div className="mb-12">
   <h2 className="text-3xl font-black mb-5">

@@ -71,19 +71,6 @@ function isLive(match: Match) {
   return match.status.toUpperCase() === "LIVE";
 }
 
-function playerLastName(name: string) {
-  return name.toLowerCase().split(" ").pop() || name.toLowerCase();
-}
-
-function isPlayerMatch(match: Match, playerName: string) {
-  const lastName = playerLastName(playerName);
-
-  const text = `${match.player1} ${match.player2}`
-    .toLowerCase()
-    .replace(/[^a-z0-9\s.-]/g, " ");
-
-  return text.includes(lastName);
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -115,7 +102,6 @@ export default async function WatchPlayerLivePage({ params }: Props) {
   const matches = await getMatches();
 
   // use exact matching helper to find matches for this player slug
-  const playersToday = matches; // keep original list if needed elsewhere
 
   const liveMatches = matches.filter(isLive);
   const upcomingMatches = matches.filter(
@@ -152,6 +138,56 @@ export default async function WatchPlayerLivePage({ params }: Props) {
           platforms and {player.tour} tennis coverage. Find match schedules,
           live streams and tournament information.
         </p>
+        <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900 p-6 text-zinc-300 leading-8">
+  <h2 className="text-3xl font-black text-white mb-4">
+    Why Watch {player.name} Live?
+  </h2>
+
+  {"bio" in player ? (
+  <p className="mb-4">{player.bio}</p>
+) : (
+  <p className="mb-4">
+    {player.name} is featured on Watch Tennis Today with match schedules,
+    tournament information and legal tennis viewing guidance.
+  </p>
+)}
+
+  {"playStyle" in player ? (
+  <p className="mb-4">{player.playStyle}</p>
+) : (
+  <p className="mb-4">
+    This page helps fans track {player.name} matches across {player.tour}
+    events, including live matches, upcoming schedules and official viewing
+    options.
+  </p>
+)}
+
+  {"surfaceStrength" in player ? (
+  <p className="mb-4">
+    <strong className="text-white">Best surfaces:</strong>{" "}
+    {player.surfaceStrength}
+  </p>
+) : (
+  <p className="mb-4">
+    <strong className="text-white">Coverage focus:</strong>{" "}
+    live matches, tournament schedules and legal streaming availability.
+  </p>
+)}
+
+  {"watchReasons" in player ? (
+  <ul className="list-disc pl-6 space-y-2">
+    {player.watchReasons.map((reason) => (
+      <li key={reason}>{reason}</li>
+    ))}
+  </ul>
+) : (
+  <ul className="list-disc pl-6 space-y-2">
+    <li>Follow live and upcoming matches</li>
+    <li>Check official broadcaster information</li>
+    <li>Find tournament and schedule updates</li>
+  </ul>
+)}
+</section>
         <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
   <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
   embed, or provide unauthorized live streams. We only provide information

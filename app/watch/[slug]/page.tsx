@@ -179,7 +179,69 @@ export default async function MatchPage({
  const match = matches.find((item) => String(item.id) === matchId);
 
 if (!match) {
-  redirect("/live-tennis");
+  return (
+    <main className="min-h-screen bg-black text-white p-6 md:p-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+          <h1 className="text-4xl font-black mb-6">
+            Tennis Match Not Available
+          </h1>
+
+          <p className="text-zinc-300 text-lg leading-8 mb-8">
+            This tennis match may have finished, been removed, rescheduled or
+            is temporarily unavailable.
+          </p>
+
+          <div className="flex flex-wrap gap-4 mb-12">
+            <a
+              href="/live-tennis"
+              className="bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
+            >
+              View Live Tennis
+            </a>
+
+            <a
+              href="/tv-schedule"
+              className="bg-zinc-800 text-white font-black px-6 py-4 rounded-2xl hover:bg-zinc-700 transition-all"
+            >
+              Tennis TV Schedule
+            </a>
+          </div>
+
+          <section className="text-zinc-300 leading-relaxed space-y-6">
+            <h2 className="text-3xl font-black text-white">
+              How Tennis Broadcast Rights Work
+            </h2>
+
+            <p>
+              Tennis broadcasting rights vary between tournaments, countries and
+              streaming services. Some matches may only be available in specific
+              regions.
+            </p>
+
+            <p>
+              ATP, WTA, Challenger and Grand Slam tournaments are often shown by
+              different broadcasters depending on local agreements.
+            </p>
+
+            <h2 className="text-3xl font-black text-white">
+              Why Match Listings Can Change
+            </h2>
+
+            <p>
+              Match schedules may change because of weather delays, withdrawals,
+              court changes or tournament decisions.
+            </p>
+
+            <p>
+              Official tournament websites and licensed broadcasters usually
+              provide the most accurate final schedule information.
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
 }
 
   const tournamentSlug = slugify(match.tournament);
