@@ -243,11 +243,17 @@ export default async function WatchPlayerLivePage({ params }: Props) {
             Where to Watch {player.name}
           </h2>
 
-          <p className="text-zinc-400 leading-8 mb-6">
-            {player.name} matches may be available on {player.tour}{" "}
-            broadcasters, Tennis Channel, Eurosport, Sky Sports and regional
-            sports streaming services depending on your country.
-          </p>
+          <p className="text-zinc-300 leading-8 mb-6">
+  Broadcasting rights for {player.name} matches depend on the tournament,
+  country, and tour level. Grand Slam events are usually shown on major
+  sports networks such as Eurosport, ESPN, TNT Sports, beIN Sports, and
+  Tennis Channel, while ATP and WTA events may vary by region.
+</p>
+<p className="text-zinc-400 leading-8 mb-8">
+  Availability may change depending on your location and subscription
+  provider. Always use official broadcasters and licensed streaming
+  services in your country.
+</p>
 
           <div className="flex flex-wrap gap-3">
             <a

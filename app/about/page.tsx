@@ -25,7 +25,11 @@ export default function AboutPage() {
             fans quickly find live tennis matches, daily schedules, tournament
             pages, broadcaster information and legal ways to watch tennis online.
           </p>
-
+<p>
+  The website was built by tennis fans who wanted a simpler way to track
+  match schedules, tournament coverage and official viewing options
+  without searching across dozens of different sports websites.
+</p>
           <section>
             <h2 className="text-2xl font-black text-white mb-3">
               What we cover
@@ -36,7 +40,7 @@ export default function AboutPage() {
               <li>Daily tennis schedules</li>
               <li>Player match pages</li>
               <li>Country-specific broadcaster guides</li>
-              <li>Streaming safety and VPN-related guides</li>
+              <li>Regional broadcasting and streaming access guides</li>
             </ul>
           </section>
 
@@ -64,6 +68,19 @@ export default function AboutPage() {
               providers.
             </p>
           </section>
+
+          <section>
+  <h2 className="text-2xl font-black text-white mb-3">
+    Legal notice
+  </h2>
+
+  <p>
+    Watch Tennis Today does not host live streams, embed copyrighted
+    broadcasts or distribute sports content. The website only references
+    official broadcasters, licensed streaming services and publicly
+    available tournament information.
+  </p>
+</section>
 
           <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
             <h2 className="text-2xl font-black text-white mb-3">

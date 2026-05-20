@@ -225,7 +225,18 @@ export default async function CountryPage({
             services available in {readable}. This guide helps you check where
             to watch ATP, WTA, Challenger and Grand Slam tennis matches legally.
           </p>
+<div className="space-y-5 mt-6">
+  <p className="text-zinc-300 leading-8">
+    Tennis broadcasting rights can differ significantly between countries,
+    tournaments and streaming providers. Some ATP and WTA events may only
+    be available through regional sports channels or subscription platforms.
+  </p>
 
+  <p className="text-zinc-400 leading-8">
+    This guide was created to help tennis fans in {readable} find official
+    TV coverage and legal streaming information for major tennis events.
+  </p>
+</div>
         </section>
 
         {/* Tennis Broadcasters in {readable} */}
@@ -277,7 +288,7 @@ export default async function CountryPage({
             href="/live-tennis"
             className="inline-block bg-black text-white px-5 py-3 rounded-2xl font-black"
           >
-            View Live Tennis
+            View Match Schedule
           </a>
         </section>
 
@@ -308,7 +319,7 @@ export default async function CountryPage({
         <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
   <div className="max-w-3xl">
     <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
-      🌍 Tennis streaming abroad
+      🌍 Watching tennis while traveling
     </div>
 
     <h2 className="text-3xl font-black mb-5">
@@ -316,11 +327,11 @@ export default async function CountryPage({
     </h2>
 
     <p className="text-zinc-300 leading-8 mb-6">
-      Tennis broadcasters and streaming services may vary depending on your
-      location. If you travel often during ATP, WTA or Grand Slam tournaments,
-      NordVPN can help keep your connection private while checking tennis
-      streams on public Wi-Fi.
-    </p>
+  Tennis broadcasters and streaming services may vary depending on your
+  location. If you travel frequently during ATP, WTA or Grand Slam
+  tournaments, a VPN may help you securely access your existing streaming
+  subscriptions while abroad.
+</p>
 
     <div className="flex flex-wrap gap-4 mb-8">
       <a
@@ -329,14 +340,14 @@ export default async function CountryPage({
         rel="nofollow sponsored noopener noreferrer"
         className="inline-block rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
       >
-        Try NordVPN
+        View VPN Options
       </a>
 
       <a
         href="/best-vpn-for-tennis-streaming"
         className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
       >
-        Best VPN for Tennis Streaming
+        VPN Guide for Tennis Fans
       </a>
 
       <a
