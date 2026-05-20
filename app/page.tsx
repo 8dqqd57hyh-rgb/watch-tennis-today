@@ -349,7 +349,28 @@ export default function Home() {
               ATP and WTA schedules, Grand Slam coverage and country-based tennis viewing
               options.
             </p>
+<section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
+  <h2 className="text-3xl font-black text-white mb-5">
+    What Watch Tennis Today Does
+  </h2>
 
+  <p className="mb-4">
+    Watch Tennis Today is designed to help tennis fans follow ATP, WTA,
+    Challenger and Grand Slam tennis more easily.
+  </p>
+
+  <p className="mb-4">
+    The site combines live tennis matches, TV schedules, broadcaster guides,
+    player pages and tournament coverage in one place.
+  </p>
+
+  <p>
+    Because tennis broadcast rights vary between countries and tournaments,
+    many fans struggle to find official viewing information quickly. This site
+    aims to simplify that process with structured tennis viewing guides and
+    live match pages.
+  </p>
+</section>
             <div className="flex flex-wrap items-center gap-3 mb-10">
   <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400">
     ● Live updates
