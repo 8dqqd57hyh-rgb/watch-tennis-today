@@ -1,7 +1,10 @@
 export const metadata = {
   title: "About | Watch Tennis Today",
   description:
-    "About Watch Tennis Today — live tennis matches, TV schedules, official broadcasters and legal streaming information.",
+    "About Watch Tennis Today — a tennis schedule and streaming guide helping fans find live matches, tournament pages and legal broadcaster information.",
+  alternates: {
+    canonical: "https://watchtennistoday.com/about",
+  },
 };
 
 export default function AboutPage() {
@@ -16,89 +19,68 @@ export default function AboutPage() {
           About Watch Tennis Today
         </h1>
 
-        <div className="space-y-6 text-zinc-300 leading-8 text-lg">
+        <div className="space-y-8 text-zinc-300 leading-relaxed">
           <p>
-            Watch Tennis Today helps tennis fans find live tennis matches,
-            official broadcasters, TV schedules and streaming information for
-            ATP, WTA, Challenger and Grand Slam tournaments.
+            Watch Tennis Today is a tennis information website created to help
+            fans quickly find live tennis matches, daily schedules, tournament
+            pages, broadcaster information and legal ways to watch tennis online.
           </p>
 
-          <p>
-            The goal is to make tennis easier to follow by organizing live match
-            schedules, streaming availability and tournament coverage in one
-            place for fans around the world.
-          </p>
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">
+              What we cover
+            </h2>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>ATP and WTA live tennis matches</li>
+              <li>Grand Slam tournament pages</li>
+              <li>Daily tennis schedules</li>
+              <li>Player match pages</li>
+              <li>Country-specific broadcaster guides</li>
+              <li>Streaming safety and VPN-related guides</li>
+            </ul>
+          </section>
 
-          <p>
-            Watch Tennis Today does not host, stream or retransmit tennis
-            matches directly. The site links to official broadcasters,
-            tournament websites and legal streaming providers whenever possible.
-          </p>
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">
+              Our goal
+            </h2>
+            <p>
+              Tennis broadcasting can be confusing because availability changes
+              by country, tournament, provider and match round. Our goal is to
+              make it easier for fans to understand where a match may be shown
+              and what official sources they should check before watching.
+            </p>
+          </section>
 
-          <p>
-            Broadcasting rights may vary depending on country, tournament,
-            broadcaster and platform availability. Users should always verify
-            access and streaming rights with the official provider in their
-            region.
-          </p>
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">
+              Accuracy and updates
+            </h2>
+            <p>
+              Match schedules, scores, start times and broadcaster availability
+              can change quickly. We aim to keep pages useful and updated, but
+              users should always confirm final schedules and streaming access
+              through official tournament websites, broadcasters or streaming
+              providers.
+            </p>
+          </section>
 
-          <p>
-            Live tennis match information and schedules may be updated
-            automatically using sports data providers and publicly available
-            match information sources.
-          </p>
-
-          <p>
-            The site is designed for tennis fans looking for a simpler way to
-            discover what tennis matches are live today, where to watch them
-            legally and how to follow tournaments more easily.
-          </p>
+          <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-black text-white mb-3">
+              Contact us
+            </h2>
+            <p>
+              Found outdated information or a broken link? Please visit our{" "}
+              <a
+                href="/contact"
+                className="text-green-400 hover:text-green-300 font-bold"
+              >
+                Contact page
+              </a>{" "}
+              and send us a correction.
+            </p>
+          </section>
         </div>
-
-        <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-4">
-            What Watch Tennis Today Provides
-          </h2>
-
-          <ul className="list-disc pl-6 space-y-3 text-zinc-300 leading-8">
-            <li>Live tennis match information</li>
-            <li>ATP, WTA, Challenger and Grand Slam schedules</li>
-            <li>Country-based tennis broadcaster guides</li>
-            <li>Official streaming and TV channel information</li>
-            <li>Player, tournament and match pages</li>
-          </ul>
-        </section>
-
-        <section className="mt-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-4">
-            Legal Notice
-          </h2>
-
-          <p className="text-zinc-300 leading-8">
-            Watch Tennis Today is an informational website. We do not provide
-            illegal streams, pirated broadcasts or unauthorized tennis video
-            content. All users should watch tennis through official broadcasters,
-            licensed streaming platforms or tournament partners.
-          </p>
-        </section>
-
-        <section className="mt-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-4">
-            Contact
-          </h2>
-
-          <p className="text-zinc-300 leading-8 mb-5">
-            For corrections, partnership inquiries or feedback, please use the
-            contact page.
-          </p>
-
-          <a
-            href="/contact"
-            className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black hover:bg-green-400 transition-all"
-          >
-            Contact Watch Tennis Today
-          </a>
-        </section>
       </div>
     </main>
   );
