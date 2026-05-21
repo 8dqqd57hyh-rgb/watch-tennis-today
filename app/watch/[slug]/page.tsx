@@ -383,8 +383,8 @@ if (!match) {
 
           <div className="mb-10 space-y-4">
   <p className="text-xl text-zinc-300">
-    Where to watch {matchTitle} live, including official streaming
-    options, TV schedule, match time and live score updates.
+    Follow match timing, tournament details, official broadcaster
+availability and live tennis updates for {matchTitle}.
   </p>
 
   <p className="text-zinc-400 leading-8">
@@ -471,13 +471,13 @@ if (!match) {
   </p>
 
   <h2 className="mb-3 text-2xl font-black">
-    Can’t access the tennis stream?
+    Watching while traveling?
   </h2>
 
   <p className="mb-5 text-zinc-300 leading-7">
-    Tennis streaming availability depends on your location. If you are traveling,
-    check your usual streaming services securely with a VPN.
-  </p>
+  Tennis streaming availability can vary by region. If you are traveling,
+  use official broadcasters and protect your connection on public Wi-Fi.
+</p>
 
   <a
     href={affiliateLinks.nordvpn}
@@ -485,15 +485,27 @@ if (!match) {
     rel="nofollow sponsored noopener noreferrer"
     className="inline-flex rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
   >
-    Try NordVPN for tennis streaming
+    Protect Your Connection with NordVPN
   </a>
 </section>
 
 
           <section className="mt-16 text-zinc-300 space-y-6">
             <h2 className="text-3xl font-black">
-              Watch {matchTitle} Live Stream and TV Schedule
-            </h2>
+  {matchTitle} TV Schedule and Official Viewing Info
+</h2>
+
+            <p>
+  Streaming availability for this match can vary by country, tournament rights
+  and broadcaster agreements. We recommend checking official tennis platforms,
+  tournament websites and licensed TV providers before the match starts.
+</p>
+
+<p>
+  This page is updated to help fans understand the match status, start time,
+  tournament context and legal viewing options without hosting or embedding
+  unauthorized streams.
+</p>
 
             <p>
               {match.player1} faces {match.player2} at {match.tournament}. This{" "}
@@ -590,7 +602,7 @@ if (!match) {
 
 <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
   <h3 className="text-xl font-black mb-2">
-    Why is the stream not available in my country?
+    Why does tennis coverage vary by country?
   </h3>
   <p className="text-zinc-400">
     Tennis streaming rights are usually sold by country or region. If a stream
