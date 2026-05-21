@@ -162,7 +162,22 @@ export async function generateMetadata({
     },
   };
 }
+const playerDescriptions: Record<string, string> = {
+  "carlos alcaraz":
+    "Carlos Alcaraz is known for explosive movement, heavy topspin and aggressive baseline play, especially on clay courts.",
 
+  "novak djokovic":
+    "Novak Djokovic is one of the most successful Grand Slam players in tennis history, known for elite defense and consistency.",
+
+  "jannik sinner":
+    "Jannik Sinner is known for powerful groundstrokes, fast-paced rallies and strong hard-court performances.",
+
+  "aryna sabalenka":
+    "Aryna Sabalenka is recognized for aggressive shot-making and one of the most powerful serves on the WTA Tour.",
+
+  "iga swiatek":
+    "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
+};
 export default async function MatchPage({
   params,
 }: {
@@ -247,6 +262,10 @@ if (!match) {
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
   const matchTitle = `${match.player1} vs ${match.player2}`;
+  const playerDescription =
+  playerDescriptions[match.player1.toLowerCase()] ||
+  playerDescriptions[match.player2.toLowerCase()] ||
+  "Follow live tennis matches, streaming availability, TV schedule updates and official broadcaster information.";
 
   const relatedMatches = matches
     .filter((item) => item.id !== match.id && !isFinished(item.status))
@@ -362,10 +381,16 @@ if (!match) {
             </a>
           </h1>
 
-          <p className="text-xl text-zinc-300 mb-10">
-            Where to watch {matchTitle} live, including official streaming
-            options, TV schedule, match time and live score updates.
-          </p>
+          <div className="mb-10 space-y-4">
+  <p className="text-xl text-zinc-300">
+    Where to watch {matchTitle} live, including official streaming
+    options, TV schedule, match time and live score updates.
+  </p>
+
+  <p className="text-zinc-400 leading-8">
+    {playerDescription}
+  </p>
+</div>
           <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
   <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
   embed, or provide unauthorized live streams. We only provide information
