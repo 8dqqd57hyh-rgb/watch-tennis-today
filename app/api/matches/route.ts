@@ -40,10 +40,18 @@ function normalizeStatus(match: ApiTennisMatch) {
   const startsInFuture = startTime ? new Date(startTime) > new Date() : false;
 
   const hasScore =
-    (match.scores && match.scores.length > 0) ||
-    (match.event_final_result && match.event_final_result !== "-") ||
-    (match.event_game_result && match.event_game_result !== "-");
-
+  (match.scores && match.scores.length > 0) ||
+  (
+    match.event_final_result &&
+    match.event_final_result !== "-" &&
+    match.event_final_result !== "0-0"
+  ) ||
+  (
+    match.event_game_result &&
+    match.event_game_result !== "-" &&
+    match.event_game_result !== "0-0"
+  );
+  
   if (
     startsInFuture &&
     !hasScore &&
