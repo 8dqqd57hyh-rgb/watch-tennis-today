@@ -134,10 +134,10 @@ export default async function WatchPlayerLivePage({ params }: Props) {
         </h1>
 
         <p className="text-zinc-300 text-lg leading-8 mb-10">
-          Watch {player.name} live today with official broadcasters, streaming
-          platforms and {player.tour} tennis coverage. Find match schedules,
-          live streams and tournament information.
-        </p>
+  Follow {player.name} matches, tournament appearances, live tennis schedules
+  and official viewing information for major {player.tour} events and Grand
+  Slam tournaments.
+</p>
         <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900 p-6 text-zinc-300 leading-8">
   <h2 className="text-3xl font-black text-white mb-4">
     Why Watch {player.name} Live?
@@ -335,7 +335,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
           <p className="text-zinc-400 leading-8 mb-6">
             Check live tennis schedules, {player.tour} match coverage and
             upcoming {player.name} matches through official broadcasters and
-            legal streaming platforms.
+            official viewing platforms.
           </p>
 
           <a
@@ -405,7 +405,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
                   name: `Where can I watch ${player.name} live?`,
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: `${player.name} matches are available through official sports broadcasters and tennis streaming services.`,
+                    text: `${player.name} matches are available through official tennis coverage and regional broadcaster listings`,
                   },
                 },
                 {
@@ -413,7 +413,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
                   name: `Can I stream ${player.tour} tennis online?`,
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: `${player.tour} tennis is available through legal sports streaming services and TV broadcasters.`,
+                    text: `${player.tour} tennis is available through official sports coverage and regional TV availability`,
                   },
                 },
               ],
