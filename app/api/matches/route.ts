@@ -184,8 +184,12 @@ const response = await fetch(url, {
 });
 
   if (!response.ok) {
-    throw new Error(`API-Tennis request failed: ${method}`);
-  }
+  console.error(
+    `API-Tennis request failed: ${method} (${response.status})`
+  );
+
+  return [];
+}
 
   const data = await response.json();
 
@@ -225,6 +229,9 @@ export async function GET() {
     ]);
 
     const allMatches: ApiTennisMatch[] = [...liveMatches, ...fixtureMatches];
+    if (allMatches.length === 0) {
+  console.warn("No tennis matches returned from API-Tennis");
+}
 
     const uniqueMatches = Array.from(
       new Map(allMatches.map((match) => [match.event_key, match])).values()
@@ -268,9 +275,14 @@ export async function GET() {
 
     return NextResponse.json(matches);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch matches from API-Tennis" },
-      { status: 500 }
-    );
-  }
+  console.error("Failed to fetch tennis matches:", error);
+
+  return NextResponse.json(
+    {
+      matches: [],
+      error: "External tennis API temporarily unavailable",
+    },
+    { status: 200 }
+  );
+}
 }
