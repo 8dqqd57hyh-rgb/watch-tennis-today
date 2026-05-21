@@ -390,7 +390,7 @@ export default async function WatchPlayerLivePage({ params }: Props) {
         </section>
         <VpnPromo
   title={`Watching ${player.name} while traveling?`}
-  text={`${player.name} matches may be geo-blocked depending on your location and broadcaster rights. A VPN can help you safely access your usual tennis streaming services when abroad.`}
+  text={`${player.name} matches may have different broadcaster availability depending on your region and travel location. A VPN can help improve privacy and connection security while using public Wi-Fi or accessing your usual sports services abroad.`}
 />
 
         <script

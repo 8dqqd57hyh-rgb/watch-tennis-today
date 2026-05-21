@@ -193,8 +193,7 @@ export default async function PlayerPage({
   </span>
 </nav>
       <h1 className="text-3xl font-bold mb-6">
-        {playerName} Live Matches &
-        Streaming
+        {playerName} Tennis Matches & TV Schedule
       </h1>
 
       {playerMatches.some(
@@ -226,7 +225,7 @@ export default async function PlayerPage({
             href={`/watch/${getMatchSlug(match)}`}
             className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white hover:bg-red-400 transition-all"
           >
-            Watch Live Match →
+            Open Match Page →
           </a>
         ))}
     </div>
@@ -269,8 +268,10 @@ export default async function PlayerPage({
           </div>
         ) : (
           <p>
-            No upcoming matches found for {playerName} right now.
-            Check back later for live tennis updates and streaming information.
+            No upcoming matches are currently listed for {playerName}.
+
+You can still explore tournament coverage, TV schedules,
+official broadcaster information and live tennis updates.
           </p>
         )}
       </section>
@@ -354,7 +355,7 @@ export default async function PlayerPage({
         <div className="space-y-5 text-zinc-300 leading-8">
           <p>
             Tennis fans can watch {playerName} live on official sports broadcasters,
-            streaming platforms and tennis TV services depending on country and
+            official broadcasters and tennis TV services depending on country and
             tournament rights.
           </p>
 
@@ -387,23 +388,25 @@ export default async function PlayerPage({
       </section>
 
       <section className="space-y-4 text-sm leading-7">
-        <h2 className="text-2xl font-semibold">
-          Watch {playerName} Live
-        </h2>
+  <h2 className="text-2xl font-semibold">
+    About {playerName}
+  </h2>
 
-        <p>
-          Watch {playerName} live today including ATP and Grand Slam tennis matches.
-        </p>
+  <p>
+    This page helps tennis fans follow {playerName} matches, tournament
+    appearances, official broadcaster availability and live tennis schedules.
+  </p>
 
-        <p>
-          Find live streams, match schedules, TV channels and tournament information for{" "}
-          {playerName}.
-        </p>
+  <p>
+    Coverage may include ATP, WTA, Grand Slam and international tennis events
+    depending on the player’s current tournament schedule.
+  </p>
 
-        <p>
-          Follow upcoming matches and watch tennis online on Watch Tennis Today.
-        </p>
-      </section>
+  <p>
+    Watch Tennis Today provides tennis information, match timing updates and
+    viewing guidance for fans following professional tennis worldwide.
+  </p>
+</section>
      
       <script
   type="application/ld+json"

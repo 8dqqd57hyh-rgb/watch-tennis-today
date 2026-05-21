@@ -278,7 +278,7 @@ export default function Home() {
           href={`/watch/${matchSlug(featuredMatch)}`}
           className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
         >
-          Watch Match →
+          Match Details →
         </a>
 
         <a
@@ -313,7 +313,7 @@ export default function Home() {
 
   <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-8">
     Follow French Open live matches, today’s schedule, TV channels,
-    streaming platforms, player draws, scores and Grand Slam updates.
+    official broadcasters, player draws, scores and Grand Slam updates
   </p>
 
   <div className="flex flex-wrap gap-4">
@@ -345,9 +345,9 @@ export default function Home() {
             </h1>
 
             <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-10">
-              Find live tennis matches today, official TV broadcasters, streaming platforms,
-              ATP and WTA schedules, Grand Slam coverage and country-based tennis viewing
-              options.
+              Find live tennis matches today, official TV broadcasters,
+ATP and WTA schedules, Grand Slam coverage and country-based
+tennis viewing information.
             </p>
 <section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
   <h2 className="text-3xl font-black text-white mb-5">
@@ -549,7 +549,7 @@ export default function Home() {
 </a>
 
                       <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
-                        Watch Live →
+                        Open Match →
                       </div>
                     </a>
                   ))}
@@ -599,6 +599,9 @@ export default function Home() {
             {match.player2}
           </h3>
 
+<p className="text-zinc-400 text-sm mb-3 leading-6">
+  Upcoming tennis match with schedule information and tournament details.
+</p>
           <p className="text-zinc-400">
             {new Date(match.startTime).toLocaleString()}
           </p>
@@ -613,7 +616,7 @@ export default function Home() {
                 </h2>
 
                 <p className="text-zinc-400 mb-6 max-w-3xl">
-                  Popular live and upcoming tennis matches with official streaming options.
+                  Popular live and upcoming tennis matches with official broadcaster information.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -646,6 +649,11 @@ export default function Home() {
                           <br />
                           {match.player2}
                         </h3>
+
+                        <p className="text-zinc-400 text-sm mb-3 leading-6">
+  Follow match timing, tournament updates and official broadcaster
+  availability for this tennis match.
+</p>
 
                         <a
   href={`/tournament/${slugify(match.tournament)}`}
@@ -693,7 +701,7 @@ export default function Home() {
                 </h2>
 
                 <p className="text-zinc-400 mb-6 max-w-3xl">
-                  Follow tennis players, live matches, schedules and streaming information.
+                  Follow tennis players, live matches, schedules and tournament updates.
                 </p>
                 <div className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
   <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -887,16 +895,7 @@ export default function Home() {
                   <div className="pt-4 border-t border-zinc-800">
                     <p className="text-zinc-500 text-sm mb-3">Where to watch</p>
 
-                    <div className="mb-3">
-  <a
-    href={affiliateLinks.nordvpn}
-    target="_blank"
-    rel="nofollow sponsored noopener noreferrer"
-    className="inline-flex items-center rounded-full bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400 hover:bg-green-500/20 transition-all"
-  >
-    🌍 Traveling? Stream more securely
-  </a>
-</div>
+                
 
                     {match.watchProviders.length > 0 ? (
                       <div className="space-y-3">
@@ -971,16 +970,16 @@ export default function Home() {
 
           <div className="text-zinc-300 space-y-5 leading-8">
             <p>
-              Watch Tennis Today helps tennis fans find live tennis matches, official
-              streaming options, TV channels and daily tennis schedules in one place.
+              Watch Tennis Today helps tennis fans follow live tennis matches,
+official broadcasters, TV schedules and tournament coverage in one place.
               The site covers ATP, WTA, Grand Slam, Challenger and ITF matches with
               match status, start times, scores and tournament information.
             </p>
 
             <p>
               You can use Watch Tennis Today to check which tennis matches are live now,
-              where to watch upcoming matches, and which broadcasters or streaming
-              platforms may show tennis in your country. Coverage includes popular
+              where to follow upcoming matches, and which official broadcasters
+may provide tennis coverage in your country. Coverage includes popular
               players, major tournaments, live match pages and country-based tennis
               viewing guides.
             </p>
