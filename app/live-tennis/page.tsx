@@ -80,9 +80,37 @@ export const metadata = {
 export default async function LiveTennisPage() {
   const matches = await getMatches();
 
-  const liveMatches = matches.filter(
-    (match) => match.status === "LIVE"
-  );
+  function isLiveStatus(status: string) {
+  const normalizedStatus = status.toLowerCase().trim();
+
+  return [
+    "live",
+    "in progress",
+    "1st set",
+    "2nd set",
+    "3rd set",
+    "4th set",
+    "5th set",
+    "set 1",
+    "set 2",
+    "set 3",
+    "set 4",
+    "set 5",
+    "after delay",
+    "suspended",
+    "interrupted",
+  ].some((liveStatus) => normalizedStatus.includes(liveStatus));
+}
+
+const liveMatches = matches.filter((match) =>
+  isLiveStatus(match.status)
+);
+const fallbackMatches = matches
+  .filter((match) => match.status !== "FINISHED" && match.status !== "CANCELLED")
+  .slice(0, 12);
+
+const matchesToShow =
+  liveMatches.length > 0 ? liveMatches : fallbackMatches;
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -104,7 +132,7 @@ export default async function LiveTennisPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {liveMatches.map((match) => (
+          {matchesToShow.map((match) => (
             <div
               key={match.id}
               className="bg-zinc-900 border border-red-500 rounded-3xl p-6"
