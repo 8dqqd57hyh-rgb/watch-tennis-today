@@ -208,7 +208,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
-    "/live-tennis",
     "/players/live-now",
     "/players",
     "/players/atp",
@@ -241,7 +240,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/privacy-policy",
     "/terms",
     "/atp-live-today",
-    "/french-open-schedule",
     "/matches/live-now",
     "/compare",
 "/compare/tennis-tv-vs-espn",
@@ -258,11 +256,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-player-live/carlos-alcaraz",
     "/watch-player-live/novak-djokovic",
     "/watch-player-live/aryna-sabalenka",
-    "/watch-sinner-live",
-"/watch-swiatek-live",
-"/watch-alcaraz-live",
-"/watch-djokovic-live",
-"/watch-sabalenka-live",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
   ].map((path) => ({
@@ -349,14 +342,12 @@ const uniquePlayers = [
 // Add French Open / Roland Garros related pages
 const frenchOpenPages = [
   "/french-open-live",
-  "/french-open-live-stream",
   "/watch-french-open-online",
   "/french-open-tv-schedule",
   "/french-open-today",
   "/french-open-order-of-play",
   "/french-open-results",
   "/french-open-draw",
-  "/french-open-streaming-countries",
   "/where-to-watch-french-open",
 ];
 
