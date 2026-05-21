@@ -39,8 +39,16 @@ function normalizeStatus(match: ApiTennisMatch) {
   const startTime = getStartTime(match);
   const startsInFuture = startTime ? new Date(startTime) > new Date() : false;
 
-  const hasScore =
-  (match.scores && match.scores.length > 0) ||
+  const hasSetScore =
+  match.scores?.some((set) => {
+    const first = String(set.score_first ?? "").trim();
+    const second = String(set.score_second ?? "").trim();
+
+    return first !== "" && second !== "" && `${first}-${second}` !== "0-0";
+  }) ?? false;
+
+const hasScore =
+  hasSetScore ||
   (
     match.event_final_result &&
     match.event_final_result !== "-" &&
@@ -51,7 +59,7 @@ function normalizeStatus(match: ApiTennisMatch) {
     match.event_game_result !== "-" &&
     match.event_game_result !== "0-0"
   );
-  
+
   if (
     startsInFuture &&
     !hasScore &&
