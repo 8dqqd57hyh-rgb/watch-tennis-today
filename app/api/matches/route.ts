@@ -38,15 +38,27 @@ function normalizeCategory(eventType?: string) {
 
 function normalizeStatus(match: ApiTennisMatch) {
   const status = (match.event_status || "").toLowerCase();
+  const startTime = getStartTime(match);
+  const startsInFuture = startTime ? new Date(startTime) > new Date() : false;
 
   const hasScore =
     (match.scores && match.scores.length > 0) ||
-    (match.event_final_result &&
-      match.event_final_result !== "-") ||
-    (match.event_game_result &&
-      match.event_game_result !== "-");
+    (match.event_final_result && match.event_final_result !== "-") ||
+    (match.event_game_result && match.event_game_result !== "-");
 
-  // suspended / interrupted / delayed
+  if (
+    startsInFuture &&
+    !hasScore &&
+    (
+      status.includes("suspended") ||
+      status.includes("interrupted") ||
+      status.includes("delay") ||
+      status.includes("postponed")
+    )
+  ) {
+    return "UPCOMING";
+  }
+
   if (
     status.includes("suspended") ||
     status.includes("interrupted") ||
@@ -56,7 +68,6 @@ function normalizeStatus(match: ApiTennisMatch) {
     return "SUSPENDED";
   }
 
-  // live
   if (
     match.event_live === "1" ||
     status.includes("live") ||
@@ -66,24 +77,18 @@ function normalizeStatus(match: ApiTennisMatch) {
     return "LIVE";
   }
 
-  // finished
   if (status.includes("finished")) {
     return "FINISHED";
   }
 
-  // cancelled
   if (status.includes("cancel")) {
     return "CANCELLED";
   }
 
-  // retired
   if (status.includes("retired")) {
     return "RETIRED";
   }
 
-  // important fallback:
-  // if score already exists but match isn't finished,
-  // it's probably suspended/live — not upcoming
   if (hasScore) {
     return "SUSPENDED";
   }
