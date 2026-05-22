@@ -340,6 +340,13 @@ if (!liveMatch && archivedMatch) {
   );
 }
 if (!match) {
+  if (
+    decodedSlug.includes("-vs-") &&
+    decodedSlug.match(/\d+$/)
+  ) {
+    redirect("/");
+  }
+
   notFound();
 }
 
