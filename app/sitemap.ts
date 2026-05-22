@@ -248,17 +248,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 "/compare/nordvpn-vs-surfshark-for-tennis",
 "/rome-open-final-live",
     "/disclaimer",
-    "/advertise",
-    "/newsletter",
     "/how-to-watch-french-open-in-usa",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
-  ].map((path) => ({
+  ].map((path) => {
+  const livePages = [
+    "",
+    "/today",
+    "/live-tennis",
+    "/matches/live-now",
+    "/watch",
+  ];
+
+  return {
     url: `${BASE_URL}${path}`,
     lastModified: now,
-    changeFrequency: "hourly" as const,
+    changeFrequency: livePages.includes(path)
+      ? ("hourly" as const)
+      : ("weekly" as const),
     priority: path === "" ? 1 : 0.9,
-  }));
+  };
+});
 
   const importantMatches = matches.filter(isImportantMatch);
 
@@ -285,7 +295,7 @@ const uniquePlayers = [
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
     url: `${BASE_URL}/player/${player}`,
     lastModified: now,
-    changeFrequency: "hourly" as const,
+    changeFrequency: "daily" as const,
     priority: TOP_PLAYERS.has(player) ? 0.9 : 0.75,
   }));
 
@@ -303,7 +313,7 @@ const uniquePlayers = [
     (tournament) => ({
       url: `${BASE_URL}/tournament/${tournament}`,
       lastModified: now,
-      changeFrequency: "hourly" as const,
+      changeFrequency: "daily" as const,
       priority: 0.9,
     })
   );
