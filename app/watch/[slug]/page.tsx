@@ -6,7 +6,7 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
-
+import { getArchivedMatch } from "@/app/lib/matchArchive";
 
 export const dynamic = "force-dynamic";
 
@@ -192,71 +192,124 @@ export default async function MatchPage({
   const matches = await getMatches();
 
  const match = matches.find((item) => String(item.id) === matchId);
+ const archivedMatch = getArchivedMatch(matchId);
 
-if (!match) {
+if (!match && archivedMatch) {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-          <h1 className="text-4xl font-black mb-6">
-            Tennis Match Not Available
-          </h1>
+        <a href="/" className="text-zinc-400 hover:text-white">
+          ← Back
+        </a>
 
-          <p className="text-zinc-300 text-lg leading-8 mb-8">
-            This tennis match may have finished, been removed, rescheduled or
-            is temporarily unavailable.
-          </p>
-
-          <div className="flex flex-wrap gap-4 mb-12">
-            <a
-              href="/live-tennis"
-              className="bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
-            >
-              View Live Tennis
-            </a>
-
-            <a
-              href="/tv-schedule"
-              className="bg-zinc-800 text-white font-black px-6 py-4 rounded-2xl hover:bg-zinc-700 transition-all"
-            >
-              Tennis TV Schedule
-            </a>
+        <div className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
+          <div className="inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400 mb-5">
+            📁 Archived Match
           </div>
 
-          <section className="text-zinc-300 leading-relaxed space-y-6">
+          <h1 className="text-5xl font-black leading-tight mb-6">
+            {archivedMatch.player1}
+            <br />
+            vs
+            <br />
+            {archivedMatch.player2}
+          </h1>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
+              <p className="text-zinc-500 text-sm mb-2">
+                Tournament
+              </p>
+
+              <p className="font-bold text-lg">
+                {archivedMatch.tournament || "Unknown"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
+              <p className="text-zinc-500 text-sm mb-2">
+                Last Known Status
+              </p>
+
+              <p className="font-bold text-lg">
+                {archivedMatch.status || "Completed"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
+              <p className="text-zinc-500 text-sm mb-2">
+                Score
+              </p>
+
+              <p className="font-bold text-lg">
+                {archivedMatch.score || "Unavailable"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
+              <p className="text-zinc-500 text-sm mb-2">
+                Match Date
+              </p>
+
+              <p className="font-bold text-lg">
+                {archivedMatch.startTime
+                  ? new Date(archivedMatch.startTime).toLocaleString()
+                  : "Unavailable"}
+              </p>
+            </div>
+          </div>
+
+          <section className="space-y-5 text-zinc-300 leading-8 mb-10">
             <h2 className="text-3xl font-black text-white">
-              How Tennis Broadcast Rights Work
+              Match Coverage Archived
             </h2>
 
             <p>
-              Tennis broadcasting rights vary between tournaments, countries and
-              streaming services. Some matches may only be available in specific
-              regions.
+              This tennis match is no longer live and may have been removed
+              from active schedules and live feeds.
             </p>
 
             <p>
-              ATP, WTA, Challenger and Grand Slam tournaments are often shown by
-              different broadcasters depending on local agreements.
-            </p>
-
-            <h2 className="text-3xl font-black text-white">
-              Why Match Listings Can Change
-            </h2>
-
-            <p>
-              Match schedules may change because of weather delays, withdrawals,
-              court changes or tournament decisions.
+              Watch Tennis Today keeps archived match information available
+              to help fans revisit tournament coverage, player matchups,
+              scores and tennis schedules.
             </p>
 
             <p>
-              Official tournament websites and licensed broadcasters usually
-              provide the most accurate final schedule information.
+              Coverage availability may vary depending on tournament data
+              providers and regional broadcaster updates.
             </p>
           </section>
+
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="/live-tennis"
+              className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+            >
+              Live Tennis
+            </a>
+
+            <a
+              href="/today"
+              className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
+            >
+              Today’s Schedule
+            </a>
+
+            <a
+              href="/players"
+              className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
+            >
+              Tennis Players
+            </a>
+          </div>
         </div>
       </div>
     </main>
   );
+}
+if (!match) {
+  notFound();
 }
 
   const tournamentSlug = slugify(match.tournament);
