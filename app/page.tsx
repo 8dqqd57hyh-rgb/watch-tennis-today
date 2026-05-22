@@ -68,11 +68,9 @@ function slugify(text: string) {
 }
 
 function playerUrl(name: string) {
-  // Build a player page URL using the existing slugify helper
   const slug = slugify(name);
-  return `/players/${slug}`;
+  return `/player/${slug}`;
 }
-
 function matchSlug(match: Match) {
   const readablePart = `${match.player1}-vs-${match.player2}`
     .toLowerCase()
@@ -422,13 +420,6 @@ async function subscribeToFinals(
     </a>
 
     <a
-      href="/french-open-schedule"
-      className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
-    >
-      Today’s Schedule
-    </a>
-
-    <a
       href="/french-open-tv-schedule"
       className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
     >
@@ -446,6 +437,13 @@ async function subscribeToFinals(
 ATP and WTA schedules, Grand Slam coverage and country-based
 tennis viewing information.
             </p>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-4 mb-10 max-w-3xl">
+  <p className="text-sm text-zinc-400 leading-relaxed">
+    Watch Tennis Today does not host, stream, embed or retransmit live tennis
+    broadcasts. We provide informational coverage, schedules and links to
+    official broadcaster and streaming platform resources only.
+  </p>
+</div>
 <section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
   <h2 className="text-3xl font-black text-white mb-5">
     What Watch Tennis Today Does
@@ -1095,6 +1093,7 @@ tennis viewing information.
                             key={provider.name}
                             href={withTracking(provider.url, "homepage_match_card")}
                             target="_blank"
+                            rel="nofollow sponsored noopener noreferrer"
                             className="block rounded-2xl bg-green-500 text-black px-4 py-3 font-bold hover:bg-green-400 transition-all"
                           >
                             {provider.name}

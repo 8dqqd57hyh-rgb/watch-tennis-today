@@ -82,28 +82,6 @@ function titleCaseName(value: string) {
     .join(" ");
 }
 
-function getArchivedMatchInfoFromSlug(slug: string) {
-  const cleanSlug = slug.replace(/-\d+$/, "");
-  const matchId = getMatchIdFromSlug(slug);
-
-  const [player1Slug, player2Slug] = cleanSlug.split("-vs-");
-
-  if (!player1Slug || !player2Slug) {
-    return null;
-  }
-
-  return {
-    id: matchId || "unknown",
-    player1: titleCaseName(player1Slug),
-    player2: titleCaseName(player2Slug),
-    tournament: "Archived tennis match",
-    category: "Tennis",
-    status: "No longer live",
-    score: "Unavailable",
-    startTime: null,
-    watchProviders: [],
-  };
-}
 
 function slugify(value: string) {
   return value

@@ -94,12 +94,6 @@ export default function AuthorPage() {
                   Contact
                 </a>
 
-                <a
-                  href="/advertise"
-                  className="border border-zinc-700 px-5 py-3 rounded-2xl font-black hover:border-green-500 hover:text-green-400 transition-all"
-                >
-                  Advertise
-                </a>
               </div>
             </section>
           </div>

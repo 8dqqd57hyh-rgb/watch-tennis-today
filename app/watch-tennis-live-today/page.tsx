@@ -20,6 +20,12 @@ export default function WatchTennisLiveTodayPage() {
           schedules, scores and official streaming information.
         </p>
 
+        <p className="text-zinc-400 mt-4 max-w-3xl">
+  Watch Tennis Today does not host, embed or restream live tennis broadcasts.
+  We provide tennis schedules, match information and links to official
+  broadcaster resources only.
+</p>
+
         <div className="flex flex-wrap gap-3 mt-8">
           <Link
             href="/atp-live-today"

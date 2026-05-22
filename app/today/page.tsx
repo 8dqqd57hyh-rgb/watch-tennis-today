@@ -147,6 +147,12 @@ export default function TodayPage() {
             streaming options.
           </p>
 
+          <p className="text-zinc-400 mt-4 max-w-3xl">
+  Watch Tennis Today does not host, embed or restream live tennis broadcasts.
+  We provide match schedules, live score information and links to official
+  broadcaster resources only.
+</p>
+
           <div className="flex flex-wrap items-center gap-3 mt-6">
             <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400">
               🔴 Live updates
