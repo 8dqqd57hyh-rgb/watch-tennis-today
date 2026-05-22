@@ -22,6 +22,8 @@ type Match = {
   score: string;
   startTime: string;
   watchProviders: WatchProvider[];
+  round?: string;
+isFinal?: boolean;
 };
 
 const countries = [
@@ -207,6 +209,54 @@ export default function Home() {
   const topLiveMatches = matches
     .filter((match) => match.status === "LIVE" && hasPriorityPlayer(match))
     .slice(0, 4);
+
+  const upcomingFinals = matches
+  .filter((match) => {
+    const category = (match.category || "").toLowerCase();
+    const round = (match.round || "").toLowerCase();
+    const tournament = (match.tournament || "").toLowerCase();
+
+    const isAllowedCategory = category === "atp" || category === "wta";
+
+    const isFinalRound =
+      round.includes("final") &&
+      !round.includes("semi") &&
+      !round.includes("quarter");
+
+    const isGrandSlam =
+      tournament.includes("french open") ||
+      tournament.includes("roland garros") ||
+      tournament.includes("wimbledon") ||
+      tournament.includes("us open") ||
+      tournament.includes("australian open");
+
+    return (
+      isAllowedCategory &&
+      isFinalRound &&
+      !isGrandSlam &&
+      match.startTime &&
+      match.status !== "FINISHED" &&
+      match.status !== "CANCELLED"
+    );
+  })
+  .sort((a, b) => {
+    const categoryPriority = (category?: string) => {
+      const cat = (category || "").toLowerCase();
+
+      if (cat === "wta") return 1;
+      if (cat === "atp") return 2;
+
+      return 3;
+    };
+
+    const priorityDiff =
+      categoryPriority(a.category) - categoryPriority(b.category);
+
+    if (priorityDiff !== 0) return priorityDiff;
+
+    return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+  })
+  .slice(0, 6);
 
     const featuredMatch =
   topLiveMatches[0] ||
@@ -557,6 +607,63 @@ tennis viewing information.
               </section>
               
             )}
+
+            {upcomingFinals.length > 0 && (
+  <section className="mb-12 rounded-[2.5rem] border border-purple-500 bg-gradient-to-br from-purple-950/40 to-black p-8">
+    <div className="flex flex-wrap items-center gap-3 mb-5">
+      <span className="bg-purple-500 text-white text-sm font-black px-4 py-2 rounded-full">
+        🏆 FINALS
+      </span>
+
+      <span className="text-zinc-400">
+        Upcoming tennis finals with confirmed dates
+      </span>
+    </div>
+
+    <h2 className="text-4xl font-black mb-6">
+      Tennis Finals Coming Up
+    </h2>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {upcomingFinals.map((match) => (
+        <a
+          key={match.id}
+          href={`/watch/${matchSlug(match)}`}
+          className="block rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500 transition-all"
+        >
+          <div className="flex justify-between mb-3">
+            <span className="font-black text-purple-400">
+              FINAL
+            </span>
+
+            <span className="text-zinc-500">
+              {match.category}
+            </span>
+          </div>
+
+          <h3 className="text-2xl font-black mb-3">
+            {match.player1}
+            <br />
+            vs
+            <br />
+            {match.player2}
+          </h3>
+
+          <p className="text-zinc-400 mb-2">
+            {match.tournament}
+          </p>
+          <p className="text-xs text-zinc-500">
+  Round: {match.round}
+</p>
+
+          <p className="text-zinc-300 font-bold">
+            {new Date(match.startTime).toLocaleString()}
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
 <section className="mb-12">
   <h2 className="text-3xl font-black mb-5">
     ⏳ Starting Soon

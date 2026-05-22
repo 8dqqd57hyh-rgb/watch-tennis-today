@@ -13,6 +13,7 @@ type ApiTennisMatch = {
   event_type_type: string;
   tournament_name: string;
   event_live: string;
+  tournament_round?: string;
   scores?: {
     score_first: string;
     score_second: string;
@@ -269,6 +270,11 @@ export async function GET() {
           tournament,
           category,
           status: normalizeStatus(match),
+          round: match.tournament_round || "",
+isFinal:
+  (match.tournament_round || "").toLowerCase().includes("final") &&
+  !(match.tournament_round || "").toLowerCase().includes("semi") &&
+  Boolean(match.event_date),
           score: formatScore(match),
           startTime: getStartTime(match),
           watchProviders: getWatchProviders(category, tournament),
