@@ -60,6 +60,36 @@ async function getMatches(): Promise<Match[]> {
 function getMatchIdFromSlug(slug: string) {
   return slug.match(/(\d+)$/)?.[1] ?? null;
 }
+function titleCaseName(value: string) {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function getArchivedMatchInfoFromSlug(slug: string) {
+  const cleanSlug = slug.replace(/-\d+$/, "");
+  const matchId = getMatchIdFromSlug(slug);
+
+  const [player1Slug, player2Slug] = cleanSlug.split("-vs-");
+
+  if (!player1Slug || !player2Slug) {
+    return null;
+  }
+
+  return {
+    id: matchId || "unknown",
+    player1: titleCaseName(player1Slug),
+    player2: titleCaseName(player2Slug),
+    tournament: "Archived tennis match",
+    category: "Tennis",
+    status: "No longer live",
+    score: "Unavailable",
+    startTime: null,
+    watchProviders: [],
+  };
+}
 
 function slugify(value: string) {
   return value
@@ -192,7 +222,8 @@ export default async function MatchPage({
   const matches = await getMatches();
 
  const match = matches.find((item) => String(item.id) === matchId);
- const archivedMatch = getArchivedMatch(matchId);
+const archivedMatch =
+  getArchivedMatch(matchId) || getArchivedMatchInfoFromSlug(decodedSlug);
 
 if (!match && archivedMatch) {
   return (
