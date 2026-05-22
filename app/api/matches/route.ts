@@ -106,10 +106,19 @@ const hasScore =
   }
 
   if (hasScore) {
-    return "SUSPENDED";
-  }
+  return "SUSPENDED";
+}
 
+// fixtures without official time yet
+if (
+  !status ||
+  status.includes("scheduled") ||
+  status.includes("not started")
+) {
   return "UPCOMING";
+}
+
+return "UPCOMING";
 }
 
 function formatScore(match: ApiTennisMatch) {
@@ -230,45 +239,111 @@ try {
   return Array.isArray(data.result) ? data.result : [];
 }
 
-export async function GET() {
+async function getPlayerKeyByName(apiKey: string, playerName: string) {
+  const parts = playerName.trim().split(/\s+/);
+  const lastName = parts[parts.length - 1];
+
+  const players = await fetchApiTennis(
+    "get_players",
+    apiKey,
+    `&player_name=${encodeURIComponent(lastName)}`
+  );
+
+  console.log("PLAYER SEARCH QUERY:", lastName);
+  console.log("PLAYER SEARCH RESULTS:", players.slice(0, 10));
+
+  const normalizedTarget = playerName.toLowerCase();
+  const normalizedLastName = lastName.toLowerCase();
+
+  const player = players?.find((p: any) => {
+    const apiName = String(p.player_name || "").toLowerCase();
+
+    return (
+      apiName === normalizedTarget ||
+      apiName.includes(normalizedTarget) ||
+      apiName.includes(normalizedLastName)
+    );
+  });
+
+  console.log("RESOLVED PLAYER:", player);
+
+  return player?.player_key ? String(player.player_key) : null;
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  const playerKeyFromQuery = searchParams.get("playerKey");
+  const playerName = searchParams.get("playerName");
+
   const apiKey = process.env.API_TENNIS_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Missing API_TENNIS_KEY in .env.local" },
-      { status: 500 }
+      { matches: [], error: "API key is missing" },
+      { status: 200 }
     );
   }
 
-  const today = new Date();
-  const tomorrow = new Date();
+  const resolvedPlayerKey =
+    playerKeyFromQuery ||
+    (playerName ? await getPlayerKeyByName(apiKey, playerName) : null);
 
-  tomorrow.setDate(today.getDate() + 1);
+const today = new Date();
+const dateStopDate = new Date();
 
-  const dateStart = formatDate(today);
-  const dateStop = formatDate(tomorrow);
+dateStopDate.setDate(today.getDate() + 30);
+
+const dateStart = formatDate(today);
+const dateStop = formatDate(dateStopDate);
 
   try {
     const [liveMatches, fixtureMatches] = await Promise.all([
-      fetchApiTennis("get_livescore", apiKey),
-      fetchApiTennis(
-        "get_fixtures",
-        apiKey,
-        `&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw`
-      ),
-    ]);
+  fetchApiTennis(
+    "get_livescore",
+    apiKey,
+    resolvedPlayerKey
+      ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw`
+      : `&timezone=Europe/Warsaw`
+  ),
+  fetchApiTennis(
+    "get_fixtures",
+    apiKey,
+    `&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw${
+      resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
+    }`
+  ),
+]);
+
+console.log("FIXTURES COUNT:", fixtureMatches.length);
+
+console.log(
+  "RYBAKINA BY FULL RESPONSE",
+  fixtureMatches.filter((match: ApiTennisMatch) =>
+    JSON.stringify(match).toLowerCase().includes("rybakina")
+  )
+);
 
     const allMatches: ApiTennisMatch[] = [...liveMatches, ...fixtureMatches];
     if (allMatches.length === 0) {
-  console.warn("No tennis matches returned from API-Tennis");
+ 
 }
 
     const uniqueMatches = Array.from(
       new Map(allMatches.map((match) => [match.event_key, match])).values()
     );
 
-    const matches = uniqueMatches
-      .map((match) => {
+    const filteredMatches = playerName
+  ? uniqueMatches.filter((match) => {
+      const fullText = `${match.event_first_player} ${match.event_second_player}`.toLowerCase();
+      const parts = playerName.toLowerCase().split(/\s+/);
+
+      return parts.some((part) => fullText.includes(part));
+    })
+  : uniqueMatches;
+
+    const matches = filteredMatches
+  .map((match) => {
         const category = normalizeCategory(match.event_type_type);
         const tournament = match.tournament_name || "Unknown tournament";
 
