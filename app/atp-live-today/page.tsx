@@ -94,12 +94,72 @@ function formatDateTime(value: string | null) {
 export default async function AtpLiveTodayPage() {
   const matches = await getMatches();
 
-  const liveAtpMatches = matches.filter(
-    (m) => (m.status || "").toUpperCase() === "LIVE"
+  const liveAtpMatches = matches.filter((m) => {
+  const status = (m.status || "").toUpperCase();
+
+  const category = (
+    m.category || ""
+  ).toLowerCase();
+
+  const tournament = (
+    m.tournament || ""
+  ).toLowerCase();
+
+  const isITF =
+    tournament.includes("w15") ||
+    tournament.includes("w25") ||
+    tournament.includes("w35") ||
+    tournament.includes("w50") ||
+    tournament.includes("w75") ||
+    tournament.includes("w100") ||
+    tournament.includes("m15") ||
+    tournament.includes("m25") ||
+    tournament.includes("itf");
+
+  const isChallenger =
+    tournament.includes("challenger");
+
+  return (
+    status === "LIVE" &&
+    category === "atp" &&
+    !isITF &&
+    !isChallenger
   );
+});
 
   const upcomingAtpMatches = matches
-    .filter((m) => (m.status || "").toUpperCase() === "UPCOMING")
+    .filter((m) => {
+  const status = (m.status || "").toUpperCase();
+
+  const category = (
+    m.category || ""
+  ).toLowerCase();
+
+  const tournament = (
+    m.tournament || ""
+  ).toLowerCase();
+
+  const isITF =
+    tournament.includes("w15") ||
+    tournament.includes("w25") ||
+    tournament.includes("w35") ||
+    tournament.includes("w50") ||
+    tournament.includes("w75") ||
+    tournament.includes("w100") ||
+    tournament.includes("m15") ||
+    tournament.includes("m25") ||
+    tournament.includes("itf");
+
+  const isChallenger =
+    tournament.includes("challenger");
+
+  return (
+    status === "UPCOMING" &&
+    category === "atp" &&
+    !isITF &&
+    !isChallenger
+  );
+})
     .sort((a, b) => {
       const pr = statusPriority(a.status) - statusPriority(b.status);
       if (pr !== 0) return pr;
