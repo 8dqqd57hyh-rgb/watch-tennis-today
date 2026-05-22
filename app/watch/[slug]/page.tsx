@@ -57,6 +57,20 @@ async function getMatches(): Promise<Match[]> {
   return [];
 }
 
+async function getArchivedMatchById(id: string): Promise<Match | null> {
+  const baseUrl = await getBaseUrl();
+
+  const response = await fetch(`${baseUrl}/api/match-archive/${id}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) return null;
+
+  const data = await response.json();
+
+  return data.match || null;
+}
+
 function getMatchIdFromSlug(slug: string) {
   return slug.match(/(\d+)$/)?.[1] ?? null;
 }
@@ -221,11 +235,20 @@ export default async function MatchPage({
 
   const matches = await getMatches();
 
- const match = matches.find((item) => String(item.id) === matchId);
-const archivedMatch =
-  getArchivedMatch(matchId) || getArchivedMatchInfoFromSlug(decodedSlug);
+ const liveMatch = matches.find((item) => String(item.id) === matchId);
 
-if (!match && archivedMatch) {
+const archivedDbMatch = liveMatch
+  ? null
+  : await getArchivedMatchById(matchId);
+
+const match = liveMatch || archivedDbMatch;
+
+const archivedMatch =
+  match ||
+  getArchivedMatch(matchId) ||
+  getArchivedMatchInfoFromSlug(decodedSlug);
+
+if (!liveMatch && archivedMatch) {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
