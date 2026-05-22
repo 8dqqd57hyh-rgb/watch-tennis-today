@@ -331,9 +331,7 @@ const frenchOpenPages = [
 
  return [
   ...staticPages,
-  ...nextMatchPages,
   ...playerPages,
-  ...tvSchedulePages,
   ...tournamentPages,
   ...matchPages,
   ...frenchOpenPages.map((page) => ({
