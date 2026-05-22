@@ -132,6 +132,53 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [finalsEmail, setFinalsEmail] = useState("");
+const [finalsLoading, setFinalsLoading] = useState(false);
+const [finalsMessage, setFinalsMessage] = useState("");
+async function subscribeToFinals(
+  event: React.FormEvent<HTMLFormElement>
+) {
+  event.preventDefault();
+
+  if (!finalsEmail) return;
+
+  try {
+    setFinalsLoading(true);
+    setFinalsMessage("");
+
+    const response = await fetch("/api/subscribe-finals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: finalsEmail,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setFinalsMessage(
+        data.message || "Something went wrong"
+      );
+
+      return;
+    }
+
+    setFinalsMessage(
+      "🎾 You are subscribed to ATP/WTA finals alerts!"
+    );
+
+    setFinalsEmail("");
+  } catch (error) {
+    setFinalsMessage(
+      "Something went wrong. Please try again."
+    );
+  } finally {
+    setFinalsLoading(false);
+  }
+}
 
   useEffect(() => {
     async function loadMatches() {
@@ -623,7 +670,50 @@ tennis viewing information.
     <h2 className="text-4xl font-black mb-6">
       Tennis Finals Coming Up
     </h2>
+<div className="mb-8 rounded-3xl border border-purple-500/40 bg-black/40 p-5">
+  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div>
+      <h3 className="text-xl font-black mb-2">
+        🔔 ATP & WTA Finals Alerts
+      </h3>
 
+      <p className="text-zinc-400 max-w-2xl">
+        Get notified when new ATP or WTA finals are announced,
+        including match dates, start times and tournament updates.
+      </p>
+    </div>
+
+    <form
+  onSubmit={subscribeToFinals}
+      className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto"
+    >
+      <input
+  type="email"
+  name="email"
+  value={finalsEmail}
+  onChange={(event) =>
+    setFinalsEmail(event.target.value)
+  }
+        required
+        placeholder="Your email"
+        className="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 text-white min-w-[260px]"
+      />
+
+      <button
+        type="submit"
+        className="bg-purple-500 text-white px-6 py-3 rounded-2xl font-black hover:bg-purple-400 transition-all"
+      >
+        {finalsLoading ? "Submitting..." : "Notify Me"}
+      </button>
+    </form>
+    
+  </div>
+  {finalsMessage && (
+  <p className="text-sm text-zinc-300 mt-3">
+    {finalsMessage}
+  </p>
+)}
+</div>
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {upcomingFinals.map((match) => (
         <a
@@ -652,8 +742,8 @@ tennis viewing information.
           <p className="text-zinc-400 mb-2">
             {match.tournament}
           </p>
-          <p className="text-xs text-zinc-500">
-  Round: {match.round}
+          <p className="text-sm text-zinc-500">
+  {match.category} Final
 </p>
 
           <p className="text-zinc-300 font-bold">
@@ -681,7 +771,7 @@ tennis viewing information.
           match.status !== "FINISHED" &&
           match.status !== "CANCELLED"
       )
-      .slice(0, 6)
+     .slice(0, 4)
       .map((match) => (
         <a
           key={match.id}

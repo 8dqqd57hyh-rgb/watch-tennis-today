@@ -184,8 +184,8 @@ const slugParts = slug
   .split("-")
   .filter(Boolean);
 
-const lastName = slugParts[0];
-const firstName = slugParts[1];
+const firstName = slugParts[0];
+const lastName = slugParts[1];
 
 const firstInitial = firstName?.charAt(0);
 
