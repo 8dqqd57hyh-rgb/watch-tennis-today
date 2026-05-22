@@ -188,7 +188,7 @@ export default function RootLayout({
 >
   Affiliate Disclosure
 </a>
-<a href="/advertise">Advertise</a>
+
 <a
   href="/cookie-policy"
   className="hover:text-white transition-colors"

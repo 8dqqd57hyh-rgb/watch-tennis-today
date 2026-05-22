@@ -109,6 +109,11 @@ export default function WatchPage() {
             subscription or local access. Always confirm the final match listing
             on the official broadcaster website before purchasing or signing up.
           </p>
+          <p>
+  Watch Tennis Today does not host, embed or restream live tennis broadcasts.
+  We provide informational guides and links to official broadcaster resources
+  only.
+</p>
         </section>
       </div>
     </main>
