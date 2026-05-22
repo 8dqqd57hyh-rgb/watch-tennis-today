@@ -212,7 +212,16 @@ const response = await fetch(url, {
   return [];
 }
 
-  const data = await response.json();
+  const text = await response.text();
+
+let data;
+
+try {
+  data = JSON.parse(text);
+} catch (error) {
+  console.error("API-Tennis returned invalid JSON:", text.slice(0, 500));
+  return [];
+}
 
   if (data.success !== 1) {
     return [];
