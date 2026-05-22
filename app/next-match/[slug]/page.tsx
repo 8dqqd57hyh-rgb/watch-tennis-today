@@ -106,6 +106,10 @@ export async function generateMetadata({
   return {
     title: `${player.name} Next Match | Schedule, Opponent & Streaming`,
     description: `Find ${player.name}'s next tennis match, opponent, tournament schedule, live stream information and TV coverage.`,
+   robots: {
+  index: false,
+  follow: true,
+},
     alternates: {
       canonical: `https://watchtennistoday.com/next-match/${slug}`,
     },

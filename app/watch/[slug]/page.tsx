@@ -245,8 +245,7 @@ const match = liveMatch || archivedDbMatch;
 
 const archivedMatch =
   match ||
-  getArchivedMatch(matchId) ||
-  getArchivedMatchInfoFromSlug(decodedSlug);
+  getArchivedMatch(matchId);
 
 if (!liveMatch && archivedMatch) {
   return (

@@ -251,11 +251,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/advertise",
     "/newsletter",
     "/how-to-watch-french-open-in-usa",
-    "/watch-player-live/jannik-sinner",
-    "/watch-player-live/iga-swiatek",
-    "/watch-player-live/carlos-alcaraz",
-    "/watch-player-live/novak-djokovic",
-    "/watch-player-live/aryna-sabalenka",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
   ].map((path) => ({
@@ -294,23 +289,6 @@ const uniquePlayers = [
     priority: TOP_PLAYERS.has(player) ? 0.9 : 0.75,
   }));
 
-  const nextMatchPages: MetadataRoute.Sitemap = Object.keys(players).map(
-    (player) => ({
-      url: `${BASE_URL}/next-match/${player}`,
-      lastModified: now,
-      changeFrequency: "hourly" as const,
-      priority: 0.85,
-    })
-  );
-
-  const tvSchedulePages: MetadataRoute.Sitemap = Object.keys(players).map(
-    (player) => ({
-      url: `${BASE_URL}/tv-schedule/${player}`,
-      lastModified: now,
-      changeFrequency: "hourly" as const,
-      priority: 0.85,
-    })
-  );
 
   const uniqueTournaments = [
     ...new Set(
@@ -367,24 +345,6 @@ const frenchOpenPages = [
 
   {
     url: `${BASE_URL}/watch-french-open-in-usa`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
-  },
-  {
-    url: `${BASE_URL}/watch-french-open-in-uk`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
-  },
-  {
-    url: `${BASE_URL}/watch-french-open-in-canada`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
-  },
-  {
-    url: `${BASE_URL}/watch-french-open-in-australia`,
     lastModified: new Date(),
     changeFrequency: "daily" as const,
     priority: 0.9,

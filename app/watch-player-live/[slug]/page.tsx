@@ -85,6 +85,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Watch ${player.name} Live Tennis Matches | TV Channels & Streaming`,
     description: `Watch ${player.name} live tennis matches today. Find ${player.tour} schedules, TV broadcasters, streaming platforms and live tennis coverage.`,
+    robots: {
+  index: false,
+  follow: true,
+},
     alternates: {
       canonical: `https://watchtennistoday.com/watch-player-live/${slug}`,
     },

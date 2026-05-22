@@ -75,6 +75,10 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${player.name} TV Schedule | Watch Tennis Today`,
     description: `Find ${player.name} TV schedule, live stream information, match times and official tennis broadcasters.`,
+    robots: {
+  index: false,
+  follow: true,
+},
   };
 }
 
