@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { supabase } from "@/app/lib/supabase";
 
 type ApiTennisMatch = {
   event_key: string;
@@ -291,7 +292,23 @@ export async function GET() {
           new Date(b.startTime).getTime()
         );
       });
-
+await supabase.from("match_archive").upsert(
+  matches.map((match) => ({
+    id: String(match.id),
+    player1: match.player1,
+    player2: match.player2,
+    tournament: match.tournament,
+    category: match.category,
+    status: match.status,
+    score: match.score || null,
+    start_time: match.startTime || null,
+    watch_providers: match.watchProviders || [],
+    updated_at: new Date().toISOString(),
+  })),
+  {
+    onConflict: "id",
+  }
+);
     return NextResponse.json(matches);
   } catch (error) {
   console.error("Failed to fetch tennis matches:", error);
