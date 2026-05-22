@@ -151,6 +151,21 @@ function getMatchSlug(match: Match) {
   return `${readablePart}-${numericId}`;
 }
 
+function getPossiblePlayerNames(slug: string) {
+  const parts = slug
+    .split("-")
+    .map((part) => part.toLowerCase());
+
+  if (parts.length < 2) {
+    return [parts.join(" ")];
+  }
+
+  const firstLast = `${parts[0]} ${parts[1]}`;
+  const lastFirst = `${parts[1]} ${parts[0]}`;
+
+  return [firstLast, lastFirst];
+}
+
 export default async function PlayerPage({
   params,
 }: {
@@ -162,9 +177,32 @@ export default async function PlayerPage({
 
   const allMatches = await getMatches();
 
-  const playerMatches = allMatches.filter((match) =>
-    matchContainsExactPlayer(match, slug)
-  );
+  const possibleNames = getPossiblePlayerNames(slug);
+
+const slugParts = slug
+  .toLowerCase()
+  .split("-")
+  .filter(Boolean);
+
+const lastName = slugParts[0];
+const firstName = slugParts[1];
+
+const firstInitial = firstName?.charAt(0);
+
+const playerMatches = allMatches.filter((match) => {
+  const playerText = `${match.player1} ${match.player2}`
+    .toLowerCase()
+    .replace(/\./g, "");
+
+  const matchesFullName =
+    playerText.includes(`${firstName} ${lastName}`) ||
+    playerText.includes(`${lastName} ${firstName}`);
+
+  const matchesInitial =
+    playerText.includes(`${firstInitial} ${lastName}`);
+
+  return matchesFullName || matchesInitial;
+});
 
   const relatedPlayers = PLAYERS
     .filter((playerSlug) => playerSlug !== slug)
@@ -240,30 +278,52 @@ export default async function PlayerPage({
         {playerMatches.length > 0 ? (
           <div className="space-y-3">
             {playerMatches.map((match) => (
-              <div key={match.id}>
-                <p className="font-semibold">
-                  {match.player1} vs {match.player2}
-                </p>
-
-                <a
-  href={`/tournament/${slugify(match.tournament)}`}
-  className="hover:text-green-400 transition-colors"
+            <div
+  key={match.id}
+  className="rounded-2xl border border-zinc-200 p-4"
 >
-  {match.tournament}
-</a>
+  <div className="flex items-start justify-between gap-3 mb-3">
+    <div>
+      <p className="font-bold text-lg">
+        {match.player1} vs {match.player2}
+      </p>
 
-                <div className="flex items-center gap-2 mt-2">
-                  {match.status === "LIVE" ? (
-                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                      LIVE NOW
-                    </span>
-                  ) : (
-                    <span className="bg-zinc-700 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      {match.status}
-                    </span>
-                  )}
-                </div>
-              </div>
+      <a
+        href={`/tournament/${slugify(match.tournament)}`}
+        className="text-zinc-600 hover:text-green-500 transition-colors"
+      >
+        {match.tournament}
+      </a>
+    </div>
+
+    <span className="text-xs font-bold text-zinc-500">
+      {match.category}
+    </span>
+  </div>
+
+  <div className="flex flex-wrap items-center gap-3 mb-4">
+    {match.status === "LIVE" ? (
+      <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+        LIVE NOW
+      </span>
+    ) : (
+      <span className="bg-zinc-700 text-white text-xs font-bold px-3 py-1 rounded-full">
+        {match.status}
+      </span>
+    )}
+
+    <span className="text-sm text-zinc-600">
+      {new Date(match.startTime).toLocaleString()}
+    </span>
+  </div>
+
+  <a
+    href={`/watch/${getMatchSlug(match)}`}
+    className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800 transition-all"
+  >
+    Open Match →
+  </a>
+</div>
             ))}
           </div>
         ) : (
