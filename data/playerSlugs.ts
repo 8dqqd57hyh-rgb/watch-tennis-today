@@ -39,6 +39,18 @@ export function playerNameMatchesSlug(playerName: string, slug: string) {
 export function matchContainsExactPlayer(match: any, slug: string) {
   if (!match || !slug) return false;
 
+  const parts = slug
+    .toLowerCase()
+    .split("-")
+    .filter(Boolean);
+
+  const firstName = parts[0];
+  const lastName = parts[1];
+
+  if (!firstName || !lastName) return false;
+
+  const firstInitial = firstName.charAt(0);
+
   const fields = [
     "event_first_player",
     "event_second_player",
@@ -48,12 +60,21 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     "player2",
   ];
 
-  for (const field of fields) {
-    const val = match[field];
-    if (typeof val === "string" && playerNameMatchesSlug(val, slug)) {
-      return true;
-    }
-  }
+  return fields.some((field) => {
+    const value = match[field];
 
-  return false;
+    if (typeof value !== "string") return false;
+
+    const normalized = normalizePlayerName(value).replace(/\./g, "");
+
+    return (
+      normalized === `${firstInitial} ${lastName}` ||
+      normalized === `${lastName} ${firstInitial}` ||
+      normalized === `${firstName} ${lastName}` ||
+      normalized === `${lastName} ${firstName}` ||
+      normalized.includes(`${firstInitial} ${lastName}`) ||
+      normalized.includes(`${firstName} ${lastName}`) ||
+      normalized.includes(lastName)
+    );
+  });
 }

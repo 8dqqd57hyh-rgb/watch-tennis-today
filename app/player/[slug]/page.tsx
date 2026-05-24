@@ -4,6 +4,7 @@ import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players } from "@/data/players";
 import { matchContainsExactPlayer } from "@/data/playerSlugs";
+import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 
 export const dynamic = "force-dynamic";
 
@@ -179,29 +180,21 @@ export default async function PlayerPage({
 
   const possibleNames = getPossiblePlayerNames(slug);
 
-const slugParts = slug
-  .toLowerCase()
-  .split("-")
-  .filter(Boolean);
 
-const firstName = slugParts[0];
-const lastName = slugParts[1];
-
-const firstInitial = firstName?.charAt(0);
+const slugLastName = slug
+  .split("-")[0]
+  ?.toLowerCase();
 
 const playerMatches = allMatches.filter((match) => {
-  const playerText = `${match.player1} ${match.player2}`
+  const players = [
+    match.player1,
+    match.player2,
+  ]
+    .join(" ")
     .toLowerCase()
     .replace(/\./g, "");
 
-  const matchesFullName =
-    playerText.includes(`${firstName} ${lastName}`) ||
-    playerText.includes(`${lastName} ${firstName}`);
-
-  const matchesInitial =
-    playerText.includes(`${firstInitial} ${lastName}`);
-
-  return matchesFullName || matchesInitial;
+  return players.includes(slugLastName);
 });
 
   const relatedPlayers = PLAYERS
@@ -312,9 +305,11 @@ const playerMatches = allMatches.filter((match) => {
       </span>
     )}
 
-    <span className="text-sm text-zinc-600">
-      {new Date(match.startTime).toLocaleString()}
-    </span>
+   <span className="text-sm text-zinc-600">
+  {match.startTime
+    ? new Date(match.startTime).toLocaleString()
+    : "Time to be announced"}
+</span>
   </div>
 
   <a
@@ -336,54 +331,10 @@ official broadcaster information and live tennis updates.
         )}
       </section>
 
-      <section className="mb-10 rounded-xl border p-5 bg-gray-50">
-        <h2 className="text-2xl font-semibold mb-3">
-          Get notified when {playerName} plays
-        </h2>
-
-        <p className="mb-4">
-          Leave your email and get updates about {playerName} live matches,
-          schedule changes and streaming information.
-        </p>
-
-        <form
-          action="https://formspree.io/f/xeenwwbk"
-          method="POST"
-          className="flex gap-3"
-        >
-            <input
-  type="hidden"
-  name="_redirect"
-  value="https://watchtennistoday.com/newsletter-confirmation"
+    <PlayerSubscribeBox
+  playerName={playerName}
+  playerSlug={slug}
 />
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="Your email"
-            className="flex-1 rounded-lg border px-4 py-2"
-          />
-
-          <input
-            type="hidden"
-            name="player"
-            value={playerName}
-          />
-
-          <input
-            type="hidden"
-            name="source"
-            value="player-page"
-          />
-
-          <button
-            type="submit"
-            className="rounded-lg bg-black px-5 py-2 text-white"
-          >
-            Notify me
-          </button>
-        </form>
-      </section>
 
       <section className="mb-10">
         <h2 className="text-2xl font-semibold mb-4">
