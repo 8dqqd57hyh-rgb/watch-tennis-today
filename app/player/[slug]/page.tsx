@@ -181,9 +181,9 @@ export default async function PlayerPage({
   const possibleNames = getPossiblePlayerNames(slug);
 
 
-const slugLastName = slug
-  .split("-")[0]
-  ?.toLowerCase();
+const slugParts = slug.split("-").map((part) => part.toLowerCase());
+
+const possibleLastNames = slugParts;
 
 const playerMatches = allMatches.filter((match) => {
   const players = [
@@ -194,7 +194,7 @@ const playerMatches = allMatches.filter((match) => {
     .toLowerCase()
     .replace(/\./g, "");
 
-  return players.includes(slugLastName);
+ return possibleLastNames.some((name) => players.includes(name));
 });
 
   const relatedPlayers = PLAYERS
