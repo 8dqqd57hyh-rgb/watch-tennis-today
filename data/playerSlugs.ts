@@ -39,10 +39,7 @@ export function playerNameMatchesSlug(playerName: string, slug: string) {
 export function matchContainsExactPlayer(match: any, slug: string) {
   if (!match || !slug) return false;
 
-  const parts = slug
-    .toLowerCase()
-    .split("-")
-    .filter(Boolean);
+  const parts = slug.toLowerCase().split("-").filter(Boolean);
 
   const firstName = parts[0];
   const lastName = parts[1];
@@ -60,21 +57,18 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     "player2",
   ];
 
+  const exactPlayerRegex = new RegExp(
+    `(^|[^a-z])(${firstInitial}\\.?\\s*${lastName}|${firstName}\\s+${lastName}|${lastName}\\s+${firstInitial}\\.?|${lastName}\\s+${firstName})([^a-z]|$)`,
+    "i"
+  );
+
   return fields.some((field) => {
     const value = match[field];
 
     if (typeof value !== "string") return false;
 
-    const normalized = normalizePlayerName(value).replace(/\./g, "");
+    const normalized = normalizePlayerName(value);
 
-    return (
-      normalized === `${firstInitial} ${lastName}` ||
-      normalized === `${lastName} ${firstInitial}` ||
-      normalized === `${firstName} ${lastName}` ||
-      normalized === `${lastName} ${firstName}` ||
-      normalized.includes(`${firstInitial} ${lastName}`) ||
-      normalized.includes(`${firstName} ${lastName}`) ||
-      normalized.includes(lastName)
-    );
+    return exactPlayerRegex.test(normalized);
   });
 }
