@@ -39,7 +39,7 @@ export const comparisons = [
     slug: "nordvpn-vs-surfshark-for-tennis",
     title: "NordVPN vs Surfshark for Tennis",
     description:
-      "Compare VPNs for tennis streaming, travel and geo-unblocking.",
+      "Compare VPNs for tennis streaming, travel privacy and secure public Wi-Fi use.",
     left: "NordVPN",
     right: "Surfshark",
     bestForLeft: "Best for speed and reliability",

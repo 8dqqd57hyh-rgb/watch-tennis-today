@@ -215,6 +215,8 @@ export default async function CountryPage({
           ← Back
         </a>
 
+        
+
         <section className="mt-8 mb-10">
           <h1 className="text-5xl font-black mb-4">
             🌍 Where to Watch Tennis in {readable}
@@ -237,6 +239,9 @@ export default async function CountryPage({
     TV coverage and legal streaming information for major tennis events.
   </p>
 </div>
+<p className="text-sm text-zinc-500 mt-4">
+  Last updated: May 2026
+</p>
         </section>
 
         {/* Tennis Broadcasters in {readable} */}
@@ -329,8 +334,8 @@ export default async function CountryPage({
     <p className="text-zinc-300 leading-8 mb-6">
   Tennis broadcasters and streaming services may vary depending on your
   location. If you travel frequently during ATP, WTA or Grand Slam
-  tournaments, a VPN may help you securely access your existing streaming
-  subscriptions while abroad.
+  tournaments, a VPN may help protect your connection and improve privacy when using
+your existing streaming subscriptions on public or shared networks.
 </p>
 
     <div className="flex flex-wrap gap-4 mb-8">
@@ -347,7 +352,7 @@ export default async function CountryPage({
         href="/best-vpn-for-tennis-streaming"
         className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
       >
-        VPN Guide for Tennis Fans
+        Privacy Guide for Tennis Fans
       </a>
 
       <a

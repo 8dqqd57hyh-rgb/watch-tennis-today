@@ -4,6 +4,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
+import CookieBanner from "@/app/components/CookieBanner";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -212,6 +214,7 @@ export default function RootLayout({
 </footer>
   <Analytics />
   <GoogleAnalytics gaId="G-Y9EP52NP5T" />
+  <CookieBanner />
 </body>
     </html>
   );

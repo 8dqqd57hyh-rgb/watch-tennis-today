@@ -59,7 +59,7 @@ export default function HowToWatchTennisSafelyAbroadPage() {
           <p className="text-zinc-300 leading-8 mb-6">
             When watching tennis while traveling, NordVPN can help keep your
             connection private, especially on hotel, airport or public Wi-Fi.
-            It can also help improve privacy and connection security when accessing tennis services while traveling internationally.
+            It can help improve privacy and connection security while using online tennis services on public networks.
           </p>
 
           <a
@@ -165,7 +165,7 @@ export default function HowToWatchTennisSafelyAbroadPage() {
     href="/best-vpn-for-tennis-streaming"
     className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
   >
-    Best VPN for Tennis Streaming
+    Privacy Tools for Watching Tennis Abroad
   </a>
 </div>
         </section>

@@ -170,20 +170,43 @@ export default async function TvSchedulePage({
             </div>
           </section>
         ) : (
-          <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
-            <h2 className="text-3xl font-black mb-4">
-              No matches found
-            </h2>
+          <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-8">
+  <h2 className="text-3xl font-black mb-4">
+    No scheduled matches are currently available
+  </h2>
 
-            <p className="text-zinc-400 leading-8">
-              No scheduled matches currently available for {player.name}.
-            </p>
-          </section>
+  <p className="text-zinc-400 leading-8 mb-6">
+    Match schedules for {player.name} may change depending on tournament
+    updates, qualification rounds, broadcaster availability and official
+    tennis data feeds.
+  </p>
+
+  <p className="text-zinc-400 leading-8 mb-6">
+    Please check back later for updated TV schedules, live tennis coverage
+    and upcoming match information.
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <a
+      href="/live-tennis"
+      className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+    >
+      Live Tennis Today
+    </a>
+
+    <a
+      href="/tournament"
+      className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+    >
+      Tennis Tournaments
+    </a>
+  </div>
+</section>
         )}
 
         <VpnPromo
           title={`Watching ${player.name} from another country?`}
-          text={`Tennis broadcasts and streaming platforms may differ depending on your region and broadcaster rights.`}
+          text={`Tennis broadcasters and streaming availability may vary depending on tournament rights and your current location.`}
         />
 
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
