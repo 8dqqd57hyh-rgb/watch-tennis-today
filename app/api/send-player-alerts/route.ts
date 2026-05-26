@@ -152,7 +152,7 @@ export async function GET(request: Request) {
     : subscription.email;
 
 const resendResult = await resend.emails.send({
-  from: "Watch Tennis Today <onboarding@resend.dev>",
+  from: "Watch Tennis Today <alerts@watchtennistoday.com>",
   to: recipientEmail,
   subject: getSubject(subscription.player_name, match, alertType),
   html: getEmailHtml(subscription.player_name, subscription.player_slug, match),

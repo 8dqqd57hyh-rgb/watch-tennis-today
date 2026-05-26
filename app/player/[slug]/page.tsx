@@ -119,6 +119,19 @@ async function getMatches(): Promise<Match[]> {
     cache: "no-store",
   });
 
+  if (!response.ok) {
+    console.error("/api/matches failed:", response.status);
+    return [];
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error("/api/matches returned non-JSON:", text.slice(0, 300));
+    return [];
+  }
+
   const data = await response.json();
 
   if (Array.isArray(data)) {
@@ -152,20 +165,6 @@ function getMatchSlug(match: Match) {
   return `${readablePart}-${numericId}`;
 }
 
-function getPossiblePlayerNames(slug: string) {
-  const parts = slug
-    .split("-")
-    .map((part) => part.toLowerCase());
-
-  if (parts.length < 2) {
-    return [parts.join(" ")];
-  }
-
-  const firstLast = `${parts[0]} ${parts[1]}`;
-  const lastFirst = `${parts[1]} ${parts[0]}`;
-
-  return [firstLast, lastFirst];
-}
 
 export default async function PlayerPage({
   params,
@@ -178,24 +177,11 @@ export default async function PlayerPage({
 
   const allMatches = await getMatches();
 
-  const possibleNames = getPossiblePlayerNames(slug);
 
 
-const slugParts = slug.split("-").map((part) => part.toLowerCase());
-
-const possibleLastNames = slugParts;
-
-const playerMatches = allMatches.filter((match) => {
-  const players = [
-    match.player1,
-    match.player2,
-  ]
-    .join(" ")
-    .toLowerCase()
-    .replace(/\./g, "");
-
- return possibleLastNames.some((name) => players.includes(name));
-});
+const playerMatches = allMatches.filter((match) =>
+  matchContainsExactPlayer(match, slug)
+);
 
   const relatedPlayers = PLAYERS
     .filter((playerSlug) => playerSlug !== slug)
