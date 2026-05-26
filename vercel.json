@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/send-player-alerts",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
