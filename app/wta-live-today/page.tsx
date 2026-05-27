@@ -92,7 +92,27 @@ function formatDateTime(value: string | null) {
   });
 }
 
-export default function WtaLiveTodayPage() {
+export default async function WtaLiveTodayPage() {
+  const matches = await getMatches();
+
+  const wtaMatches = matches.filter((match) => {
+    const category = match.category?.toLowerCase() || "";
+    const tournament = match.tournament?.toLowerCase() || "";
+
+    return category.includes("wta") || tournament.includes("wta");
+  });
+
+  const liveWtaMatches = wtaMatches
+    .filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()))
+    .sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+
+  const upcomingWtaMatches = wtaMatches
+    .filter((match) => match.status?.toUpperCase() === "UPCOMING")
+    .sort((a, b) => {
+      if (!a.startTime) return 1;
+      if (!b.startTime) return -1;
+      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+    });
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
@@ -143,7 +163,7 @@ export default function WtaLiveTodayPage() {
         <section className="mb-14">
           <h2 className="text-4xl font-black mb-6">🔴 WTA Live Now</h2>
 
-          {/* {liveWtaMatches.length > 0 ? (
+         {liveWtaMatches.length > 0 ? (
             <div className="space-y-5">
               {liveWtaMatches.map((match) => (
                 <a
@@ -180,7 +200,7 @@ export default function WtaLiveTodayPage() {
                 </a>
               ))}
             </div>
-          ) : ( */}
+          ) : ( 
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">
                 No WTA matches live right now
@@ -199,7 +219,7 @@ export default function WtaLiveTodayPage() {
             ⏰ Upcoming WTA Matches Today
           </h2>
 
-          {/* {upcomingWtaMatches.length > 0 ? (
+         {upcomingWtaMatches.length > 0 ? (
             <div className="space-y-5">
               {upcomingWtaMatches.map((match) => (
                 <a
@@ -236,7 +256,7 @@ export default function WtaLiveTodayPage() {
                 </a>
               ))}
             </div>
-          ) : ( */}
+          ) : ( 
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">
                 No upcoming WTA matches found
