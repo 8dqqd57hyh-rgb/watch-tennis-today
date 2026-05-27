@@ -18,6 +18,11 @@ type WatchProvider = {
   note?: string;
 };
 
+type ArchivedStatusInput = {
+  status?: string | null;
+  startTime?: string | null;
+};
+
 type Match = {
   id: string;
   player1: string;
@@ -106,20 +111,24 @@ function formatDateTime(value: string | null) {
   });
 }
 
-function isArchivedUpcomingPast(match: Match) {
+function isArchivedUpcomingPast(match: ArchivedStatusInput) {
   if (match.status?.toUpperCase() !== "UPCOMING") return false;
   if (!match.startTime) return false;
 
   return new Date(match.startTime).getTime() < Date.now();
 }
 
-function getArchivedDisplayStatus(match: Match) {
+function getArchivedDisplayStatus(match: ArchivedStatusInput) {
   if (isArchivedUpcomingPast(match)) return "COMPLETED";
 
   return match.status || "Completed";
 }
 
-function getArchivedDisplayScore(match: Match) {
+function getArchivedDisplayScore(
+  match: ArchivedStatusInput & {
+    score?: string;
+  }
+) {
   const score = String(match.score || "").trim();
 
   if (
@@ -129,7 +138,7 @@ function getArchivedDisplayScore(match: Match) {
     return "Final score unavailable";
   }
 
-  return score || "Unavailable";
+  return score || "Final score unavailable";
 }
 
 function isLive(status: string) {
