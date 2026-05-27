@@ -290,11 +290,14 @@ export async function GET(request: Request) {
     (playerName ? await getPlayerKeyByName(apiKey, playerName) : null);
 
 const today = new Date();
-const dateStopDate = new Date();
 
+const dateStartDate = new Date();
+dateStartDate.setDate(today.getDate() - 3);
+
+const dateStopDate = new Date();
 dateStopDate.setDate(today.getDate() + 30);
 
-const dateStart = formatDate(today);
+const dateStart = formatDate(dateStartDate);
 const dateStop = formatDate(dateStopDate);
 
   try {
