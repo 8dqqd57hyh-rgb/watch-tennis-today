@@ -98,7 +98,7 @@ export default function CookiePolicyPage() {
               For more details about how information may be collected and used,
               please read our{" "}
               <a
-                href="/privacy-policy"
+                href="/privacy"
                 className="text-green-400 hover:text-green-300 font-bold"
               >
                 Privacy Policy

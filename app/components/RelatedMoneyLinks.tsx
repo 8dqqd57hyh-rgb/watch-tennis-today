@@ -12,7 +12,7 @@ export default function RelatedMoneyLinks({
   return (
     <section className="my-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
       <h2 className="mb-4 text-3xl font-black text-white">
-        More Tennis Streaming Guides
+        More Tennis TV and Schedule Guides
       </h2>
 
       <p className="mb-6 text-zinc-400 leading-7">
