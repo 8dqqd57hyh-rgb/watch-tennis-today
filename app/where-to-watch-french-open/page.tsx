@@ -35,22 +35,22 @@ export default function WhereToWatchFrenchOpenPage() {
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="/where-to-watch-french-open"
-              className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
-            >
-              Where to Watch →
-            </a>
+  href="#countries"
+  className="rounded-2xl bg-zinc-800 border border-zinc-700 px-6 py-4 text-lg font-black text-white hover:border-orange-500 hover:text-orange-400 transition-all"
+>
+  View Countries →
+</a>
 
-            <a
-              href="/french-open-live-stream"
-              className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
-            >
-              Live Stream Guide
-            </a>
+<a
+  href="/french-open-live"
+  className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
+>
+  French Open Live Hub
+</a>
           </div>
         </section>
 
-        <section className="mb-12">
+       <section id="countries" className="mb-12">
   <h2 className="text-4xl font-black mb-6">
     🌍 Where to Watch French Open by Country
   </h2>

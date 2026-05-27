@@ -1,5 +1,6 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import VpnPromo from "@/app/components/VpnPromo";
+import AuthorBox from "@/app/components/AuthorBox";
 
 export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
@@ -89,11 +90,15 @@ export default async function FrenchOpenLivePage() {
             channels, streaming options, scores and today’s Grand Slam tennis
             coverage.
           </p>
+          <p className="mt-4 text-sm text-zinc-500">
+  Updated regularly during the tournament using official tennis schedule and
+  broadcaster information sources.
+</p>
 
           <div className="flex flex-wrap gap-4">
             <a
               href="#matches"
-              className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
+              className="rounded-2xl bg-zinc-800 border border-zinc-700 px-6 py-4 text-lg font-black text-white hover:border-orange-500 hover:text-orange-400 transition-all"
             >
               View Matches →
             </a>
@@ -199,7 +204,24 @@ export default async function FrenchOpenLivePage() {
   title="Watching French Open while traveling?"
   text="Streaming availability can vary by country and broadcaster rights. If you are traveling, privacy tools can help protect your connection when using public or shared Wi-Fi."
 />
+<section className="mt-16 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+  <h2 className="text-2xl font-black mb-4">
+    Editorial note
+  </h2>
 
+  <p className="text-zinc-300 leading-8 mb-4">
+    Watch Tennis Today independently tracks tennis schedules, official
+    broadcaster availability and tournament coverage information for ATP, WTA
+    and Grand Slam events.
+  </p>
+
+  <p className="text-zinc-400 leading-8">
+    Our goal is to help tennis fans follow matches through reliable,
+    legal and easy-to-understand viewing information without hosting
+    unauthorized streams.
+  </p>
+</section>
+<AuthorBox />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
