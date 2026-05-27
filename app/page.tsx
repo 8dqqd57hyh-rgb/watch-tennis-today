@@ -466,6 +466,84 @@ tennis viewing information.
     live match pages.
   </p>
 </section>
+
+<section className="mb-12 grid grid-cols-1 lg:grid-cols-3 gap-5">
+  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
+    <h2 className="text-2xl font-black mb-4">
+      How We Choose Tennis Viewing Options
+    </h2>
+
+    <p className="text-zinc-300 leading-7 mb-4">
+      Tennis broadcast rights change by country, tournament and platform.
+      Watch Tennis Today prioritizes official broadcasters, tournament pages,
+      recognized streaming services and clearly labelled partner offers.
+    </p>
+
+    <p className="text-zinc-400 leading-7">
+      We avoid promoting unofficial streams. When a viewing option cannot be
+      confirmed, we label it carefully instead of presenting it as guaranteed.
+    </p>
+  </div>
+
+  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
+    <h2 className="text-2xl font-black mb-4">
+      What You Can Check Here
+    </h2>
+
+    <ul className="space-y-3 text-zinc-300 leading-7">
+      <li>• Which tennis matches are live or starting soon.</li>
+      <li>• Which tournament a match belongs to.</li>
+      <li>• Where official TV or streaming coverage may be available.</li>
+      <li>• Player pages for popular ATP and WTA names.</li>
+      <li>• Country guides for legal tennis streaming options.</li>
+    </ul>
+  </div>
+
+  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
+    <h2 className="text-2xl font-black mb-4">
+      Why This Matters For Tennis Fans
+    </h2>
+
+    <p className="text-zinc-300 leading-7 mb-4">
+      A match that is easy to watch in one country may be locked behind a
+      different broadcaster somewhere else. Grand Slams, ATP, WTA and smaller
+      events often have separate rights agreements.
+    </p>
+
+    <p className="text-zinc-400 leading-7">
+      This site brings the key information into one tennis-focused hub so fans
+      can compare routes before searching across multiple apps and TV guides.
+    </p>
+  </div>
+</section>
+
+<section className="mb-12 rounded-[2.5rem] border border-zinc-800 bg-zinc-950 p-8">
+  <div className="max-w-4xl">
+    <p className="text-sm font-black uppercase tracking-[0.2em] text-green-400 mb-4">
+      Editorial note
+    </p>
+
+    <h2 className="text-3xl md:text-4xl font-black mb-5">
+      We Focus On Legal Tennis Streaming Information
+    </h2>
+
+    <div className="space-y-5 text-zinc-300 leading-8">
+      <p>
+        Watch Tennis Today is an informational tennis guide. The site does not
+        provide pirated streams, hidden video embeds, illegal IPTV links or
+        access to copyrighted broadcasts without permission.
+      </p>
+
+      <p>
+        Our goal is to help fans understand where tennis is usually shown,
+        which official services may carry a match, and how viewing options can
+        differ between countries. For final confirmation, users should always
+        check the official broadcaster or tournament source before purchasing a
+        subscription or planning to watch a specific match.
+      </p>
+    </div>
+  </div>
+</section>
             <div className="flex flex-wrap items-center gap-3 mb-10">
   <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400">
     ● Live updates
@@ -1127,6 +1205,61 @@ tennis viewing information.
           </div>
         )}
 
+
+        <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
+          <h2 className="text-3xl font-black mb-6">
+            Frequently Asked Questions About Watching Tennis Online
+          </h2>
+
+          <div className="space-y-6 text-zinc-300 leading-8">
+            <div>
+              <h3 className="text-xl font-black text-white mb-2">
+                Does Watch Tennis Today stream tennis matches directly?
+              </h3>
+              <p>
+                No. Watch Tennis Today does not host, embed or retransmit live
+                tennis video. We provide schedules, match pages and links to
+                official broadcaster or streaming information.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-black text-white mb-2">
+                Why do tennis streaming options change by country?
+              </h3>
+              <p>
+                Tennis broadcast rights are usually sold by territory. A Grand
+                Slam, ATP event or WTA tournament may be available on different
+                TV channels and streaming platforms depending on where a viewer
+                is located.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-black text-white mb-2">
+                How should I confirm where to watch a specific match?
+              </h3>
+              <p>
+                Use this site as a discovery guide, then confirm the final
+                schedule on the official broadcaster, tournament website or app.
+                Start times, court assignments and rights availability can
+                change close to match time.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-black text-white mb-2">
+                Are free tennis streams safe?
+              </h3>
+              <p>
+                Many unofficial free stream sites can expose users to intrusive
+                ads, misleading buttons, malware risks or copyright problems.
+                We recommend using official broadcasters and legitimate
+                streaming services whenever possible.
+              </p>
+            </div>
+          </div>
+        </section>
 
         <section className="mt-16 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
           <h2 className="text-3xl font-black mb-5">
