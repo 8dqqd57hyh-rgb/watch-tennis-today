@@ -3,8 +3,8 @@ export const metadata = {
   description:
     "Privacy Policy for Watch Tennis Today, including analytics, advertising, cookies, affiliate links and external websites.",
   alternates: {
-    canonical: "https://watchtennistoday.com/privacy-policy",
-  },
+  canonical: "https://watchtennistoday.com/privacy",
+},
 };
 
 export default function PrivacyPolicyPage() {

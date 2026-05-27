@@ -211,6 +211,13 @@ export default function RootLayout({
   How We Source Data
 </a>
   </div>
+  <div className="max-w-7xl mx-auto px-6 pb-8">
+  <p className="text-xs text-zinc-500 leading-relaxed max-w-3xl">
+    Watch Tennis Today provides information about legal tennis broadcasts,
+    tournament schedules, TV coverage, player matches, and viewing options.
+    We do not host, provide, or stream copyrighted content.
+  </p>
+</div>
 </footer>
   <Analytics />
   <GoogleAnalytics gaId="G-Y9EP52NP5T" />
