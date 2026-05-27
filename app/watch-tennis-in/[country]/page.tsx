@@ -334,8 +334,9 @@ export default async function CountryPage({
     <p className="text-zinc-300 leading-8 mb-6">
   Tennis broadcasters and streaming services may vary depending on your
   location. If you travel frequently during ATP, WTA or Grand Slam
-  tournaments, a VPN may help protect your connection and improve privacy when using
-your existing streaming subscriptions on public or shared networks.
+tournaments, secure internet connections and privacy tools may help
+protect your personal data while using streaming services on public
+or shared networks.
 </p>
 
     <div className="flex flex-wrap gap-4 mb-8">
@@ -343,9 +344,9 @@ your existing streaming subscriptions on public or shared networks.
         href={affiliateLinks.nordvpn}
         target="_blank"
         rel="nofollow sponsored noopener noreferrer"
-        className="inline-block rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+        className="inline-block rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
       >
-        View VPN Options
+        Learn More About Privacy Tools
       </a>
 
       <a
@@ -438,6 +439,26 @@ your existing streaming subscriptions on public or shared networks.
     >
       Best Ways to Watch Tennis Online
     </a>
+    <a
+  href="/atp-live-today"
+  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+>
+  ATP Live Matches
+</a>
+
+<a
+  href="/wta-live-today"
+  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+>
+  WTA Live Matches
+</a>
+
+<a
+  href="/grand-slam-live"
+  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+>
+  Grand Slam Coverage
+</a>
   </div>
 </section>
       </div>

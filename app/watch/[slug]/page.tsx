@@ -501,6 +501,9 @@ availability and live tennis updates for {matchTitle}.
       timeStyle: "short",
     })}
   </p>
+  <p className="text-zinc-500 text-sm">
+  Match information is updated using official tournament and tennis schedule data sources.
+</p>
 </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -537,7 +540,7 @@ availability and live tennis updates for {matchTitle}.
                     href={provider.url}
                     target="_blank"
                     rel="nofollow sponsored noopener noreferrer"
-                    className="block bg-green-500 text-black rounded-2xl px-5 py-4 font-black hover:bg-green-400 transition-all"
+                   className="block bg-zinc-800 border border-zinc-700 text-white rounded-2xl px-5 py-4 font-black hover:border-green-500 hover:text-green-400 transition-all"
                   >
                     {provider.name}
                     {provider.note ? (
@@ -574,10 +577,13 @@ availability and live tennis updates for {matchTitle}.
     href={affiliateLinks.nordvpn}
     target="_blank"
     rel="nofollow sponsored noopener noreferrer"
-    className="inline-flex rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
+    className="inline-flex rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
   >
-    Protect Your Connection with NordVPN
+    Learn About Streaming Privacy
   </a>
+  <p className="mt-4 text-xs text-zinc-500">
+  Some links on Watch Tennis Today may be affiliate links.
+</p>
 </section>
 
 
@@ -618,6 +624,9 @@ availability and live tennis updates for {matchTitle}.
               Get notified before {matchTitle} starts, including live stream
               updates and tennis schedule alerts.
             </p>
+            <p className="text-zinc-500 text-sm mb-6">
+  Email alerts are optional and can be unsubscribed from at any time.
+</p>
 
             <form
               action="https://formspree.io/f/xeenwwbk"
@@ -804,6 +813,26 @@ availability and live tennis updates for {matchTitle}.
               >
                 Best Ways to Watch Tennis Online
               </a>
+              <a
+  href="/atp-live-today"
+  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
+>
+  ATP Live Matches
+</a>
+
+<a
+  href="/wta-live-today"
+  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
+>
+  WTA Live Matches
+</a>
+
+<a
+  href="/grand-slam-live"
+  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
+>
+  Grand Slam Coverage
+</a>
             </div>
           </section>
         </article>

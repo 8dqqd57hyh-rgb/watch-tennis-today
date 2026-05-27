@@ -188,9 +188,9 @@ export default async function AtpLiveTodayPage() {
         </p>
 
         <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <a className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black">Live Scores</a>
-          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">Schedule</a>
-          <a className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">How to Watch</a>
+          <a href="/live-tennis" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black">Live Scores</a>
+<a href="/today" className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">Schedule</a>
+<a href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 px-6 py-4 font-black">How to Watch</a>
         </div>
 
         {/* ATP-specific highlights */}
@@ -259,6 +259,13 @@ export default async function AtpLiveTodayPage() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">No ATP matches live right now</h3>
 
+              <p className="mt-4 text-zinc-400 max-w-2xl mx-auto">
+  ATP schedules may change throughout the day depending on weather,
+  tournament delays and broadcaster updates. You can still explore
+  upcoming matches, Grand Slam coverage and player pages across
+  Watch Tennis Today.
+</p>
+
               <p className="text-zinc-400 leading-8">
                 Check upcoming ATP matches below or visit the full live tennis
                 schedule for ATP, WTA, Challenger and ITF matches.
@@ -308,6 +315,11 @@ export default async function AtpLiveTodayPage() {
           ) : (
             <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
               <h3 className="text-2xl font-black mb-3">No upcoming ATP matches found</h3>
+
+              <p className="mt-4 text-zinc-400 max-w-2xl mx-auto">
+  Upcoming ATP schedules are updated regularly as tournaments confirm
+  match times and court assignments.
+</p>
 
               <p className="text-zinc-400 leading-8">
                 There may be no ATP matches available in the current schedule.

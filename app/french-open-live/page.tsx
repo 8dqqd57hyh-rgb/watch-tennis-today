@@ -5,6 +5,7 @@ export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
   description:
     "Follow French Open live matches today. Find Roland Garros live streams, TV channels, schedules, scores and official ways to watch tennis online.",
+  alternates: { canonical: "https://watchtennistoday.com/french-open-live" },
 };
 
 export default async function FrenchOpenLivePage() {
@@ -64,6 +65,24 @@ export default async function FrenchOpenLivePage() {
             <br />
             Roland Garros Matches Today
           </h1>
+
+          <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+  <h2 className="text-2xl font-black mb-4">
+    Why French Open coverage matters
+  </h2>
+
+  <p className="text-zinc-300 leading-8 mb-4">
+    The French Open, also known as Roland Garros, is the biggest clay-court
+    tennis tournament of the season. Match schedules can change quickly because
+    of weather, long five-set matches and court availability.
+  </p>
+
+  <p className="text-zinc-400 leading-8">
+    Watch Tennis Today tracks French Open viewing information, official
+    broadcaster options, match timing and tournament context to help fans follow
+    the event through legal and reliable sources.
+  </p>
+</section>
 
           <p className="max-w-3xl text-lg leading-8 text-zinc-300 mb-8">
             Follow French Open live matches, Roland Garros schedules, TV
@@ -153,12 +172,12 @@ export default async function FrenchOpenLivePage() {
 
         <section className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            ["French Open Live Stream", "/french-open-live-stream"],
+  ["French Open Streaming Guide", "/where-to-watch-french-open"],
             ["French Open Today", "/french-open-today"],
             ["French Open Order of Play", "/french-open-order-of-play"],
             ["French Open Results", "/french-open-results"],
             ["French Open Draw", "/french-open-draw"],
-            ["Streaming Countries", "/french-open-streaming-countries"],
+            ["Where to Watch French Open", "/where-to-watch-french-open"],
           ].map(([title, href]) => (
             <a
               key={href}
@@ -177,9 +196,9 @@ export default async function FrenchOpenLivePage() {
         </section>
 
         <VpnPromo
-          title="Watching French Open while traveling?"
-          text="Some French Open streams are geo-restricted. A VPN can help you safely access your streaming subscriptions while abroad."
-        />
+  title="Watching French Open while traveling?"
+  text="Streaming availability can vary by country and broadcaster rights. If you are traveling, privacy tools can help protect your connection when using public or shared Wi-Fi."
+/>
 
         <script
           type="application/ld+json"
