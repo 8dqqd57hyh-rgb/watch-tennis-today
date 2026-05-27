@@ -106,6 +106,32 @@ function formatDateTime(value: string | null) {
   });
 }
 
+function isArchivedUpcomingPast(match: Match) {
+  if (match.status?.toUpperCase() !== "UPCOMING") return false;
+  if (!match.startTime) return false;
+
+  return new Date(match.startTime).getTime() < Date.now();
+}
+
+function getArchivedDisplayStatus(match: Match) {
+  if (isArchivedUpcomingPast(match)) return "COMPLETED";
+
+  return match.status || "Completed";
+}
+
+function getArchivedDisplayScore(match: Match) {
+  const score = String(match.score || "").trim();
+
+  if (
+    isArchivedUpcomingPast(match) &&
+    (!score || score === "-" || score === "0-0")
+  ) {
+    return "Final score unavailable";
+  }
+
+  return score || "Unavailable";
+}
+
 function isLive(status: string) {
   return status.toUpperCase() === "LIVE";
 }
@@ -263,7 +289,7 @@ if (!liveMatch && archivedMatch) {
               </p>
 
               <p className="font-bold text-lg">
-                {archivedMatch.status || "Completed"}
+                {getArchivedDisplayStatus(archivedMatch)}
               </p>
             </div>
 
@@ -273,7 +299,7 @@ if (!liveMatch && archivedMatch) {
               </p>
 
               <p className="font-bold text-lg">
-                {archivedMatch.score || "Unavailable"}
+                {getArchivedDisplayScore(archivedMatch)}
               </p>
             </div>
 

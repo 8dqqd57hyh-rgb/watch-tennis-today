@@ -342,28 +342,47 @@ console.log(
     })
   : uniqueMatches;
 
-    const matches = filteredMatches
-  .map((match) => {
-        const category = normalizeCategory(match.event_type_type);
-        const tournament = match.tournament_name || "Unknown tournament";
+    const mappedMatches = filteredMatches.map((match) => {
+      const category = normalizeCategory(match.event_type_type);
+      const tournament = match.tournament_name || "Unknown tournament";
 
-        return {
-          id: String(match.event_key),
-          player1: match.event_first_player || "Unknown player",
-          player2: match.event_second_player || "Unknown player",
-          tournament,
-          category,
-          status: normalizeStatus(match),
-          round: match.tournament_round || "",
-isFinal:
-  (match.tournament_round || "").toLowerCase().includes("final") &&
-  !(match.tournament_round || "").toLowerCase().includes("semi") &&
-  Boolean(match.event_date),
-          score: formatScore(match),
-          startTime: getStartTime(match),
-          watchProviders: getWatchProviders(category, tournament),
-        };
-      })
+      return {
+        id: String(match.event_key),
+        player1: match.event_first_player || "Unknown player",
+        player2: match.event_second_player || "Unknown player",
+        tournament,
+        category,
+        status: normalizeStatus(match),
+        round: match.tournament_round || "",
+        isFinal:
+          (match.tournament_round || "").toLowerCase().includes("final") &&
+          !(match.tournament_round || "").toLowerCase().includes("semi") &&
+          Boolean(match.event_date),
+        score: formatScore(match),
+        startTime: getStartTime(match),
+        watchProviders: getWatchProviders(category, tournament),
+      };
+    });
+
+    await supabase.from("match_archive").upsert(
+      mappedMatches.map((match) => ({
+        id: String(match.id),
+        player1: match.player1,
+        player2: match.player2,
+        tournament: match.tournament,
+        category: match.category,
+        status: match.status,
+        score: match.score || null,
+        start_time: match.startTime || null,
+        watch_providers: match.watchProviders || [],
+        updated_at: new Date().toISOString(),
+      })),
+      {
+        onConflict: "id",
+      }
+    );
+
+    const matches = mappedMatches
       .filter(
         (match) =>
           match.status !== "FINISHED" &&
@@ -382,23 +401,7 @@ isFinal:
           new Date(b.startTime).getTime()
         );
       });
-await supabase.from("match_archive").upsert(
-  matches.map((match) => ({
-    id: String(match.id),
-    player1: match.player1,
-    player2: match.player2,
-    tournament: match.tournament,
-    category: match.category,
-    status: match.status,
-    score: match.score || null,
-    start_time: match.startTime || null,
-    watch_providers: match.watchProviders || [],
-    updated_at: new Date().toISOString(),
-  })),
-  {
-    onConflict: "id",
-  }
-);
+
     return NextResponse.json(matches);
   } catch (error) {
   console.error("Failed to fetch tennis matches:", error);
