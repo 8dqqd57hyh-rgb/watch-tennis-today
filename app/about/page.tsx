@@ -57,6 +57,34 @@ export default function AboutPage() {
           </section>
 
           <section>
+  <h2 className="text-2xl font-black text-white mb-3">
+    Why this site exists
+  </h2>
+
+  <p>
+    Tennis fans often need to check several different sources to find out
+    when a match starts, whether it is live, which tournament it belongs to
+    and where it may be available to watch legally. Watch Tennis Today was
+    created to bring that information together in a simple, tennis-focused
+    format.
+  </p>
+</section>
+
+<section>
+  <h2 className="text-2xl font-black text-white mb-3">
+    Our approach
+  </h2>
+
+  <p>
+    We combine tennis schedule information, tournament context, country-based
+    broadcaster notes and practical viewing guides. We do not host live streams
+    or promote illegal streaming sources. Our goal is to point users toward
+    official broadcasters, legal streaming platforms and reliable tournament
+    information.
+  </p>
+</section>
+
+          <section>
             <h2 className="text-2xl font-black text-white mb-3">
               Accuracy and updates
             </h2>

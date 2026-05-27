@@ -242,6 +242,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/atp-live-today",
     "/matches/live-now",
     "/compare",
+    "/cookie-policy",
+"/editorial-policy",
+"/how-we-source-data",
 "/compare/tennis-tv-vs-espn",
 "/compare/tennis-tv-vs-eurosport",
 "/compare/espn-vs-tennis-channel",
@@ -350,12 +353,5 @@ const frenchOpenPages = [
     changeFrequency: "daily" as const,
     priority: 0.9,
   })),
-
-  {
-    url: `${BASE_URL}/watch-french-open-in-usa`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.9,
-  },
 ];
 }
