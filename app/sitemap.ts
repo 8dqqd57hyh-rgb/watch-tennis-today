@@ -238,6 +238,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-live-today",
     "/about",
     "/contact",
+     "/privacy",
     "/privacy-policy",
     "/terms",
     "/matches/live-now",
