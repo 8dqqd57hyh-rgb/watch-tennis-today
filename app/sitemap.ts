@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
+import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
 export const dynamic = "force-dynamic";
 
 type Match = {
@@ -308,21 +309,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const importantMatches = matches.filter(isImportantMatch);
 
   const dynamicPlayers = [
-  ...new Set(
-    importantMatches
-      .flatMap((match) => [
-        ...splitPlayers(match.player1),
-        ...splitPlayers(match.player2),
-      ])
-      .filter(isGoodPlayerName)
-      .map(slugify)
-      .filter(Boolean)
-  ),
-];
+    ...new Set(
+      importantMatches
+        .flatMap((match) => [
+          ...splitPlayers(match.player1),
+          ...splitPlayers(match.player2),
+        ])
+        .map(getCanonicalPlayerSlug)
+        .filter((slug): slug is keyof typeof players => Boolean(slug))
+    ),
+  ];
+
+  const canonicalTopPlayers = Array.from(TOP_PLAYERS)
+    .map(getCanonicalPlayerSlug)
+    .filter((slug): slug is keyof typeof players => Boolean(slug));
 
 const uniquePlayers = [
   ...new Set([
-    ...Array.from(TOP_PLAYERS),
+    ...canonicalTopPlayers,
     ...dynamicPlayers,
   ]),
 ].slice(0, 120);
@@ -331,7 +335,7 @@ const uniquePlayers = [
     url: `${BASE_URL}/player/${player}`,
     lastModified: now,
     changeFrequency: "daily" as const,
-    priority: TOP_PLAYERS.has(player) ? 0.9 : 0.75,
+    priority: canonicalTopPlayers.includes(player) ? 0.9 : 0.75,
   }));
 
 

@@ -1,49 +1,17 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
-import { players } from "@/data/players";
-import { matchContainsExactPlayer } from "@/data/playerSlugs";
+import { players, type PlayerSlug } from "@/data/players";
+import { getCanonicalPlayerSlug, matchContainsExactPlayer } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
 
-const PLAYERS = [
-  "sinner-jannik",
-  "alcaraz-carlos",
-  "djokovic-novak",
-  "swiatek-iga",
-  "sabalenka-aryna",
-  "gauff-coco",
-  "zverev-alexander",
-  "medvedev-daniil",
-
-  "rune-holger",
-  "fritz-taylor",
-  "rublev-andrey",
-  "ruud-casper",
-  "tsitsipas-stefanos",
-  "de-minaur-alex",
-  "musetti-lorenzo",
-  "paul-tommy",
-  "shelton-ben",
-  "tiafoe-frances",
-  "humbert-ugo",
-  "dimitrov-grigor",
-
-  "pegula-jessica",
-  "rybakina-elena",
-  "ostapenko-jelena",
-  "kasatkina-daria",
-  "navarro-emma",
-  "paolini-jasmine",
-  "zheng-qinwen",
-  "vondrousova-marketa",
-  "sakkari-maria",
-  "jabeur-ons",
-];
+const PLAYERS = Object.keys(players) as PlayerSlug[];
 
 export async function generateStaticParams() {
   return PLAYERS.map((slug) => ({
@@ -63,12 +31,8 @@ type Match = {
 };
 
 function formatPlayerName(slug?: string) {
-  if (!slug) return "Tennis Player";
-
-  return slug
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  const canonicalSlug = getCanonicalPlayerSlug(slug || "");
+  return canonicalSlug ? players[canonicalSlug].name : "Tennis Player";
 }
 
 export async function generateMetadata({
@@ -77,8 +41,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const canonicalSlug = getCanonicalPlayerSlug(slug);
 
-  const playerName = formatPlayerName(slug);
+  if (!canonicalSlug) {
+    return {
+      title: "Player Not Found | Watch Tennis Today",
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const playerName = players[canonicalSlug].name;
 
   return {
     title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
@@ -86,7 +58,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${playerName} Matches Today & TV Schedule`,
       description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
-      url: `https://watchtennistoday.com/player/${slug}`,
+      url: `https://watchtennistoday.com/player/${canonicalSlug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
@@ -174,19 +146,27 @@ export default async function PlayerPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const canonicalSlug = getCanonicalPlayerSlug(slug);
 
-  const playerName = formatPlayerName(slug);
+  if (!canonicalSlug) {
+    return {
+      title: "Player Not Found | Watch Tennis Today",
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const playerName = players[canonicalSlug].name;
 
   const allMatches = await getMatches();
 
 
 
 const playerMatches = allMatches.filter((match) =>
-  matchContainsExactPlayer(match, slug)
+  matchContainsExactPlayer(match, canonicalSlug)
 );
 
   const relatedPlayers = PLAYERS
-    .filter((playerSlug) => playerSlug !== slug)
+    .filter((playerSlug) => playerSlug !== canonicalSlug)
     .slice(0, 6);
 
   return (
@@ -357,7 +337,7 @@ const playerMatches = allMatches.filter((match) =>
 
     <PlayerSubscribeBox
   playerName={playerName}
-  playerSlug={slug}
+  playerSlug={canonicalSlug}
 />
 
       <section className="mb-10">
@@ -493,7 +473,7 @@ const playerMatches = allMatches.filter((match) =>
           "@type": "ListItem",
           position: 3,
           name: playerName,
-          item: `https://watchtennistoday.com/player/${slug}`,
+          item: `https://watchtennistoday.com/player/${canonicalSlug}`,
         },
       ],
     }),
