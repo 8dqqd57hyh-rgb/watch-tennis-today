@@ -1,3 +1,8 @@
+
+export const metadata = {
+  title: "WTA Players",
+  description: "WTA tennis players, schedules, rankings and match coverage.",
+};
 const wtaPlayers = [
   "Iga Swiatek",
   "Aryna Sabalenka",

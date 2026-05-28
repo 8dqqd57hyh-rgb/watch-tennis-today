@@ -1,3 +1,8 @@
+
+export const metadata = {
+  title: "Tennis Players Directory",
+  description: "Browse ATP and WTA player profiles, schedules, rankings and live match information.",
+};
 const players = [
   "Jannik Sinner",
   "Carlos Alcaraz",
