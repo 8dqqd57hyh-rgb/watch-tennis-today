@@ -245,6 +245,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/cookie-policy",
 "/editorial-policy",
 "/how-we-source-data",
+    "/tennis-streaming-rights-explained",
 "/compare/tennis-tv-vs-espn",
 "/compare/tennis-tv-vs-eurosport",
 "/compare/espn-vs-tennis-channel",

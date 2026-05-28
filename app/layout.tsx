@@ -138,6 +138,20 @@ export default function RootLayout({
         >
           Countries
         </a>
+
+        <a
+          href="/how-to-watch-tennis-legally"
+          className="hidden md:inline text-zinc-300 hover:text-white"
+        >
+          Legal Guide
+        </a>
+
+        <a
+          href="/about"
+          className="hidden md:inline text-zinc-300 hover:text-white"
+        >
+          About
+        </a>
       </nav>
     </div>
   </header>
@@ -210,12 +224,27 @@ export default function RootLayout({
 >
   How We Source Data
 </a>
+<a
+  href="/tennis-streaming-rights-explained"
+  className="hover:text-white transition-colors"
+>
+  Streaming Rights Explained
+</a>
+<a
+  href="/authors/watch-tennis-today"
+  className="hover:text-white transition-colors"
+>
+  Author
+</a>
   </div>
   <div className="max-w-7xl mx-auto px-6 pb-8">
   <p className="text-xs text-zinc-500 leading-relaxed max-w-3xl">
     Watch Tennis Today provides information about legal tennis broadcasts,
     tournament schedules, TV coverage, player matches, and viewing options.
-    We do not host, provide, or stream copyrighted content.
+    We do not host, provide, or stream copyrighted content. External links may
+    lead to official broadcasters, tournament websites, streaming services or
+    clearly labelled affiliate partners. Always confirm availability with the
+    provider before subscribing or paying.
   </p>
 </div>
 </footer>

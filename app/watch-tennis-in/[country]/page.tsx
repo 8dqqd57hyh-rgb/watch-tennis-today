@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
+import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 
 export function generateStaticParams() {
   return [
@@ -370,6 +371,8 @@ or shared networks.
     </p>
   </div>
 </section>
+
+        <ContentQualityNotice pageType={`country guide for ${readable}`} />
 
         <EmailSignup />
 

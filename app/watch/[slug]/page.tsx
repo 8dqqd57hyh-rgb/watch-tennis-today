@@ -6,6 +6,7 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch } from "@/app/lib/matchArchive";
 
 export const dynamic = "force-dynamic";
@@ -820,7 +821,9 @@ rankings and official viewing information.
   </div>
 </section>
 <AdSlot label="Advertisement" />
-<RelatedMoneyLinks playerName={match.player1} />
+<ContentQualityNotice pageType="match page" />
+
+        <RelatedMoneyLinks playerName={match.player1} />
 <AuthorBox />
           <section className="mt-16 border-t border-zinc-800 pt-8">
             <h2 className="text-2xl font-black mb-5">More Tennis Coverage</h2>

@@ -5,6 +5,7 @@ import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players } from "@/data/players";
 import { matchContainsExactPlayer } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
+import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 
 export const dynamic = "force-dynamic";
 
@@ -323,6 +324,8 @@ const playerMatches = allMatches.filter((match) =>
 </>
         )}
       </section>
+
+    <ContentQualityNotice pageType="player page" />
 
     <PlayerSubscribeBox
   playerName={playerName}
