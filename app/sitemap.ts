@@ -239,6 +239,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-in/australia",
     "/watch-tennis-in/india",
     "/watch-tennis-live-today",
+    "/tennis-results-today",
+    "/tennis-order-of-play-today",
+    "/tennis-schedule-today",
     "/about",
     "/contact",
      "/privacy",
@@ -269,8 +272,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/live-tennis",
     "/matches/live-now",
     "/watch",
+    "/tennis-schedule-today",
+    "/tennis-order-of-play-today",
+    "/tennis-results-today",
   ];
-
   return {
     url: `${BASE_URL}${path}`,
     lastModified: now,
