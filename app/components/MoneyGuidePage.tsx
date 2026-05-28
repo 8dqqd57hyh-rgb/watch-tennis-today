@@ -1,3 +1,4 @@
+import EmailSignup from "@/app/components/EmailSignup";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type MoneyGuidePageProps = {
@@ -8,6 +9,31 @@ type MoneyGuidePageProps = {
   primaryUseCase: string;
   sections: string[];
 };
+
+
+const vpnComparison = [
+  {
+    name: "NordVPN",
+    bestFor: "Travel privacy and fast tennis streaming checks",
+    strengths: "Large server network, strong brand trust, simple setup",
+    action: "Check NordVPN",
+    href: affiliateLinks.nordvpn,
+  },
+  {
+    name: "Official broadcaster app",
+    bestFor: "Primary legal match access",
+    strengths: "Best source for licensed coverage in your country",
+    action: "Find TV options",
+    href: "/tv-schedule",
+  },
+  {
+    name: "Tournament site",
+    bestFor: "Order of play and last-minute schedule changes",
+    strengths: "Most reliable source for courts, start times and delays",
+    action: "Check schedule",
+    href: "/tennis-schedule-today",
+  },
+];
 
 const checklist = [
   "Confirm the official broadcaster in your country before match day.",
@@ -103,6 +129,52 @@ export default function MoneyGuidePage({
         ))}
       </section>
 
+      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-700">Conversion comparison</p>
+            <h2 className="text-2xl font-bold text-neutral-950">Best legal viewing route for {eventName}</h2>
+          </div>
+          <a href="/affiliate-disclosure" className="text-sm font-bold text-emerald-700 underline-offset-4 hover:underline">
+            How affiliate links work
+          </a>
+        </div>
+        <div className="overflow-hidden rounded-2xl border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-neutral-100 text-neutral-700">
+              <tr>
+                <th className="p-3">Option</th>
+                <th className="p-3">Best for</th>
+                <th className="p-3">Why consider it</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vpnComparison.map((option) => (
+                <tr key={option.name} className="border-t align-top">
+                  <td className="p-3 font-semibold">{option.name}</td>
+                  <td className="p-3">{option.bestFor}</td>
+                  <td className="p-3 text-neutral-600">{option.strengths}</td>
+                  <td className="p-3">
+                    <a
+                      href={option.href}
+                      target={option.href.startsWith("http") ? "_blank" : undefined}
+                      rel={option.href.startsWith("http") ? "nofollow sponsored noopener noreferrer" : undefined}
+                      className="font-bold text-emerald-700 underline-offset-4 hover:underline"
+                    >
+                      {option.action}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-sm leading-6 text-neutral-500">
+          This table is intentionally practical: first confirm legal coverage, then consider privacy tools only when they solve a real travel or network-security problem.
+        </p>
+      </section>
+
       <section className="mb-8 rounded-3xl border bg-neutral-50 p-6">
         <h2 className="mb-4 text-2xl font-bold text-neutral-950">
           Safety checklist before streaming tennis
@@ -116,7 +188,7 @@ export default function MoneyGuidePage({
         </ul>
       </section>
 
-      <section className="rounded-3xl border bg-white p-6">
+      <section className="mb-8 rounded-3xl border bg-white p-6">
         <h2 className="mb-4 text-2xl font-bold text-neutral-950">FAQ</h2>
         <div className="space-y-4">
           {faq.map((item) => (
@@ -127,6 +199,8 @@ export default function MoneyGuidePage({
           ))}
         </div>
       </section>
+
+      <EmailSignup />
 
       <script
         type="application/ld+json"
