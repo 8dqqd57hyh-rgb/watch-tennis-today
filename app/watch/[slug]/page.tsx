@@ -36,6 +36,19 @@ type Match = {
   watchProviders: WatchProvider[];
 };
 
+const playerDescriptions: Record<string, string> = {
+  "carlos alcaraz":
+    "Carlos Alcaraz is known for explosive movement, heavy topspin and aggressive baseline play, especially on clay courts.",
+  "novak djokovic":
+    "Novak Djokovic is one of the most successful Grand Slam players in tennis history, known for elite defense, return quality and consistency.",
+  "jannik sinner":
+    "Jannik Sinner is known for powerful groundstrokes, fast-paced rallies and strong hard-court performances.",
+  "aryna sabalenka":
+    "Aryna Sabalenka is recognized for aggressive shot-making and one of the most powerful serves on the WTA Tour.",
+  "iga swiatek":
+    "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
+};
+
 async function getBaseUrl() {
   const headersList = await headers();
   const host = headersList.get("host");
@@ -80,14 +93,6 @@ async function getArchivedMatchById(id: string): Promise<Match | null> {
 function getMatchIdFromSlug(slug: string) {
   return slug.match(/(\d+)$/)?.[1] ?? null;
 }
-function titleCaseName(value: string) {
-  return value
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
 
 function slugify(value: string) {
   return value
@@ -106,9 +111,24 @@ function getMatchSlug(match: Match) {
 function formatDateTime(value: string | null) {
   if (!value) return "Time to be confirmed";
 
+  const timestamp = new Date(value).getTime();
+  if (Number.isNaN(timestamp)) return "Time to be confirmed";
+
   return new Date(value).toLocaleString("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
+  });
+}
+
+function formatShortTime(value: string | null) {
+  if (!value) return "TBC";
+
+  const timestamp = new Date(value).getTime();
+  if (Number.isNaN(timestamp)) return "TBC";
+
+  return new Date(value).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
   });
 }
 
@@ -142,12 +162,141 @@ function getArchivedDisplayScore(
   return score || "Final score unavailable";
 }
 
+function normalizeStatus(status: string) {
+  return status.toUpperCase();
+}
+
 function isLive(status: string) {
-  return status.toUpperCase() === "LIVE";
+  return normalizeStatus(status) === "LIVE";
 }
 
 function isFinished(status: string) {
-  return ["FINISHED", "CANCELLED", "RETIRED"].includes(status.toUpperCase());
+  return ["FINISHED", "CANCELLED", "RETIRED", "COMPLETED"].includes(
+    normalizeStatus(status)
+  );
+}
+
+function getStatusStyles(status: string) {
+  const normalized = normalizeStatus(status);
+
+  if (normalized === "LIVE") {
+    return "bg-red-500 text-white shadow-lg shadow-red-500/20 animate-pulse";
+  }
+
+  if (normalized === "UPCOMING") {
+    return "bg-sky-400 text-black";
+  }
+
+  if (normalized === "SUSPENDED") {
+    return "bg-yellow-400 text-black";
+  }
+
+  if (isFinished(status)) {
+    return "bg-zinc-700 text-zinc-200";
+  }
+
+  return "bg-green-500 text-black";
+}
+
+function getMatchPhase(match: Match) {
+  if (isLive(match.status)) return "Live now";
+  if (normalizeStatus(match.status) === "UPCOMING") return "Upcoming match";
+  if (normalizeStatus(match.status) === "SUSPENDED") return "Delayed or suspended";
+  if (isFinished(match.status)) return "Completed match";
+  return "Match status";
+}
+
+function getScoreDisplay(match: Match) {
+  const score = String(match.score || "").trim();
+
+  if (!score || score === "-" || score === "0-0") {
+    if (isLive(match.status)) return "Live score pending";
+    if (normalizeStatus(match.status) === "UPCOMING") return "Not started";
+    return "Score unavailable";
+  }
+
+  return score;
+}
+
+function getTimeContext(match: Match) {
+  if (!match.startTime) return "Official start time has not been confirmed yet.";
+
+  const start = new Date(match.startTime).getTime();
+  if (Number.isNaN(start)) return "Official start time has not been confirmed yet.";
+
+  const diff = start - Date.now();
+  const minutes = Math.round(Math.abs(diff) / 60000);
+
+  if (isLive(match.status)) return "Match is marked as live in the current feed.";
+  if (diff > 0 && minutes <= 90) return `Scheduled to start in about ${minutes} minutes.`;
+  if (diff > 0) return `Scheduled for ${formatDateTime(match.startTime)}.`;
+  if (isFinished(match.status)) return "This match is no longer active.";
+
+  return "Start time may have moved. Check official order of play before watching.";
+}
+
+function buildCountryWatchLinks(match: Match) {
+  const tournament = match.tournament.toLowerCase();
+  const category = match.category.toUpperCase();
+  const isGrandSlam =
+    tournament.includes("roland") ||
+    tournament.includes("french open") ||
+    tournament.includes("wimbledon") ||
+    tournament.includes("us open") ||
+    tournament.includes("australian open");
+
+  const links = [
+    {
+      country: "United States",
+      label: isGrandSlam ? "ESPN / Tennis Channel" : "Tennis Channel / Tennis TV",
+      href: "/watch-tennis-in/usa",
+    },
+    {
+      country: "United Kingdom",
+      label: isGrandSlam ? "Eurosport / Discovery+ / BBC where available" : "Sky Sports / Tennis TV",
+      href: "/watch-tennis-in/uk",
+    },
+    {
+      country: "Poland",
+      label: isGrandSlam ? "Eurosport / Canal+ where available" : "Canal+ / Tennis TV",
+      href: "/watch-tennis-in/poland",
+    },
+    {
+      country: "Germany",
+      label: category === "WTA" ? "WTA broadcasters / Tennis Channel" : "Sky / Tennis TV",
+      href: "/watch-tennis-in/germany",
+    },
+  ];
+
+  return links;
+}
+
+function getRelatedMatches(match: Match, matches: Match[]) {
+  const playerNames = [match.player1.toLowerCase(), match.player2.toLowerCase()];
+  const tournament = match.tournament.toLowerCase();
+
+  return matches
+    .filter((item) => item.id !== match.id && !isFinished(item.status))
+    .sort((a, b) => {
+      const aScore =
+        (a.tournament.toLowerCase() === tournament ? 3 : 0) +
+        (a.category === match.category ? 2 : 0) +
+        (playerNames.includes(a.player1.toLowerCase()) ||
+        playerNames.includes(a.player2.toLowerCase())
+          ? 5
+          : 0);
+
+      const bScore =
+        (b.tournament.toLowerCase() === tournament ? 3 : 0) +
+        (b.category === match.category ? 2 : 0) +
+        (playerNames.includes(b.player1.toLowerCase()) ||
+        playerNames.includes(b.player2.toLowerCase())
+          ? 5
+          : 0);
+
+      return bScore - aScore;
+    })
+    .slice(0, 6);
 }
 
 export async function generateStaticParams() {
@@ -160,121 +309,68 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
   const decodedSlug = decodeURIComponent(slug);
-
   const matchId = getMatchIdFromSlug(decodedSlug);
-
-  const readableTitle = decodedSlug
-    .replace(/-\d+$/, "")
-    .replace(/-/g, " ");
-
+  const readableTitle = decodedSlug.replace(/-\d+$/, "").replace(/-/g, " ");
   const matches = await getMatches();
-
-  const match = matches.find(
-    (item) => String(item.id) === matchId
-  );
-
-  const isLiveMatch =
-    match?.status?.toUpperCase() === "LIVE";
+  const match = matches.find((item) => String(item.id) === matchId);
+  const isLiveMatch = match?.status?.toUpperCase() === "LIVE";
 
   return {
     title: isLiveMatch
-  ? `🔴 LIVE: ${readableTitle} — Score & TV Schedule | Watch Tennis Today`
-  : `${readableTitle} TV Schedule & Match Info | Watch Tennis Today`,
-
+      ? `🔴 LIVE: ${readableTitle} — Score, Time & TV Info | Watch Tennis Today`
+      : `${readableTitle} Tennis Match — Time, Score & TV Info | Watch Tennis Today`,
     description: isLiveMatch
-  ? `Follow ${readableTitle} with live score updates, official broadcaster information, TV schedule and tournament coverage.`
-  : "Find this tennis match schedule, official broadcaster information, match time, tournament details and score updates.",
-
+      ? `Follow ${readableTitle} with live score context, official viewing links, tournament details and legal TV information.`
+      : "Find this tennis match time, score context, tournament details and legal broadcaster information.",
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
-
     openGraph: {
-     title: isLiveMatch
-  ? `🔴 LIVE: ${readableTitle}`
-  : `${readableTitle} Match Info`,
-
+      title: isLiveMatch ? `🔴 LIVE: ${readableTitle}` : `${readableTitle} Match Hub`,
       description: isLiveMatch
-  ? `Live tennis score updates, TV schedule and official viewing information.`
-  : "Official tennis TV schedule, match timing and viewing information.",
-
+        ? "Live tennis score context, TV schedule and official viewing information."
+        : "Tennis match timing, tournament context and legal viewing information.",
       url: `https://watchtennistoday.com/watch/${slug}`,
-
       siteName: "Watch Tennis Today",
-
       type: "website",
     },
-
     twitter: {
       card: "summary_large_image",
-
-      title: isLiveMatch
-        ? `🔴 LIVE: ${readableTitle}`
-        : `${readableTitle} Match Info`,
-
+      title: isLiveMatch ? `🔴 LIVE: ${readableTitle}` : `${readableTitle} Match Hub`,
       description: isLiveMatch
-  ? `Live tennis score updates, TV schedule and official viewing information.`
-  : "Official tennis TV schedule, match timing and viewing information.",
+        ? "Live tennis score context, TV schedule and official viewing information."
+        : "Tennis match timing, tournament context and legal viewing information.",
     },
   };
 }
-const playerDescriptions: Record<string, string> = {
-  "carlos alcaraz":
-    "Carlos Alcaraz is known for explosive movement, heavy topspin and aggressive baseline play, especially on clay courts.",
 
-  "novak djokovic":
-    "Novak Djokovic is one of the most successful Grand Slam players in tennis history, known for elite defense and consistency.",
-
-  "jannik sinner":
-    "Jannik Sinner is known for powerful groundstrokes, fast-paced rallies and strong hard-court performances.",
-
-  "aryna sabalenka":
-    "Aryna Sabalenka is recognized for aggressive shot-making and one of the most powerful serves on the WTA Tour.",
-
-  "iga swiatek":
-    "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
+type ArchivedMatchLike = {
+  id?: string;
+  player1: string;
+  player2: string;
+  tournament?: string;
+  category?: string;
+  status?: string | null;
+  score?: string;
+  startTime?: string | null;
+  watchProviders?: WatchProvider[];
 };
-export default async function MatchPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
 
-  const matchId = getMatchIdFromSlug(decodedSlug);
-  if (!matchId) notFound();
-
-  const matches = await getMatches();
-
- const liveMatch = matches.find((item) => String(item.id) === matchId);
-
-const archivedDbMatch = liveMatch
-  ? null
-  : await getArchivedMatchById(matchId);
-
-const match = liveMatch || archivedDbMatch;
-
-const archivedMatch =
-  match ||
-  getArchivedMatch(matchId);
-
-if (!liveMatch && archivedMatch) {
+function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike }) {
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-black p-6 text-white md:p-10">
+      <div className="mx-auto max-w-4xl">
         <a href="/" className="text-zinc-400 hover:text-white">
           ← Back
         </a>
 
         <div className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
-          <div className="inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400 mb-5">
-            📁 Archived Match
+          <div className="mb-5 inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400">
+            📁 Archived match
           </div>
 
-          <h1 className="text-5xl font-black leading-tight mb-6">
+          <h1 className="mb-6 text-5xl font-black leading-tight">
             {archivedMatch.player1}
             <br />
             vs
@@ -282,91 +378,46 @@ if (!liveMatch && archivedMatch) {
             {archivedMatch.player2}
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
-              <p className="text-zinc-500 text-sm mb-2">
-                Tournament
-              </p>
-
-              <p className="font-bold text-lg">
-                {archivedMatch.tournament || "Unknown"}
-              </p>
+          <div className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <p className="mb-2 text-sm text-zinc-500">Tournament</p>
+              <p className="text-lg font-bold">{archivedMatch.tournament || "Unknown"}</p>
             </div>
 
-            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
-              <p className="text-zinc-500 text-sm mb-2">
-                Last Known Status
-              </p>
-
-              <p className="font-bold text-lg">
-                {getArchivedDisplayStatus(archivedMatch)}
-              </p>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <p className="mb-2 text-sm text-zinc-500">Last known status</p>
+              <p className="text-lg font-bold">{getArchivedDisplayStatus(archivedMatch)}</p>
             </div>
 
-            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
-              <p className="text-zinc-500 text-sm mb-2">
-                Score
-              </p>
-
-              <p className="font-bold text-lg">
-                {getArchivedDisplayScore(archivedMatch)}
-              </p>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <p className="mb-2 text-sm text-zinc-500">Score</p>
+              <p className="text-lg font-bold">{getArchivedDisplayScore(archivedMatch)}</p>
             </div>
 
-            <div className="rounded-2xl bg-black border border-zinc-800 p-5">
-              <p className="text-zinc-500 text-sm mb-2">
-                Match Date
-              </p>
-
-              <p className="font-bold text-lg">
-                {archivedMatch.startTime
-                  ? new Date(archivedMatch.startTime).toLocaleString()
-                  : "Unavailable"}
-              </p>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <p className="mb-2 text-sm text-zinc-500">Match date</p>
+              <p className="text-lg font-bold">{formatDateTime(archivedMatch.startTime ?? null)}</p>
             </div>
           </div>
 
-          <section className="space-y-5 text-zinc-300 leading-8 mb-10">
-            <h2 className="text-3xl font-black text-white">
-              Archived Match Information
-            </h2>
-
+          <section className="mb-10 space-y-5 leading-8 text-zinc-300">
+            <h2 className="text-3xl font-black text-white">Archived match information</h2>
             <p>
-              This tennis match is no longer active and may have been removed
-from current tournament schedules or live score feeds.
+              This tennis match is no longer active and may have been removed from current tournament schedules or live score feeds.
             </p>
-
             <p>
-              Watch Tennis Today keeps archived match information available
-              to help fans revisit tournament coverage, player matchups,
-              scores and tennis schedules.
-            </p>
-
-            <p>
-              Coverage availability may vary depending on tournament data
-              providers and regional broadcaster updates.
+              Watch Tennis Today keeps archived match information available to help fans revisit tournament coverage, player matchups, scores and tennis schedules.
             </p>
           </section>
 
           <div className="flex flex-wrap gap-4">
-            <a
-              href="/live-tennis"
-              className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
-            >
-              Tennis Schedule
+            <a href="/tennis-schedule-today" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
+              Tennis Schedule Today
             </a>
-
-            <a
-              href="/today"
-              className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
-            >
-              Today’s Schedule
+            <a href="/live-tennis" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
+              Live Tennis
             </a>
-
-            <a
-              href="/players"
-              className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
-            >
+            <a href="/players" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
               Tennis Players
             </a>
           </div>
@@ -375,28 +426,52 @@ from current tournament schedules or live score feeds.
     </main>
   );
 }
-if (!match) {
-  if (
-    decodedSlug.includes("-vs-") &&
-    decodedSlug.match(/\d+$/)
-  ) {
-    redirect("/");
+
+export default async function MatchPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+  const matchId = getMatchIdFromSlug(decodedSlug);
+
+  if (!matchId) notFound();
+
+  const matches = await getMatches();
+  const liveMatch = matches.find((item) => String(item.id) === matchId);
+  const archivedDbMatch = liveMatch ? null : await getArchivedMatchById(matchId);
+  const match = liveMatch || archivedDbMatch;
+  const archivedMatch = match || getArchivedMatch(matchId);
+
+  if (!liveMatch && archivedMatch) {
+    return <ArchivedMatchPage archivedMatch={archivedMatch} />;
   }
 
-  notFound();
-}
+  if (!match) {
+    if (decodedSlug.includes("-vs-") && decodedSlug.match(/\d+$/)) {
+      redirect("/");
+    }
+
+    notFound();
+  }
 
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
   const matchTitle = `${match.player1} vs ${match.player2}`;
+  const scoreDisplay = getScoreDisplay(match);
+  const countryLinks = buildCountryWatchLinks(match);
+  const relatedMatches = getRelatedMatches(match, matches);
   const playerDescription =
-  playerDescriptions[match.player1.toLowerCase()] ||
-  playerDescriptions[match.player2.toLowerCase()] ||
-  "Follow tennis match schedules, TV coverage updates, tournament context and official broadcaster information.";
+    playerDescriptions[match.player1.toLowerCase()] ||
+    playerDescriptions[match.player2.toLowerCase()] ||
+    "Follow tennis match schedules, score context, tournament details and official broadcaster information.";
 
-  const relatedMatches = matches
-    .filter((item) => item.id !== match.id && !isFinished(item.status))
-    .slice(0, 6);
+  const eventStatus = isLive(match.status)
+    ? "https://schema.org/EventInProgress"
+    : isFinished(match.status)
+      ? "https://schema.org/EventCompleted"
+      : "https://schema.org/EventScheduled";
 
   const eventSchema = {
     "@context": "https://schema.org",
@@ -404,18 +479,10 @@ if (!match) {
     name: matchTitle,
     sport: "Tennis",
     startDate: match.startTime,
-    eventStatus: isLive(match.status)
-      ? "https://schema.org/EventInProgress"
-      : "https://schema.org/EventScheduled",
+    eventStatus,
     competitor: [
-      {
-        "@type": "Person",
-        name: match.player1,
-      },
-      {
-        "@type": "Person",
-        name: match.player2,
-      },
+      { "@type": "Person", name: match.player1 },
+      { "@type": "Person", name: match.player2 },
     ],
     location: {
       "@type": "Place",
@@ -446,9 +513,7 @@ if (!match) {
         name: `What time does ${matchTitle} start?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${matchTitle} is scheduled for ${formatDateTime(
-            match.startTime
-          )}.`,
+          text: `${matchTitle} is scheduled for ${formatDateTime(match.startTime)}.`,
         },
       },
       {
@@ -463,450 +528,289 @@ if (!match) {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-4xl mx-auto">
-        <nav className="text-sm text-zinc-400 mb-8">
-          <a href="/" className="hover:text-white">
-            Home
-          </a>{" "}
-          /{" "}
-          <a href="/watch" className="hover:text-white">
-            Watch
-          </a>{" "}
-          /{" "}
-          <a href={`/tournament/${tournamentSlug}`} className="hover:text-white">
-            {match.tournament}
-          </a>
+    <main className="min-h-screen bg-black p-6 text-white md:p-10">
+      <div className="mx-auto max-w-6xl">
+        <nav className="mb-8 text-sm text-zinc-400">
+          <a href="/" className="hover:text-white">Home</a> /{" "}
+          <a href="/watch" className="hover:text-white">Watch</a> /{" "}
+          <a href={`/tournament/${tournamentSlug}`} className="hover:text-white">{match.tournament}</a>
         </nav>
 
-        <article className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-          <div className="flex flex-wrap items-center gap-3 mb-5">
-            <span
-              className={`font-black px-4 py-2 rounded-full text-sm ${
-                isLive(match.status)
-                  ? "bg-red-500 text-white animate-pulse"
-                  : "bg-green-500 text-black"
-              }`}
-            >
-              {match.status}
-            </span>
-
-            <span className="text-zinc-400">{match.category}</span>
-            <span className="text-zinc-500">•</span>
-            <span className="text-zinc-400">{match.tournament}</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6">
-            <a href={playerUrl(match.player1)} className="hover:text-green-400">
-              {match.player1}
-            </a>
-            <br />
-            vs
-            <br />
-            <a href={playerUrl(match.player2)} className="hover:text-green-400">
-              {match.player2}
-            </a>
-          </h1>
-
-          <div className="mb-10 space-y-4">
-  <p className="text-xl text-zinc-300">
-    Follow match timing, tournament details, official broadcaster
-availability and live tennis updates for {matchTitle}.
-  </p>
-
-  <p className="text-zinc-400 leading-8">
-    {playerDescription}
-  </p>
-</div>
-          <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
-  <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
-  embed, or provide unauthorized live streams. We only provide information
-  about official broadcasters and licensed viewing platforms available in
-  your region.
-</div>
-
-          <div className="flex flex-wrap items-center gap-3 mb-10">
-  <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400">
-    🔴 Live tennis updates
-  </div>
-
-  <p className="text-zinc-500 text-sm">
-    Last updated:{" "}
-    {new Date().toLocaleString("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    })}
-  </p>
-  <p className="text-zinc-500 text-sm">
-  Match information is updated using official tournament and tennis schedule data sources.
-</p>
-</div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div>
-              <p className="text-zinc-500 text-sm mb-2">Tournament</p>
-              <p className="text-xl font-bold">{match.tournament}</p>
+        <article className="overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900">
+          <section className="relative border-b border-zinc-800 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.22),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.18),_transparent_32%)] p-6 md:p-10">
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <span className={`rounded-full px-4 py-2 text-sm font-black ${getStatusStyles(match.status)}`}>
+                {getMatchPhase(match)}
+              </span>
+              <span className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-zinc-300">
+                {match.category || "Tennis"}
+              </span>
+              <span className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-zinc-300">
+                {match.tournament}
+              </span>
             </div>
 
-            <div>
-              <p className="text-zinc-500 text-sm mb-2">Score</p>
-              <p className="text-xl font-bold">{match.score || "-"}</p>
-            </div>
-
-            <div>
-              <p className="text-zinc-500 text-sm mb-2">Start Time</p>
-              <p className="text-xl font-bold">
-                {formatDateTime(match.startTime)}
-              </p>
-            </div>
-          </div>
-
-          <section className="mt-14">
-            <h2 className="text-3xl font-black mb-5">
-              📺 Where to Watch {matchTitle}
-            </h2>
-
-            {match.watchProviders.length > 0 ? (
-              <div className="space-y-4">
-                {match.watchProviders.map((provider) => (
-                  <a
-                    key={`${provider.name}-${provider.url}`}
-                    href={provider.url}
-                    target="_blank"
-                    rel="nofollow sponsored noopener noreferrer"
-                   className="block bg-zinc-800 border border-zinc-700 text-white rounded-2xl px-5 py-4 font-black hover:border-green-500 hover:text-green-400 transition-all"
-                  >
-                    {provider.name}
-                    {provider.note ? (
-                      <span className="block text-sm font-semibold mt-1 opacity-80">
-                        {provider.note}
-                      </span>
-                    ) : null}
+            <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
+              <div>
+                <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-green-400">
+                  Match hub
+                </p>
+                <h1 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
+                  <a href={playerUrl(match.player1)} className="hover:text-green-400">
+                    {match.player1}
                   </a>
-                ))}
-              </div>
-            ) : (
-              <p className="text-zinc-400">
-                No trusted watch source found yet. Check official tournament,
-                ATP, WTA or local broadcaster listings.
-              </p>
-            )}
-          </section>
-
-          <section className="mt-8 rounded-[2rem] border border-green-500/30 bg-green-500/10 p-6">
-  <p className="mb-2 text-xs font-black uppercase tracking-widest text-green-400">
-    Streaming tip
-  </p>
-
-  <h2 className="mb-3 text-2xl font-black">
-    Watching while traveling?
-  </h2>
-
-  <p className="mb-5 text-zinc-300 leading-7">
-  Tennis streaming availability can vary by region. If you are traveling,
-  use official broadcasters and protect your connection on public Wi-Fi.
-</p>
-
-  <a
-    href={affiliateLinks.nordvpn}
-    target="_blank"
-    rel="nofollow sponsored noopener noreferrer"
-    className="inline-flex rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
-  >
-    Online Viewing Privacy Guide
-  </a>
-  <p className="mt-4 text-xs text-zinc-500">
-  Some links on Watch Tennis Today may be affiliate links.
-</p>
-</section>
-
-
-          <section className="mt-16 text-zinc-300 space-y-6">
-            <h2 className="text-3xl font-black">
-  {matchTitle} TV Schedule and Official Viewing Info
-</h2>
-
-            <p>
-  Streaming availability for this match can vary by country, tournament rights
-  and broadcaster agreements. We recommend checking official tennis platforms,
-  tournament websites and licensed TV providers before the match starts.
-</p>
-
-<p>
-  This page is updated to help fans understand the match status, start time,
-  tournament context and legal viewing options without hosting or embedding
-  unauthorized streams.
-</p>
-
-            <p>
-              {match.player1} faces {match.player2} at {match.tournament}. This{" "}
-              {match.category} tennis match is listed for{" "}
-              {formatDateTime(match.startTime)}.
-            </p>
-
-            <p>
-              Watch Tennis Today helps tennis fans find official streaming
-              platforms, TV broadcasters and schedule information for ATP, WTA,
-              Grand Slam, Challenger and ITF matches.
-            </p>
-          </section>
-
-          <section className="mt-16 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-            <h2 className="text-3xl font-black mb-4">🔔 Get Match Alerts</h2>
-
-            <p className="text-zinc-400 mb-6">
-              Get notified before {matchTitle} starts, including match schedule
-updates, score alerts and tournament coverage information.
-            </p>
-            <p className="text-zinc-500 text-sm mb-6">
-  Email alerts are optional and can be unsubscribed from at any time.
-</p>
-
-            <form
-              action="https://formspree.io/f/xeenwwbk"
-              method="POST"
-              className="flex flex-col md:flex-row gap-4"
-            >
-                <input
-  type="hidden"
-  name="_redirect"
-  value="https://watchtennistoday.com/newsletter-confirmation"
-/>
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Your email"
-                className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
-              />
-
-              <input type="hidden" name="match" value={matchTitle} />
-              <input type="hidden" name="source" value="match-page" />
-
-              <button
-                type="submit"
-                className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
-              >
-                Notify Me
-              </button>
-            </form>
-          </section>
-
-          <section className="mt-16">
-            <h2 className="text-3xl font-black mb-6">FAQ</h2>
-
-            <div className="space-y-4">
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-                <h3 className="text-xl font-black mb-2">
-                  Where can I find official viewing information for {matchTitle}?
-                </h3>
-                <p className="text-zinc-400">
-                  You can check the official viewing options listed above. Availability may
-depend on your country, tournament rights and licensed broadcasters.
+                  <span className="block text-zinc-500">vs</span>
+                  <a href={playerUrl(match.player2)} className="hover:text-green-400">
+                    {match.player2}
+                  </a>
+                </h1>
+                <p className="max-w-3xl text-lg leading-8 text-zinc-300">
+                  Follow {matchTitle} with match timing, score context, tournament details and official viewing information. This page links only to legal broadcaster and schedule sources.
                 </p>
               </div>
 
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-                <h3 className="text-xl font-black mb-2">
-                  What time does {matchTitle} start?
-                </h3>
-                <p className="text-zinc-400">
-                  The match is scheduled for {formatDateTime(match.startTime)}.
-                </p>
+              <div className="rounded-[2rem] border border-white/10 bg-black/60 p-6 shadow-2xl">
+                <p className="mb-2 text-sm font-black uppercase tracking-wide text-zinc-500">Current score</p>
+                <p className="mb-5 text-4xl font-black text-white">{scoreDisplay}</p>
+                <div className="grid gap-3 text-sm">
+                  <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
+                    <span className="text-zinc-500">Start time</span>
+                    <span className="font-bold text-zinc-200">{formatShortTime(match.startTime)}</span>
+                  </div>
+                  <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
+                    <span className="text-zinc-500">Status</span>
+                    <span className="font-bold text-zinc-200">{match.status}</span>
+                  </div>
+                  <div className="border-t border-zinc-800 pt-3 text-zinc-400">
+                    {getTimeContext(match)}
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-                <h3 className="text-xl font-black mb-2">
-                  What tournament is this match from?
-                </h3>
-                <p className="text-zinc-400">
-                  This match is listed under {match.tournament}.
-                </p>
-              </div>
-
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-  <h3 className="text-xl font-black mb-2">
-    Can I watch {matchTitle} online?
-  </h3>
-  <p className="text-zinc-400">
-    Yes, if the match is covered by an official broadcaster or licensed
-    viewing platform in your country. Availability can vary by tournament and region.
-  </p>
-</div>
-
-<div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-  <h3 className="text-xl font-black mb-2">
-    Why does tennis coverage vary by country?
-  </h3>
-  <p className="text-zinc-400">
-    Tennis streaming rights are usually sold by country or region. If a stream
-    is unavailable, check your local broadcaster or the official tournament
-    website for legal viewing options.
-  </p>
-</div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#where-to-watch" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
+                Where to watch
+              </a>
+              <a href="/tennis-schedule-today" className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
+                Today’s schedule
+              </a>
+              <a href={`/tournament/${tournamentSlug}`} className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
+                Tournament page
+              </a>
             </div>
           </section>
 
-          {relatedMatches.length > 0 ? (
-            <section className="mt-16">
-              <h2 className="text-3xl font-black mb-6">
-                🎾 More Tennis Matches
-              </h2>
+          <div className="p-6 md:p-10">
+            <section className="mb-8 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
+              <strong>Legal streaming notice:</strong> Watch Tennis Today does not host, embed, or provide unauthorized live streams. We provide match discovery, schedule context and links to official or licensed viewing information.
+            </section>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedMatches.map((item) => (
-                  <a
-                    key={item.id}
-                    href={`/watch/${getMatchSlug(item)}`}
-                    className="bg-zinc-950 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
-                  >
-                    <div className="flex justify-between mb-3">
-                      <span className="font-black">{item.status}</span>
-                      <span className="text-zinc-500">{item.category}</span>
-                    </div>
+            <section className="mb-10 grid gap-4 md:grid-cols-4">
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                <p className="mb-2 text-sm text-zinc-500">Tournament</p>
+                <p className="text-lg font-black">{match.tournament}</p>
+              </div>
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                <p className="mb-2 text-sm text-zinc-500">Category</p>
+                <p className="text-lg font-black">{match.category || "Tennis"}</p>
+              </div>
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                <p className="mb-2 text-sm text-zinc-500">Start time</p>
+                <p className="text-lg font-black">{formatDateTime(match.startTime)}</p>
+              </div>
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                <p className="mb-2 text-sm text-zinc-500">Score</p>
+                <p className="text-lg font-black">{scoreDisplay}</p>
+              </div>
+            </section>
 
-                    <h3 className="text-2xl font-black mb-2">
-                      {item.player1}
-                      <br />
-                      vs
-                      <br />
-                      {item.player2}
-                    </h3>
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match context</p>
+              <h2 className="mb-4 text-3xl font-black">What to know before {matchTitle}</h2>
+              <div className="grid gap-5 md:grid-cols-2">
+                <p className="leading-8 text-zinc-300">{playerDescription}</p>
+                <p className="leading-8 text-zinc-300">
+                  Tennis schedules can move during the day because earlier matches run long, courts change, rain delays happen or withdrawals are announced. Re-check the official order of play before match time.
+                </p>
+              </div>
+            </section>
 
-                    <p className="text-zinc-400">{item.tournament}</p>
+            <section id="where-to-watch" className="mb-12">
+              <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Official viewing</p>
+                  <h2 className="text-3xl font-black">Where to watch {matchTitle}</h2>
+                </div>
+                <a href="/how-we-verify-streams" className="text-sm font-bold text-green-400 hover:text-green-300">
+                  How we verify streams →
+                </a>
+              </div>
+
+              {match.watchProviders.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {match.watchProviders.map((provider) => (
+                    <a
+                      key={`${provider.name}-${provider.url}`}
+                      href={provider.url}
+                      target="_blank"
+                      rel="nofollow sponsored noopener noreferrer"
+                      className="block rounded-3xl border border-zinc-700 bg-zinc-950 p-5 transition-all hover:border-green-500 hover:text-green-400"
+                    >
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span className="text-xl font-black">{provider.name}</span>
+                        {provider.accessType ? (
+                          <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs font-black text-zinc-300">
+                            {provider.accessType.replaceAll("_", " ")}
+                          </span>
+                        ) : null}
+                      </div>
+                      {provider.note ? (
+                        <span className="block text-sm font-semibold leading-6 text-zinc-400">
+                          {provider.note}
+                        </span>
+                      ) : null}
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-400">
+                  No trusted watch source is attached to this match yet. Check official tournament, ATP, WTA or local broadcaster listings before using any stream.
+                </div>
+              )}
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <h2 className="mb-5 text-3xl font-black">Viewing options by country</h2>
+              <p className="mb-6 max-w-3xl leading-7 text-zinc-400">
+                Tennis rights vary by country. These country guides help users check legal broadcasters and streaming platforms instead of relying on unsafe stream links.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {countryLinks.map((item) => (
+                  <a key={item.country} href={item.href} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                    <p className="mb-2 text-lg font-black">{item.country}</p>
+                    <p className="text-sm leading-6 text-zinc-400">{item.label}</p>
                   </a>
                 ))}
               </div>
             </section>
-          ) : null}
 
-<section className="mt-16">
-  <h2 className="text-3xl font-black mb-5">
-    🎾 Player Pages
-  </h2>
-
-  <p className="text-zinc-400 mb-6 max-w-3xl">
-    Explore player match schedules, tournament context,
-rankings and official viewing information.
-  </p>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-    <a
-      href={playerUrl(match.player1)}
-      className="bg-zinc-950 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
-    >
-      <h3 className="text-2xl font-black mb-3">
-        {match.player1}
-      </h3>
-
-      <p className="text-zinc-400">
-        Matches, schedule and viewing info
-      </p>
-    </a>
-
-    <a
-      href={playerUrl(match.player2)}
-      className="bg-zinc-950 border border-zinc-800 rounded-3xl p-5 hover:border-green-500 transition-all"
-    >
-      <h3 className="text-2xl font-black mb-3">
-        {match.player2}
-      </h3>
-
-      <p className="text-zinc-400">
-        Matches, schedule and viewing info
-      </p>
-    </a>
-
-  </div>
-</section>
-<AdSlot label="Advertisement" />
-<ContentQualityNotice pageType="match page" />
-
-        <RelatedMoneyLinks playerName={match.player1} />
-<AuthorBox />
-          <section className="mt-16 border-t border-zinc-800 pt-8">
-            <h2 className="text-2xl font-black mb-5">More Tennis Coverage</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a
-                href="/live-tennis"
-                className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
-              >
-                Tennis Schedule Today
+            <section className="mb-12 rounded-[2rem] border border-green-500/30 bg-green-500/10 p-6">
+              <p className="mb-2 text-xs font-black uppercase tracking-widest text-green-400">Streaming tip</p>
+              <h2 className="mb-3 text-2xl font-black">Watching while traveling?</h2>
+              <p className="mb-5 max-w-3xl leading-7 text-zinc-300">
+                Tennis streaming availability can vary by region. If you are traveling, use official broadcasters and protect your connection on hotel, airport or café Wi‑Fi.
+              </p>
+              <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow sponsored noopener noreferrer" className="inline-flex rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
+                Online viewing privacy guide
               </a>
+              <p className="mt-4 text-xs text-zinc-500">Some links on Watch Tennis Today may be affiliate links.</p>
+            </section>
 
-              <a
-                href={`/tournament/${tournamentSlug}`}
-                className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
-              >
-                More from {match.tournament}
-              </a>
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <h2 className="mb-5 text-3xl font-black">Head-to-head quick links</h2>
+              <p className="mb-6 max-w-3xl leading-7 text-zinc-400">
+                Use these player pages to check schedules, match pages, tournament context and official viewing information for each player.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <a href={playerUrl(match.player1)} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                  <h3 className="mb-2 text-2xl font-black">{match.player1}</h3>
+                  <p className="text-zinc-400">Live matches, schedule and viewing info</p>
+                </a>
+                <a href={playerUrl(match.player2)} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                  <h3 className="mb-2 text-2xl font-black">{match.player2}</h3>
+                  <p className="text-zinc-400">Live matches, schedule and viewing info</p>
+                </a>
+              </div>
+            </section>
 
-              <a
-                href="/best-ways-to-watch-tennis-online"
-                className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
-              >
-                Best Ways to Watch Tennis Online
-              </a>
-              <a
-  href="/atp-live-today"
-  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
->
-  ATP Live Matches
-</a>
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <h2 className="mb-4 text-3xl font-black">🔔 Get match alerts</h2>
+              <p className="mb-2 text-zinc-400">
+                Get notified before {matchTitle} starts, including match schedule updates, score alerts and tournament coverage information.
+              </p>
+              <p className="mb-6 text-sm text-zinc-500">Email alerts are optional and can be unsubscribed from at any time.</p>
+              <form action="https://formspree.io/f/xeenwwbk" method="POST" className="flex flex-col gap-4 md:flex-row">
+                <input type="hidden" name="_redirect" value="https://watchtennistoday.com/newsletter-confirmation" />
+                <input type="email" name="email" required placeholder="Your email" className="flex-1 rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-white" />
+                <input type="hidden" name="match" value={matchTitle} />
+                <input type="hidden" name="source" value="match-page" />
+                <button type="submit" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
+                  Notify me
+                </button>
+              </form>
+            </section>
 
-<a
-  href="/wta-live-today"
-  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
->
-  WTA Live Matches
-</a>
+            <section className="mb-12">
+              <h2 className="mb-6 text-3xl font-black">FAQ</h2>
+              <div className="space-y-4">
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                  <h3 className="mb-2 text-xl font-black">Where can I find official viewing information for {matchTitle}?</h3>
+                  <p className="text-zinc-400">Check the official viewing options listed above. Availability may depend on your country, tournament rights and licensed broadcasters.</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                  <h3 className="mb-2 text-xl font-black">What time does {matchTitle} start?</h3>
+                  <p className="text-zinc-400">The match is scheduled for {formatDateTime(match.startTime)}. Tennis start times can move, so confirm close to match time.</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                  <h3 className="mb-2 text-xl font-black">What tournament is this match from?</h3>
+                  <p className="text-zinc-400">This match is listed under {match.tournament}.</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                  <h3 className="mb-2 text-xl font-black">Can I watch {matchTitle} online?</h3>
+                  <p className="text-zinc-400">Yes, if the match is covered by an official broadcaster or licensed viewing platform in your country. Availability can vary by tournament and region.</p>
+                </div>
+              </div>
+            </section>
 
-<a
-  href="/grand-slam-live"
-  className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
->
-  Grand Slam Coverage
-</a>
-            </div>
-          </section>
+            {relatedMatches.length > 0 ? (
+              <section className="mb-12">
+                <h2 className="mb-6 text-3xl font-black">🎾 Related matches</h2>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {relatedMatches.map((item) => (
+                    <a key={item.id} href={`/watch/${getMatchSlug(item)}`} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition-all hover:border-green-500">
+                      <div className="mb-3 flex justify-between gap-3">
+                        <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusStyles(item.status)}`}>{item.status}</span>
+                        <span className="text-sm text-zinc-500">{item.category}</span>
+                      </div>
+                      <h3 className="mb-2 text-xl font-black">{item.player1} vs {item.player2}</h3>
+                      <p className="text-sm text-zinc-400">{item.tournament}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            <AdSlot label="Advertisement" />
+            <ContentQualityNotice pageType="match page" />
+            <RelatedMoneyLinks playerName={match.player1} />
+            <AuthorBox />
+
+            <section className="mt-16 border-t border-zinc-800 pt-8">
+              <h2 className="mb-5 text-2xl font-black">More tennis coverage</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <a href="/tennis-schedule-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Tennis Schedule Today</a>
+                <a href={`/tournament/${tournamentSlug}`} className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">More from {match.tournament}</a>
+                <a href="/best-ways-to-watch-tennis-online" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Best Ways to Watch Tennis Online</a>
+                <a href="/atp-live-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">ATP Live Matches</a>
+                <a href="/wta-live-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">WTA Live Matches</a>
+                <a href="/grand-slam-live" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Grand Slam Coverage</a>
+              </div>
+            </section>
+          </div>
         </article>
       </div>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(eventSchema),
-        }}
-      />
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqSchema),
-        }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <BreadcrumbSchema
-  items={[
-    {
-      name: "Home",
-      url: "https://watchtennistoday.com",
-    },
-    {
-      name: "Watch",
-      url: "https://watchtennistoday.com/watch",
-    },
-    {
-      name: match.tournament,
-      url: `https://watchtennistoday.com/tournament/${tournamentSlug}`,
-    },
-    {
-      name: `${match.player1} vs ${match.player2}`,
-      url: currentUrl,
-    },
-  ]}
-/>
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "Watch", url: "https://watchtennistoday.com/watch" },
+          { name: match.tournament, url: `https://watchtennistoday.com/tournament/${tournamentSlug}` },
+          { name: `${match.player1} vs ${match.player2}`, url: currentUrl },
+        ]}
+      />
     </main>
   );
 }

@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import MatchDashboard from "./MatchDashboard";
 
 type LinkItem = {
   href: string;
@@ -240,9 +239,67 @@ export default async function DailyTennisGuide({
         </div>
       </section>
 
-      <MatchDashboard matches={usefulMatches} />
+      <section className="mb-8">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-black uppercase tracking-wide text-sky-700">Today’s matches</p>
+            <h2 className="text-3xl font-black text-neutral-950">
+              {mode === "results" ? "Latest live or completed match updates" : "Live and upcoming tennis matches"}
+            </h2>
+          </div>
+          <a href="/live-tennis" className="rounded-full border px-5 py-3 text-sm font-black hover:border-sky-400">
+            Open full live page
+          </a>
+        </div>
 
-      
+        {usefulMatches.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2">
+            {usefulMatches.map((match) => (
+              <article key={match.id} className="rounded-3xl border bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <span className={`rounded-full px-3 py-1 text-xs font-black uppercase ${statusClass(match.status)}`}>
+                    {statusLabel(match.status)}
+                  </span>
+                  <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black uppercase text-neutral-700">
+                    {match.category || "Tennis"}
+                  </span>
+                </div>
+
+                <h3 className="mb-2 text-xl font-black text-neutral-950">
+                  {match.player1} vs {match.player2}
+                </h3>
+
+                <p className="mb-2 text-sm font-bold text-neutral-600">{match.tournament}</p>
+
+                <div className="mb-4 grid gap-2 text-sm text-neutral-700 md:grid-cols-2">
+                  <p>
+                    <span className="font-black text-neutral-950">Time:</span> {formatMatchTime(match.startTime)}
+                  </p>
+                  <p>
+                    <span className="font-black text-neutral-950">Score:</span> {match.score && match.score !== "-" ? match.score : "Not started / unavailable"}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <a href={`/watch/${matchSlug(match)}`} className="rounded-full bg-neutral-950 px-4 py-2 text-sm font-black text-white hover:bg-neutral-800">
+                    Match page
+                  </a>
+                  <a href="/watch-tennis-live-today" className="rounded-full border px-4 py-2 text-sm font-black hover:border-sky-400">
+                    Where to watch
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-3xl border bg-neutral-50 p-6">
+            <h3 className="mb-2 text-xl font-black text-neutral-950">No live schedule data available right now</h3>
+            <p className="max-w-3xl leading-7 text-neutral-700">
+              We could not load real tennis matches from the match API at this moment. This page does not show fake fixtures, so please check again later or use official tournament schedules and broadcaster pages.
+            </p>
+          </div>
+        )}
+      </section>
 
       {tournaments.length > 0 ? (
         <section className="mb-8 rounded-3xl border bg-neutral-50 p-6">
