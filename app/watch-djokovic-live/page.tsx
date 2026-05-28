@@ -1,7 +1,9 @@
+import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+
 export const metadata = {
-  title: "Watch Novak Djokovic Live | Schedule, Matches and Legal Streams",
+  title: "Novak Djokovic Live Stream Today | TV Schedule and Legal Ways to Watch",
   description:
-    "Find Novak Djokovic live match information, tennis schedules, tournament context and legal streaming options.",
+    "Watch Novak Djokovic live online with today’s schedule, official TV channels, legal streaming options, VPN tips and match alerts.",
   alternates: {
     canonical: "https://watchtennistoday.com/watch-djokovic-live",
   },
@@ -65,6 +67,12 @@ export default function WatchNovakDjokovicLivePage() {
             Find legal tennis streams today
           </a>
         </div>
+
+
+        <PlayerLiveMoneyGuide
+          playerName="Novak Djokovic"
+          playerSlug="novak-djokovic"
+        />
 
         <p className="text-base text-neutral-600">
           If no live match is listed, check back closer to the next tournament session.

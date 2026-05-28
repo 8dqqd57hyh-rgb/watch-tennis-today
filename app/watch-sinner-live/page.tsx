@@ -1,7 +1,9 @@
+import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+
 export const metadata = {
-  title: "Watch Jannik Sinner Live | Schedule, Matches and Legal Streams",
+  title: "Jannik Sinner Live Stream Today | TV Schedule and Legal Ways to Watch",
   description:
-    "Find Jannik Sinner live match information, tennis schedules, tournament context and legal streaming options.",
+    "Watch Jannik Sinner live online with today’s schedule, official TV channels, legal streaming options, VPN tips and match alerts.",
   alternates: {
     canonical: "https://watchtennistoday.com/watch-sinner-live",
   },
@@ -65,6 +67,12 @@ export default function WatchJannikSinnerLivePage() {
             Find legal tennis streams today
           </a>
         </div>
+
+
+        <PlayerLiveMoneyGuide
+          playerName="Jannik Sinner"
+          playerSlug="jannik-sinner"
+        />
 
         <p className="text-base text-neutral-600">
           If no live match is listed, check back closer to the next tournament session.

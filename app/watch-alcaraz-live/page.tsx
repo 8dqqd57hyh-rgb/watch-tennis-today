@@ -1,7 +1,9 @@
+import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+
 export const metadata = {
-  title: "Watch Carlos Alcaraz Live | Schedule, Matches and Legal Streams",
+  title: "Carlos Alcaraz Live Stream Today | TV Schedule and Legal Ways to Watch",
   description:
-    "Find Carlos Alcaraz live match information, tennis schedules, tournament context and legal streaming options.",
+    "Watch Carlos Alcaraz live online with today’s schedule, official TV channels, legal streaming options, VPN tips and match alerts.",
   alternates: {
     canonical: "https://watchtennistoday.com/watch-alcaraz-live",
   },
@@ -65,6 +67,12 @@ export default function WatchCarlosAlcarazLivePage() {
             Find legal tennis streams today
           </a>
         </div>
+
+
+        <PlayerLiveMoneyGuide
+          playerName="Carlos Alcaraz"
+          playerSlug="carlos-alcaraz"
+        />
 
         <p className="text-base text-neutral-600">
           If no live match is listed, check back closer to the next tournament session.
