@@ -83,7 +83,7 @@ export async function generateMetadata({
    description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
     openGraph: {
       title: `${playerName} Live Stream & Matches Today`,
-      description: `Watch ${playerName} live today.`,
+      description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
       url: `https://watchtennistoday.com/player/${slug}`,
       siteName: "Watch Tennis Today",
       type: "website",
@@ -91,7 +91,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: `${playerName} Live Stream & Matches Today`,
-      description: `Watch ${playerName} live today.`,
+      description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
     },
   };
 }

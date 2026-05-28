@@ -179,25 +179,25 @@ export async function generateMetadata({
 
   return {
     title: isLiveMatch
-      ? `🔴 LIVE: ${readableTitle} — Score, Stream & TV Schedule | Watch Tennis Today`
-      : `${readableTitle} Live Stream & TV Schedule | Watch Tennis Today`,
+  ? `🔴 LIVE: ${readableTitle} — Score & TV Schedule | Watch Tennis Today`
+  : `${readableTitle} TV Schedule & Match Info | Watch Tennis Today`,
 
     description: isLiveMatch
-      ? `Watch ${readableTitle} live now. Follow live score updates, official tennis streams, TV schedule and tournament coverage.`
-      : "Find where to watch this tennis match live, including official streaming options, TV schedule, match time, tournament details and live score updates.",
+  ? `Follow ${readableTitle} with live score updates, official broadcaster information, TV schedule and tournament coverage.`
+  : "Find this tennis match schedule, official broadcaster information, match time, tournament details and score updates.",
 
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
 
     openGraph: {
-      title: isLiveMatch
-        ? `🔴 LIVE: ${readableTitle}`
-        : `${readableTitle} Live Stream`,
+     title: isLiveMatch
+  ? `🔴 LIVE: ${readableTitle}`
+  : `${readableTitle} Match Info`,
 
       description: isLiveMatch
-        ? `Live tennis score updates, streams and TV schedule.`
-        : "Official tennis streaming and TV schedule information.",
+  ? `Live tennis score updates, TV schedule and official viewing information.`
+  : "Official tennis TV schedule, match timing and viewing information.",
 
       url: `https://watchtennistoday.com/watch/${slug}`,
 
@@ -214,8 +214,8 @@ export async function generateMetadata({
         : `${readableTitle} Live Stream`,
 
       description: isLiveMatch
-        ? `Live tennis score updates and streaming info.`
-        : "Official tennis streaming and TV schedule information.",
+  ? `Live tennis score updates, TV schedule and official viewing information.`
+  : "Official tennis TV schedule, match timing and viewing information.",
     },
   };
 }
@@ -327,12 +327,12 @@ if (!liveMatch && archivedMatch) {
 
           <section className="space-y-5 text-zinc-300 leading-8 mb-10">
             <h2 className="text-3xl font-black text-white">
-              Match Coverage Archived
+              Archived Match Information
             </h2>
 
             <p>
-              This tennis match is no longer live and may have been removed
-              from active schedules and live feeds.
+              This tennis match is no longer active and may have been removed
+from current tournament schedules or live score feeds.
             </p>
 
             <p>
@@ -352,7 +352,7 @@ if (!liveMatch && archivedMatch) {
               href="/live-tennis"
               className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
             >
-              Live Tennis
+              Tennis Schedule
             </a>
 
             <a
@@ -391,7 +391,7 @@ if (!match) {
   const playerDescription =
   playerDescriptions[match.player1.toLowerCase()] ||
   playerDescriptions[match.player2.toLowerCase()] ||
-  "Follow live tennis matches, streaming availability, TV schedule updates and official broadcaster information.";
+  "Follow tennis match schedules, TV coverage updates, tournament context and official broadcaster information.";
 
   const relatedMatches = matches
     .filter((item) => item.id !== match.id && !isFinished(item.status))
@@ -429,12 +429,12 @@ if (!match) {
     mainEntity: [
       {
         "@type": "Question",
-        name: `Where can I watch ${matchTitle} live?`,
+        name: `Where can I find official viewing information for ${matchTitle}?`,
         acceptedAnswer: {
           "@type": "Answer",
           text:
             match.watchProviders.length > 0
-              ? `${matchTitle} can be checked through official tennis streaming and broadcaster sources such as ${match.watchProviders
+              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${match.watchProviders
                   .map((provider) => provider.name)
                   .join(", ")}.`
               : `Official streaming information for ${matchTitle} may depend on your country and broadcaster availability.`,
@@ -560,8 +560,6 @@ availability and live tennis updates for {matchTitle}.
             </div>
           </div>
 
-          <AdSlot />
-
           <section className="mt-14">
             <h2 className="text-3xl font-black mb-5">
               📺 Where to Watch {matchTitle}
@@ -614,7 +612,7 @@ availability and live tennis updates for {matchTitle}.
     rel="nofollow sponsored noopener noreferrer"
     className="inline-flex rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
   >
-    Learn About Streaming Privacy
+    Online Viewing Privacy Guide
   </a>
   <p className="mt-4 text-xs text-zinc-500">
   Some links on Watch Tennis Today may be affiliate links.
@@ -656,8 +654,8 @@ availability and live tennis updates for {matchTitle}.
             <h2 className="text-3xl font-black mb-4">🔔 Get Match Alerts</h2>
 
             <p className="text-zinc-400 mb-6">
-              Get notified before {matchTitle} starts, including live stream
-              updates and tennis schedule alerts.
+              Get notified before {matchTitle} starts, including match schedule
+updates, score alerts and tournament coverage information.
             </p>
             <p className="text-zinc-500 text-sm mb-6">
   Email alerts are optional and can be unsubscribed from at any time.
@@ -699,11 +697,11 @@ availability and live tennis updates for {matchTitle}.
             <div className="space-y-4">
               <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                 <h3 className="text-xl font-black mb-2">
-                  Where can I watch {matchTitle} live?
+                  Where can I find official viewing information for {matchTitle}?
                 </h3>
                 <p className="text-zinc-400">
-                  You can check the official watch options listed above. Some
-                  streams and broadcasters may depend on your country.
+                  You can check the official viewing options listed above. Availability may
+depend on your country, tournament rights and licensed broadcasters.
                 </p>
               </div>
 
@@ -751,7 +749,7 @@ availability and live tennis updates for {matchTitle}.
           {relatedMatches.length > 0 ? (
             <section className="mt-16">
               <h2 className="text-3xl font-black mb-6">
-                🎾 More Live Tennis Matches
+                🎾 More Tennis Matches
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -787,8 +785,8 @@ availability and live tennis updates for {matchTitle}.
   </h2>
 
   <p className="text-zinc-400 mb-6 max-w-3xl">
-    Explore live tennis matches, schedules,
-    rankings and streaming coverage for featured players.
+    Explore player match schedules, tournament context,
+rankings and official viewing information.
   </p>
 
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -802,7 +800,7 @@ availability and live tennis updates for {matchTitle}.
       </h3>
 
       <p className="text-zinc-400">
-        Live matches, streaming info and schedule
+        Matches, schedule and viewing info
       </p>
     </a>
 
