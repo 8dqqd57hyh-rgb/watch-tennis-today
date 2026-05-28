@@ -1,4 +1,5 @@
 import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+import PlayerAuthoritySections from "@/app/components/PlayerAuthoritySections";
 
 export const metadata = {
   title: "Carlos Alcaraz Live Stream Today | TV Schedule and Legal Ways to Watch",
@@ -68,6 +69,21 @@ export default function WatchCarlosAlcarazLivePage() {
           </a>
         </div>
 
+
+        <PlayerAuthoritySections
+          playerName="Carlos Alcaraz"
+          playerSlug="carlos-alcaraz"
+          tour="ATP"
+          nationality="Spain"
+          surfaces="Clay / hard / grass"
+          playingStyle="Alcaraz is a high-interest live player because his matches combine explosive movement, all-court attack and frequent momentum swings. Fans often search for his live schedule around Grand Slams, Masters events and prime-time show courts."
+          keyStrengths={[
+            "All-court style creates highlight-friendly matches and strong casual fan demand.",
+            "Grand Slam and Masters sessions with Alcaraz are often heavily promoted by broadcasters.",
+            "Clay, grass and hard-court results all generate seasonal search interest.",
+            "Rivalry matches against Sinner, Djokovic or Zverev can become breakout traffic pages.",
+          ]}
+        />
 
         <PlayerLiveMoneyGuide
           playerName="Carlos Alcaraz"

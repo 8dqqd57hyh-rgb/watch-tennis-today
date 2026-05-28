@@ -1,4 +1,5 @@
 import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+import PlayerAuthoritySections from "@/app/components/PlayerAuthoritySections";
 
 export const metadata = {
   title: "Jannik Sinner Live Stream Today | TV Schedule and Legal Ways to Watch",
@@ -68,6 +69,21 @@ export default function WatchJannikSinnerLivePage() {
           </a>
         </div>
 
+
+        <PlayerAuthoritySections
+          playerName="Jannik Sinner"
+          playerSlug="jannik-sinner"
+          tour="ATP"
+          nationality="Italy"
+          surfaces="Hard / indoor hard"
+          playingStyle="Sinner is usually followed for clean baseline timing, early ball striking and calm point construction. His matches can become especially valuable for viewers when he faces elite returners, heavy servers or other top-seeded players in late tournament rounds."
+          keyStrengths={[
+            "Elite baseline timing makes rallies easy to follow and attractive for highlights.",
+            "Top-seeded matches often receive better TV placement and wider broadcaster coverage.",
+            "Hard-court and indoor events can create strong demand for live viewing.",
+            "Rivalry matches against Alcaraz, Djokovic or Medvedev often attract search traffic.",
+          ]}
+        />
 
         <PlayerLiveMoneyGuide
           playerName="Jannik Sinner"

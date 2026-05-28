@@ -1,4 +1,5 @@
 import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
+import PlayerAuthoritySections from "@/app/components/PlayerAuthoritySections";
 
 export const metadata = {
   title: "Novak Djokovic Live Stream Today | TV Schedule and Legal Ways to Watch",
@@ -68,6 +69,21 @@ export default function WatchNovakDjokovicLivePage() {
           </a>
         </div>
 
+
+        <PlayerAuthoritySections
+          playerName="Novak Djokovic"
+          playerSlug="novak-djokovic"
+          tour="ATP"
+          nationality="Serbia"
+          surfaces="Hard / grass / clay"
+          playingStyle="Djokovic matches remain high-demand because many viewers follow record-chasing runs, Grand Slam sessions and late-round tactical battles. His matches are often scheduled on major courts, which makes broadcaster confirmation important before match time."
+          keyStrengths={[
+            "Major-court scheduling usually increases broadcaster visibility.",
+            "Grand Slam record storylines create strong search demand.",
+            "Matches against top ATP players often produce high session duration.",
+            "Fans often need country-specific TV guidance because rights differ by event.",
+          ]}
+        />
 
         <PlayerLiveMoneyGuide
           playerName="Novak Djokovic"

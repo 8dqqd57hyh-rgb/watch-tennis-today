@@ -630,6 +630,38 @@ tennis viewing information.
               🔴 Live Tennis
             </a>
 
+            <section className="mb-12 mt-10 rounded-[2rem] border border-emerald-500/40 bg-emerald-950/20 p-6">
+              <div className="mb-5 flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-black text-black">
+                  💸 Streaming guides
+                </span>
+                <span className="text-sm text-zinc-400">
+                  Helpful money pages for tennis fans who want legal viewing options
+                </span>
+              </div>
+              <h2 className="mb-4 text-3xl font-black text-white">
+                Tennis Streaming Guides That Help You Choose Safely
+              </h2>
+              <p className="mb-6 max-w-3xl text-zinc-300 leading-7">
+                Compare legal ways to watch tennis online, check country-based broadcaster
+                guides and prepare before Grand Slam matches without relying on risky stream sites.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <a href="/best-vpn-for-tennis-streaming" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
+                  Best VPN for tennis streaming
+                </a>
+                <a href="/best-vpn-for-roland-garros" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
+                  VPN for Roland Garros
+                </a>
+                <a href="/best-vpn-for-wimbledon" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
+                  VPN for Wimbledon
+                </a>
+                <a href="/how-to-watch-tennis-without-cable" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
+                  Watch tennis without cable
+                </a>
+              </div>
+            </section>
+
             <div className="mb-12 mt-10">
               <h2 className="text-3xl font-black mb-5">
                 🌍 Watch Tennis by Country
