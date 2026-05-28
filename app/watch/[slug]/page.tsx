@@ -211,7 +211,7 @@ export async function generateMetadata({
 
       title: isLiveMatch
         ? `🔴 LIVE: ${readableTitle}`
-        : `${readableTitle} Live Stream`,
+        : `${readableTitle} Match Info`,
 
       description: isLiveMatch
   ? `Live tennis score updates, TV schedule and official viewing information.`
@@ -437,7 +437,7 @@ if (!match) {
               ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${match.watchProviders
                   .map((provider) => provider.name)
                   .join(", ")}.`
-              : `Official streaming information for ${matchTitle} may depend on your country and broadcaster availability.`,
+              : `Official viewing information for ${matchTitle} may depend on your country, tournament rights and broadcaster availability.`,
         },
       },
       {
@@ -520,7 +520,7 @@ availability and live tennis updates for {matchTitle}.
           <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
   <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
   embed, or provide unauthorized live streams. We only provide information
-  about official broadcasters and legal streaming platforms available in
+  about official broadcasters and licensed viewing platforms available in
   your region.
 </div>
 
@@ -728,8 +728,8 @@ depend on your country, tournament rights and licensed broadcasters.
     Can I watch {matchTitle} online?
   </h3>
   <p className="text-zinc-400">
-    Yes, if the match is covered by an official broadcaster or streaming
-    service in your country. Availability can vary by tournament and region.
+    Yes, if the match is covered by an official broadcaster or licensed
+    viewing platform in your country. Availability can vary by tournament and region.
   </p>
 </div>
 
@@ -813,7 +813,7 @@ rankings and official viewing information.
       </h3>
 
       <p className="text-zinc-400">
-        Live matches, streaming info and schedule
+        Matches, schedule and viewing info
       </p>
     </a>
 
@@ -830,7 +830,7 @@ rankings and official viewing information.
                 href="/live-tennis"
                 className="bg-zinc-800 rounded-2xl p-5 font-bold hover:bg-zinc-700"
               >
-                Live Tennis Today
+                Tennis Schedule Today
               </a>
 
               <a

@@ -79,10 +79,10 @@ export async function generateMetadata({
   const playerName = formatPlayerName(slug);
 
   return {
-    title: `${playerName} Live Stream & Matches Today | Watch Tennis Today`,
+    title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
    description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
     openGraph: {
-      title: `${playerName} Live Stream & Matches Today`,
+      title: `${playerName} Matches Today & TV Schedule`,
       description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
       url: `https://watchtennistoday.com/player/${slug}`,
       siteName: "Watch Tennis Today",
@@ -90,7 +90,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${playerName} Live Stream & Matches Today`,
+      title: `${playerName} Matches Today & TV Schedule`,
       description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
     },
   };
@@ -228,7 +228,7 @@ const playerMatches = allMatches.filter((match) =>
     </div>
 
     <p className="text-zinc-300 mb-5 leading-8">
-      Follow the live match, score updates, streaming information and current
+      Follow the live match, score updates, official viewing information and current
       tournament coverage for {playerName}.
     </p>
 
@@ -344,7 +344,7 @@ const playerMatches = allMatches.filter((match) =>
                 href={`/player/${playerSlug}`}
                 className="rounded-lg border p-4 hover:bg-gray-50 transition"
               >
-                {name} live matches
+                {name} match schedule
               </a>
             );
           })}
@@ -370,7 +370,7 @@ const playerMatches = allMatches.filter((match) =>
 
           <p>
             Watch Tennis Today helps fans find match schedules, live tennis coverage,
-            streaming options and TV channels for upcoming {playerName} matches.
+            official viewing options and TV channels for upcoming {playerName} matches.
           </p>
         </div>
 

@@ -71,10 +71,10 @@ function matchSlug(match: Match) {
 
 export const metadata = {
   title:
-    "Live Tennis Matches Today | Watch Tennis Today",
+    "Tennis Match Schedule Today | Watch Tennis Today",
 
   description:
-    "Watch live ATP, WTA, Challenger and ITF tennis matches happening right now.",
+    "Follow ATP, WTA, Challenger and ITF tennis schedules, live scores, tournament coverage and official viewing information.",
 };
 
 export default async function LiveTennisPage() {
@@ -123,16 +123,16 @@ const matchesToShow =
         </a>
 
         <h1 className="text-5xl font-black mt-8 mb-4">
-          🔴 Live Tennis Matches
+          🔴 Tennis Match Schedule
         </h1>
 
         <p className="text-zinc-400 text-lg mb-10">
-          Live ATP, WTA, Challenger and ITF
-          tennis matches happening right now.
+          Follow ATP, WTA, Challenger and ITF tennis schedules, live scores,
+          tournament coverage and official viewing information.
         </p>
 <p className="text-zinc-400 mt-4 max-w-3xl">
-  Watch Tennis Today does not host, embed or restream live tennis broadcasts.
-  We provide live tennis schedules, match information and links to official
+  Watch Tennis Today does not host, embed or restream tennis broadcasts.
+  We provide tennis schedules, match information and links to official
   broadcaster resources only.
 </p>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -173,7 +173,7 @@ const matchesToShow =
                 )}`}
                 className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
               >
-                Watch Match
+                View Match Info
               </a>
             </div>
           ))}
