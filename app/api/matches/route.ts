@@ -145,8 +145,69 @@ function getStartTime(match: ApiTennisMatch) {
   return `${match.event_date}T${match.event_time}:00`;
 }
 
+function isGrandSlamTournament(tournament: string) {
+  const name = tournament.toLowerCase();
+
+  return (
+    name.includes("roland") ||
+    name.includes("french open") ||
+    name.includes("wimbledon") ||
+    name.includes("us open") ||
+    name.includes("australian open")
+  );
+}
+
+function getGrandSlamWatchProviders(tournament: string) {
+  const name = tournament.toLowerCase();
+
+  if (name.includes("roland") || name.includes("french open")) {
+    return [
+      {
+        name: "Roland-Garros official site",
+        url: "https://www.rolandgarros.com/en-us/broadcasters",
+        accessType: "REGION_DEPENDENT",
+        verificationStatus: "TOURNAMENT_VERIFIED",
+        note: "Grand Slam rights are separate from Tennis TV. Check the official Roland-Garros broadcaster list for your country.",
+      },
+      {
+        name: "France TV / Eurosport where available",
+        url: "https://www.rolandgarros.com/en-us/broadcasters",
+        accessType: "REGION_DEPENDENT",
+        verificationStatus: "TOURNAMENT_VERIFIED",
+        note: "French Open coverage depends on your location and local broadcaster rights.",
+      },
+    ];
+  }
+
+  if (name.includes("wimbledon")) {
+    return [
+      {
+        name: "Wimbledon official broadcasters",
+        url: "https://www.wimbledon.com/en_GB/atoz/tv_schedules.html",
+        accessType: "REGION_DEPENDENT",
+        verificationStatus: "TOURNAMENT_VERIFIED",
+        note: "Wimbledon is a Grand Slam and is not included with Tennis TV. Check official broadcaster availability by region.",
+      },
+    ];
+  }
+
+  return [
+    {
+      name: "Official Grand Slam broadcaster list",
+      url: "https://www.itftennis.com/en/about-us/organisation/about-the-itf/grand-slams/",
+      accessType: "REGION_DEPENDENT",
+      verificationStatus: "TOURNAMENT_VERIFIED",
+      note: "Grand Slam streaming rights are sold separately from Tennis TV and vary by country.",
+    },
+  ];
+}
+
 function getWatchProviders(category: string, tournament: string) {
   const tournamentLower = tournament.toLowerCase();
+
+  if (isGrandSlamTournament(tournament)) {
+    return getGrandSlamWatchProviders(tournament);
+  }
 
   if (category === "ATP" && !tournamentLower.includes("challenger")) {
     return [
@@ -155,14 +216,14 @@ function getWatchProviders(category: string, tournament: string) {
         url: "https://www.tennistv.com/live-schedule",
         accessType: "PAID",
         verificationStatus: "TOUR_VERIFIED",
-        note: "Official ATP streaming schedule. Exact match should be checked on Tennis TV.",
+        note: "Official ATP Tour streaming schedule. Grand Slam matches are not included.",
       },
       {
         name: "ATP TV Schedule",
         url: "https://www.atptour.com/en/tournaments/tv-schedule",
         accessType: "REGION_DEPENDENT",
         verificationStatus: "TOUR_VERIFIED",
-        note: "Official ATP broadcaster schedule by region.",
+        note: "Official ATP broadcaster schedule for ATP Tour events, excluding Grand Slams.",
       },
     ];
   }

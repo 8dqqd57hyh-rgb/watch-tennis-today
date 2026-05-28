@@ -36,6 +36,54 @@ type Match = {
   watchProviders: WatchProvider[];
 };
 
+
+function isGrandSlamTournament(tournament: string) {
+  const name = tournament.toLowerCase();
+
+  return (
+    name.includes("roland") ||
+    name.includes("french open") ||
+    name.includes("wimbledon") ||
+    name.includes("us open") ||
+    name.includes("australian open")
+  );
+}
+
+function getSafeWatchProviders(match: Match) {
+  if (!isGrandSlamTournament(match.tournament)) {
+    return match.watchProviders;
+  }
+
+  const filtered = match.watchProviders.filter((provider) => {
+    const name = provider.name.toLowerCase();
+    return !name.includes("tennis tv") && !name.includes("atp tv");
+  });
+
+  if (filtered.length > 0) return filtered;
+
+  if (match.tournament.toLowerCase().includes("french open") || match.tournament.toLowerCase().includes("roland")) {
+    return [
+      {
+        name: "Roland-Garros official broadcasters",
+        url: "https://www.rolandgarros.com/en-us/broadcasters",
+        accessType: "REGION_DEPENDENT",
+        verificationStatus: "TOURNAMENT_VERIFIED",
+        note: "French Open rights are separate from Tennis TV. Check the official broadcaster list for your country.",
+      },
+    ];
+  }
+
+  return [
+    {
+      name: "Official Grand Slam broadcasters",
+      url: "/watch-tennis-in/usa",
+      accessType: "REGION_DEPENDENT",
+      verificationStatus: "TOURNAMENT_VERIFIED",
+      note: "Grand Slam streaming rights are separate from Tennis TV and vary by country.",
+    },
+  ];
+}
+
 const playerDescriptions: Record<string, string> = {
   "carlos alcaraz":
     "Carlos Alcaraz is known for explosive movement, heavy topspin and aggressive baseline play, especially on clay courts.",
@@ -263,7 +311,7 @@ function buildCountryWatchLinks(match: Match) {
     },
     {
       country: "Germany",
-      label: category === "WTA" ? "WTA broadcasters / Tennis Channel" : "Sky / Tennis TV",
+      label: isGrandSlam ? "Eurosport / Discovery+ where available" : category === "WTA" ? "WTA broadcasters / Tennis Channel" : "Sky / Tennis TV",
       href: "/watch-tennis-in/germany",
     },
   ];
@@ -501,8 +549,8 @@ export default async function MatchPage({
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            match.watchProviders.length > 0
-              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${match.watchProviders
+            getSafeWatchProviders(match).length > 0
+              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${getSafeWatchProviders(match)
                   .map((provider) => provider.name)
                   .join(", ")}.`
               : `Official viewing information for ${matchTitle} may depend on your country, tournament rights and broadcaster availability.`,
@@ -647,9 +695,9 @@ export default async function MatchPage({
                 </a>
               </div>
 
-              {match.watchProviders.length > 0 ? (
+              {getSafeWatchProviders(match).length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {match.watchProviders.map((provider) => (
+                  {getSafeWatchProviders(match).map((provider) => (
                     <a
                       key={`${provider.name}-${provider.url}`}
                       href={provider.url}

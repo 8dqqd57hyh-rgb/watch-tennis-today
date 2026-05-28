@@ -51,6 +51,53 @@ const priorityPlayers = [
   "Coco Gauff",
 ];
 
+function isGrandSlamTournament(tournament: string) {
+  const name = tournament.toLowerCase();
+
+  return (
+    name.includes("roland") ||
+    name.includes("french open") ||
+    name.includes("wimbledon") ||
+    name.includes("us open") ||
+    name.includes("australian open")
+  );
+}
+
+function getSafeWatchProviders(match: Match) {
+  if (!isGrandSlamTournament(match.tournament)) {
+    return match.watchProviders;
+  }
+
+  const filtered = match.watchProviders.filter((provider) => {
+    const name = provider.name.toLowerCase();
+    return !name.includes("tennis tv") && !name.includes("atp tv");
+  });
+
+  if (filtered.length > 0) return filtered;
+
+  if (match.tournament.toLowerCase().includes("french open") || match.tournament.toLowerCase().includes("roland")) {
+    return [
+      {
+        name: "Roland-Garros official broadcasters",
+        url: "https://www.rolandgarros.com/en-us/broadcasters",
+        accessType: "REGION_DEPENDENT",
+        verificationStatus: "TOURNAMENT_VERIFIED",
+        note: "French Open rights are separate from Tennis TV. Check the official broadcaster list for your country.",
+      },
+    ];
+  }
+
+  return [
+    {
+      name: "Official Grand Slam broadcasters",
+      url: "/watch-tennis-in/usa",
+      accessType: "REGION_DEPENDENT",
+      verificationStatus: "TOURNAMENT_VERIFIED",
+      note: "Grand Slam streaming rights are separate from Tennis TV and vary by country.",
+    },
+  ];
+}
+
 function readableCountry(country: string) {
   return country
     .split("-")
@@ -1198,9 +1245,9 @@ tennis viewing information.
 
                 
 
-                    {match.watchProviders.length > 0 ? (
+                    {getSafeWatchProviders(match).length > 0 ? (
                       <div className="space-y-3">
-                        {match.watchProviders.map((provider) => (
+                        {getSafeWatchProviders(match).map((provider) => (
                           <a
                             key={provider.name}
                             href={withTracking(provider.url, "homepage_match_card")}
