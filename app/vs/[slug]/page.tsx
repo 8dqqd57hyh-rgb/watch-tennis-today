@@ -5,6 +5,7 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -330,6 +331,12 @@ export default async function VsPage({ params }: Props) {
             </div>
           </section>
         ) : null}
+
+        <RevenueConversionPanel
+          context="matchup"
+          playerName={playerA}
+          opponentName={playerB}
+        />
 
         <StreamingLinksGrid />
 

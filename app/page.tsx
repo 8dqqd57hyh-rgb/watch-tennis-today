@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import TodaysTennisHub from "@/app/components/TodaysTennisHub";
+import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 type WatchProvider = {
   name: string;
@@ -493,6 +494,8 @@ tennis viewing information.
   </p>
 </div>
 <TodaysTennisHub matches={matches} />
+
+        <RevenueConversionPanel context="homepage" />
 <section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
   <h2 className="text-3xl font-black text-white mb-5">
     What Watch Tennis Today Does

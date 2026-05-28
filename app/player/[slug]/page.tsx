@@ -6,6 +6,7 @@ import { players } from "@/data/players";
 import { matchContainsExactPlayer } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
+import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -323,6 +324,33 @@ const playerMatches = allMatches.filter((match) =>
   </p>
 </>
         )}
+      </section>
+
+
+      <RevenueConversionPanel context="player" playerName={playerName} />
+
+      <section className="mb-10 rounded-2xl border border-zinc-200 p-6">
+        <h2 className="mb-4 text-2xl font-semibold">High-interest matchups</h2>
+        <p className="mb-5 text-sm leading-7 text-zinc-600">
+          These head-to-head pages help fans compare popular matchups, find schedule
+          context and continue to official viewing guides instead of leaving after one page.
+        </p>
+        <div className="grid gap-3 md:grid-cols-2">
+          {[
+            ["Alcaraz vs Sinner", "/vs/alcaraz-vs-sinner"],
+            ["Djokovic vs Alcaraz", "/vs/djokovic-vs-alcaraz"],
+            ["Sinner vs Djokovic", "/vs/sinner-vs-djokovic"],
+            ["Swiatek vs Sabalenka", "/vs/swiatek-vs-sabalenka"],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              className="rounded-2xl border border-zinc-200 p-4 font-bold hover:border-green-500 hover:bg-green-50"
+            >
+              {label} →
+            </a>
+          ))}
+        </div>
       </section>
 
     <ContentQualityNotice pageType="player page" />

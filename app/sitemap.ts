@@ -227,6 +227,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/best-vpn-for-tennis-streaming",
     "/best-vpn-for-roland-garros",
     "/best-vpn-for-wimbledon",
+    "/watch-tennis-abroad",
     "/wimbledon-live",
     "/wimbledon-schedule",
     "/wimbledon-results",

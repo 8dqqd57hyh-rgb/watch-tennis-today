@@ -51,6 +51,13 @@ export default function RelatedMoneyLinks({
         )}
 
         <a
+          href="/watch-tennis-abroad"
+          className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 font-bold text-white hover:border-green-500"
+        >
+          Watch tennis abroad safely
+        </a>
+
+        <a
           href="/best-ways-to-watch-tennis-online"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >

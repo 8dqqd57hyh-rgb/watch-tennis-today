@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Watch Tennis Today",
@@ -68,7 +57,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-black">
        <Script
@@ -140,6 +129,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/watch-tennis-abroad"
+          className="hidden md:inline text-emerald-300 hover:text-emerald-200"
+        >
+          Watch Abroad
+        </a>
+
+        <a
           href="/how-to-watch-tennis-legally"
           className="hidden md:inline text-zinc-300 hover:text-white"
         >
@@ -191,6 +187,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Disclaimer
+</a>
+<a
+  href="/watch-tennis-abroad"
+  className="hover:text-white transition-colors"
+>
+  Watch Tennis Abroad
 </a>
 <a
   href="/best-ways-to-watch-tennis-online"
