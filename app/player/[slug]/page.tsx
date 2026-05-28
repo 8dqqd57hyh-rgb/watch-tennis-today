@@ -80,7 +80,7 @@ export async function generateMetadata({
 
   return {
     title: `${playerName} Live Stream & Matches Today | Watch Tennis Today`,
-    description: `Watch ${playerName} live today. Find tennis match schedule, live streams, TV channels and tournament information.`,
+   description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
     openGraph: {
       title: `${playerName} Live Stream & Matches Today`,
       description: `Watch ${playerName} live today.`,
@@ -185,7 +185,7 @@ const playerMatches = allMatches.filter((match) =>
 
   const relatedPlayers = PLAYERS
     .filter((playerSlug) => playerSlug !== slug)
-    .slice(0, 12);
+    .slice(0, 6);
 
   return (
     <main className="max-w-4xl mx-auto p-4">
@@ -308,12 +308,19 @@ const playerMatches = allMatches.filter((match) =>
             ))}
           </div>
         ) : (
-          <p>
-            No upcoming matches are currently listed for {playerName}.
+          <>
+  <p className="text-zinc-600 leading-7">
+    No upcoming matches are currently listed for {playerName}. Tennis schedules can
+    change quickly because of tournament draws, weather delays, withdrawals and TV
+    scheduling updates.
+  </p>
 
-You can still explore tournament coverage, TV schedules,
-official broadcaster information and live tennis updates.
-          </p>
+  <p className="mt-3 text-zinc-600 leading-7">
+    You can still explore live tennis schedules, tournament pages and official
+    broadcaster information to check where future {playerName} matches may be
+    available legally.
+  </p>
+</>
         )}
       </section>
 
@@ -351,10 +358,10 @@ official broadcaster information and live tennis updates.
 
         <div className="space-y-5 text-zinc-300 leading-8">
           <p>
-            Tennis fans can watch {playerName} live on official sports broadcasters,
-            official broadcasters and tennis TV services depending on country and
-            tournament rights.
-          </p>
+  Tennis fans can watch {playerName} live through official sports broadcasters,
+  licensed streaming platforms and tournament TV partners, depending on country
+  and tournament rights.
+</p>
 
           <p>
             Coverage may include ATP Tour events, WTA tournaments, Grand Slams,
@@ -372,7 +379,7 @@ official broadcaster information and live tennis updates.
             href="/watch"
             className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
           >
-            Watch Tennis Live
+            View Tennis Schedule
           </a>
 
           <a
@@ -384,24 +391,47 @@ official broadcaster information and live tennis updates.
         </div>
       </section>
 
-      <section className="space-y-4 text-sm leading-7">
+      <section className="mb-10 rounded-2xl border border-green-500/30 bg-green-500/10 p-5">
+  <h2 className="text-xl font-bold mb-3">
+    Legal Tennis Viewing Information
+  </h2>
+
+  <p className="text-sm leading-7 text-zinc-700">
+    Watch Tennis Today is an informational tennis guide. We do not stream matches,
+    embed live video or bypass broadcaster restrictions. Our player pages are built
+    to help fans compare legal viewing options, understand tournament coverage and
+    find official match information.
+  </p>
+</section>
+
+     <section className="mb-10 rounded-2xl border border-zinc-200 p-6 space-y-4 text-sm leading-7">
   <h2 className="text-2xl font-semibold">
-    About {playerName}
+    About {playerName} Matches and Coverage
   </h2>
 
   <p>
-    This page helps tennis fans follow {playerName} matches, tournament
-    appearances, official broadcaster availability and live tennis schedules.
+    This page is designed to help tennis fans follow {playerName} in a legal and
+    practical way. Instead of hosting streams, Watch Tennis Today focuses on match
+    schedules, tournament context, official broadcaster information and country-based
+    viewing guidance.
   </p>
 
   <p>
-    Coverage may include ATP, WTA, Grand Slam and international tennis events
-    depending on the player’s current tournament schedule.
+    Tennis TV rights can change depending on the tournament, location and broadcast
+    partner. For that reason, availability for {playerName} matches may differ between
+    ATP, WTA, Grand Slam and other professional tennis events.
   </p>
 
   <p>
-    Watch Tennis Today provides tennis information, match timing updates and
-    viewing guidance for fans following professional tennis worldwide.
+    When no upcoming match is listed, fans can still use this page to explore related
+    tournament coverage, live tennis schedules and official viewing options for future
+    {playerName} matches.
+  </p>
+
+  <p>
+    Watch Tennis Today does not host live tennis streams and does not provide
+    unauthorized access to copyrighted broadcasts. The goal of this page is to make it
+    easier to find reliable tennis viewing information from legitimate sources.
   </p>
 </section>
      
