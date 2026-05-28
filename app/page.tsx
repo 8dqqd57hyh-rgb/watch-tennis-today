@@ -5,6 +5,7 @@ import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 
 type WatchProvider = {
   name: string;
@@ -494,6 +495,7 @@ tennis viewing information.
   </p>
 </div>
 <TodaysTennisHub matches={matches} />
+<BestMatchesTodayEngine matches={matches} />
 
         <RevenueConversionPanel context="homepage" />
 <section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">

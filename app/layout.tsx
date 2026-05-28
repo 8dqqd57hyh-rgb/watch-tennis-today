@@ -107,6 +107,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/best-tennis-matches-today"
+          className="hidden md:inline text-fuchsia-300 hover:text-fuchsia-200"
+        >
+          Best Today
+        </a>
+
+        <a
           href="/tv-schedule"
           className="text-zinc-300 hover:text-white"
         >
@@ -193,6 +200,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Watch Tennis Abroad
+</a>
+<a
+  href="/best-tennis-matches-today"
+  className="hover:text-white transition-colors"
+>
+  Best Matches Today
 </a>
 <a
   href="/best-ways-to-watch-tennis-online"
