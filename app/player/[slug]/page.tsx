@@ -44,10 +44,7 @@ export async function generateMetadata({
   const canonicalSlug = getCanonicalPlayerSlug(slug);
 
   if (!canonicalSlug) {
-    return {
-      title: "Player Not Found | Watch Tennis Today",
-      robots: { index: false, follow: true },
-    };
+    notFound();
   }
 
   const playerName = players[canonicalSlug].name;
@@ -149,10 +146,7 @@ export default async function PlayerPage({
   const canonicalSlug = getCanonicalPlayerSlug(slug);
 
   if (!canonicalSlug) {
-    return {
-      title: "Player Not Found | Watch Tennis Today",
-      robots: { index: false, follow: true },
-    };
+    notFound();
   }
 
   const playerName = players[canonicalSlug].name;
