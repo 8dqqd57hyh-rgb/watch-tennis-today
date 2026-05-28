@@ -136,6 +136,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/tennis-tv-broadcast-finder"
+          className="hidden md:inline text-sky-300 hover:text-sky-200"
+        >
+          Broadcast Finder
+        </a>
+
+        <a
           href="/watch-tennis-abroad"
           className="hidden md:inline text-emerald-300 hover:text-emerald-200"
         >
@@ -206,6 +213,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Best Matches Today
+</a>
+<a
+  href="/tennis-tv-broadcast-finder"
+  className="hover:text-white transition-colors"
+>
+  Broadcast Finder
 </a>
 <a
   href="/best-ways-to-watch-tennis-online"
