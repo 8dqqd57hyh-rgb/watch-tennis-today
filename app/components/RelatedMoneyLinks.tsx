@@ -1,3 +1,5 @@
+import { isDoublesTeam, playerUrl } from "@/data/playerSlugs";
+
 type RelatedMoneyLinksProps = {
   playerName?: string;
   player2Name?: string;
@@ -30,22 +32,18 @@ export default function RelatedMoneyLinks({
           </a>
         )}
 
-        {playerName && (
+        {playerName && !isDoublesTeam(playerName) && (
           <a
-            href={`/player/${playerName
-              .toLowerCase()
-              .replace(/\s+/g, "-")}`}
+            href={playerUrl(playerName)}
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {playerName} live
           </a>
         )}
 
-        {player2Name && (
+        {player2Name && !isDoublesTeam(player2Name) && (
           <a
-            href={`/player/${player2Name
-              .toLowerCase()
-              .replace(/\s+/g, "-")}`}
+            href={playerUrl(player2Name)}
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {player2Name} live

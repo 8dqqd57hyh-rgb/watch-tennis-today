@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
+
+  // Repair old/bad player links created from doubles names like
+  // /player/matushkina/-uchijima. They should not become nested routes.
+  if (playerPathMatch && playerPathMatch[1].includes("/")) {
+    const normalizedSlug = playerPathMatch[1]
+      .split("/")
+      .filter(Boolean)
+      .join("-")
+      .replace(/-+/g, "-");
+
+    const url = request.nextUrl.clone();
+    url.pathname = `/player/${normalizedSlug}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   const requestHeaders = new Headers(request.headers);
   const range = requestHeaders.get("range");
 

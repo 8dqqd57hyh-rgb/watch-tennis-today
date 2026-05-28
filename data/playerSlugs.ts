@@ -21,6 +21,10 @@ export function playerSlug(name: string) {
     .replace(/-+/g, "-");
 }
 
+export function isDoublesTeam(name?: string | null) {
+  return /\s*[/&+]\s*/.test(String(name || ""));
+}
+
 export function playerUrl(name: string) {
   return `/player/${playerSlug(name)}`;
 }
