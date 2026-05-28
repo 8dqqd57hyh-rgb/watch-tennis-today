@@ -255,6 +255,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/how-to-watch-french-open-in-usa",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
+    "/watch-alcaraz-live",
+    "/watch-djokovic-live",
+    "/watch-sinner-live",
   ].map((path) => {
   const livePages = [
     "",
@@ -334,8 +337,11 @@ const uniquePlayers = [
 // Add French Open / Roland Garros related pages
 const frenchOpenPages = [
   "/french-open-live",
+  "/french-open-live-stream",
   "/watch-french-open-online",
   "/french-open-tv-schedule",
+  "/french-open-schedule",
+  "/french-open-streaming-countries",
   "/french-open-today",
   "/french-open-order-of-play",
   "/french-open-results",
