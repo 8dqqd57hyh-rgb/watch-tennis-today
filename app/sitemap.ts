@@ -213,6 +213,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/players/wta",
     "/watch-tennis-in/poland",
     "/today",
+    "/tomorrow",
+    "/tennis-schedule-tomorrow",
     "/live-tennis",
     "/watch",
     "/tv-schedule",
@@ -277,6 +279,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const livePages = [
     "",
     "/today",
+    "/tomorrow",
+    "/tennis-schedule-tomorrow",
     "/live-tennis",
     "/matches/live-now",
     "/watch",

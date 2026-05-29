@@ -1,7 +1,7 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type RevenueConversionPanelProps = {
-  context?: "homepage" | "player" | "matchup" | "article";
+  context?: "homepage" | "player" | "matchup" | "article" | "tomorrow-schedule";
   playerName?: string;
   opponentName?: string;
   tournament?: string;
@@ -31,6 +31,12 @@ const contextCopy = {
     title: "Choose the safest tennis streaming setup",
     text:
       "Use official broadcasters first, then compare travel-friendly VPN options when you are away from your normal region.",
+  },
+  "tomorrow-schedule": {
+    eyebrow: "Plan tomorrow's tennis viewing",
+    title: "Check the best legal way to watch tomorrow's matches",
+    text:
+      "Tomorrow schedules are useful for planning ahead, comparing official broadcasters and checking travel-friendly viewing options before match day.",
   },
 };
 

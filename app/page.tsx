@@ -547,6 +547,28 @@ tennis viewing information.
     official broadcaster and streaming platform resources only.
   </p>
 </div>
+
+<div className="mb-10 flex flex-wrap gap-3">
+  <a
+    href="/today"
+    className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400"
+  >
+    Today&apos;s matches
+  </a>
+  <a
+    href="/tomorrow"
+    className="rounded-2xl border border-blue-500/60 px-5 py-3 font-black text-blue-200 hover:border-blue-300 hover:text-blue-100"
+  >
+    Tomorrow&apos;s schedule
+  </a>
+  <a
+    href="/compare"
+    className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold text-zinc-300 hover:border-zinc-500 hover:text-white"
+  >
+    Compare streaming services
+  </a>
+</div>
+
 <HomepageGrowthEngine matches={homepageMatches} />
 <TodaysTennisHub matches={homepageMatches} />
 <BestMatchesTodayEngine matches={homepageMatches} />
