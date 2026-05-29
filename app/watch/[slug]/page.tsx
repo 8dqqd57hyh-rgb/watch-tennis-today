@@ -322,31 +322,64 @@ function buildCountryWatchLinks(match: Match) {
   return links;
 }
 
-function getRelatedMatches(match: Match, matches: Match[]) {
+function getRelatedMatchStatusScore(status: string) {
+  const normalized = normalizeStatus(status);
+
+  if (normalized === "LIVE") return 40;
+  if (normalized === "SUSPENDED") return 35;
+  if (normalized === "UPCOMING") return 25;
+
+  return 5;
+}
+
+function getRelatedMatchStartScore(startTime: string | null) {
+  if (!startTime) return 0;
+
+  const timestamp = new Date(startTime).getTime();
+  if (Number.isNaN(timestamp)) return 0;
+
+  const hoursFromNow = (timestamp - Date.now()) / (1000 * 60 * 60);
+
+  if (hoursFromNow >= 0 && hoursFromNow <= 6) return 18;
+  if (hoursFromNow > 6 && hoursFromNow <= 24) return 10;
+  if (hoursFromNow < 0 && hoursFromNow >= -3) return 6;
+
+  return 0;
+}
+
+function getRelatedMatchScore(match: Match, item: Match) {
   const playerNames = [match.player1.toLowerCase(), match.player2.toLowerCase()];
   const tournament = match.tournament.toLowerCase();
 
+  return (
+    getRelatedMatchStatusScore(item.status) +
+    getRelatedMatchStartScore(item.startTime) +
+    (item.tournament.toLowerCase() === tournament ? 16 : 0) +
+    (item.category === match.category ? 8 : 0) +
+    (playerNames.includes(item.player1.toLowerCase()) ||
+    playerNames.includes(item.player2.toLowerCase())
+      ? 20
+      : 0)
+  );
+}
+
+function getRelatedMatches(match: Match, matches: Match[]) {
   return matches
     .filter((item) => item.id !== match.id && !isFinished(item.status))
+    .map((item) => ({
+      item,
+      score: getRelatedMatchScore(match, item),
+    }))
+    .filter(({ score }) => score > 0)
     .sort((a, b) => {
-      const aScore =
-        (a.tournament.toLowerCase() === tournament ? 3 : 0) +
-        (a.category === match.category ? 2 : 0) +
-        (playerNames.includes(a.player1.toLowerCase()) ||
-        playerNames.includes(a.player2.toLowerCase())
-          ? 5
-          : 0);
+      if (b.score !== a.score) return b.score - a.score;
 
-      const bScore =
-        (b.tournament.toLowerCase() === tournament ? 3 : 0) +
-        (b.category === match.category ? 2 : 0) +
-        (playerNames.includes(b.player1.toLowerCase()) ||
-        playerNames.includes(b.player2.toLowerCase())
-          ? 5
-          : 0);
+      const aTime = a.item.startTime ? new Date(a.item.startTime).getTime() : Number.MAX_SAFE_INTEGER;
+      const bTime = b.item.startTime ? new Date(b.item.startTime).getTime() : Number.MAX_SAFE_INTEGER;
 
-      return bScore - aScore;
+      return aTime - bTime;
     })
+    .map(({ item }) => item)
     .slice(0, 6);
 }
 
@@ -826,16 +859,39 @@ export default async function MatchPage({
               <section className="mb-12">
                 <h2 className="mb-6 text-3xl font-black">🎾 Related matches</h2>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {relatedMatches.map((item) => (
-                    <a key={item.id} href={`/watch/${getMatchSlug(item)}`} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition-all hover:border-green-500">
-                      <div className="mb-3 flex justify-between gap-3">
-                        <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusStyles(item.status)}`}>{item.status}</span>
-                        <span className="text-sm text-zinc-500">{item.category}</span>
-                      </div>
-                      <h3 className="mb-2 text-xl font-black">{item.player1} vs {item.player2}</h3>
-                      <p className="text-sm text-zinc-400">{item.tournament}</p>
-                    </a>
-                  ))}
+                  {relatedMatches.map((item) => {
+                    const relatedPlayer1Url = isDoublesTeam(item.player1) ? null : safePlayerUrl(item.player1);
+                    const relatedPlayer2Url = isDoublesTeam(item.player2) ? null : safePlayerUrl(item.player2);
+
+                    return (
+                      <article key={item.id} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition-all hover:border-green-500">
+                        <a href={`/watch/${getMatchSlug(item)}`} className="block">
+                          <div className="mb-3 flex justify-between gap-3">
+                            <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusStyles(item.status)}`}>{item.status}</span>
+                            <span className="text-sm text-zinc-500">{item.category}</span>
+                          </div>
+                          <h3 className="mb-2 text-xl font-black">{item.player1} vs {item.player2}</h3>
+                          <p className="text-sm text-zinc-400">{item.tournament}</p>
+                          <p className="mt-2 text-xs font-semibold text-zinc-500">{formatShortTime(item.startTime)}</p>
+                        </a>
+
+                        {(relatedPlayer1Url || relatedPlayer2Url) ? (
+                          <div className="mt-4 flex flex-wrap gap-2 border-t border-zinc-900 pt-4 text-xs font-bold">
+                            {relatedPlayer1Url ? (
+                              <a href={relatedPlayer1Url} className="rounded-full bg-zinc-900 px-3 py-1 text-zinc-300 hover:bg-zinc-800 hover:text-white">
+                                {item.player1}
+                              </a>
+                            ) : null}
+                            {relatedPlayer2Url ? (
+                              <a href={relatedPlayer2Url} className="rounded-full bg-zinc-900 px-3 py-1 text-zinc-300 hover:bg-zinc-800 hover:text-white">
+                                {item.player2}
+                              </a>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </article>
+                    );
+                  })}
                 </div>
               </section>
             ) : null}
