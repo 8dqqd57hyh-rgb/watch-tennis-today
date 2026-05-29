@@ -1,3 +1,7 @@
+import Link from "next/link";
+import { comparisons } from "@/data/comparisons";
+import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+
 export const metadata = {
   title: "Compare Tennis Streaming Options | Watch Tennis Today",
   description:
@@ -9,110 +13,109 @@ export const metadata = {
 
 export default function ComparePage() {
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+    <main className="min-h-screen bg-black p-6 text-white md:p-10">
+      <div className="mx-auto max-w-6xl">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
-        <h1 className="text-4xl md:text-5xl font-black mt-8">
-          Compare Tennis Streaming Options
-        </h1>
+        <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 md:p-8">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-green-400">
+            Tennis streaming comparisons
+          </p>
+          <h1 className="text-4xl font-black md:text-6xl">
+            Compare Tennis Streaming Options
+          </h1>
 
-        <p className="text-zinc-300 mt-4 text-lg leading-relaxed">
-          Tennis coverage depends on your country, tournament and subscription
-          access. This guide helps compare the most common legal ways to watch
-          tennis online and on TV.
-        </p>
+          <p className="mt-5 max-w-4xl text-lg leading-8 text-zinc-300">
+            Tennis coverage depends on your country, tournament and subscription access.
+            Use these legal, practical comparisons to choose the right broadcaster,
+            streaming service or travel setup before match time.
+          </p>
+        </section>
 
-        <section className="mt-10 overflow-x-auto rounded-2xl border border-zinc-800">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-zinc-900">
-              <tr>
-                <th className="p-4">Option</th>
-                <th className="p-4">Best for</th>
-                <th className="p-4">Limitations</th>
+        <section className="mt-8 grid gap-4 md:grid-cols-2">
+          {comparisons.map((comparison) => (
+            <Link
+              key={comparison.slug}
+              href={`/compare/${comparison.slug}`}
+              className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 transition hover:border-green-500 hover:bg-zinc-900"
+            >
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                {comparison.left} vs {comparison.right}
+              </p>
+              <h2 className="mb-3 text-2xl font-black text-white">
+                {comparison.title}
+              </h2>
+              <p className="leading-7 text-zinc-400">{comparison.description}</p>
+              <p className="mt-5 rounded-2xl border border-zinc-800 bg-black p-4 text-sm leading-6 text-zinc-300">
+                Best for: {comparison.audience}
+              </p>
+            </Link>
+          ))}
+        </section>
+
+        <section className="mt-10 overflow-x-auto rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="mb-5 text-3xl font-black text-white">
+            Quick decision table
+          </h2>
+
+          <table className="w-full min-w-[720px] text-left">
+            <thead>
+              <tr className="border-b border-zinc-800 text-sm text-zinc-400">
+                <th className="pb-4 pr-6">Comparison</th>
+                <th className="pb-4 pr-6">Best use case</th>
+                <th className="pb-4">Next step</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800 text-zinc-300">
-              <tr>
-                <td className="p-4 font-semibold text-white">TV broadcasters</td>
-                <td className="p-4">Grand Slams and major tournaments</td>
-                <td className="p-4">Rights vary by country</td>
-              </tr>
-              <tr>
-                <td className="p-4 font-semibold text-white">
-                  Official streaming services
-                </td>
-                <td className="p-4">Watching without cable</td>
-                <td className="p-4">May require paid subscription</td>
-              </tr>
-              <tr>
-                <td className="p-4 font-semibold text-white">Tournament apps</td>
-                <td className="p-4">Scores, draws and schedules</td>
-                <td className="p-4">Usually not full live video coverage</td>
-              </tr>
-              <tr>
-                <td className="p-4 font-semibold text-white">Highlights</td>
-                <td className="p-4">Catching up after matches</td>
-                <td className="p-4">Not a replacement for live coverage</td>
-              </tr>
+              {comparisons.map((comparison) => (
+                <tr key={comparison.slug}>
+                  <td className="py-4 pr-6 font-bold text-white">
+                    <Link href={`/compare/${comparison.slug}`} className="hover:text-green-400">
+                      {comparison.title}
+                    </Link>
+                  </td>
+                  <td className="py-4 pr-6">{comparison.audience}</td>
+                  <td className="py-4">
+                    <Link
+                      href={comparison.primaryCta.href}
+                      className="font-bold text-green-400 hover:text-green-300"
+                    >
+                      {comparison.primaryCta.label} →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </section>
 
-        <section className="mt-12 space-y-5 text-zinc-300 leading-relaxed">
-          <h2 className="text-3xl font-bold text-white">
-            How to choose the best option
+        <RevenueConversionPanel context="article" />
+
+        <section className="mt-10 space-y-5 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-300">
+          <h2 className="text-3xl font-black text-white">
+            How to choose without overpaying
           </h2>
 
-          <p>
+          <p className="leading-8">
             Start with the tournament you want to watch. Grand Slam events,
             ATP tournaments and WTA tournaments may be shown by different
             broadcasters even in the same country.
           </p>
 
-          <p>
+          <p className="leading-8">
             Then check whether you need live coverage, full replays, highlights
             or only scores. Some platforms are useful for live video, while
             others are better for schedules and match results.
           </p>
 
-          <h2 className="text-3xl font-bold text-white">
-            Why legal streams are safer
-          </h2>
-
-          <p>
+          <p className="leading-8">
             Unofficial streaming sites often have unreliable video quality,
             misleading pop-ups and unsafe redirects. Official broadcasters are
             more stable and usually provide better commentary, replays and
             tournament coverage.
           </p>
-
-          <h2 className="text-3xl font-bold text-white">
-            Useful next pages
-          </h2>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <a
-              href="/how-to-watch-tennis-legally"
-              className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 hover:border-zinc-600"
-            >
-              How to watch legally
-            </a>
-            <a
-              href="/tv-schedule"
-              className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 hover:border-zinc-600"
-            >
-              Tennis TV schedule
-            </a>
-            <a
-              href="/live-tennis"
-              className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 hover:border-zinc-600"
-            >
-              Live tennis today
-            </a>
-          </div>
         </section>
       </div>
     </main>

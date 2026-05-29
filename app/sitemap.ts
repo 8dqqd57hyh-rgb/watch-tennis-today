@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
+import { comparisons } from "@/data/comparisons";
 export const dynamic = "force-dynamic";
 
 type Match = {
@@ -264,10 +265,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 "/how-we-source-data",
 "/how-we-verify-streams",
     "/tennis-streaming-rights-explained",
-"/compare/tennis-tv-vs-espn",
-"/compare/tennis-tv-vs-eurosport",
-"/compare/espn-vs-tennis-channel",
-"/compare/nordvpn-vs-surfshark-for-tennis",
 "/rome-open-final-live",
     "/disclaimer",
     "/how-to-watch-french-open-in-usa",
@@ -384,8 +381,16 @@ const frenchOpenPages = [
   "/where-to-watch-french-open",
 ];
 
+  const comparisonPages: MetadataRoute.Sitemap = comparisons.map((comparison) => ({
+    url: `${BASE_URL}/compare/${comparison.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
+
  return [
   ...staticPages,
+  ...comparisonPages,
   ...playerPages,
   ...tournamentPages,
   ...matchPages,

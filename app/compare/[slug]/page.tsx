@@ -225,6 +225,37 @@ const faqSchema = {
   </div>
 </section>
 
+        <section className="mb-8 rounded-3xl border border-green-500/30 bg-green-950/20 p-6">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-300">
+            Best next step
+          </p>
+          <h2 className="mb-3 text-3xl font-black text-white">
+            What should you check next?
+          </h2>
+          <p className="mb-5 max-w-3xl leading-8 text-zinc-300">
+            For {comparison.title}, the safest choice is to verify the broadcaster
+            for your country and tournament before paying for a subscription.
+          </p>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <Link
+              href={comparison.primaryCta.href}
+              className="rounded-2xl bg-green-400 px-5 py-4 text-center font-black text-black hover:bg-green-300"
+            >
+              {comparison.primaryCta.label} →
+            </Link>
+
+            {comparison.secondaryCta ? (
+              <Link
+                href={comparison.secondaryCta.href}
+                className="rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-center font-black text-white hover:border-green-400"
+              >
+                {comparison.secondaryCta.label}
+              </Link>
+            ) : null}
+          </div>
+        </section>
+
         <VpnPromo />
 
         <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
