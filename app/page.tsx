@@ -7,6 +7,7 @@ import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
+import { safePlayerUrl } from "@/data/playerSlugs";
 
 type WatchProvider = {
   name: string;
@@ -119,8 +120,7 @@ function slugify(text: string) {
 }
 
 function playerUrl(name: string) {
-  const slug = slugify(name);
-  return `/player/${slug}`;
+  return safePlayerUrl(name);
 }
 function matchSlug(match: Match) {
   const readablePart = `${match.player1}-vs-${match.player2}`
@@ -754,15 +754,20 @@ tennis viewing information.
                 </p>
 
                 <div className="flex flex-wrap gap-3">
-                  {livePlayers.map((player) => (
-                    <a
-                      key={player}
-                     href={playerUrl(player)}
-                      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-red-500 hover:text-red-400 transition-all"
-                    >
-                      🔴 {player}
-                    </a>
-                  ))}
+                  {livePlayers.map((player) => {
+                    const href = playerUrl(player);
+                    if (!href) return null;
+
+                    return (
+                      <a
+                        key={player}
+                        href={href}
+                        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-red-500 hover:text-red-400 transition-all"
+                      >
+                        🔴 {player}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1037,15 +1042,20 @@ tennis viewing information.
   </p>
 
   <div className="flex flex-wrap gap-3">
-    {priorityPlayers.map((player) => (
-      <a
-        key={player}
-      href={playerUrl(player)}
-        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
-      >
-        ⭐ {player}
-      </a>
-    ))}
+    {priorityPlayers.map((player) => {
+      const href = playerUrl(player);
+      if (!href) return null;
+
+      return (
+        <a
+          key={player}
+          href={href}
+          className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
+        >
+          ⭐ {player}
+        </a>
+      );
+    })}
   </div>
 </div>
 
@@ -1072,15 +1082,20 @@ tennis viewing information.
 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  {seoPlayers.map((player) => (
-                    <a
-                      key={player}
-                     href={playerUrl(player)}
-                      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-                    >
-                      {player} live matches
-                    </a>
-                  ))}
+                  {seoPlayers.map((player) => {
+                    const href = playerUrl(player);
+                    if (!href) return null;
+
+                    return (
+                      <a
+                        key={player}
+                        href={href}
+                        className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+                      >
+                        {player} live matches
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1182,39 +1197,49 @@ tennis viewing information.
 
                 <div className="space-y-3 mb-6">
                   <div className="flex flex-wrap gap-x-2 gap-y-1">
-                    {splitPlayers(match.player1).map((player, index) => (
-                      <span key={player} className="text-2xl font-bold">
-                        <a
-                         href={playerUrl(player)}
-                          className="hover:text-green-400 transition-colors"
-                        >
-                          {player}
-                        </a>
+                    {splitPlayers(match.player1).map((player, index) => {
+                      const href = playerUrl(player);
 
-                        {index < splitPlayers(match.player1).length - 1 && (
-                          <span className="text-zinc-500"> /</span>
-                        )}
-                      </span>
-                    ))}
+                      return (
+                        <span key={player} className="text-2xl font-bold">
+                          {href ? (
+                            <a href={href} className="hover:text-green-400 transition-colors">
+                              {player}
+                            </a>
+                          ) : (
+                            <span>{player}</span>
+                          )}
+
+                          {index < splitPlayers(match.player1).length - 1 && (
+                            <span className="text-zinc-500"> /</span>
+                          )}
+                        </span>
+                      );
+                    })}
                   </div>
 
                   <div className="text-zinc-500 font-semibold">VS</div>
 
                   <div className="flex flex-wrap gap-x-2 gap-y-1">
-                    {splitPlayers(match.player2).map((player, index) => (
-                      <span key={player} className="text-2xl font-bold">
-                        <a
-                          href={playerUrl(player)}
-                          className="hover:text-green-400 transition-colors"
-                        >
-                          {player}
-                        </a>
+                    {splitPlayers(match.player2).map((player, index) => {
+                      const href = playerUrl(player);
 
-                        {index < splitPlayers(match.player2).length - 1 && (
-                          <span className="text-zinc-500"> /</span>
-                        )}
-                      </span>
-                    ))}
+                      return (
+                        <span key={player} className="text-2xl font-bold">
+                          {href ? (
+                            <a href={href} className="hover:text-green-400 transition-colors">
+                              {player}
+                            </a>
+                          ) : (
+                            <span>{player}</span>
+                          )}
+
+                          {index < splitPlayers(match.player2).length - 1 && (
+                            <span className="text-zinc-500"> /</span>
+                          )}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
 

@@ -2,6 +2,7 @@
 
 import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import { safePlayerUrl } from "@/data/playerSlugs";
 
 type WatchProvider = {
   name: string;
@@ -255,15 +256,20 @@ export default function BestMatchesTodayEngine({ matches }: Props) {
           <div className="rounded-3xl border border-zinc-800 bg-black/50 p-5">
             <h3 className="mb-4 text-2xl font-black text-white">Trending player hubs</h3>
             <div className="flex flex-wrap gap-2">
-              {topPlayers.map((player) => (
-                <a
-                  key={player}
-                  href={`/player/${slugify(player)}`}
-                  className="rounded-full border border-zinc-700 px-3 py-2 text-sm font-bold text-zinc-200 hover:border-yellow-400 hover:text-yellow-300"
-                >
-                  {player}
-                </a>
-              ))}
+              {topPlayers.map((player) => {
+                const href = safePlayerUrl(player);
+                if (!href) return null;
+
+                return (
+                  <a
+                    key={player}
+                    href={href}
+                    className="rounded-full border border-zinc-700 px-3 py-2 text-sm font-bold text-zinc-200 hover:border-yellow-400 hover:text-yellow-300"
+                  >
+                    {player}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
