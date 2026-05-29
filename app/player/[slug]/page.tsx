@@ -29,6 +29,100 @@ type Match = {
   startTime: string;
 };
 
+
+const PRIORITY_PLAYERS: PlayerSlug[] = [
+  "jannik-sinner",
+  "carlos-alcaraz",
+  "novak-djokovic",
+  "daniil-medvedev",
+  "alexander-zverev",
+  "holger-rune",
+  "taylor-fritz",
+  "iga-swiatek",
+  "aryna-sabalenka",
+  "coco-gauff",
+  "elena-rybakina",
+  "jessica-pegula",
+  "naomi-osaka",
+  "mirra-andreeva",
+];
+
+function getStatusPriority(status: string) {
+  const normalized = status.toUpperCase();
+
+  if (normalized === "LIVE") return 0;
+  if (normalized === "SUSPENDED") return 1;
+  if (normalized === "UPCOMING") return 2;
+
+  return 3;
+}
+
+function getMatchTime(match: Match) {
+  const timestamp = new Date(match.startTime || "").getTime();
+
+  return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
+}
+
+function sortMatchesByUserIntent(a: Match, b: Match) {
+  const statusDiff = getStatusPriority(a.status) - getStatusPriority(b.status);
+  if (statusDiff !== 0) return statusDiff;
+
+  return getMatchTime(a) - getMatchTime(b);
+}
+
+function getPlayerSlugByName(name: string) {
+  const normalizedName = normalizePlayerName(name);
+
+  return PLAYERS.find((playerSlug) =>
+    normalizePlayerName(players[playerSlug].name) === normalizedName
+  );
+}
+
+function uniquePlayerSlugs(slugs: (PlayerSlug | undefined | null)[]) {
+  const seen = new Set<PlayerSlug>();
+
+  return slugs.filter((slug): slug is PlayerSlug => {
+    if (!slug || seen.has(slug)) return false;
+
+    seen.add(slug);
+    return true;
+  });
+}
+
+function getRelatedPlayers(
+  currentSlug: PlayerSlug | null,
+  playerMatches: Match[]
+) {
+  const currentTour = currentSlug ? players[currentSlug].tour : null;
+
+  const opponentsFromMatches = playerMatches.flatMap((match) => [
+    getPlayerSlugByName(match.player1),
+    getPlayerSlugByName(match.player2),
+  ]);
+
+  const sameTourPriority = PRIORITY_PLAYERS.filter((playerSlug) =>
+    playerSlug !== currentSlug &&
+    (!currentTour || players[playerSlug].tour === currentTour)
+  );
+
+  const sameTourFallback = PLAYERS.filter((playerSlug) =>
+    playerSlug !== currentSlug &&
+    (!currentTour || players[playerSlug].tour === currentTour)
+  );
+
+  const otherPopularPlayers = PRIORITY_PLAYERS.filter((playerSlug) =>
+    playerSlug !== currentSlug &&
+    Boolean(currentTour && players[playerSlug].tour !== currentTour)
+  );
+
+  return uniquePlayerSlugs([
+    ...opponentsFromMatches,
+    ...sameTourPriority,
+    ...sameTourFallback,
+    ...otherPopularPlayers,
+  ]).slice(0, 8);
+}
+
 function formatPlayerName(slug?: string) {
   const canonicalSlug = getCanonicalPlayerSlug(slug || "");
   return canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug || "");
@@ -180,13 +274,11 @@ export default async function PlayerPage({
 
 
 
-const playerMatches = allMatches.filter((match) =>
-  matchContainsPlayerText(match, pageSlug)
-);
+const playerMatches = allMatches
+  .filter((match) => matchContainsPlayerText(match, pageSlug))
+  .sort(sortMatchesByUserIntent);
 
-  const relatedPlayers = PLAYERS
-    .filter((playerSlug) => playerSlug !== canonicalSlug)
-    .slice(0, 6);
+  const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
 
   return (
     <main className="max-w-4xl mx-auto p-4">
@@ -268,7 +360,7 @@ const playerMatches = allMatches.filter((match) =>
 
         {playerMatches.length > 0 ? (
           <div className="space-y-3">
-            {playerMatches.map((match) => (
+            {playerMatches.slice(0, 8).map((match) => (
             <div
   key={match.id}
   className="rounded-2xl border border-zinc-200 p-4"
@@ -371,21 +463,46 @@ const playerMatches = allMatches.filter((match) =>
 />
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">
-          Other popular tennis players
-        </h2>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
+              Keep watching
+            </p>
+            <h2 className="text-2xl font-semibold">
+              Related tennis players
+            </h2>
+          </div>
+          <a href="/players" className="text-sm font-bold text-green-600 hover:text-green-500">
+            All players →
+          </a>
+        </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <p className="mb-5 text-sm leading-7 text-zinc-600">
+          Similar player pages help fans continue from one schedule page to another without adding duplicate content or interrupting the reading experience.
+        </p>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {relatedPlayers.map((playerSlug) => {
-            const name = formatPlayerName(playerSlug);
+            const player = players[playerSlug];
+            const isSameTour = canonicalSlug
+              ? player.tour === players[canonicalSlug].tour
+              : false;
 
             return (
               <a
                 key={playerSlug}
                 href={`/player/${playerSlug}`}
-                className="rounded-lg border p-4 hover:bg-gray-50 transition"
+                className="rounded-2xl border border-zinc-200 p-4 transition hover:border-green-500 hover:bg-green-50"
               >
-                {name} match schedule
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="font-bold">{player.name}</span>
+                  <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-black text-zinc-600">
+                    {player.tour}
+                  </span>
+                </div>
+                <p className="text-sm leading-6 text-zinc-600">
+                  {isSameTour ? "Same tour schedule and live match coverage" : "Popular player schedule and TV coverage"}
+                </p>
               </a>
             );
           })}
