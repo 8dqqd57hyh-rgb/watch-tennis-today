@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
-import { isDoublesTeam, playerUrl } from "@/data/playerSlugs";
+import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
@@ -607,7 +607,7 @@ export default async function MatchPage({
                   {isDoublesTeam(match.player1) ? (
                     <span>{match.player1}</span>
                   ) : (
-                    <a href={playerUrl(match.player1)} className="hover:text-green-400">
+                    <a href={safePlayerUrl(match.player1) || "/players"} className="hover:text-green-400">
                       {match.player1}
                     </a>
                   )}
@@ -615,7 +615,7 @@ export default async function MatchPage({
                   {isDoublesTeam(match.player2) ? (
                     <span>{match.player2}</span>
                   ) : (
-                    <a href={playerUrl(match.player2)} className="hover:text-green-400">
+                    <a href={safePlayerUrl(match.player2) || "/players"} className="hover:text-green-400">
                       {match.player2}
                     </a>
                   )}
@@ -770,7 +770,7 @@ export default async function MatchPage({
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 {!isDoublesTeam(match.player1) ? (
-                  <a href={playerUrl(match.player1)} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                  <a href={safePlayerUrl(match.player1) || "/players"} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
                     <h3 className="mb-2 text-2xl font-black">{match.player1}</h3>
                     <p className="text-zinc-400">Live matches, schedule and viewing info</p>
                   </a>
@@ -781,7 +781,7 @@ export default async function MatchPage({
                   </div>
                 )}
                 {!isDoublesTeam(match.player2) ? (
-                  <a href={playerUrl(match.player2)} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                  <a href={safePlayerUrl(match.player2) || "/players"} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
                     <h3 className="mb-2 text-2xl font-black">{match.player2}</h3>
                     <p className="text-zinc-400">Live matches, schedule and viewing info</p>
                   </a>

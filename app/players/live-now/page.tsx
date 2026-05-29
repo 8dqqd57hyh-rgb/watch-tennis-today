@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { safeWatchPlayerLiveUrl, safePlayerUrl } from "@/data/playerSlugs";
+import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl } from "@/data/playerSlugs";
 
 type Match = {
   id?: string;
@@ -85,6 +85,7 @@ function normalizeApiPlayerName(name?: string) {
 
   if (!cleaned) return null;
   if (NON_PLAYER_WORDS.has(cleaned.toLowerCase())) return null;
+  if (looksLikeUnverifiedDoublesSlug(cleaned)) return null;
   if (!/[a-z]/i.test(cleaned)) return null;
   if (/^[a-z]\.?$/i.test(cleaned)) return null;
   if (/^[a-z]{2,4}$/i.test(cleaned) && !safePlayerUrl(cleaned)) return null;

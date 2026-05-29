@@ -42,15 +42,23 @@ export function hasInitialOnlyName(nameOrSlug: string) {
   return /(^|\s|-)\p{L}\.(?=\s|-|$)/u.test(String(nameOrSlug || ""));
 }
 
+export function isDoublesTeam(name?: string | null) {
+  return /\s*[/&+]\s*/.test(String(name || ""));
+}
+
 export function looksLikeUnverifiedDoublesSlug(nameOrSlug: string) {
   const raw = String(nameOrSlug || "").trim();
   const slug = playerSlug(raw);
 
-  // API feeds sometimes expose doubles teams or match fragments as hyphenated
-  // surname chains: "detiuc-khromacheva", "moutet-van-assche",
-  // "bennani-lopez-morillo". If such slug is not canonical, do not let it
-  // enter the player page pipeline.
-  return slug.includes("-");
+  if (!slug || slug in players) return false;
+  if (isDoublesTeam(raw)) return true;
+
+  // Bad production links are usually doubles-team surname chains, for example:
+  // shimizu-watanabe, kostyuk-ruse, muhammad-stollar, bennani-lopez-morillo.
+  // Keep real one-word unknown players like ngounoue available, but do not let
+  // non-canonical hyphenated chains enter the player-link pipeline.
+  const parts = slug.split("-").filter(Boolean);
+  return parts.length >= 2;
 }
 
 export function isSafePlayerCandidate(nameOrSlug: string) {
@@ -73,7 +81,6 @@ export function getCanonicalPlayerSlug(nameOrSlug: string): PlayerSlug | null {
   return canonicalNameToSlug.get(normalized) ?? null;
 }
 
-
 export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {
   const raw = String(nameOrSlug || "").trim();
   const slug = playerSlug(raw);
@@ -82,16 +89,15 @@ export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {
   if (isDoublesTeam(raw)) return true;
   if (hasInitialOnlyName(raw) || /(^|-)[a-z]\.-/.test(raw.toLowerCase())) return true;
 
-  // Common bad links generated from doubles teams or match fragments are
-  // non-canonical hyphenated slugs. Examples seen in production logs:
-  // /player/berkieta-nagoudi, /player/moutet-van-assche,
-  // /player/bennani-lopez-morillo. Canonical players such as jannik-sinner
-  // are protected by getCanonicalPlayerSlug(raw).
   if (!getCanonicalPlayerSlug(raw) && looksLikeUnverifiedDoublesSlug(raw)) {
     return true;
   }
 
   return false;
+}
+
+export function shouldShowAsPlayerLink(nameOrSlug: string) {
+  return Boolean(getCanonicalPlayerSlug(nameOrSlug));
 }
 
 export function playerNameFromSlug(slug: string) {
@@ -112,15 +118,13 @@ export function isKnownPlayerSlug(slug: string) {
   return Boolean(getCanonicalPlayerSlug(slug));
 }
 
-export function isDoublesTeam(name?: string | null) {
-  return /\s*[/&+]\s*/.test(String(name || ""));
-}
-
 export function safePlayerUrl(nameOrSlug: string) {
   const canonicalSlug = getCanonicalPlayerSlug(nameOrSlug);
   return canonicalSlug ? `/player/${canonicalSlug}` : null;
 }
 
+// Use this only for generic fallbacks. UI that labels a specific player should
+// prefer safePlayerUrl() and render plain text when it returns null.
 export function playerUrl(name: string) {
   return safePlayerUrl(name) || "/players";
 }
@@ -160,7 +164,7 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     canonicalPlayer.name,
     canonicalPlayer.name
       .split(" ")
-      .map((part, index, arr) => (index === 0 ? `${part.charAt(0)}.` : part))
+      .map((part, index) => (index === 0 ? `${part.charAt(0)}.` : part))
       .join(" "),
   ].map(normalizePlayerName);
 
@@ -178,6 +182,6 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     if (typeof value !== "string") return false;
 
     const normalized = normalizePlayerName(value);
-    return aliases.some((alias) => normalized === alias || normalized.includes(alias));
+    return aliases.includes(normalized);
   });
 }

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { playerUrl } from "@/data/playerSlugs";
+import { safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import VpnPromo from "@/app/components/VpnPromo";
@@ -263,7 +263,7 @@ export default async function VsPage({ params }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <a
-              href={playerUrl(playerA)}
+              href={safePlayerUrl(playerA) || "/players"}
               className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
             >
               <h3 className="text-2xl font-black mb-2">{playerA}</h3>
@@ -273,7 +273,7 @@ export default async function VsPage({ params }: Props) {
             </a>
 
             <a
-              href={playerUrl(playerB)}
+              href={safePlayerUrl(playerB) || "/players"}
               className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
             >
               <h3 className="text-2xl font-black mb-2">{playerB}</h3>
