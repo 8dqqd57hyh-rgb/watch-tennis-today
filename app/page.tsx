@@ -7,6 +7,7 @@ import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
+import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -495,6 +496,7 @@ tennis viewing information.
     official broadcaster and streaming platform resources only.
   </p>
 </div>
+<HomepageGrowthEngine matches={matches} />
 <TodaysTennisHub matches={matches} />
 <BestMatchesTodayEngine matches={matches} />
 <BroadcastFinder />
