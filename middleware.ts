@@ -32,9 +32,11 @@ export function middleware(request: NextRequest) {
     // This preserves real players that are not yet in the canonical list, e.g.
     // /player/ngounoue, while still cleaning doubles-team and abbreviated slugs
     // like /player/detiuc-khromacheva or /player/m.-cecchinato.
+    // Do not redirect unknown/invalid player slugs to /players.
+    // Let /player/[slug] return a proper 404/noindex instead, so bots do not
+    // see misleading permanent redirects for possible real players or bad feed fragments.
     if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
-      url.pathname = "/players";
-      return NextResponse.redirect(url, 308);
+      return NextResponse.next();
     }
   }
 

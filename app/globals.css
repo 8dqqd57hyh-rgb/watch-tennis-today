@@ -24,3 +24,33 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Critical layout guardrails: keep global navigation readable even if theme utilities regress. */
+.site-header {
+  background: #050505 !important;
+  color: #ffffff !important;
+}
+
+.site-header a,
+.site-header .site-brand,
+.site-header .site-nav a {
+  color: #f4f4f5 !important;
+  opacity: 1 !important;
+}
+
+.site-header .site-nav a:hover {
+  color: #ffffff !important;
+}
+
+@media (max-width: 760px) {
+  .site-header > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .site-header .site-nav {
+    width: 100%;
+    padding-bottom: 0.25rem;
+  }
+}

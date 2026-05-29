@@ -97,10 +97,19 @@ export function getCanonicalPlayerSlug(nameOrSlug: string): PlayerSlug | null {
   if (!raw) return null;
 
   if (raw in players) return raw as PlayerSlug;
+
+  // Try the canonical alias map first. This intentionally supports common
+  // feed formats such as "J. Fonseca" and "j-fonseca" when the player is
+  // already verified in data/players.ts.
+  const normalized = normalizePlayerName(raw.replace(/-/g, " "));
+  const aliasMatch = canonicalNameToSlug.get(normalized);
+  if (aliasMatch) return aliasMatch;
+
+  // If the alias was not verified, keep the strict safety rules so random
+  // initials, doubles teams and feed fragments do not become player links.
   if (!isSafePlayerCandidate(raw)) return null;
 
-  const normalized = normalizePlayerName(raw.replace(/-/g, " "));
-  return canonicalNameToSlug.get(normalized) ?? null;
+  return null;
 }
 
 export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {
@@ -162,6 +171,17 @@ export function normalizeMatchParticipantName(name?: string | null) {
   if (!/[a-z]/i.test(cleaned)) return null;
 
   return cleaned;
+}
+
+
+export function displayPlayerName(nameOrSlug?: string | null) {
+  const raw = String(nameOrSlug || "").trim();
+  if (!raw) return "Tennis Player";
+
+  const canonicalSlug = getCanonicalPlayerSlug(raw);
+  if (canonicalSlug) return players[canonicalSlug].name;
+
+  return raw;
 }
 
 export function verifiedPlayerNameForLink(nameOrSlug?: string | null) {

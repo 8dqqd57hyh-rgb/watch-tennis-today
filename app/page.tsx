@@ -8,7 +8,7 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
-import { safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
+import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
   name: string;
@@ -388,11 +388,11 @@ async function subscribeToFinals(
       </div>
 
       <h2 className="text-5xl md:text-7xl font-black leading-tight mb-6">
-        {featuredMatch.player1}
+        {displayPlayerName(featuredMatch.player1)}
         <br />
         vs
         <br />
-        {featuredMatch.player2}
+        {displayPlayerName(featuredMatch.player2)}
       </h2>
 
       <div className="flex flex-wrap gap-6 mb-8 text-lg">
