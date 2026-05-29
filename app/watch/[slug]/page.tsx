@@ -8,6 +8,7 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch } from "@/app/lib/matchArchive";
+import LiveMatchScore from "./LiveMatchScore";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ type Match = {
   category: string;
   status: string;
   score: string;
+  pointScore?: string | null;
   startTime: string | null;
   watchProviders: WatchProvider[];
 };
@@ -627,23 +629,14 @@ export default async function MatchPage({
                 </p>
               </div>
 
-              <div className="rounded-[2rem] border border-white/10 bg-black/60 p-6 shadow-2xl">
-                <p className="mb-2 text-sm font-black uppercase tracking-wide text-zinc-500">Current score</p>
-                <p className="mb-5 text-4xl font-black text-white">{scoreDisplay}</p>
-                <div className="grid gap-3 text-sm">
-                  <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
-                    <span className="text-zinc-500">Start time</span>
-                    <span className="font-bold text-zinc-200">{formatShortTime(match.startTime)}</span>
-                  </div>
-                  <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
-                    <span className="text-zinc-500">Status</span>
-                    <span className="font-bold text-zinc-200">{match.status}</span>
-                  </div>
-                  <div className="border-t border-zinc-800 pt-3 text-zinc-400">
-                    {getTimeContext(match)}
-                  </div>
-                </div>
-              </div>
+              <LiveMatchScore
+                initialMatch={{
+                  id: match.id,
+                  status: match.status,
+                  score: match.score,
+                  startTime: match.startTime,
+                }}
+              />
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

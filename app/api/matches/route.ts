@@ -8,7 +8,10 @@ type ApiTennisMatch = {
   event_first_player: string;
   event_second_player: string;
   event_final_result: string;
-  event_game_result: string;
+  event_game_result?: string;
+  event_current_result?: string;
+  event_point_result?: string;
+  event_live_score?: string;
   event_status: string;
   event_type_type: string;
   tournament_name: string;
@@ -18,6 +21,22 @@ type ApiTennisMatch = {
     score_first: string;
     score_second: string;
     score_set: string;
+    score_game?: string;
+  }[];
+  pointbypoint?: {
+    set_number?: string;
+    number_game?: string;
+    player_served?: string | null;
+    serve_winner?: string | null;
+    serve_lost?: string | null;
+    score?: string;
+    points?: {
+      number_point?: string;
+      score?: string;
+      break_point?: string | null;
+      set_point?: string | null;
+      match_point?: string | null;
+    }[];
   }[];
 };
 
@@ -119,6 +138,69 @@ if (
 }
 
 return "UPCOMING";
+}
+
+function normalizePointToken(value: string) {
+  const token = value.trim().toUpperCase().replace(/\.$/, "");
+
+  if (!token) return null;
+  if (["0", "00", "LOVE"].includes(token)) return "0";
+  if (["15", "30", "40"].includes(token)) return token;
+  if (["A", "AD", "ADV", "ADVANTAGE"].includes(token)) return "ADV";
+
+  return null;
+}
+
+function normalizePointScoreValue(value?: string | null) {
+  const raw = String(value || "").trim();
+  if (!raw || raw === "-" || raw === "0-0" || raw === "0 - 0") return null;
+
+  if (/^deuce$/i.test(raw)) return "Deuce";
+
+  const parts = raw.split(/\s*[-:]\s*/);
+  if (parts.length !== 2) return null;
+
+  const first = normalizePointToken(parts[0]);
+  const second = normalizePointToken(parts[1]);
+
+  if (!first || !second) return null;
+  if (first === "40" && second === "40") return "Deuce";
+
+  return `${first}-${second}`;
+}
+
+function getLatestPointByPointScore(match: ApiTennisMatch) {
+  const games = match.pointbypoint || [];
+
+  for (let gameIndex = games.length - 1; gameIndex >= 0; gameIndex -= 1) {
+    const game = games[gameIndex];
+    const points = game.points || [];
+
+    for (let pointIndex = points.length - 1; pointIndex >= 0; pointIndex -= 1) {
+      const pointScore = normalizePointScoreValue(points[pointIndex]?.score);
+      if (pointScore) return pointScore;
+    }
+  }
+
+  return null;
+}
+
+function formatPointScore(match: ApiTennisMatch) {
+  const livePointByPointScore = getLatestPointByPointScore(match);
+  if (livePointByPointScore) return livePointByPointScore;
+
+  const candidates = [
+    match.event_point_result,
+    match.event_current_result,
+    match.event_live_score,
+  ];
+
+  for (const candidate of candidates) {
+    const pointScore = normalizePointScoreValue(candidate);
+    if (pointScore) return pointScore;
+  }
+
+  return null;
 }
 
 function formatScore(match: ApiTennisMatch) {
@@ -336,6 +418,7 @@ export async function GET(request: Request) {
 
   const playerKeyFromQuery = searchParams.get("playerKey");
   const playerName = searchParams.get("playerName");
+  const matchId = searchParams.get("matchId");
 
   const apiKey = process.env.API_TENNIS_KEY;
 
@@ -366,9 +449,11 @@ const dateStop = formatDate(dateStopDate);
   fetchApiTennis(
     "get_livescore",
     apiKey,
-    resolvedPlayerKey
-      ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw`
-      : `&timezone=Europe/Warsaw`
+    matchId
+      ? `&match_key=${encodeURIComponent(matchId)}&timezone=Europe/Warsaw`
+      : resolvedPlayerKey
+        ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw`
+        : `&timezone=Europe/Warsaw`
   ),
   fetchApiTennis(
     "get_fixtures",
@@ -423,6 +508,7 @@ console.log(
           !(match.tournament_round || "").toLowerCase().includes("semi") &&
           Boolean(match.event_date),
         score: formatScore(match),
+        pointScore: formatPointScore(match),
         startTime: getStartTime(match),
         watchProviders: getWatchProviders(category, tournament),
       };
@@ -445,6 +531,12 @@ console.log(
         onConflict: "id",
       }
     );
+
+    if (matchId) {
+      return NextResponse.json(
+        mappedMatches.filter((match) => String(match.id) === String(matchId))
+      );
+    }
 
     const matches = mappedMatches
       .filter(
