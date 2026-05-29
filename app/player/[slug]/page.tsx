@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
-import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, looksLikeClearlyInvalidPlayerSlug } from "@/data/playerSlugs";
+import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
@@ -35,13 +34,19 @@ function formatPlayerName(slug?: string) {
   return canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug || "");
 }
 
+function isIndexablePlayerSlug(slug: string) {
+  return Boolean(getCanonicalPlayerSlug(slug));
+}
+
 function getPlayerDisplay(slug: string) {
   const canonicalSlug = getCanonicalPlayerSlug(slug);
+  const safeSlug = slugify(slug || "tennis-player") || "tennis-player";
 
   return {
     canonicalSlug,
-    pageSlug: canonicalSlug || slug,
-    playerName: canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug),
+    pageSlug: canonicalSlug || safeSlug,
+    playerName: canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(safeSlug),
+    isVerifiedPlayer: Boolean(canonicalSlug),
   };
 }
 
@@ -69,13 +74,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  if (looksLikeClearlyInvalidPlayerSlug(slug)) {
-    notFound();
-  }
-
   const { playerName, pageSlug } = getPlayerDisplay(slug);
+  const indexable = isIndexablePlayerSlug(slug);
 
   return {
+    robots: indexable
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
     title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
    description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
     openGraph: {
@@ -169,11 +174,7 @@ export default async function PlayerPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (looksLikeClearlyInvalidPlayerSlug(slug)) {
-    notFound();
-  }
-
-  const { canonicalSlug, pageSlug, playerName } = getPlayerDisplay(slug);
+  const { canonicalSlug, pageSlug, playerName, isVerifiedPlayer } = getPlayerDisplay(slug);
 
   const allMatches = await getMatches();
 
@@ -212,6 +213,17 @@ const playerMatches = allMatches.filter((match) =>
       <h1 className="text-3xl font-bold mb-6">
         {playerName} Tennis Matches & TV Schedule
       </h1>
+
+      {!isVerifiedPlayer ? (
+  <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-sm leading-7 text-zinc-300">
+    <p>
+      This is a fallback tennis player schedule page created from a live-data slug.
+      The player name has not been manually verified yet, so the page is kept out
+      of search indexing while still giving crawlers and visitors a useful landing
+      page instead of a 404.
+    </p>
+  </section>
+) : null}
 
       {playerMatches.some(
   (match) => match.status === "LIVE"
