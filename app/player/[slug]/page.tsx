@@ -11,6 +11,15 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 export const dynamic = "force-dynamic";
 
 const PLAYERS = Object.keys(players) as PlayerSlug[];
+const CURRENT_SEASON = new Date().getFullYear();
+
+function buildPlayerSeoTitle(playerName: string) {
+  return `${playerName} Schedule, Results & Live Matches (${CURRENT_SEASON})`;
+}
+
+function buildPlayerSeoDescription(playerName: string) {
+  return `Follow ${playerName} live matches, upcoming schedule, recent results, tournament updates and legal tennis TV information for ${CURRENT_SEASON}.`;
+}
 
 export async function generateStaticParams() {
   return PLAYERS.map((slug) => ({
@@ -175,22 +184,22 @@ export async function generateMetadata({
     robots: indexable
       ? { index: true, follow: true }
       : { index: false, follow: true },
-    title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
-   description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
+    title: buildPlayerSeoTitle(playerName),
+    description: buildPlayerSeoDescription(playerName),
     alternates: {
       canonical: `https://watchtennistoday.com/player/${pageSlug}`,
     },
     openGraph: {
-      title: `${playerName} Matches Today & TV Schedule`,
-      description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
+      title: buildPlayerSeoTitle(playerName),
+      description: buildPlayerSeoDescription(playerName),
       url: `https://watchtennistoday.com/player/${pageSlug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${playerName} Matches Today & TV Schedule`,
-      description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
+      title: buildPlayerSeoTitle(playerName),
+      description: buildPlayerSeoDescription(playerName),
     },
   };
 }

@@ -13,6 +13,26 @@ import EmailSignup from "@/app/components/EmailSignup";
 
 export const dynamic = "force-dynamic";
 
+function titleCaseMatchName(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.length <= 2 ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function buildWatchSeoTitle(matchTitle: string, isLiveMatch: boolean) {
+  return isLiveMatch
+    ? `🔴 ${matchTitle} Live Score, Stream Info & Match Time`
+    : `${matchTitle} Match Time, Score Updates & TV Info`;
+}
+
+function buildWatchSeoDescription(matchTitle: string, isLiveMatch: boolean) {
+  return isLiveMatch
+    ? `Follow ${matchTitle} live score context, match time, tournament details and legal tennis TV or streaming information.`
+    : `Find ${matchTitle} match time, score updates, tournament details and legal tennis TV or streaming information.`;
+}
+
 type WatchProvider = {
   name: string;
   url: string;
@@ -395,36 +415,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const matchId = getMatchIdFromSlug(decodedSlug);
-  const readableTitle = decodedSlug.replace(/-\d+$/, "").replace(/-/g, " ");
+  const readableTitle = titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
   const matches = await getMatches();
   const match = matches.find((item) => String(item.id) === matchId);
   const isLiveMatch = match?.status?.toUpperCase() === "LIVE";
 
   return {
-    title: isLiveMatch
-      ? `🔴 LIVE: ${readableTitle} — Score, Time & TV Info | Watch Tennis Today`
-      : `${readableTitle} Tennis Match — Time, Score & TV Info | Watch Tennis Today`,
-    description: isLiveMatch
-      ? `Follow ${readableTitle} with live score context, official viewing links, tournament details and legal TV information.`
-      : "Find this tennis match time, score context, tournament details and legal broadcaster information.",
+    title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+    description: buildWatchSeoDescription(readableTitle, isLiveMatch),
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
     openGraph: {
-      title: isLiveMatch ? `🔴 LIVE: ${readableTitle}` : `${readableTitle} Match Hub`,
-      description: isLiveMatch
-        ? "Live tennis score context, TV schedule and official viewing information."
-        : "Tennis match timing, tournament context and legal viewing information.",
+      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
       url: `https://watchtennistoday.com/watch/${slug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: isLiveMatch ? `🔴 LIVE: ${readableTitle}` : `${readableTitle} Match Hub`,
-      description: isLiveMatch
-        ? "Live tennis score context, TV schedule and official viewing information."
-        : "Tennis match timing, tournament context and legal viewing information.",
+      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
     },
   };
 }

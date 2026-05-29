@@ -4,6 +4,16 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
 export const dynamic = "force-dynamic";
 
+const CURRENT_SEASON = new Date().getFullYear();
+
+function buildTournamentSeoTitle(tournamentName: string) {
+  return `${tournamentName} ${CURRENT_SEASON}: Schedule, Results, Draw & Live Coverage`;
+}
+
+function buildTournamentSeoDescription(tournamentName: string) {
+  return `Follow ${tournamentName} ${CURRENT_SEASON} with today's schedule, live match updates, results, draw information and legal TV or streaming options.`;
+}
+
 type Match = {
   id: string;
   player1: string;
@@ -105,8 +115,23 @@ export async function generateMetadata({ params }: PageProps) {
   const tournamentName = unslugify(slug);
 
   return {
-    title: `${tournamentName} Live Matches | Tennis Schedule & Streaming`,
-    description: `Watch ${tournamentName} tennis matches live. Find match schedules, streaming options, TV channels, live scores and tournament updates.`,
+    title: buildTournamentSeoTitle(tournamentName),
+    description: buildTournamentSeoDescription(tournamentName),
+    alternates: {
+      canonical: `https://watchtennistoday.com/tournament/${slug}`,
+    },
+    openGraph: {
+      title: buildTournamentSeoTitle(tournamentName),
+      description: buildTournamentSeoDescription(tournamentName),
+      url: `https://watchtennistoday.com/tournament/${slug}`,
+      siteName: "Watch Tennis Today",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: buildTournamentSeoTitle(tournamentName),
+      description: buildTournamentSeoDescription(tournamentName),
+    },
   };
 }
 
