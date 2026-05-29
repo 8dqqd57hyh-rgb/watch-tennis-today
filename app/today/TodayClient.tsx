@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
-import { matchContainsExactPlayer } from "@/data/playerSlugs";
+import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
 type Match = {
   id: string;
@@ -36,16 +36,6 @@ const countries = [
   "canada",
   "australia",
 ];
-
-function playerSlug(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/\//g, " ")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
 
 function slugify(text: string) {
   return text
@@ -305,15 +295,21 @@ export default function TodayPage() {
           </h2>
 
           <div className="flex flex-wrap gap-3">
-            {trendingPlayers.map((player) => (
-              <a
-                key={player}
-                href={`/watch-player-live/${playerSlug(player)}`}
-                className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
-              >
-                ⭐ {player}
-              </a>
-            ))}
+            {trendingPlayers.map((player) => {
+              const href = safeWatchPlayerLiveUrl(player);
+
+              if (!href) return null;
+
+              return (
+                <a
+                  key={player}
+                  href={href}
+                  className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
+                >
+                  ⭐ {player}
+                </a>
+              );
+            })}
           </div>
         </section>
 

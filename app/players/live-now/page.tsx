@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
-function playerUrl(name?: string) {
-  if (!name) return "/";
-  const slug = name
-    .trim()
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // remove punctuation
-    .replace(/\s+/g, "-"); // spaces to dashes
-  return `/players/${encodeURIComponent(slug)}`;
-}
+import { safeWatchPlayerLiveUrl, safePlayerUrl } from "@/data/playerSlugs";
 
 type Match = {
   id?: string;
@@ -20,12 +11,96 @@ type Match = {
   tournament?: string;
 };
 
-function splitPlayers(name?: string) {
-  if (!name) return [];
-  return name
-    .split(/vs\.?|v\.?|\/|,| - /i)
-    .map((s) => s.trim())
-    .filter(Boolean);
+type LivePlayer = {
+  displayName: string;
+  href: string | null;
+};
+
+const NON_PLAYER_WORDS = new Set([
+  "",
+  "a",
+  "e",
+  "vs",
+  "v",
+  "live",
+  "added",
+  "unknown",
+  "unknown player",
+  "tbd",
+  "bye",
+  "retired",
+  "walkover",
+  "withdrawn",
+  "suspended",
+  "cancelled",
+  "canceled",
+]);
+
+function toTitleCase(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => {
+      if (/^[A-Z]\.$/.test(part)) return part;
+      if (/^[A-Z]\.\s*$/i.test(part)) return part.toUpperCase();
+
+      return part
+        .split("-")
+        .map((piece) => piece.charAt(0).toUpperCase() + piece.slice(1).toLowerCase())
+        .join("-");
+    })
+    .join(" ");
+}
+
+function normalizeApiPlayerName(name?: string) {
+  const raw = String(name || "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!raw) return null;
+
+  // Do not push doubles teams into the singles-player page pipeline.
+  if (/\s*[/&+]\s*/.test(raw)) return null;
+
+  const lower = raw.toLowerCase();
+  if (NON_PLAYER_WORDS.has(lower)) return null;
+
+  // API-Tennis sometimes returns names as "Surname, A.". Keep it as one
+  // player instead of splitting it into "Surname" and "A".
+  const commaName = raw.match(/^([^,]{2,}),\s*([A-Z](?:\.\s*[A-Z])?\.?)$/i);
+  if (commaName) {
+    const surname = commaName[1].trim();
+    const initials = commaName[2]
+      .replace(/\s+/g, " ")
+      .replace(/([A-Z])(?=\s|$)/gi, "$1.")
+      .toUpperCase();
+    return `${initials} ${toTitleCase(surname)}`.replace(/\s+/g, " ").trim();
+  }
+
+  const cleaned = raw
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\b(?:ATP|WTA|ITF|Challenger)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return null;
+  if (NON_PLAYER_WORDS.has(cleaned.toLowerCase())) return null;
+  if (!/[a-z]/i.test(cleaned)) return null;
+  if (/^[a-z]\.?$/i.test(cleaned)) return null;
+  if (/^[a-z]{2,4}$/i.test(cleaned) && !safePlayerUrl(cleaned)) return null;
+
+  const tokens = cleaned.split(/\s+/).filter(Boolean);
+
+  // One-word unknown surnames created most of the garbage seen in production
+  // logs. Keep canonical one-word players, but do not list arbitrary fragments
+  // such as "a", "ako", "ano", "asile" as live players.
+  if (tokens.length < 2 && !safePlayerUrl(cleaned)) return null;
+
+  return toTitleCase(cleaned);
+}
+
+function playerHref(displayName: string) {
+  return safeWatchPlayerLiveUrl(displayName) || safePlayerUrl(displayName);
 }
 
 export default function LiveNowPlayersPage() {
@@ -67,14 +142,18 @@ export default function LiveNowPlayersPage() {
     (m) => (m.status || "").toUpperCase() === "LIVE"
   );
 
-  const livePlayers = [
-    ...new Set(
-      liveMatches.flatMap((match) => [
-        ...splitPlayers(match.player1),
-        ...splitPlayers(match.player2),
-      ])
-    ),
-  ].sort((a, b) => a.localeCompare(b));
+  const livePlayers: LivePlayer[] = Array.from(
+    new Map(
+      liveMatches
+        .flatMap((match) => [match.player1, match.player2])
+        .map(normalizeApiPlayerName)
+        .filter((name): name is string => Boolean(name))
+        .map((displayName) => [
+          displayName.toLowerCase(),
+          { displayName, href: playerHref(displayName) },
+        ])
+    ).values()
+  ).sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -114,23 +193,42 @@ export default function LiveNowPlayersPage() {
           </div>
         ) : livePlayers.length === 0 ? (
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-zinc-300">
-            No players are currently live. Check back for updates or visit the
-            live matches page.
+            No verified singles players are currently live. Check back for
+            updates or visit the live matches page.
           </div>
         ) : (
           <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {livePlayers.map((player) => (
-              <a
-                key={player}
-                href={playerUrl(player)}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition-all"
-              >
-                <h3 className="text-lg font-black">{player}</h3>
-                <p className="text-sm text-zinc-400 mt-2">
-                  See live scores, schedule and streaming options.
-                </p>
-              </a>
-            ))}
+            {livePlayers.map((player) => {
+              const content = (
+                <>
+                  <h3 className="text-lg font-black">{player.displayName}</h3>
+                  <p className="text-sm text-zinc-400 mt-2">
+                    See live scores, schedule and streaming options.
+                  </p>
+                </>
+              );
+
+              if (player.href) {
+                return (
+                  <a
+                    key={player.displayName}
+                    href={player.href}
+                    className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition-all"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <div
+                  key={player.displayName}
+                  className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5"
+                >
+                  {content}
+                </div>
+              );
+            })}
           </section>
         )}
       </div>

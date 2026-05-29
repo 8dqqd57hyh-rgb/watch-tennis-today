@@ -1,3 +1,4 @@
+import { safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -162,16 +163,6 @@ export default async function FrenchOpenOrderOfPlayPage() {
     "Elena Rybakina",
   ];
 
-  function playerSlug(name: string) {
-    return name
-      .toLowerCase()
-      .replace(/,/g, "")
-      .replace(/\//g, "-")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
   const playersToday = [
     ...new Set(
       frenchOpenMatches.flatMap((match) => [match.player1 || "", match.player2 || ""])
@@ -284,19 +275,25 @@ export default async function FrenchOpenOrderOfPlayPage() {
             </h2>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {playersToday.map((player) => (
-                <a
-                  key={player}
-                  href={`/watch-player-live/${playerSlug(player)}`}
-                  className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 transition hover:border-orange-500 hover:bg-zinc-900"
-                >
-                  <h3 className="mb-3 text-2xl font-black">{player}</h3>
+              {playersToday.map((player) => {
+                const href = safeWatchPlayerLiveUrl(player);
 
-                  <p className="leading-7 text-zinc-400">
-                    See live scores, schedule, results and streaming options.
-                  </p>
-                </a>
-              ))}
+                if (!href) return null;
+
+                return (
+                  <a
+                    key={player}
+                    href={href}
+                    className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 transition hover:border-orange-500 hover:bg-zinc-900"
+                  >
+                    <h3 className="mb-3 text-2xl font-black">{player}</h3>
+
+                    <p className="leading-7 text-zinc-400">
+                      See live scores, schedule, results and streaming options.
+                    </p>
+                  </a>
+                );
+              })}
             </div>
           </section>
         ) : null}

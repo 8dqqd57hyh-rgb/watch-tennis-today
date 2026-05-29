@@ -125,6 +125,15 @@ export function playerUrl(name: string) {
   return safePlayerUrl(name) || "/players";
 }
 
+export function safeWatchPlayerLiveUrl(nameOrSlug: string) {
+  const canonicalSlug = getCanonicalPlayerSlug(nameOrSlug);
+  return canonicalSlug ? `/watch-player-live/${canonicalSlug}` : null;
+}
+
+export function watchPlayerLiveUrl(nameOrSlug: string) {
+  return safeWatchPlayerLiveUrl(nameOrSlug) || "/players/live-now";
+}
+
 export function slugToPlayerName(slug: string) {
   const canonicalSlug = getCanonicalPlayerSlug(slug);
   if (canonicalSlug) return players[canonicalSlug].name;

@@ -3,6 +3,7 @@ import { looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
 export function middleware(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
+  const watchPlayerLiveMatch = request.nextUrl.pathname.match(/^\/watch-player-live\/(.+)$/);
 
   if (playerPathMatch) {
     const requestedSlug = decodeURIComponent(playerPathMatch[1] || "")
@@ -27,6 +28,29 @@ export function middleware(request: NextRequest) {
     // like /player/detiuc-khromacheva or /player/m.-cecchinato.
     if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
       url.pathname = "/players";
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
+
+
+  if (watchPlayerLiveMatch) {
+    const requestedSlug = decodeURIComponent(watchPlayerLiveMatch[1] || "")
+      .split("/")
+      .filter(Boolean)
+      .join("-")
+      .replace(/-+/g, "-")
+      .replace(/^[-.]+|[-.]+$/g, "");
+
+    const url = request.nextUrl.clone();
+
+    if (watchPlayerLiveMatch[1].includes("/") && requestedSlug) {
+      url.pathname = `/watch-player-live/${requestedSlug}`;
+      return NextResponse.redirect(url, 308);
+    }
+
+    if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
+      url.pathname = "/players/live-now";
       return NextResponse.redirect(url, 308);
     }
   }
