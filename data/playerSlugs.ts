@@ -72,6 +72,38 @@ export function getCanonicalPlayerSlug(nameOrSlug: string): PlayerSlug | null {
   return canonicalNameToSlug.get(normalized) ?? null;
 }
 
+
+export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {
+  const raw = String(nameOrSlug || "").trim();
+  const slug = playerSlug(raw);
+
+  if (!slug) return true;
+  if (isDoublesTeam(raw)) return true;
+  if (hasInitialOnlyName(raw) || /(^|-)[a-z]\.-/.test(raw.toLowerCase())) return true;
+
+  // Common bad links generated from doubles teams or match fragments: surname-surname.
+  // Do not block canonical two-word players such as jannik-sinner.
+  if (!getCanonicalPlayerSlug(raw) && /^([a-z]{3,})-([a-z]{3,})$/.test(slug)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function playerNameFromSlug(slug: string) {
+  const raw = String(slug || "")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!raw) return "Tennis Player";
+
+  return raw
+    .split(" ")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export function isKnownPlayerSlug(slug: string) {
   return Boolean(getCanonicalPlayerSlug(slug));
 }

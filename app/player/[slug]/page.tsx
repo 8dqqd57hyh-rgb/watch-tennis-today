@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
-import { getCanonicalPlayerSlug, matchContainsExactPlayer } from "@/data/playerSlugs";
+import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, looksLikeClearlyInvalidPlayerSlug } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
@@ -32,7 +32,35 @@ type Match = {
 
 function formatPlayerName(slug?: string) {
   const canonicalSlug = getCanonicalPlayerSlug(slug || "");
-  return canonicalSlug ? players[canonicalSlug].name : "Tennis Player";
+  return canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug || "");
+}
+
+function getPlayerDisplay(slug: string) {
+  const canonicalSlug = getCanonicalPlayerSlug(slug);
+
+  return {
+    canonicalSlug,
+    pageSlug: canonicalSlug || slug,
+    playerName: canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug),
+  };
+}
+
+function matchContainsPlayerText(match: Match, slug: string) {
+  const canonicalSlug = getCanonicalPlayerSlug(slug);
+
+  if (canonicalSlug) {
+    return matchContainsExactPlayer(match, canonicalSlug);
+  }
+
+  const target = normalizePlayerName(slug.replace(/-/g, " "));
+  if (!target) return false;
+
+  const fields = [match.player1, match.player2];
+
+  return fields.some((value) => {
+    const normalized = normalizePlayerName(value || "");
+    return normalized === target || normalized.split(" ").includes(target);
+  });
 }
 
 export async function generateMetadata({
@@ -41,13 +69,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const canonicalSlug = getCanonicalPlayerSlug(slug);
-
-  if (!canonicalSlug) {
+  if (looksLikeClearlyInvalidPlayerSlug(slug)) {
     notFound();
   }
 
-  const playerName = players[canonicalSlug].name;
+  const { playerName, pageSlug } = getPlayerDisplay(slug);
 
   return {
     title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
@@ -55,7 +81,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${playerName} Matches Today & TV Schedule`,
       description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
-      url: `https://watchtennistoday.com/player/${canonicalSlug}`,
+      url: `https://watchtennistoday.com/player/${pageSlug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
@@ -143,20 +169,18 @@ export default async function PlayerPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const canonicalSlug = getCanonicalPlayerSlug(slug);
-
-  if (!canonicalSlug) {
+  if (looksLikeClearlyInvalidPlayerSlug(slug)) {
     notFound();
   }
 
-  const playerName = players[canonicalSlug].name;
+  const { canonicalSlug, pageSlug, playerName } = getPlayerDisplay(slug);
 
   const allMatches = await getMatches();
 
 
 
 const playerMatches = allMatches.filter((match) =>
-  matchContainsExactPlayer(match, canonicalSlug)
+  matchContainsPlayerText(match, pageSlug)
 );
 
   const relatedPlayers = PLAYERS
@@ -331,7 +355,7 @@ const playerMatches = allMatches.filter((match) =>
 
     <PlayerSubscribeBox
   playerName={playerName}
-  playerSlug={canonicalSlug}
+  playerSlug={pageSlug}
 />
 
       <section className="mb-10">
@@ -467,7 +491,7 @@ const playerMatches = allMatches.filter((match) =>
           "@type": "ListItem",
           position: 3,
           name: playerName,
-          item: `https://watchtennistoday.com/player/${canonicalSlug}`,
+          item: `https://watchtennistoday.com/player/${pageSlug}`,
         },
       ],
     }),

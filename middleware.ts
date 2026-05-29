@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isKnownPlayerSlug } from "./data/playerSlugs";
+import { looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
 export function middleware(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
@@ -21,10 +21,11 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(url, 308);
     }
 
-    // Hard safety net: only canonical player pages should resolve. This prevents
-    // generated singles-looking doubles teams and abbreviated API names like
-    // /player/m.-cecchinato from becoming SEO-quality 404 noise.
-    if (!isKnownPlayerSlug(requestedSlug)) {
+    // Safety net: redirect only clearly bad player URLs, not every unknown player.
+    // This preserves real players that are not yet in the canonical list, e.g.
+    // /player/ngounoue, while still cleaning doubles-team and abbreviated slugs
+    // like /player/detiuc-khromacheva or /player/m.-cecchinato.
+    if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
       url.pathname = "/players";
       return NextResponse.redirect(url, 308);
     }
