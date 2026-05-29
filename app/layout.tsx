@@ -4,6 +4,7 @@ import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
+import ClickAnalytics from "@/app/components/ClickAnalytics";
 
 
 export const metadata: Metadata = {
@@ -183,6 +184,7 @@ export default function RootLayout({
       <a href="/authors/watch-tennis-today" className="hover:text-white">Author</a>
     </div>
   </footer>
+  <ClickAnalytics />
   <Analytics />
   <GoogleAnalytics gaId="G-Y9EP52NP5T" />
   <CookieBanner />
