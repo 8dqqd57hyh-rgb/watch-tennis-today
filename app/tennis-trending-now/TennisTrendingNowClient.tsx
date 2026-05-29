@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import { safePlayerUrl } from "@/data/playerSlugs";
 
 type Match = {
   id: string;
@@ -35,15 +36,6 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
-function playerSlug(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/\//g, " ")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
 
 function matchSlug(match: Match) {
   const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
@@ -218,15 +210,20 @@ export default function TennisTrendingNowPage() {
               </h2>
 
               <div className="flex flex-wrap gap-3">
-                {trendingPlayers.map((player) => (
+                {trendingPlayers.map((player) => {
+                  const href = safePlayerUrl(player);
+                  if (!href) return null;
+
+                  return (
                   <a
                     key={player}
-                    href={`/player/${playerSlug(player)}`}
+                    href={href}
                     className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
                   >
                     ⭐ {player}
                   </a>
-                ))}
+                  );
+                })}
               </div>
             </section>
 

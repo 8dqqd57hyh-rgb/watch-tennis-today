@@ -1,3 +1,4 @@
+import { safePlayerUrl } from "@/data/playerSlugs";
 
 export const metadata = {
   title: "WTA Players",
@@ -20,10 +21,6 @@ const wtaPlayers = [
   "Maria Sakkari",
   "Qinwen Zheng",
 ];
-
-function playerSlug(name: string) {
-  return name.toLowerCase().replace(/,/g, "").replace(/\//g, " ").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
-}
 
 export default function WTAPlayersPage() {
   return (
@@ -53,7 +50,7 @@ export default function WTAPlayersPage() {
             {wtaPlayers.map((player) => (
               <a
                 key={player}
-                href={`/player/${playerSlug(player)}`}
+                href={safePlayerUrl(player) || "/players"}
                 className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-purple-500 transition-all"
               >
                 <h2 className="text-2xl font-black mb-3">{player}</h2>
