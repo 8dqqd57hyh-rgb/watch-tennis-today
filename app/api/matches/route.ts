@@ -68,18 +68,19 @@ function normalizeStatus(match: ApiTennisMatch) {
     return first !== "" && second !== "" && `${first}-${second}` !== "0-0";
   }) ?? false;
 
-const hasScore =
+const hasScore = Boolean(
   hasSetScore ||
-  (
-    match.event_final_result &&
-    match.event_final_result !== "-" &&
-    match.event_final_result !== "0-0"
-  ) ||
-  (
-    match.event_game_result &&
-    match.event_game_result !== "-" &&
-    match.event_game_result !== "0-0"
-  );
+    (
+      match.event_final_result &&
+      match.event_final_result !== "-" &&
+      match.event_final_result !== "0-0"
+    ) ||
+    (
+      match.event_game_result &&
+      match.event_game_result !== "-" &&
+      match.event_game_result !== "0-0"
+    )
+);
 
   if (isPastUnplayedFixture(match, hasScore)) {
     return "EXPIRED";
