@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCanonicalPlayerSlug, looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
 export function middleware(request: NextRequest) {
+
+  const duplicateCanonicalRedirects: Record<string, string> = {
+    "/privacy-policy": "/privacy",
+    "/watch-french-open-in-australia": "/where-to-watch-french-open#australia",
+    "/watch-french-open-in-canada": "/where-to-watch-french-open#canada",
+    "/watch-french-open-in-uk": "/where-to-watch-french-open#uk",
+    "/watch-french-open-in-usa": "/where-to-watch-french-open#usa",
+  };
+
+  const canonicalRedirectTarget = duplicateCanonicalRedirects[request.nextUrl.pathname];
+  if (canonicalRedirectTarget) {
+    const url = request.nextUrl.clone();
+    const [pathname, hash] = canonicalRedirectTarget.split("#");
+    url.pathname = pathname;
+    url.hash = hash ? `#${hash}` : "";
+    return NextResponse.redirect(url, 308);
+  }
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
   const watchPlayerLiveMatch = request.nextUrl.pathname.match(/^\/watch-player-live\/(.+)$/);
 
