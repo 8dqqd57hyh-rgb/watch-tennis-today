@@ -510,6 +510,8 @@ export default async function MatchPage({
   const scoreDisplay = getScoreDisplay(match);
   const countryLinks = buildCountryWatchLinks(match);
   const relatedMatches = getRelatedMatches(match, matches);
+  const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
+  const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
   const playerDescription =
     playerDescriptions[match.player1.toLowerCase()] ||
     playerDescriptions[match.player2.toLowerCase()] ||
@@ -604,20 +606,20 @@ export default async function MatchPage({
                   Match hub
                 </p>
                 <h1 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
-                  {isDoublesTeam(match.player1) ? (
-                    <span>{match.player1}</span>
-                  ) : (
-                    <a href={safePlayerUrl(match.player1) || "/players"} className="hover:text-green-400">
+                  {player1Url ? (
+                    <a href={player1Url} className="hover:text-green-400">
                       {match.player1}
                     </a>
+                  ) : (
+                    <span>{match.player1}</span>
                   )}
                   <span className="block text-zinc-500">vs</span>
-                  {isDoublesTeam(match.player2) ? (
-                    <span>{match.player2}</span>
-                  ) : (
-                    <a href={safePlayerUrl(match.player2) || "/players"} className="hover:text-green-400">
+                  {player2Url ? (
+                    <a href={player2Url} className="hover:text-green-400">
                       {match.player2}
                     </a>
+                  ) : (
+                    <span>{match.player2}</span>
                   )}
                 </h1>
                 <p className="max-w-3xl text-lg leading-8 text-zinc-300">
@@ -769,26 +771,26 @@ export default async function MatchPage({
                 Use these player pages to check schedules, match pages, tournament context and official viewing information for each player.
               </p>
               <div className="grid gap-4 md:grid-cols-2">
-                {!isDoublesTeam(match.player1) ? (
-                  <a href={safePlayerUrl(match.player1) || "/players"} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                {player1Url ? (
+                  <a href={player1Url} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
                     <h3 className="mb-2 text-2xl font-black">{match.player1}</h3>
                     <p className="text-zinc-400">Live matches, schedule and viewing info</p>
                   </a>
                 ) : (
                   <div className="rounded-3xl border border-zinc-800 bg-black p-5">
                     <h3 className="mb-2 text-2xl font-black">{match.player1}</h3>
-                    <p className="text-zinc-400">Doubles team shown on this match page</p>
+                    <p className="text-zinc-400">Player page is shown only when the player can be verified.</p>
                   </div>
                 )}
-                {!isDoublesTeam(match.player2) ? (
-                  <a href={safePlayerUrl(match.player2) || "/players"} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                {player2Url ? (
+                  <a href={player2Url} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
                     <h3 className="mb-2 text-2xl font-black">{match.player2}</h3>
                     <p className="text-zinc-400">Live matches, schedule and viewing info</p>
                   </a>
                 ) : (
                   <div className="rounded-3xl border border-zinc-800 bg-black p-5">
                     <h3 className="mb-2 text-2xl font-black">{match.player2}</h3>
-                    <p className="text-zinc-400">Doubles team shown on this match page</p>
+                    <p className="text-zinc-400">Player page is shown only when the player can be verified.</p>
                   </div>
                 )}
               </div>

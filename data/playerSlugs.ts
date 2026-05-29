@@ -24,17 +24,39 @@ export function playerSlug(name: string) {
     .replace(/-+/g, "-");
 }
 
+function playerLookupAliases(name: string, slug: string) {
+  const parts = name.split(/\s+/).filter(Boolean);
+  const aliases = new Set<string>([
+    normalizePlayerName(name),
+    normalizePlayerName(parts.slice().reverse().join(" ")),
+    normalizePlayerName(slug.replace(/-/g, " ")),
+  ]);
+
+  // API feeds often use abbreviated names such as "J. de Jong" or slugs
+  // like "j-de-jong". Map those to the canonical player when that player
+  // is already in our database, instead of emitting /player/j-de-jong.
+  if (parts.length >= 2) {
+    const initial = parts[0]?.charAt(0) || "";
+    const surnamePart = parts.slice(1).join(" ");
+
+    if (initial && surnamePart) {
+      aliases.add(normalizePlayerName(`${initial}. ${surnamePart}`));
+      aliases.add(normalizePlayerName(`${initial} ${surnamePart}`));
+      aliases.add(normalizePlayerName(`${initial}-${surnamePart.replace(/\s+/g, "-")}`));
+    }
+  }
+
+  return Array.from(aliases);
+}
+
 const canonicalNameToSlug = new Map<string, PlayerSlug>(
   Object.entries(players).flatMap(([slug, player]) => {
     const canonicalSlug = slug as PlayerSlug;
-    const normalizedName = normalizePlayerName(player.name);
-    const reversedName = normalizePlayerName(player.name.split(" ").reverse().join(" "));
 
-    return [
-      [normalizedName, canonicalSlug],
-      [reversedName, canonicalSlug],
-      [normalizePlayerName(slug.replace(/-/g, " ")), canonicalSlug],
-    ];
+    return playerLookupAliases(player.name, slug).map((alias) => [
+      alias,
+      canonicalSlug,
+    ] as const);
   })
 );
 

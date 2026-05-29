@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
+import { getCanonicalPlayerSlug, looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
 export function middleware(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
@@ -19,6 +19,12 @@ export function middleware(request: NextRequest) {
     // /player/matushkina/-uchijima.
     if (playerPathMatch[1].includes("/") && requestedSlug) {
       url.pathname = `/player/${requestedSlug}`;
+      return NextResponse.redirect(url, 308);
+    }
+
+    const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedSlug);
+    if (canonicalPlayerSlug && canonicalPlayerSlug !== requestedSlug) {
+      url.pathname = `/player/${canonicalPlayerSlug}`;
       return NextResponse.redirect(url, 308);
     }
 
@@ -46,6 +52,12 @@ export function middleware(request: NextRequest) {
 
     if (watchPlayerLiveMatch[1].includes("/") && requestedSlug) {
       url.pathname = `/watch-player-live/${requestedSlug}`;
+      return NextResponse.redirect(url, 308);
+    }
+
+    const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedSlug);
+    if (canonicalPlayerSlug && canonicalPlayerSlug !== requestedSlug) {
+      url.pathname = `/watch-player-live/${canonicalPlayerSlug}`;
       return NextResponse.redirect(url, 308);
     }
 
