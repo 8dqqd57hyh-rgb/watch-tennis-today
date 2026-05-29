@@ -51,7 +51,10 @@ export default function RevenueConversionPanel({
   const guideLabel = matchupLabel || playerName || tournament || "tennis";
 
   return (
-    <section className="my-10 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/70 to-zinc-950 p-6 text-white shadow-2xl">
+    <section
+      data-track-area={`revenue-panel-${context}`}
+      className="my-10 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/70 to-zinc-950 p-6 text-white shadow-2xl"
+    >
       <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
         {copy.eyebrow}
       </p>
@@ -84,6 +87,9 @@ export default function RevenueConversionPanel({
       <div className="mt-6 grid gap-3 md:grid-cols-3">
         <a
           href="/watch-tennis-abroad"
+          data-track-category="money_internal"
+          data-track-id="revenue_panel_watch_tennis_abroad"
+          data-track-position="primary"
           className="rounded-2xl border border-emerald-500/40 bg-emerald-400 px-5 py-4 text-center font-black text-black hover:bg-emerald-300"
         >
           Watch Tennis Abroad →
@@ -91,6 +97,9 @@ export default function RevenueConversionPanel({
 
         <a
           href="/best-vpn-for-tennis-streaming"
+          data-track-category="money_internal"
+          data-track-id="revenue_panel_best_vpn_guide"
+          data-track-position="secondary"
           className="rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-center font-black text-white hover:border-emerald-400"
         >
           Best VPN for Tennis
@@ -98,6 +107,9 @@ export default function RevenueConversionPanel({
 
         <a
           href={affiliateLinks.nordvpn}
+          data-track-category="affiliate"
+          data-track-id="revenue_panel_nordvpn_deal"
+          data-track-position="affiliate"
           target="_blank"
           rel="nofollow sponsored noopener noreferrer"
           className="rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-center font-black text-white hover:border-emerald-400"

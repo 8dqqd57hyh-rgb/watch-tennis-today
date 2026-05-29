@@ -25,6 +25,10 @@ export default function VpnPromo({
 
       <a
         href={affiliateLinks.nordvpn}
+        data-track-area="vpn-promo"
+        data-track-category="affiliate"
+        data-track-id="vpn_promo_nordvpn_cta"
+        data-track-position="primary"
         target="_blank"
         rel="nofollow sponsored noopener noreferrer"
         className="inline-flex rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-300"

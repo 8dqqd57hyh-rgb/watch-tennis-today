@@ -12,7 +12,10 @@ export default function RelatedMoneyLinks({
   tournament,
 }: RelatedMoneyLinksProps) {
   return (
-    <section className="my-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+    <section
+      data-track-area="related-money-links"
+      className="my-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
+    >
       <h2 className="mb-4 text-3xl font-black text-white">
         More Tennis TV and Schedule Guides
       </h2>
@@ -26,6 +29,8 @@ export default function RelatedMoneyLinks({
         {playerName && (
           <a
             href="/best-vpn-for-tennis-streaming"
+            data-track-category="money_internal"
+            data-track-id="related_best_vpn_player"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Best VPN for watching {playerName} matches
@@ -35,6 +40,8 @@ export default function RelatedMoneyLinks({
         {playerName && !isDoublesTeam(playerName) && (
           <a
             href={safePlayerUrl(playerName) || "/players"}
+            data-track-category="player_internal"
+            data-track-id="related_player_primary"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {playerName} live
@@ -44,6 +51,8 @@ export default function RelatedMoneyLinks({
         {player2Name && !isDoublesTeam(player2Name) && (
           <a
             href={safePlayerUrl(player2Name) || "/players"}
+            data-track-category="player_internal"
+            data-track-id="related_player_secondary"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {player2Name} live
@@ -52,6 +61,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/watch-tennis-abroad"
+          data-track-category="money_internal"
+          data-track-id="related_watch_abroad"
           className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis abroad safely
@@ -59,6 +70,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/best-ways-to-watch-tennis-online"
+          data-track-category="money_internal"
+          data-track-id="related_best_ways_online"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Best ways to watch tennis online
@@ -66,6 +79,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/compare/tennis-tv-vs-espn"
+          data-track-category="compare_internal"
+          data-track-id="related_compare_tennis_tv_espn"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Tennis TV vs ESPN+
@@ -73,6 +88,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/compare/nordvpn-vs-surfshark-for-tennis"
+          data-track-category="compare_internal"
+          data-track-id="related_compare_nordvpn_surfshark"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           NordVPN vs Surfshark for tennis
@@ -80,6 +97,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/compare/espn-vs-tennis-channel"
+          data-track-category="compare_internal"
+          data-track-id="related_compare_espn_tennis_channel"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           ESPN+ vs Tennis Channel
@@ -87,6 +106,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/watch-tennis-in/usa"
+          data-track-category="country_internal"
+          data-track-id="related_country_usa"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis in the USA
@@ -94,6 +115,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/watch-tennis-in/uk"
+          data-track-category="country_internal"
+          data-track-id="related_country_uk"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis in the UK
@@ -101,6 +124,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/atp-live-today"
+          data-track-category="schedule_internal"
+          data-track-id="related_atp_live_today"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           ATP live today
@@ -108,6 +133,8 @@ export default function RelatedMoneyLinks({
 
         <a
           href="/wta-live-today"
+          data-track-category="schedule_internal"
+          data-track-id="related_wta_live_today"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           WTA live today

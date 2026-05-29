@@ -15,6 +15,10 @@ export default function StickyAffiliateBar() {
 
         <a
           href={affiliateLinks.nordvpn}
+          data-track-area="mobile-affiliate-bar"
+          data-track-category="affiliate"
+          data-track-id="mobile_nordvpn_cta"
+          data-track-position="sticky"
           target="_blank"
           rel="nofollow sponsored noopener noreferrer"
           className="shrink-0 rounded-full bg-emerald-400 px-4 py-2 text-xs font-black text-black hover:bg-emerald-300"
