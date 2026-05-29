@@ -500,6 +500,33 @@ tennis viewing information.
 <BroadcastFinder />
 
         <RevenueConversionPanel context="homepage" />
+<section className="mb-12 rounded-[2.5rem] border border-lime-400/40 bg-gradient-to-br from-lime-950/30 to-black p-8">
+  <div className="flex flex-wrap items-center gap-3 mb-5">
+    <span className="rounded-full bg-lime-400 px-4 py-2 text-sm font-black text-black">
+      🔔 Free tennis alerts
+    </span>
+
+    <span className="text-sm text-zinc-400">
+      Turn daily traffic into returning visitors
+    </span>
+  </div>
+
+  <h2 className="text-4xl font-black mb-4">
+    Get tennis match alerts before the best matches start
+  </h2>
+
+  <p className="max-w-3xl text-zinc-300 leading-7 mb-6">
+    Subscribe for practical schedule reminders, TV channel checks and Grand Slam
+    viewing notes. No illegal streams — just legal tennis viewing guidance.
+  </p>
+
+  <a
+    href="/tennis-live-alerts"
+    className="inline-flex rounded-2xl bg-lime-400 px-6 py-4 font-black text-black hover:bg-lime-300"
+  >
+    Set up tennis alerts →
+  </a>
+</section>
 <section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
   <h2 className="text-3xl font-black text-white mb-5">
     What Watch Tennis Today Does

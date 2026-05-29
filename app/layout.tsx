@@ -157,6 +157,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/tennis-live-alerts"
+          className="hidden xl:inline text-lime-300 hover:text-lime-200"
+        >
+          Alerts
+        </a>
+
+        <a
           href="/how-to-watch-tennis-legally"
           className="hidden md:inline text-zinc-300 hover:text-white"
         >
@@ -220,6 +227,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Best Matches Today
+</a>
+<a
+  href="/tennis-live-alerts"
+  className="hover:text-white transition-colors"
+>
+  Tennis Alerts
 </a>
 <a
   href="/tennis-tv-broadcast-finder"
