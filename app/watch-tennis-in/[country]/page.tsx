@@ -1,157 +1,16 @@
 export const dynamic = "force-dynamic";
+
+import { notFound } from "next/navigation";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
-import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
+import { broadcastCountries, getBroadcastCountry } from "@/data/broadcastFinder";
+
+const BASE_URL = "https://watchtennistoday.com";
 
 export function generateStaticParams() {
-  return [
-    { country: "usa" },
-    { country: "uk" },
-    { country: "canada" },
-    { country: "australia" },
-    { country: "germany" },
-    { country: "france" },
-    { country: "italy" },
-    { country: "spain" },
-    { country: "poland" },
-    { country: "india" },
-  ];
+  return broadcastCountries.map((country) => ({ country: country.slug }));
 }
-
-function readableCountry(country: string) {
-  return country
-    .split("-")
-    .map(
-      (word) =>
-        word.charAt(0).toUpperCase() +
-        word.slice(1)
-    )
-    .join(" ");
-}
-
-const broadcasters: Record<
-  string,
-  {
-    name: string;
-    url: string;
-    note: string;
-  }[]
-> = {
-  poland: [
-    {
-      name: "Eurosport",
-      url: "https://www.eurosport.com/tennis/",
-      note: "Major ATP, WTA and Grand Slam coverage",
-    },
-    {
-      name: "Canal+",
-      url: "https://www.canalplus.com/",
-      note: "Selected tennis tournaments and sports packages",
-    },
-  ],
-
-  uk: [
-    {
-      name: "Sky Sports",
-      url: "https://www.skysports.com/tennis",
-      note: "ATP and WTA coverage",
-    },
-    {
-      name: "BBC",
-      url: "https://www.bbc.co.uk/sport/tennis",
-      note: "Wimbledon coverage",
-    },
-  ],
-
-  usa: [
-    {
-      name: "Tennis Channel",
-      url: affiliateLinks.tennisChannel,
-      note: "Major ATP and WTA broadcaster",
-    },
-    {
-      name: "ESPN",
-     url: affiliateLinks.espn,
-      note: "Grand Slam coverage",
-    },
-  ],
-
-  germany: [
-  {
-    name: "Sky Deutschland",
-    url: "https://sport.sky.de/tennis",
-    note: "ATP and Grand Slam coverage",
-  },
-  {
-    name: "Eurosport Germany",
-    url: "https://www.eurosport.de/tennis/",
-    note: "Major ATP, WTA and Grand Slam tournaments",
-  },
-],
-france: [
-  {
-    name: "Eurosport France",
-    url: "https://www.eurosport.fr/tennis/",
-    note: "ATP, WTA and Grand Slam coverage",
-  },
-  {
-    name: "France TV",
-    url: "https://www.france.tv/sport/tennis/",
-    note: "Roland Garros coverage",
-  },
-],
-spain: [
-  {
-    name: "Movistar Plus+",
-    url: "https://www.movistarplus.es/deportes/tenis/",
-    note: "ATP and WTA coverage",
-  },
-],
-italy: [
-  {
-    name: "Sky Italia",
-    url: "https://sport.sky.it/tennis",
-    note: "ATP, WTA and Grand Slam coverage",
-  },
-  {
-    name: "SuperTennis",
-    url: "https://www.supertennis.tv/",
-    note: "Italian tennis channel",
-  },
-],
-canada: [
-  {
-    name: "TSN",
-    url: "https://www.tsn.ca/tennis",
-    note: "ATP and Grand Slam coverage",
-  },
-  {
-    name: "Sportsnet",
-    url: "https://www.sportsnet.ca/tennis/",
-    note: "Tennis coverage in Canada",
-  },
-],
-australia: [
-  {
-    name: "Stan Sport",
-    url: "https://www.stan.com.au/sport",
-    note: "Grand Slam and ATP coverage",
-  },
-  {
-    name: "9Now",
-    url: "https://www.9now.com.au/",
-    note: "Australian Open coverage",
-  },
-],
-india: [
-  {
-    name: "Sony LIV",
-    url: "https://www.sonyliv.com/",
-    note: "ATP and Grand Slam coverage",
-  },
-],
-};
 
 export async function generateMetadata({
   params,
@@ -159,15 +18,44 @@ export async function generateMetadata({
   params: Promise<{ country: string }>;
 }) {
   const { country } = await params;
-  const readable = readableCountry(country);
+  const broadcastCountry = getBroadcastCountry(country);
+
+  if (!broadcastCountry) {
+    return {
+      title: "Tennis TV Channels by Country | Watch Tennis Today",
+      robots: { index: false, follow: true },
+    };
+  }
 
   return {
-    title: `Where to Watch Tennis in ${readable} | TV Channels & Live Streams`,
-    description: `Find official tennis broadcasters, live streams, TV channels and ATP/WTA coverage available in ${readable}.`,
+    title: `Where to Watch Tennis in ${broadcastCountry.country} | TV Channels, ATP, WTA & Grand Slams`,
+    description: `Find official tennis broadcasters, TV channels and legal streaming routes for ATP, WTA and Grand Slam matches in ${broadcastCountry.country}.`,
     alternates: {
-      canonical: `https://watchtennistoday.com/watch-tennis-in/${country}`,
+      canonical: `${BASE_URL}/watch-tennis-in/${broadcastCountry.slug}`,
+    },
+    openGraph: {
+      title: `Where to Watch Tennis in ${broadcastCountry.country}`,
+      description: `Official broadcaster routes, ATP/WTA options and Grand Slam TV guidance for tennis fans in ${broadcastCountry.country}.`,
+      url: `${BASE_URL}/watch-tennis-in/${broadcastCountry.slug}`,
+      type: "article",
     },
   };
+}
+
+function InfoCard({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+      <h3 className="mb-4 text-xl font-black text-white">{title}</h3>
+      <ul className="space-y-3 text-zinc-300">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3">
+            <span className="mt-1 h-2 w-2 flex-none rounded-full bg-emerald-400" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 export default async function CountryPage({
@@ -176,301 +64,166 @@ export default async function CountryPage({
   params: Promise<{ country: string }>;
 }) {
   const { country } = await params;
-  const readable = readableCountry(country);
-  const countryBroadcasters = broadcasters[country] || [];
+  const broadcastCountry = getBroadcastCountry(country);
+
+  if (!broadcastCountry) notFound();
+
   const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: `Where can I watch tennis in ${readable}?`,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `Tennis in ${readable} is usually available through official sports broadcasters, tournament partners and dedicated tennis streaming platforms.`,
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Where can I watch tennis in ${broadcastCountry.country}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Tennis in ${broadcastCountry.country} is usually available through official sports broadcasters, tour streaming services and tournament broadcaster partners. Availability depends on the tournament and local rights.`,
+        },
       },
-    },
-    {
-      "@type": "Question",
-      name: "Can I watch ATP and WTA matches online?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, many ATP and WTA matches are available through official broadcasters, regional streaming platforms or tournament partners.",
+      {
+        "@type": "Question",
+        name: `What channels show ATP tennis in ${broadcastCountry.country}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `ATP coverage in ${broadcastCountry.country} may include ${broadcastCountry.atpOptions.join(", ")}. Check the official ATP TV schedule before the match starts.`,
+        },
       },
-    },
-    {
-      "@type": "Question",
-      name: `Are Grand Slam matches available in ${readable}?`,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Grand Slam coverage depends on local TV rights. Wimbledon, Roland Garros, US Open and Australian Open may have different broadcasters in each country.",
+      {
+        "@type": "Question",
+        name: `Can I watch tennis while traveling outside ${broadcastCountry.country}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "If you are traveling, check whether your normal broadcaster supports access abroad and follow the broadcaster terms. Watch Tennis Today points users toward legal viewing routes and does not host streams.",
+        },
       },
+    ],
+  };
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `Where to Watch Tennis in ${broadcastCountry.country}`,
+    description: `Official tennis broadcaster guide for ATP, WTA and Grand Slam coverage in ${broadcastCountry.country}.`,
+    mainEntityOfPage: `${BASE_URL}/watch-tennis-in/${broadcastCountry.slug}`,
+    dateModified: new Date().toISOString(),
+    author: {
+      "@type": "Organization",
+      name: "Watch Tennis Today",
     },
-  ],
-};
+    publisher: {
+      "@type": "Organization",
+      name: "Watch Tennis Today",
+    },
+  };
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
-          ← Back
+    <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
+      <div className="mx-auto max-w-6xl">
+        <a href="/tennis-tv-broadcast-finder" className="text-zinc-400 hover:text-white">
+          ← Back to Broadcast Finder
         </a>
 
-        
-
-        <section className="mt-8 mb-10">
-          <h1 className="text-5xl font-black mb-4">
-            🌍 Where to Watch Tennis in {readable}
+        <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-black to-emerald-950 p-8 md:p-10">
+          <p className="mb-4 inline-flex rounded-full bg-emerald-400/15 px-4 py-2 text-sm font-black uppercase tracking-[0.25em] text-emerald-300">
+            Country streaming guide
+          </p>
+          <h1 className="max-w-4xl text-4xl font-black leading-tight md:text-6xl">
+            Where to watch tennis in {broadcastCountry.country}
           </h1>
-
-          <p className="text-zinc-400 text-lg leading-relaxed">
-            Find official tennis broadcasters, TV channels and streaming
-            services available in {readable}. This guide helps you check where
-            to watch ATP, WTA, Challenger and Grand Slam tennis matches legally.
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
+            Use this guide to check the most likely official TV channels, legal streaming routes and travel-viewing steps for ATP, WTA and Grand Slam tennis in {broadcastCountry.country}.
           </p>
-<div className="space-y-5 mt-6">
-  <p className="text-zinc-300 leading-8">
-    Tennis broadcasting rights can differ significantly between countries,
-    tournaments and streaming providers. Some ATP and WTA events may only
-    be available through regional sports channels or subscription platforms.
-  </p>
-
-  <p className="text-zinc-400 leading-8">
-    This guide was created to help tennis fans in {readable} find official
-    TV coverage and legal streaming information for major tennis events.
-  </p>
-</div>
-<p className="text-sm text-zinc-500 mt-4">
-  Last updated: May 2026
-</p>
+          <p className="mt-4 text-sm text-zinc-500">Last updated: {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
         </section>
 
-        {/* Tennis Broadcasters in {readable} */}
-        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
-          <h2 className="text-3xl font-black mb-4">
-            📺 Tennis Broadcasters in {readable}
-          </h2>
+        <section className="mt-8 grid gap-5 md:grid-cols-2">
+          <InfoCard title="Primary broadcaster routes" items={broadcastCountry.primaryBroadcasters} />
+          <InfoCard title="Grand Slam coverage checks" items={broadcastCountry.grandSlamBroadcasters} />
+          <InfoCard title="ATP viewing options" items={broadcastCountry.atpOptions} />
+          <InfoCard title="WTA viewing options" items={broadcastCountry.wtaOptions} />
+        </section>
 
-          {countryBroadcasters.length > 0 ? (
-            <div className="space-y-5">
-              {countryBroadcasters.map((broadcaster) => (
-                <a
-                  key={broadcaster.name}
-                  href={broadcaster.url}
-                  target="_blank"
-                  rel="nofollow sponsored noopener noreferrer"
-                  className="block bg-black border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
-                >
-                  <h3 className="text-2xl font-black mb-2">
-                    {broadcaster.name}
-                  </h3>
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">Official directories to verify before match time</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-zinc-400">
+            Tennis rights can change by tournament, court and round. Before paying for a package, check these official broadcaster directories and tournament pages.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {broadcastCountry.officialDirectories.map((source) => (
+              <a
+                key={source.label}
+                href={source.url}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="rounded-2xl border border-zinc-800 bg-black p-5 font-black text-white transition hover:border-emerald-400 hover:text-emerald-300"
+              >
+                {source.label} →
+              </a>
+            ))}
+          </div>
+        </section>
 
-                  <p className="text-zinc-400">{broadcaster.note}</p>
-                  <span className="inline-block mt-4 bg-green-500 text-black px-4 py-2 rounded-2xl font-black">
-    Visit official broadcaster
-  </span>
-                </a>
-              ))}
+        <section className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-3xl font-black">Quick match-day checklist</h2>
+            <ol className="mt-5 space-y-4 text-zinc-300">
+              <li><strong className="text-white">1.</strong> Open the live schedule and identify the tournament.</li>
+              <li><strong className="text-white">2.</strong> Check whether it is ATP, WTA, Challenger or Grand Slam coverage.</li>
+              <li><strong className="text-white">3.</strong> Confirm the broadcaster in {broadcastCountry.country} using an official directory.</li>
+              <li><strong className="text-white">4.</strong> If traveling, confirm whether your normal subscription works abroad.</li>
+            </ol>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="/live-tennis" className="rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black">Live tennis today</a>
+              <a href="/best-tennis-matches-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-emerald-400">Best matches today</a>
+              <a href="/tennis-tv-broadcast-finder" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-emerald-400">Broadcast finder</a>
             </div>
-          ) : (
-            <p className="text-zinc-400">
-              Broadcaster information for {readable} is not available yet.
-              Check the live schedule for current tennis matches.
+          </div>
+
+          <div className="rounded-3xl border border-emerald-500/30 bg-emerald-950/30 p-6">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Travel viewing</p>
+            <h2 className="mt-3 text-3xl font-black">Watching outside {broadcastCountry.country}?</h2>
+            <p className="mt-4 leading-7 text-zinc-300">{broadcastCountry.travelTip}</p>
+            <p className="mt-4 leading-7 text-zinc-400">
+              Use privacy tools only within broadcaster terms and local law. This site does not bypass paywalls or host streams.
             </p>
-          )}
-        </section>
-
-        <section className="bg-gradient-to-br from-green-500 to-lime-400 text-black rounded-3xl p-6 mb-8">
-          <h2 className="text-3xl font-black mb-3">
-            🎾 Live Tennis Matches Today
-          </h2>
-
-          <p className="font-semibold mb-5">
-            Check today&apos;s tennis schedule and official streaming sources
-            before the match starts.
-          </p>
-
-          <a
-            href="/live-tennis"
-            className="inline-block bg-black text-white px-5 py-3 rounded-2xl font-black"
-          >
-            View Match Schedule
-          </a>
-        </section>
-
-        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
-          <h2 className="text-3xl font-black mb-4">
-            🔒 Streaming availability
-          </h2>
-
-          <p className="text-zinc-400 leading-relaxed">
-            Tennis broadcasting rights depend on your country, tournament and
-            platform subscription. Some matches may be available only through
-            regional broadcasters or official tournament streaming services.
-          </p>
-
-          <div className="mt-5 bg-black rounded-2xl p-5 border border-zinc-800">
-            <p className="font-bold mb-2">
-  Legal streaming notice
-</p>
-
-<p className="text-zinc-500 text-sm">
-  Watch Tennis Today does not host or stream tennis matches. We provide
-  information about official broadcasters, TV channels and legal streaming
-  options.
-</p>
+            <div className="mt-6 grid gap-3">
+              <a href="/watch-tennis-abroad" className="rounded-2xl bg-white px-5 py-3 text-center font-black text-black">Watch tennis abroad guide</a>
+              <a href="/best-vpn-for-tennis-streaming" className="rounded-2xl border border-emerald-400/40 px-5 py-3 text-center font-black text-white hover:border-emerald-300">Best VPN for tennis</a>
+              <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow sponsored noopener noreferrer" className="rounded-2xl border border-zinc-700 px-5 py-3 text-center font-black text-white hover:border-emerald-300">View VPN deal</a>
+            </div>
+            <p className="mt-4 text-xs text-zinc-500">Affiliate disclosure: we may earn a commission from qualifying purchases.</p>
           </div>
         </section>
 
-        <section className="mt-16 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
-  <div className="max-w-3xl">
-    <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
-      🌍 Watching tennis while traveling
-    </div>
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">Notes for {broadcastCountry.country}</h2>
+          <p className="mt-4 leading-8 text-zinc-300">{broadcastCountry.notes}</p>
+        </section>
 
-    <h2 className="text-3xl font-black mb-5">
-      Watching tennis outside your home country?
-    </h2>
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">FAQ</h2>
+          <div className="mt-6 space-y-6">
+            <div>
+              <h3 className="text-xl font-black">Where can I watch tennis in {broadcastCountry.country}?</h3>
+              <p className="mt-2 text-zinc-400">Start with official tournament pages, ATP/WTA directories and the broadcaster options listed above. Coverage depends on local rights.</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-black">Are all matches available on one service?</h3>
+              <p className="mt-2 text-zinc-400">Usually no. ATP, WTA, Grand Slam and Challenger events may be split across different services.</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-black">Does Watch Tennis Today stream matches?</h3>
+              <p className="mt-2 text-zinc-400">No. Watch Tennis Today is an informational guide that points users to official and legal viewing routes.</p>
+            </div>
+          </div>
+        </section>
 
-    <p className="text-zinc-300 leading-8 mb-6">
-  Tennis broadcasters and streaming services may vary depending on your
-  location. If you travel frequently during ATP, WTA or Grand Slam
-tournaments, secure internet connections and privacy tools may help
-protect your personal data while using streaming services on public
-or shared networks.
-</p>
-
-    <div className="flex flex-wrap gap-4 mb-8">
-      <a
-        href={affiliateLinks.nordvpn}
-        target="_blank"
-        rel="nofollow sponsored noopener noreferrer"
-        className="inline-block rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white hover:bg-zinc-700 transition-all"
-      >
-        Learn More About Privacy Tools
-      </a>
-
-      <a
-        href="/best-vpn-for-tennis-streaming"
-        className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-      >
-        Privacy Guide for Tennis Fans
-      </a>
-
-      <a
-        href="/how-to-watch-tennis-safely-abroad"
-        className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-      >
-        Tennis Streaming Safety Guide
-      </a>
-    </div>
-
-    <p className="text-sm text-zinc-500">
-      Affiliate disclosure: we may earn a commission if you purchase through
-      links on this page.
-    </p>
-  </div>
-</section>
-
-        <ContentQualityNotice pageType={`country guide for ${readable}`} />
-
+        <ContentQualityNotice pageType={`country broadcaster guide for ${broadcastCountry.country}`} />
         <EmailSignup />
-
-        <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-4">
-            FAQ
-          </h2>
-
-          <div className="space-y-5">
-            <div>
-              <h3 className="text-xl font-bold mb-2">
-                Where can I watch tennis in {readable}?
-              </h3>
-              <p className="text-zinc-400">
-                Tennis is usually shown by official sports broadcasters,
-                tournament partners and dedicated tennis streaming platforms.
-                Availability depends on the tournament and local rights.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-bold mb-2">
-                Can I watch ATP and WTA matches online?
-              </h3>
-              <p className="text-zinc-400">
-                Yes, many ATP and WTA matches are available through official
-                broadcasters, regional streaming platforms or tournament
-                partners.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-bold mb-2">
-                Are Grand Slam matches available in {readable}?
-              </h3>
-              <p className="text-zinc-400">
-                Grand Slam coverage depends on local TV rights. Wimbledon,
-                Roland Garros, US Open and Australian Open may have different
-                broadcasters in each country.
-              </p>
-            </div>
-          </div>
-        </section>
-        <section className="mt-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-  <h2 className="text-3xl font-black mb-4">
-    Explore More Tennis Coverage
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <a
-      href="/live-tennis"
-      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
-    >
-      Live Tennis Today
-    </a>
-
-    <a
-      href="/tournament"
-      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
-    >
-      Tennis Tournaments
-    </a>
-
-    <a
-      href="/best-ways-to-watch-tennis-online"
-      className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
-    >
-      Best Ways to Watch Tennis Online
-    </a>
-    <a
-  href="/atp-live-today"
-  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
->
-  ATP Live Matches
-</a>
-
-<a
-  href="/wta-live-today"
-  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
->
-  WTA Live Matches
-</a>
-
-<a
-  href="/grand-slam-live"
-  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
->
-  Grand Slam Coverage
-</a>
-  </div>
-</section>
       </div>
-      <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify(faqSchema),
-  }}
-/>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
     </main>
   );
 }

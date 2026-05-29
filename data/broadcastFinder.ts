@@ -89,6 +89,37 @@ export const broadcastCountries: BroadcastCountry[] = [
     notes: "French Open coverage has special local rights and should be checked separately from tour-level coverage.",
     travelTip: "French residents traveling abroad should confirm whether their normal broadcaster supports access outside France.",
   },
+
+  {
+    slug: "spain",
+    country: "Spain",
+    primaryBroadcasters: ["Movistar Plus+", "Eurosport", "Tennis TV"],
+    grandSlamBroadcasters: ["Eurosport", "Movistar Plus+", "official tournament broadcaster lists"],
+    atpOptions: ["Tennis TV", "Movistar Plus+", "ATP official TV schedule"],
+    wtaOptions: ["WTA official where-to-watch directory", "selected Spanish sports packages"],
+    officialDirectories: [
+      { label: "ATP TV Schedule", url: "https://www.atptour.com/en/tournaments/tv-schedule" },
+      { label: "WTA Where to Watch", url: "https://www.wtatennis.com/where-to-watch-tennis" },
+      { label: "Roland-Garros Broadcasters", url: "https://www.rolandgarros.com/en-us/broadcasters" },
+    ],
+    notes: "Spanish tennis coverage can differ between ATP, WTA and Grand Slam tournaments. Check the tournament page before match time.",
+    travelTip: "If you normally watch from Spain while traveling, verify whether your broadcaster account supports international streaming.",
+  },
+  {
+    slug: "italy",
+    country: "Italy",
+    primaryBroadcasters: ["Sky Italia", "SuperTennis", "Tennis TV"],
+    grandSlamBroadcasters: ["Eurosport", "Sky Italia", "official tournament broadcaster lists"],
+    atpOptions: ["Tennis TV", "Sky Italia", "ATP official TV schedule"],
+    wtaOptions: ["SuperTennis", "WTA official where-to-watch directory"],
+    officialDirectories: [
+      { label: "ATP TV Schedule", url: "https://www.atptour.com/en/tournaments/tv-schedule" },
+      { label: "WTA Where to Watch", url: "https://www.wtatennis.com/where-to-watch-tennis" },
+      { label: "Wimbledon TV Coverage", url: "https://www.wimbledon.com/en_GB/the_championships/tv_coverage" },
+    ],
+    notes: "Italian tennis coverage is split between local tennis channels, sports packages and official tour streaming options.",
+    travelTip: "Italian viewers traveling abroad should confirm whether their normal broadcaster supports temporary access outside Italy.",
+  },
   {
     slug: "canada",
     country: "Canada",
