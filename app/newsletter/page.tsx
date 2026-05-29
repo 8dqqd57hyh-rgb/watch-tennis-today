@@ -83,7 +83,12 @@ export default function NewsletterPage() {
               updates.
             </p>
 
-            <EmailSignup />
+            <EmailSignup
+              title="Subscribe for useful tennis alerts"
+              description="Get practical schedule notes, Grand Slam reminders and official viewing updates. We keep this opt-in and low-noise."
+              source="newsletter-page"
+              buttonLabel="Subscribe"
+            />
           </section>
 
           <section className="mb-10">

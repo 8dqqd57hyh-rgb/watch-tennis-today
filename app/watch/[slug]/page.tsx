@@ -9,6 +9,7 @@ import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch } from "@/app/lib/matchArchive";
 import LiveMatchScore from "./LiveMatchScore";
+import EmailSignup from "@/app/components/EmailSignup";
 
 export const dynamic = "force-dynamic";
 
@@ -789,22 +790,15 @@ export default async function MatchPage({
               </div>
             </section>
 
-            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
-              <h2 className="mb-4 text-3xl font-black">🔔 Get match alerts</h2>
-              <p className="mb-2 text-zinc-400">
-                Get notified before {matchTitle} starts, including match schedule updates, score alerts and tournament coverage information.
-              </p>
-              <p className="mb-6 text-sm text-zinc-500">Email alerts are optional and can be unsubscribed from at any time.</p>
-              <form action="https://formspree.io/f/xeenwwbk" method="POST" className="flex flex-col gap-4 md:flex-row">
-                <input type="hidden" name="_redirect" value="https://watchtennistoday.com/newsletter-confirmation" />
-                <input type="email" name="email" required placeholder="Your email" className="flex-1 rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-white" />
-                <input type="hidden" name="match" value={matchTitle} />
-                <input type="hidden" name="source" value="match-page" />
-                <button type="submit" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
-                  Notify me
-                </button>
-              </form>
-            </section>
+            <div className="mb-12">
+              <EmailSignup
+                title="Get a quiet alert for this match"
+                description={`Optional email updates for ${matchTitle}: schedule changes, match status and official viewing guidance only.`}
+                source="match-page"
+                context={matchTitle}
+                buttonLabel="Notify me"
+              />
+            </div>
 
             <section className="mb-12">
               <h2 className="mb-6 text-3xl font-black">FAQ</h2>

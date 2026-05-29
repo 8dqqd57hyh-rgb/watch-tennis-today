@@ -8,6 +8,7 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
+import EmailSignup from "@/app/components/EmailSignup";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -1211,47 +1212,13 @@ tennis viewing information.
               Live and upcoming tennis matches
             </p>
 
-            <div className="mb-12 mt-10 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-              <h2 className="text-3xl font-black mb-4">
-                🔔 Get Tennis Match Alerts
-              </h2>
-
-              <p className="text-zinc-400 mb-6 max-w-2xl">
-                Get notified about live tennis matches, Grand Slams, ATP and WTA schedules,
-                streaming updates and featured matches.
-              </p>
-
-              <form
-                action="https://formspree.io/f/xeenwwbk"
-                method="POST"
-                className="flex flex-col md:flex-row gap-4"
-              >
-                <input
-  type="hidden"
-  name="_redirect"
-  value="https://watchtennistoday.com/newsletter-confirmation"
-/>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="Your email address"
-                  className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white"
-                />
-
-                <input
-                  type="hidden"
-                  name="source"
-                  value="homepage-email-signup"
-                />
-
-                <button
-                  type="submit"
-                  className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
-                >
-                  Notify Me
-                </button>
-              </form>
+            <div className="mb-12 mt-10">
+              <EmailSignup
+                title="Get tennis match alerts without the noise"
+                description="A quiet optional signup for useful tennis schedule changes, Grand Slam reminders and official viewing updates. No popup interruption while users browse matches."
+                source="homepage-email-signup"
+                buttonLabel="Get alerts"
+              />
             </div>
           </div>
 

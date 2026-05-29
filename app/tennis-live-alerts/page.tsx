@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import EmailSignup from "@/app/components/EmailSignup";
 
 export const metadata: Metadata = {
   title: "Tennis Live Alerts | Daily Match Schedule & TV Updates",
@@ -134,40 +135,14 @@ export default function TennisLiveAlertsPage() {
             guides for ATP and WTA fans.
           </p>
 
-          <form
-            action="https://formspree.io/f/xeenwwbk"
-            method="POST"
-            className="mt-8 grid gap-3 rounded-3xl border border-emerald-400/30 bg-black/40 p-4 md:grid-cols-[1fr_auto]"
-          >
-            <input
-              type="hidden"
-              name="_redirect"
-              value="https://watchtennistoday.com/newsletter-confirmation"
+          <div className="mt-8">
+            <EmailSignup
+              title="Get the best match alerts only"
+              description="Optional alerts for important schedule changes, Grand Slam reminders and official viewing guidance — designed to stay useful, not noisy."
+              source="tennis-live-alerts"
+              buttonLabel="Send me alerts"
             />
-            <input
-              type="hidden"
-              name="source"
-              value="tennis-live-alerts"
-            />
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="Your email"
-              className="rounded-2xl border border-zinc-700 bg-zinc-950 px-5 py-4 text-white outline-none focus:border-emerald-400"
-            />
-            <button
-              type="submit"
-              className="rounded-2xl bg-emerald-400 px-7 py-4 font-black text-black hover:bg-emerald-300"
-            >
-              Send me alerts
-            </button>
-          </form>
-
-          <p className="mt-3 text-sm text-zinc-500">
-            No illegal streams, no spam. You get tennis schedule and viewing
-            guidance only.
-          </p>
+          </div>
         </section>
 
         <section className="mt-10 grid gap-5 md:grid-cols-2">
