@@ -150,6 +150,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/tennis-tv-not-working"
+          className="hidden lg:inline text-amber-300 hover:text-amber-200"
+        >
+          Stream Fix
+        </a>
+
+        <a
           href="/how-to-watch-tennis-legally"
           className="hidden md:inline text-zinc-300 hover:text-white"
         >
@@ -257,6 +264,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Streaming Rights Explained
+</a>
+<a
+  href="/tennis-tv-not-working"
+  className="hover:text-white transition-colors"
+>
+  Tennis TV Not Working
 </a>
 <a
   href="/authors/watch-tennis-today"
