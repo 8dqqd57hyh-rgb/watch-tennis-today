@@ -26,7 +26,7 @@ const grandSlamLinks = [
   },
   {
     name: "Wimbledon",
-    href: "/wimbledon-live-stream",
+    href: "/wimbledon-live",
     scheduleHref: "/tennis-schedule-today",
     tvHref: "/watch-tennis-in/uk",
     terms: ["wimbledon"],
