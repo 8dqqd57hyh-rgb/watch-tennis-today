@@ -1,31 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isKnownPlayerSlug } from "@/data/playerSlugs";
+import { isKnownPlayerSlug } from "./data/playerSlugs";
 
 export function middleware(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
 
-  // Repair old/bad player links created from doubles names like
-  // /player/matushkina/-uchijima. They should not become nested routes.
-  if (playerPathMatch && playerPathMatch[1].includes("/")) {
-    const normalizedSlug = playerPathMatch[1]
+  if (playerPathMatch) {
+    const requestedSlug = decodeURIComponent(playerPathMatch[1] || "")
       .split("/")
       .filter(Boolean)
       .join("-")
-      .replace(/-+/g, "-");
+      .replace(/-+/g, "-")
+      .replace(/^[-.]+|[-.]+$/g, "");
 
     const url = request.nextUrl.clone();
-    url.pathname = `/player/${normalizedSlug}`;
-    return NextResponse.redirect(url, 308);
-  }
 
-  // Final safety net: no uncatalogued player slug should return a 404 page.
-  // Old generated links and doubles-team slugs such as /player/detiuc-khromacheva
-  // are redirected to the player hub instead of creating low-quality indexed URLs.
-  if (playerPathMatch && !isKnownPlayerSlug(playerPathMatch[1])) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/players";
-    url.searchParams.set("from", "invalid-player");
-    return NextResponse.redirect(url, 308);
+    // Repair nested old/bad player links created from doubles names like
+    // /player/matushkina/-uchijima.
+    if (playerPathMatch[1].includes("/") && requestedSlug) {
+      url.pathname = `/player/${requestedSlug}`;
+      return NextResponse.redirect(url, 308);
+    }
+
+    // Hard safety net: only canonical player pages should resolve. This prevents
+    // generated singles-looking doubles teams and abbreviated API names like
+    // /player/m.-cecchinato from becoming SEO-quality 404 noise.
+    if (!isKnownPlayerSlug(requestedSlug)) {
+      url.pathname = "/players";
+      return NextResponse.redirect(url, 308);
+    }
   }
 
   const requestHeaders = new Headers(request.headers);

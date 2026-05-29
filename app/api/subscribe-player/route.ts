@@ -15,21 +15,8 @@ export async function POST(request: Request) {
 
     const requestedPlayer = String(body.playerSlug || body.playerName || "");
     const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedPlayer);
-
-    if (!canonicalPlayerSlug) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Unknown player",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    const playerSlug = canonicalPlayerSlug;
-    const playerName = players[canonicalPlayerSlug].name;
+    const playerSlug = canonicalPlayerSlug || "";
+    const playerName = canonicalPlayerSlug ? players[canonicalPlayerSlug].name : "";
     const source = String(body.source || "player-page");
 
     if (!email.includes("@")) {
@@ -37,6 +24,18 @@ export async function POST(request: Request) {
         {
           ok: false,
           message: "Invalid email",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (!canonicalPlayerSlug) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Unknown player",
         },
         {
           status: 400,

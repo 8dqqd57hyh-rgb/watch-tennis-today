@@ -1,4 +1,5 @@
 import { players, type PlayerSlug } from "./players";
+export { players };
 
 export function normalizePlayerName(name: string) {
   return String(name || "")
@@ -37,11 +38,35 @@ const canonicalNameToSlug = new Map<string, PlayerSlug>(
   })
 );
 
+export function hasInitialOnlyName(nameOrSlug: string) {
+  return /(^|\s|-)\p{L}\.(?=\s|-|$)/u.test(String(nameOrSlug || ""));
+}
+
+export function looksLikeUnverifiedDoublesSlug(nameOrSlug: string) {
+  const raw = String(nameOrSlug || "").trim();
+  const slug = playerSlug(raw);
+
+  // API feeds sometimes expose doubles teams as "surname-surname" instead of
+  // "surname/surname". If it is not in the canonical players list, do not let
+  // it enter the singles player pipeline.
+  return /^([a-z]{3,})-([a-z]{3,})$/.test(slug);
+}
+
+export function isSafePlayerCandidate(nameOrSlug: string) {
+  const raw = String(nameOrSlug || "").trim();
+  if (!raw) return false;
+  if (isDoublesTeam(raw)) return false;
+  if (hasInitialOnlyName(raw)) return false;
+
+  return true;
+}
+
 export function getCanonicalPlayerSlug(nameOrSlug: string): PlayerSlug | null {
   const raw = String(nameOrSlug || "").trim();
   if (!raw) return null;
 
   if (raw in players) return raw as PlayerSlug;
+  if (!isSafePlayerCandidate(raw)) return null;
 
   const normalized = normalizePlayerName(raw.replace(/-/g, " "));
   return canonicalNameToSlug.get(normalized) ?? null;
@@ -111,5 +136,3 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     return aliases.some((alias) => normalized === alias || normalized.includes(alias));
   });
 }
-
-export { players };
