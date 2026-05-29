@@ -177,6 +177,9 @@ export async function generateMetadata({
       : { index: false, follow: true },
     title: `${playerName} Matches Today & TV Schedule | Watch Tennis Today`,
    description: `Follow ${playerName} matches today with live tennis schedules, official broadcaster information, tournament coverage and TV viewing details.`,
+    alternates: {
+      canonical: `https://watchtennistoday.com/player/${pageSlug}`,
+    },
     openGraph: {
       title: `${playerName} Matches Today & TV Schedule`,
       description: `Follow ${playerName} matches, tournament coverage and official tennis viewing information.`,
@@ -279,6 +282,50 @@ const playerMatches = allMatches
   .sort(sortMatchesByUserIntent);
 
   const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
+  const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
+  const nextMatch = playerMatches[0];
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: playerName,
+    url: `https://watchtennistoday.com/player/${pageSlug}`,
+    sameAs: [],
+    description: `${playerName} tennis match schedule, official viewing information and related player coverage on Watch Tennis Today.`,
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `When is ${playerName} playing next?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: nextMatch
+            ? `${playerName}'s next listed match on this page is ${nextMatch.player1} vs ${nextMatch.player2} at ${nextMatch.tournament}. Start times can change during tournaments, so fans should confirm the official order of play before the match.`
+            : `No upcoming match is currently listed for ${playerName}. Tennis schedules can change quickly because of draws, weather delays and withdrawals.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Where can I watch ${playerName} live?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Legal viewing options for ${playerName} depend on the tournament and your country. Use official broadcasters, licensed streaming platforms and country viewing guides before using any stream.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Which players are similar to ${playerName}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `This page links to related ${sameTourLabel} player schedules and popular tennis profiles so fans can continue browsing match pages without duplicate content.`,
+        },
+      },
+    ],
+  };
 
   return (
     <main className="max-w-4xl mx-auto p-4">
@@ -290,7 +337,7 @@ const playerMatches = allMatches
   <span>/</span>
 
   <a
-    href="/live-tennis"
+    href="/players"
     className="hover:text-white"
   >
     Players
@@ -595,6 +642,16 @@ const playerMatches = allMatches
      
       <script
   type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+/>
+
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+/>
+
+      <script
+  type="application/ld+json"
   dangerouslySetInnerHTML={{
     __html: JSON.stringify({
       "@context": "https://schema.org",
@@ -613,7 +670,7 @@ const playerMatches = allMatches
           "@type": "ListItem",
           position: 2,
           name: "Players",
-          item: "https://watchtennistoday.com/live-tennis",
+          item: "https://watchtennistoday.com/players",
         },
 
         {
