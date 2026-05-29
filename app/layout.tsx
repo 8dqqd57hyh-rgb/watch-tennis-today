@@ -77,17 +77,30 @@ export default function RootLayout({
   dangerouslySetInnerHTML={{
     __html: JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      name: "Watch Tennis Today",
-      url: "https://watchtennistoday.com",
-      description:
-        "Live tennis matches, schedules, broadcasters and streaming information for ATP, WTA and Grand Slam tournaments.",
-      potentialAction: {
-        "@type": "SearchAction",
-        target:
-          "https://watchtennistoday.com/?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://watchtennistoday.com/#website",
+          name: "Watch Tennis Today",
+          url: "https://watchtennistoday.com",
+          description:
+            "Live tennis matches, schedules, broadcasters and streaming information for ATP, WTA and Grand Slam tournaments.",
+          publisher: {
+            "@id": "https://watchtennistoday.com/#organization",
+          },
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://watchtennistoday.com/#organization",
+          name: "Watch Tennis Today",
+          url: "https://watchtennistoday.com",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://watchtennistoday.com/icon.png",
+          },
+          sameAs: [],
+        },
+      ],
     }),
   }}
 />

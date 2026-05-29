@@ -1500,49 +1500,7 @@ may provide tennis coverage in your country. Coverage includes popular
         </section>
          
       </div>
-      <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-
-      "@graph": [
-        {
-          "@type": "WebSite",
-
-          name: "Watch Tennis Today",
-
-          url: "https://watchtennistoday.com",
-
-          description:
-            "Live tennis matches, streaming schedules, ATP, WTA and Grand Slam tennis coverage.",
-
-          potentialAction: {
-            "@type": "SearchAction",
-
-            target:
-              "https://watchtennistoday.com/search?q={search_term_string}",
-
-            "query-input": "required name=search_term_string",
-          },
-        },
-
-        {
-          "@type": "Organization",
-
-          name: "Watch Tennis Today",
-
-          url: "https://watchtennistoday.com",
-
-          logo:
-            "https://watchtennistoday.com/icon.png",
-
-          sameAs: [],
-        },
-      ],
-    }),
-  }}
-/>
+    
     </main>
   );
 }
