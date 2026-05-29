@@ -54,7 +54,7 @@ function getPointScoreDisplay(match: Match) {
   const pointScore = String(match.pointScore || "").trim();
 
   if (!pointScore || pointScore === "-" || pointScore === "0-0") {
-    if (isLive(match.status)) return "Awaiting next point";
+    if (isLive(match.status)) return "Waiting for next point";
     return "Not live";
   }
 
@@ -62,6 +62,10 @@ function getPointScoreDisplay(match: Match) {
 }
 
 function hasLivePointScore(match: Match) {
+  return isLive(match.status);
+}
+
+function hasPointValue(match: Match) {
   const pointScore = String(match.pointScore || "").trim();
 
   return Boolean(pointScore && pointScore !== "-" && pointScore !== "0-0");
@@ -178,9 +182,15 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
     async function refreshMatch() {
       try {
         setIsRefreshing(true);
-        const response = await fetch(`/api/matches?matchId=${encodeURIComponent(initialMatch.id)}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `/api/matches?matchId=${encodeURIComponent(initialMatch.id)}&_=${Date.now()}`,
+          {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          }
+        );
 
         if (!response.ok) throw new Error("Match update request failed");
 
@@ -203,12 +213,12 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       } finally {
         if (isMounted) {
           setIsRefreshing(false);
-          timeoutId = setTimeout(refreshMatch, 30000);
+          refreshMatch();
         }
       }
     }
 
-    timeoutId = setTimeout(refreshMatch, 30000);
+    timeoutId = setTimeout(refreshMatch, 15000);
 
     return () => {
       isMounted = false;
@@ -238,13 +248,22 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
             <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Current game</p>
             {hasLivePointScore(match) ? (
               <span className="rounded-full bg-red-500/20 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-red-200">
-                Points live
+                Points enabled
               </span>
-            ) : null}
+            ) : (
+              <span className="rounded-full bg-zinc-800 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-400">
+                Not live
+              </span>
+            )}
           </div>
-          <p className="break-words text-3xl font-black leading-tight text-white sm:text-4xl" aria-live="polite">
+          <p className={`${hasPointValue(match) ? "text-3xl sm:text-4xl" : "text-lg sm:text-xl"} break-words font-black leading-tight text-white`} aria-live="polite">
             {getPointScoreDisplay(match)}
           </p>
+          {hasLivePointScore(match) && !hasPointValue(match) ? (
+            <p className="mt-2 text-xs leading-relaxed text-zinc-500">
+              Live point updates are enabled and will appear here as soon as the feed exposes the current in-game score.
+            </p>
+          ) : null}
         </section>
       </div>
 

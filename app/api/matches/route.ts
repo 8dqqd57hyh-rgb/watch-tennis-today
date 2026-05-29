@@ -169,36 +169,135 @@ function normalizePointScoreValue(value?: string | null) {
   return `${first}-${second}`;
 }
 
-function getLatestPointByPointScore(match: ApiTennisMatch) {
+function isCompletedPointByPointGame(game: NonNullable<ApiTennisMatch["pointbypoint"]>[number]) {
+  return Boolean(
+    String(game.serve_winner || "").trim() ||
+      String(game.serve_lost || "").trim()
+  );
+}
+
+function parseScoreNumber(value?: string | null) {
+  const parsed = Number.parseInt(String(value ?? "").trim(), 10);
+
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getCurrentSetScore(match: ApiTennisMatch) {
+  const sets = match.scores || [];
+
+  for (let index = sets.length - 1; index >= 0; index -= 1) {
+    const first = parseScoreNumber(sets[index]?.score_first);
+    const second = parseScoreNumber(sets[index]?.score_second);
+    const setNumber = parseScoreNumber(sets[index]?.score_set) ?? index + 1;
+
+    if (first === null || second === null) continue;
+
+    return { first, second, setNumber };
+  }
+
+  return null;
+}
+
+function getExpectedCurrentGame(match: ApiTennisMatch) {
+  const currentSet = getCurrentSetScore(match);
+
+  if (!currentSet) return null;
+
+  return {
+    setNumber: currentSet.setNumber,
+    gameNumber: currentSet.first + currentSet.second + 1,
+  };
+}
+
+function getPointScoreFromGame(
+  game: NonNullable<ApiTennisMatch["pointbypoint"]>[number]
+) {
+  const points = game.points || [];
+
+  for (let pointIndex = points.length - 1; pointIndex >= 0; pointIndex -= 1) {
+    const pointScore = normalizePointScoreValue(points[pointIndex]?.score);
+    if (pointScore) return pointScore;
+  }
+
+  return normalizePointScoreValue(game.score);
+}
+
+function getLatestLivePointByPointScore(match: ApiTennisMatch) {
   const games = match.pointbypoint || [];
+  const expectedCurrentGame = getExpectedCurrentGame(match);
 
-  for (let gameIndex = games.length - 1; gameIndex >= 0; gameIndex -= 1) {
-    const game = games[gameIndex];
-    const points = game.points || [];
+  if (!games.length) return null;
 
-    for (let pointIndex = points.length - 1; pointIndex >= 0; pointIndex -= 1) {
-      const pointScore = normalizePointScoreValue(points[pointIndex]?.score);
-      if (pointScore) return pointScore;
-    }
+  const sortedGames = [...games].sort((left, right) => {
+    const leftSet = parseScoreNumber(left.set_number) ?? 0;
+    const rightSet = parseScoreNumber(right.set_number) ?? 0;
+    const leftGame = parseScoreNumber(left.number_game) ?? 0;
+    const rightGame = parseScoreNumber(right.number_game) ?? 0;
+
+    if (leftSet !== rightSet) return rightSet - leftSet;
+    return rightGame - leftGame;
+  });
+
+  const openGames = sortedGames.filter((game) => !isCompletedPointByPointGame(game));
+
+  // Best case: API exposes an unfinished point-by-point item for the current game.
+  // API-Tennis can number the active game as either current games sum or sum + 1,
+  // depending on the endpoint/update phase, so accept a small window instead of
+  // cutting points completely.
+  if (expectedCurrentGame) {
+    const candidate = openGames.find((game) => {
+      const setNumber = parseScoreNumber(game.set_number);
+      const gameNumber = parseScoreNumber(game.number_game);
+
+      return (
+        setNumber === expectedCurrentGame.setNumber &&
+        gameNumber !== null &&
+        Math.abs(gameNumber - expectedCurrentGame.gameNumber) <= 1
+      );
+    });
+
+    const candidateScore = candidate ? getPointScoreFromGame(candidate) : null;
+    if (candidateScore) return candidateScore;
+  }
+
+  // Fallback: use the latest unfinished live game. This keeps points enabled when
+  // the REST payload does not include enough set/game metadata to match exactly,
+  // while still avoiding clearly completed stale games.
+  for (const game of openGames) {
+    const pointScore = getPointScoreFromGame(game);
+    if (pointScore) return pointScore;
+  }
+
+  return null;
+}
+
+function getDirectLivePointScore(match: ApiTennisMatch) {
+  const possibleValues = [
+    // API-Tennis commonly exposes the active 15/30/40 score here.
+    // Do not use this field as the match/set score when `scores` exists;
+    // for live matches it is the current game point score.
+    match.event_game_result,
+    match.event_point_result,
+    match.event_current_result,
+    match.event_live_score,
+  ];
+
+  for (const value of possibleValues) {
+    const pointScore = normalizePointScoreValue(value);
+    if (pointScore) return pointScore;
   }
 
   return null;
 }
 
 function formatPointScore(match: ApiTennisMatch) {
-  const livePointByPointScore = getLatestPointByPointScore(match);
+  if (normalizeStatus(match) !== "LIVE") return null;
+
+  const directLivePointScore = getDirectLivePointScore(match);
+  if (directLivePointScore) return directLivePointScore;
+
+  const livePointByPointScore = getLatestLivePointByPointScore(match);
   if (livePointByPointScore) return livePointByPointScore;
-
-  const candidates = [
-    match.event_point_result,
-    match.event_current_result,
-    match.event_live_score,
-  ];
-
-  for (const candidate of candidates) {
-    const pointScore = normalizePointScoreValue(candidate);
-    if (pointScore) return pointScore;
-  }
 
   return null;
 }
@@ -445,15 +544,17 @@ const dateStart = formatDate(dateStartDate);
 const dateStop = formatDate(dateStopDate);
 
   try {
+    const cacheBust = `&_=${Date.now()}`;
+
     const [liveMatches, fixtureMatches] = await Promise.all([
   fetchApiTennis(
     "get_livescore",
     apiKey,
     matchId
-      ? `&match_key=${encodeURIComponent(matchId)}&timezone=Europe/Warsaw`
+      ? `&match_key=${encodeURIComponent(matchId)}&timezone=Europe/Warsaw${cacheBust}`
       : resolvedPlayerKey
-        ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw`
-        : `&timezone=Europe/Warsaw`
+        ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw${cacheBust}`
+        : `&timezone=Europe/Warsaw${cacheBust}`
   ),
   fetchApiTennis(
     "get_fixtures",
@@ -473,13 +574,16 @@ console.log(
   )
 );
 
-    const allMatches: ApiTennisMatch[] = [...liveMatches, ...fixtureMatches];
+    // Important: the live endpoint contains the freshest point-by-point payload.
+    // Fixtures can contain the same event_key with older/limited data, so merge fixtures first
+    // and live matches last. That lets the live match object win in the Map below.
+    const allMatches: ApiTennisMatch[] = [...fixtureMatches, ...liveMatches];
     if (allMatches.length === 0) {
  
 }
 
     const uniqueMatches = Array.from(
-      new Map(allMatches.map((match) => [match.event_key, match])).values()
+      new Map(allMatches.map((match) => [String(match.event_key), match])).values()
     );
 
     const filteredMatches = playerName
@@ -534,7 +638,14 @@ console.log(
 
     if (matchId) {
       return NextResponse.json(
-        mappedMatches.filter((match) => String(match.id) === String(matchId))
+        mappedMatches.filter((match) => String(match.id) === String(matchId)),
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "CDN-Cache-Control": "no-store",
+            "Vercel-CDN-Cache-Control": "no-store",
+          },
+        }
       );
     }
 
@@ -558,7 +669,13 @@ console.log(
         );
       });
 
-    return NextResponse.json(matches);
+    return NextResponse.json(matches, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store",
+      },
+    });
   } catch (error) {
   console.error("Failed to fetch tennis matches:", error);
 
