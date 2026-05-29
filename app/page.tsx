@@ -500,6 +500,34 @@ tennis viewing information.
 <BroadcastFinder />
 
         <RevenueConversionPanel context="homepage" />
+
+<section className="mb-12 rounded-[2.5rem] border border-cyan-400/40 bg-gradient-to-br from-cyan-950/30 to-black p-8">
+  <div className="flex flex-wrap items-center gap-3 mb-5">
+    <span className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-black text-black">
+      📺 Streaming decision guide
+    </span>
+
+    <span className="text-sm text-zinc-400">
+      Compare legal services before subscribing
+    </span>
+  </div>
+
+  <h2 className="text-4xl font-black mb-4">
+    Not sure which service shows tennis today?
+  </h2>
+
+  <p className="max-w-3xl text-zinc-300 leading-7 mb-6">
+    Tennis coverage is split between ATP, WTA, Grand Slam and country-specific broadcasters. Use the streaming services guide to choose the right legal option and avoid paying for the wrong platform.
+  </p>
+
+  <a
+    href="/tennis-streaming-services"
+    className="inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black hover:bg-cyan-300"
+  >
+    Compare tennis streaming services →
+  </a>
+</section>
+
 <section className="mb-12 rounded-[2.5rem] border border-lime-400/40 bg-gradient-to-br from-lime-950/30 to-black p-8">
   <div className="flex flex-wrap items-center gap-3 mb-5">
     <span className="rounded-full bg-lime-400 px-4 py-2 text-sm font-black text-black">

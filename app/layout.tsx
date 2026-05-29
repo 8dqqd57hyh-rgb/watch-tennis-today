@@ -157,6 +157,13 @@ export default function RootLayout({
         </a>
 
         <a
+          href="/tennis-streaming-services"
+          className="hidden xl:inline text-cyan-300 hover:text-cyan-200"
+        >
+          Services
+        </a>
+
+        <a
           href="/tennis-live-alerts"
           className="hidden xl:inline text-lime-300 hover:text-lime-200"
         >
@@ -283,6 +290,12 @@ export default function RootLayout({
   className="hover:text-white transition-colors"
 >
   Tennis TV Not Working
+</a>
+<a
+  href="/tennis-streaming-services"
+  className="hover:text-white transition-colors"
+>
+  Tennis Streaming Services
 </a>
 <a
   href="/authors/watch-tennis-today"
