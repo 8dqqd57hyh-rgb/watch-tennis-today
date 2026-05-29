@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabase } from "@/app/lib/supabase";
+import { getCanonicalPlayerSlug, players } from "@/data/playerSlugs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -122,7 +123,15 @@ export async function GET(request: Request) {
     let skipped = 0;
 
     for (const subscription of (subscriptions || []) as Subscription[]) {
-      const matches = await fetchPlayerMatches(subscription.player_name);
+      const canonicalPlayerSlug = getCanonicalPlayerSlug(subscription.player_slug || subscription.player_name);
+
+      if (!canonicalPlayerSlug) {
+        skipped++;
+        continue;
+      }
+
+      const canonicalPlayerName = players[canonicalPlayerSlug].name;
+      const matches = await fetchPlayerMatches(canonicalPlayerName);
 
       for (const match of matches.slice(0, 3)) {
         const alertType = getAlertType(match);
@@ -136,7 +145,7 @@ export async function GET(request: Request) {
           .from("player_alert_logs")
           .insert({
             email: subscription.email,
-            player_slug: subscription.player_slug,
+            player_slug: canonicalPlayerSlug,
             match_id: match.id,
             alert_type: alertType,
           });
@@ -154,8 +163,8 @@ export async function GET(request: Request) {
 const resendResult = await resend.emails.send({
   from: "Watch Tennis Today <alerts@watchtennistoday.com>",
   to: recipientEmail,
-  subject: getSubject(subscription.player_name, match, alertType),
-  html: getEmailHtml(subscription.player_name, subscription.player_slug, match),
+  subject: getSubject(canonicalPlayerName, match, alertType),
+  html: getEmailHtml(canonicalPlayerName, canonicalPlayerSlug, match),
 });
 
 console.log("RESEND RESULT:", resendResult);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabase } from "@/app/lib/supabase";
+import { getCanonicalPlayerSlug, players } from "@/data/playerSlugs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -12,8 +13,23 @@ export async function POST(request: Request) {
       .trim()
       .toLowerCase();
 
-    const playerSlug = String(body.playerSlug || "");
-    const playerName = String(body.playerName || "");
+    const requestedPlayer = String(body.playerSlug || body.playerName || "");
+    const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedPlayer);
+
+    if (!canonicalPlayerSlug) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Unknown player",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const playerSlug = canonicalPlayerSlug;
+    const playerName = players[canonicalPlayerSlug].name;
     const source = String(body.source || "player-page");
 
     if (!email.includes("@")) {

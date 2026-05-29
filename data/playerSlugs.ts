@@ -111,3 +111,5 @@ export function matchContainsExactPlayer(match: any, slug: string) {
     return aliases.some((alias) => normalized === alias || normalized.includes(alias));
   });
 }
+
+export { players };

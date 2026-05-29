@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isKnownPlayerSlug } from "@/data/playerSlugs";
 
 export function middleware(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
@@ -14,6 +15,16 @@ export function middleware(request: NextRequest) {
 
     const url = request.nextUrl.clone();
     url.pathname = `/player/${normalizedSlug}`;
+    return NextResponse.redirect(url, 308);
+  }
+
+  // Final safety net: no uncatalogued player slug should return a 404 page.
+  // Old generated links and doubles-team slugs such as /player/detiuc-khromacheva
+  // are redirected to the player hub instead of creating low-quality indexed URLs.
+  if (playerPathMatch && !isKnownPlayerSlug(playerPathMatch[1])) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/players";
+    url.searchParams.set("from", "invalid-player");
     return NextResponse.redirect(url, 308);
   }
 
