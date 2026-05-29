@@ -46,10 +46,11 @@ export function looksLikeUnverifiedDoublesSlug(nameOrSlug: string) {
   const raw = String(nameOrSlug || "").trim();
   const slug = playerSlug(raw);
 
-  // API feeds sometimes expose doubles teams as "surname-surname" instead of
-  // "surname/surname". If it is not in the canonical players list, do not let
-  // it enter the singles player pipeline.
-  return /^([a-z]{3,})-([a-z]{3,})$/.test(slug);
+  // API feeds sometimes expose doubles teams or match fragments as hyphenated
+  // surname chains: "detiuc-khromacheva", "moutet-van-assche",
+  // "bennani-lopez-morillo". If such slug is not canonical, do not let it
+  // enter the player page pipeline.
+  return slug.includes("-");
 }
 
 export function isSafePlayerCandidate(nameOrSlug: string) {
@@ -81,9 +82,12 @@ export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {
   if (isDoublesTeam(raw)) return true;
   if (hasInitialOnlyName(raw) || /(^|-)[a-z]\.-/.test(raw.toLowerCase())) return true;
 
-  // Common bad links generated from doubles teams or match fragments: surname-surname.
-  // Do not block canonical two-word players such as jannik-sinner.
-  if (!getCanonicalPlayerSlug(raw) && /^([a-z]{3,})-([a-z]{3,})$/.test(slug)) {
+  // Common bad links generated from doubles teams or match fragments are
+  // non-canonical hyphenated slugs. Examples seen in production logs:
+  // /player/berkieta-nagoudi, /player/moutet-van-assche,
+  // /player/bennani-lopez-morillo. Canonical players such as jannik-sinner
+  // are protected by getCanonicalPlayerSlug(raw).
+  if (!getCanonicalPlayerSlug(raw) && looksLikeUnverifiedDoublesSlug(raw)) {
     return true;
   }
 
