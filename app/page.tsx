@@ -8,7 +8,7 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
-import { safePlayerUrl } from "@/data/playerSlugs";
+import { safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
   name: string;
@@ -138,10 +138,7 @@ function matchSlug(match: Match) {
 }
 
 function splitPlayers(name: string) {
-  return name
-    .split("/")
-    .map((player) => player.trim())
-    .filter(Boolean);
+  return verifiedPlayersFromMatchSide(name);
 }
 
 function hasPriorityPlayer(match: Match) {

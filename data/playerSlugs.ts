@@ -140,6 +140,55 @@ export function isKnownPlayerSlug(slug: string) {
   return Boolean(getCanonicalPlayerSlug(slug));
 }
 
+
+export function normalizeMatchParticipantName(name?: string | null) {
+  const raw = String(name || "")
+    .replace(/ /g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!raw) return null;
+  if (isDoublesTeam(raw)) return null;
+
+  const cleaned = raw
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\b(?:ATP|WTA|ITF|Challenger|Added|Unknown|TBD|Bye)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return null;
+  if (hasInitialOnlyName(cleaned)) return null;
+  if (/^[a-z]{1,4}\.?$/i.test(cleaned)) return null;
+  if (!/[a-z]/i.test(cleaned)) return null;
+
+  return cleaned;
+}
+
+export function verifiedPlayerNameForLink(nameOrSlug?: string | null) {
+  const cleaned = normalizeMatchParticipantName(nameOrSlug);
+  if (!cleaned) return null;
+
+  const canonicalSlug = getCanonicalPlayerSlug(cleaned);
+  if (!canonicalSlug) return null;
+
+  return players[canonicalSlug].name;
+}
+
+export function verifiedPlayerUrl(nameOrSlug?: string | null) {
+  const cleaned = normalizeMatchParticipantName(nameOrSlug);
+  if (!cleaned) return null;
+
+  return safePlayerUrl(cleaned);
+}
+
+export function verifiedPlayersFromMatchSide(name?: string | null) {
+  const raw = String(name || "").trim();
+  if (!raw || isDoublesTeam(raw)) return [];
+
+  const verifiedName = verifiedPlayerNameForLink(raw);
+  return verifiedName ? [verifiedName] : [];
+}
+
 export function safePlayerUrl(nameOrSlug: string) {
   const canonicalSlug = getCanonicalPlayerSlug(nameOrSlug);
   return canonicalSlug ? `/player/${canonicalSlug}` : null;

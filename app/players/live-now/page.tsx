@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl } from "@/data/playerSlugs";
+import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl, verifiedPlayerNameForLink } from "@/data/playerSlugs";
 
 type Match = {
   id?: string;
@@ -97,7 +97,7 @@ function normalizeApiPlayerName(name?: string) {
   // such as "a", "ako", "ano", "asile" as live players.
   if (tokens.length < 2 && !safePlayerUrl(cleaned)) return null;
 
-  return toTitleCase(cleaned);
+  return verifiedPlayerNameForLink(cleaned);
 }
 
 function playerHref(displayName: string) {

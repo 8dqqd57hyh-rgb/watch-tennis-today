@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
-import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
+import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 export const dynamic = "force-dynamic";
 
 type Match = {
@@ -82,10 +82,7 @@ function slugify(text: string) {
 }
 
 function splitPlayers(name: string) {
-  return name
-    .split("/")
-    .map((player) => player.trim())
-    .filter(Boolean);
+  return verifiedPlayersFromMatchSide(name);
 }
 
 function containsBadPlaceholder(text: string) {
