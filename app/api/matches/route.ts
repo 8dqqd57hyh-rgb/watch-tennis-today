@@ -81,6 +81,10 @@ const hasScore =
     match.event_game_result !== "0-0"
   );
 
+  if (isPastUnplayedFixture(match, hasScore)) {
+    return "EXPIRED";
+  }
+
   if (
     startsInFuture &&
     !hasScore &&
@@ -302,11 +306,43 @@ function formatPointScore(match: ApiTennisMatch) {
   return null;
 }
 
+
+function formatSetScorePart(value?: string | null) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return { games: "", tiebreak: "" };
+
+  const [games, tiebreak] = raw.split(".");
+
+  return {
+    games: games || raw,
+    tiebreak: tiebreak || "",
+  };
+}
+
+function formatSetScore(firstValue?: string | null, secondValue?: string | null) {
+  const first = formatSetScorePart(firstValue);
+  const second = formatSetScorePart(secondValue);
+
+  if (!first.games || !second.games) return null;
+
+  const baseScore = `${first.games}-${second.games}`;
+
+  if (first.tiebreak || second.tiebreak) {
+    return `${baseScore} (${first.tiebreak || "0"}-${second.tiebreak || "0"})`;
+  }
+
+  return baseScore;
+}
+
 function formatScore(match: ApiTennisMatch) {
   if (match.scores && match.scores.length > 0) {
-    return match.scores
-      .map((set) => `${set.score_first}-${set.score_second}`)
-      .join(", ");
+    const setScores = match.scores
+      .map((set) => formatSetScore(set.score_first, set.score_second))
+      .filter(Boolean);
+
+    if (setScores.length > 0) {
+      return setScores.join(", ");
+    }
   }
 
   if (match.event_final_result && match.event_final_result !== "-") {
@@ -324,6 +360,24 @@ function getStartTime(match: ApiTennisMatch) {
   if (!match.event_date || !match.event_time) return null;
 
   return `${match.event_date}T${match.event_time}:00`;
+}
+
+function isPastUnplayedFixture(match: ApiTennisMatch, hasScore: boolean) {
+  if (hasScore || match.event_live === "1") return false;
+
+  const startTime = getStartTime(match);
+  if (!startTime) return false;
+
+  const startDate = new Date(startTime);
+  if (Number.isNaN(startDate.getTime())) return false;
+
+  // API-Tennis sometimes keeps old fixtures as Scheduled/Upcoming even after the
+  // match has finished or disappeared from the live feed. Hide those stale rows
+  // instead of showing dead tournament cards. Tennis delays can be long, so this
+  // window is intentionally generous.
+  const staleAfterMs = 12 * 60 * 60 * 1000;
+
+  return Date.now() - startDate.getTime() > staleAfterMs;
 }
 
 function isGrandSlamTournament(tournament: string) {
@@ -654,7 +708,8 @@ console.log(
         (match) =>
           match.status !== "FINISHED" &&
           match.status !== "CANCELLED" &&
-          match.status !== "RETIRED"
+          match.status !== "RETIRED" &&
+          match.status !== "EXPIRED"
       )
       .sort((a, b) => {
         if (a.status === "LIVE" && b.status !== "LIVE") return -1;

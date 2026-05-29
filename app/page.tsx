@@ -137,8 +137,60 @@ function matchSlug(match: Match) {
   return `${readablePart}-${numericId}`;
 }
 
+function isRealPlayerSide(value?: string) {
+  const name = String(value || "").trim();
+
+  if (!name) return false;
+
+  const normalized = name.toLowerCase();
+
+  const blockedValues = [
+    "unknown player",
+    "unknown",
+    "tbd",
+    "bye",
+    "vs",
+    "-",
+    "—",
+  ];
+
+  if (blockedValues.includes(normalized)) return false;
+
+  // API-Tennis sometimes returns placeholder-like sides made only of separators.
+  return /[a-z]/i.test(name);
+}
+
 function splitPlayers(name: string) {
   return verifiedPlayersFromMatchSide(name);
+}
+
+function displayablePlayers(name?: string) {
+  const rawName = String(name || "").trim();
+
+  if (!isRealPlayerSide(rawName)) return [];
+
+  const verifiedPlayers = splitPlayers(rawName)
+    .map((player) => player.trim())
+    .filter(isRealPlayerSide);
+
+  if (verifiedPlayers.length > 0) {
+    return verifiedPlayers;
+  }
+
+  const fallbackName = displayPlayerName(rawName).trim();
+
+  return isRealPlayerSide(fallbackName) ? [fallbackName] : [];
+}
+
+function hasRenderablePlayers(match: Match) {
+  return (
+    displayablePlayers(match.player1).length > 0 &&
+    displayablePlayers(match.player2).length > 0
+  );
+}
+
+function getHomepageMatches(matches: Match[]) {
+  return matches.filter(hasRenderablePlayers);
 }
 
 function hasPriorityPlayer(match: Match) {
@@ -151,8 +203,8 @@ function hasPriorityPlayer(match: Match) {
 
 function uniquePlayers(matches: Match[]) {
   const players = matches.flatMap((match) => [
-    ...splitPlayers(match.player1),
-    ...splitPlayers(match.player2),
+    ...displayablePlayers(match.player1),
+    ...displayablePlayers(match.player2),
   ]);
 
   return [...new Set(players)]
@@ -256,9 +308,10 @@ async function subscribeToFinals(
     loadMatches();
   }, []);
 
-  const seoPlayers = uniquePlayers(matches);
+  const homepageMatches = getHomepageMatches(matches);
+  const seoPlayers = uniquePlayers(homepageMatches);
 
-  const filteredMatches = matches.filter((match) => {
+  const filteredMatches = homepageMatches.filter((match) => {
     const matchesFilter =
       selectedFilter === "ALL" ||
       match.category === selectedFilter ||
@@ -276,11 +329,11 @@ async function subscribeToFinals(
 
   const livePlayers = [
     ...new Set(
-      matches
+      homepageMatches
         .filter((match) => match.status === "LIVE")
         .flatMap((match) => [
-          ...splitPlayers(match.player1),
-          ...splitPlayers(match.player2),
+          ...displayablePlayers(match.player1),
+          ...displayablePlayers(match.player2),
         ])
         .map((player) => player.trim())
         .filter(Boolean)
@@ -300,11 +353,11 @@ async function subscribeToFinals(
     return a.localeCompare(b);
   });
 
-  const topLiveMatches = matches
+  const topLiveMatches = homepageMatches
     .filter((match) => match.status === "LIVE" && hasPriorityPlayer(match))
     .slice(0, 4);
 
-  const upcomingFinals = matches
+  const upcomingFinals = homepageMatches
   .filter((match) => {
     const category = (match.category || "").toLowerCase();
     const round = (match.round || "").toLowerCase();
@@ -354,12 +407,12 @@ async function subscribeToFinals(
 
     const featuredMatch =
   topLiveMatches[0] ||
-  matches.find(
+  homepageMatches.find(
     (match) =>
       match.category === "ATP" ||
       match.category === "WTA"
   ) ||
-  matches[0];
+  homepageMatches[0];
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -493,9 +546,9 @@ tennis viewing information.
     official broadcaster and streaming platform resources only.
   </p>
 </div>
-<HomepageGrowthEngine matches={matches} />
-<TodaysTennisHub matches={matches} />
-<BestMatchesTodayEngine matches={matches} />
+<HomepageGrowthEngine matches={homepageMatches} />
+<TodaysTennisHub matches={homepageMatches} />
+<BestMatchesTodayEngine matches={homepageMatches} />
 <BroadcastFinder />
 
         <RevenueConversionPanel context="homepage" />
@@ -981,7 +1034,7 @@ tennis viewing information.
   </p>
 
   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-    {matches
+    {homepageMatches
       .filter(
         (match) =>
           match.status !== "LIVE" &&
@@ -1023,7 +1076,7 @@ tennis viewing information.
       ))}
   </div>
 </section>
-            {matches.length > 0 && (
+            {homepageMatches.length > 0 && (
               <div className="mb-12">
                 <h2 className="text-3xl font-black mb-5">
                   🔥 Trending Tennis Matches
@@ -1034,7 +1087,7 @@ tennis viewing information.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {matches
+                  {homepageMatches
                     .filter(
                       (match) =>
                         match.status === "LIVE" ||
@@ -1251,11 +1304,11 @@ tennis viewing information.
 
                 <div className="space-y-3 mb-6">
                   <div className="flex flex-wrap gap-x-2 gap-y-1">
-                    {splitPlayers(match.player1).map((player, index) => {
+                    {displayablePlayers(match.player1).map((player, index, players) => {
                       const href = playerUrl(player);
 
                       return (
-                        <span key={player} className="text-2xl font-bold">
+                        <span key={`${match.id}-p1-${player}`} className="text-2xl font-bold">
                           {href ? (
                             <a href={href} className="hover:text-green-400 transition-colors">
                               {player}
@@ -1264,7 +1317,7 @@ tennis viewing information.
                             <span>{player}</span>
                           )}
 
-                          {index < splitPlayers(match.player1).length - 1 && (
+                          {index < players.length - 1 && (
                             <span className="text-zinc-500"> /</span>
                           )}
                         </span>
@@ -1275,11 +1328,11 @@ tennis viewing information.
                   <div className="text-zinc-500 font-semibold">VS</div>
 
                   <div className="flex flex-wrap gap-x-2 gap-y-1">
-                    {splitPlayers(match.player2).map((player, index) => {
+                    {displayablePlayers(match.player2).map((player, index, players) => {
                       const href = playerUrl(player);
 
                       return (
-                        <span key={player} className="text-2xl font-bold">
+                        <span key={`${match.id}-p2-${player}`} className="text-2xl font-bold">
                           {href ? (
                             <a href={href} className="hover:text-green-400 transition-colors">
                               {player}
@@ -1288,7 +1341,7 @@ tennis viewing information.
                             <span>{player}</span>
                           )}
 
-                          {index < splitPlayers(match.player2).length - 1 && (
+                          {index < players.length - 1 && (
                             <span className="text-zinc-500"> /</span>
                           )}
                         </span>
