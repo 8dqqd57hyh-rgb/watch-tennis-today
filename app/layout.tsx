@@ -5,6 +5,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
 import ClickAnalytics from "@/app/components/ClickAnalytics";
+import { ADSENSE_SCRIPT_SRC } from "@/app/lib/adsense";
 
 
 export const metadata: Metadata = {
@@ -66,7 +67,7 @@ export default function RootLayout({
   async
   strategy="afterInteractive"
   crossOrigin="anonymous"
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1230772312817142"
+  src={ADSENSE_SCRIPT_SRC}
 />
 
 <Script

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ADSENSE_PUBLISHER_ID, DEFAULT_ADSENSE_SLOT } from "@/app/lib/adsense";
 
 declare global {
   interface Window {
@@ -15,10 +16,6 @@ type AdSlotProps = {
   className?: string;
 };
 
-const ADSENSE_CLIENT_ID =
-  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-1230772312817142";
-
-const DEFAULT_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT;
 
 function getFormatClass(format: NonNullable<AdSlotProps["format"]>) {
   if (format === "horizontal") {
@@ -38,7 +35,7 @@ function getFormatClass(format: NonNullable<AdSlotProps["format"]>) {
 
 export default function AdSlot({
   label = "Advertisement",
-  slot = DEFAULT_AD_SLOT,
+  slot = DEFAULT_ADSENSE_SLOT,
   format = "auto",
   className = "",
 }: AdSlotProps) {
@@ -74,7 +71,7 @@ export default function AdSlot({
       <ins
         className="adsbygoogle block"
         style={{ display: "block" }}
-        data-ad-client={ADSENSE_CLIENT_ID}
+        data-ad-client={ADSENSE_PUBLISHER_ID}
         data-ad-slot={slot}
         data-ad-format={format === "auto" ? "auto" : undefined}
         data-ad-layout={format === "fluid" ? "in-article" : undefined}
