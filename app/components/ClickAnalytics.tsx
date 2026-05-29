@@ -36,7 +36,7 @@ function isAffiliateLink(anchor: HTMLAnchorElement, url: URL) {
 
 function getLinkArea(anchor: HTMLAnchorElement) {
   return (
-    anchor.closest("header") && "header") ||
+    (anchor.closest("header") && "header") ||
     (anchor.closest("footer") && "footer") ||
     anchor.getAttribute("data-track-area") ||
     "content"
