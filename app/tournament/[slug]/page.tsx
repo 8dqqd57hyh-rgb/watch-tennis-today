@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
 
 export const dynamic = "force-dynamic";
 
@@ -179,10 +180,14 @@ export default async function Page({ params }: PageProps) {
           🎾 {tournamentName} Live Matches
         </h1>
 
-        <p className="text-zinc-300 text-lg leading-8 mb-8">
+        <p className="text-zinc-300 text-lg leading-8 mb-5">
           Watch {tournamentName} tennis matches live today with match schedules,
           TV channels, streaming information, live scores and tournament updates.
         </p>
+
+        <div className="mb-8">
+          <LocalTournamentFollowButton slug={slug} name={tournamentName} />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
           <a

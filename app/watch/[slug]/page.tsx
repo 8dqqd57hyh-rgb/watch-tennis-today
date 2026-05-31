@@ -10,6 +10,7 @@ import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch } from "@/app/lib/matchArchive";
 import LiveMatchScore from "./LiveMatchScore";
 import EmailSignup from "@/app/components/EmailSignup";
+import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 
 export const dynamic = "force-dynamic";
 
@@ -695,6 +696,19 @@ export default async function MatchPage({
               <a href={`/tournament/${tournamentSlug}`} className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
                 Tournament page
               </a>
+              <LocalMatchFollowButton
+                match={{
+                  id: match.id,
+                  player1: match.player1,
+                  player2: match.player2,
+                  tournament: match.tournament,
+                  category: match.category,
+                  status: match.status,
+                  score: match.score,
+                  startTime: match.startTime,
+                  slug: getMatchSlug(match),
+                }}
+              />
             </div>
           </section>
 

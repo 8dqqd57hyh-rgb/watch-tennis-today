@@ -128,7 +128,10 @@ export default function RootLayout({
           Players
         </a>
         <MyPlayersNavLink />
-        <a href="/my-dashboard" className="site-nav-link site-nav-link-highlight">
+        <a href="/my-feed" className="site-nav-link site-nav-link-highlight">
+          My Feed
+        </a>
+        <a href="/my-dashboard" className="site-nav-link">
           My Dashboard
         </a>
 
@@ -138,6 +141,7 @@ export default function RootLayout({
           </summary>
           <div className="site-more-panel">
             <a href="/tv-schedule">TV Schedule</a>
+            <a href="/my-feed">My Feed</a>
             <a href="/my-tournament">My Tournament</a>
             <a href="/tournament">Grand Slams</a>
             <a href="/tennis-tv-broadcast-finder">Where to Watch</a>
@@ -182,6 +186,7 @@ export default function RootLayout({
           <a href="/players" className="block hover:text-white">Players</a>
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
+          <a href="/my-feed" className="block hover:text-white">My Tennis Feed</a>
           <a href="/my-dashboard" className="block hover:text-white">My Tennis Dashboard</a>
           <a href="/my-players" className="block hover:text-white">My Players</a>
           <a href="/my-tournament" className="block hover:text-white">My Tournament</a>
