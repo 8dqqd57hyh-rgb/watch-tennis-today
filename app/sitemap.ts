@@ -389,6 +389,7 @@ const frenchOpenPages = [
   "/french-open-results",
   "/roland-garros-recap",
   "/french-open-draw",
+  "/french-open-survivors",
   "/where-to-watch-french-open",
 ];
 

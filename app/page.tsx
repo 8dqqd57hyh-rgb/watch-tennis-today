@@ -11,6 +11,7 @@ import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import EmailSignup from "@/app/components/EmailSignup";
 import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+import FrenchOpenSurvivorsBoard from "@/app/components/FrenchOpenSurvivorsBoard";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -535,6 +536,7 @@ async function subscribeToFinals(
 
 <DailyTennisLoop tournamentName="French Open" />
 <FrenchOpenConversionCluster compact title="French Open daily hub" />
+<FrenchOpenSurvivorsBoard compact />
 
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
