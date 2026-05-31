@@ -164,6 +164,7 @@ export default function RootLayout({
           <a href="/best-tennis-matches-today" className="block hover:text-white">Matches Today</a>
           <a href="/tv-schedule" className="block hover:text-white">TV Schedule</a>
           <a href="/tennis-on-tv-today" className="block hover:text-white">Tennis on TV Today</a>
+          <a href="/tennis-time-zone-converter" className="block hover:text-white">Time Zone Converter</a>
         </div>
       </div>
 

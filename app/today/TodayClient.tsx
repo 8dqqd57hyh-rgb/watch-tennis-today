@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import TennisTimeZonePlanner from "@/app/components/TennisTimeZonePlanner";
 import SpoilerFreeScoreToggle, { SpoilerSafeScore, useSpoilerFreeScores } from "@/app/components/SpoilerFreeScoreToggle";
 import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
@@ -161,6 +162,8 @@ export default function TodayPage() {
         </section>
 
         <SpoilerFreeScoreToggle enabled={spoilerFree} onChange={setSpoilerFree} />
+
+        <TennisTimeZonePlanner matches={matches} />
 
         {featuredMatch ? (
           <section className="mb-14 rounded-[2.5rem] border border-green-500 bg-gradient-to-br from-zinc-900 to-black p-8">

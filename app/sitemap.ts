@@ -211,6 +211,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/my-players",
     "/my-tournament",
     "/tennis-watchlist-today",
+    "/tennis-time-zone-converter",
     "/players",
     "/players/atp",
     "/players/wta",
