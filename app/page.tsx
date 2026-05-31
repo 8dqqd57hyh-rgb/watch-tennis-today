@@ -609,6 +609,73 @@ tennis viewing information.
   </Link>
 </div>
 
+<section className="mb-12 overflow-hidden rounded-[2.5rem] border border-emerald-400/50 bg-gradient-to-br from-emerald-950/60 via-zinc-950 to-black p-6 md:p-8 shadow-sm">
+  <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <div>
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <span className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-black text-black">
+          ⭐ Personal tennis hub
+        </span>
+        <span className="text-sm font-bold text-emerald-200">
+          Built for returning fans
+        </span>
+      </div>
+
+      <h2 className="mb-4 text-4xl font-black leading-tight md:text-5xl">
+        Follow your players from one clean dashboard
+      </h2>
+
+      <p className="mb-6 max-w-3xl text-lg leading-8 text-zinc-300">
+        Save favorite ATP and WTA players, then check live matches, next starts,
+        recent results and player pages without scanning the full schedule every day.
+      </p>
+
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href="/my-dashboard"
+          className="rounded-2xl bg-emerald-400 px-6 py-4 font-black text-black hover:bg-emerald-300"
+        >
+          Open My Dashboard →
+        </Link>
+        <Link
+          href="/my-players"
+          className="rounded-2xl border border-emerald-400/60 px-6 py-4 font-black text-emerald-100 hover:border-emerald-300 hover:text-white"
+        >
+          Manage players
+        </Link>
+      </div>
+    </div>
+
+    <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+      <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
+        <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-300">
+          Live now
+        </p>
+        <p className="mt-2 text-3xl font-black text-white">
+          {homepageMatches.filter((match) => match.status === "LIVE").length}
+        </p>
+        <p className="mt-1 text-sm text-zinc-400">matches currently active</p>
+      </div>
+
+      <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
+        <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-300">
+          Players found
+        </p>
+        <p className="mt-2 text-3xl font-black text-white">{seoPlayers.length}</p>
+        <p className="mt-1 text-sm text-zinc-400">ready to follow today</p>
+      </div>
+
+      <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
+        <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-300">
+          Faster repeat visits
+        </p>
+        <p className="mt-2 text-3xl font-black text-white">1 page</p>
+        <p className="mt-1 text-sm text-zinc-400">for your personal tennis day</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 {showHeavyHomeSections ? (
   <>
     <HomepageGrowthEngine matches={homepageMatches} />
