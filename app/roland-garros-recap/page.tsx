@@ -6,6 +6,7 @@ import FrenchOpenSeoBridge from "@/app/components/FrenchOpenSeoBridge";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
 export const dynamic = "force-dynamic";
 
@@ -500,6 +501,7 @@ export default async function RolandGarrosRecapPage() {
           )}
         </section>
 
+        <FrenchOpenStreamingDecision compact />
         <RevenueConversionPanel context="recap" tournament="Roland Garros" />
 
         <section className="mb-10 grid gap-4 md:grid-cols-5">

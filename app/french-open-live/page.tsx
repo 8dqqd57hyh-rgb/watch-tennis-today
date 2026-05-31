@@ -1,12 +1,23 @@
-import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import VpnPromo from "@/app/components/VpnPromo";
 import AuthorBox from "@/app/components/AuthorBox";
+import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
 export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
   description:
     "Follow French Open live matches today. Find Roland Garros live streams, TV channels, schedules, scores and official ways to watch tennis online.",
   alternates: { canonical: "https://watchtennistoday.com/french-open-live" },
+};
+
+
+type TennisMatch = {
+  id?: string;
+  player1?: string;
+  player2?: string;
+  tournament?: string;
+  category?: string;
+  status?: string;
+  startTime?: string;
 };
 
 export default async function FrenchOpenLivePage() {
@@ -18,9 +29,9 @@ export default async function FrenchOpenLivePage() {
   });
 
   const data = await res.json();
-  const matches = Array.isArray(data) ? data : data.matches || [];
+  const matches: TennisMatch[] = Array.isArray(data) ? data : data.matches || [];
 
-  const frenchOpenMatches = matches.filter((match: any) => {
+  const frenchOpenMatches = matches.filter((match) => {
     const tournament = match.tournament?.toLowerCase() || "";
 
     return (
@@ -29,17 +40,7 @@ export default async function FrenchOpenLivePage() {
     );
   });
 
-  function slugify(text: string) {
-    return text
-      .toLowerCase()
-      .replace(/,/g, "")
-      .replace(/\//g, "-")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
-  function matchSlug(match: any) {
+  function matchSlug(match: TennisMatch) {
     const readablePart = `${match.player1}-vs-${match.player2}`
       .toLowerCase()
       .replace(/,/g, "")
@@ -126,7 +127,7 @@ export default async function FrenchOpenLivePage() {
 
           {frenchOpenMatches.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {frenchOpenMatches.slice(0, 18).map((match: any) => (
+              {frenchOpenMatches.slice(0, 18).map((match) => (
                 <a
                   key={match.id}
                   href={`/watch/${matchSlug(match)}`}
@@ -199,6 +200,8 @@ export default async function FrenchOpenLivePage() {
             </a>
           ))}
         </section>
+
+        <FrenchOpenStreamingDecision />
 
         <VpnPromo
   title="Watching French Open while traveling?"

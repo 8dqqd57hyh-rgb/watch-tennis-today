@@ -2,6 +2,7 @@ import FrenchOpenCountryGuides, { frenchOpenCountries } from "@/app/components/F
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import JsonLd from "@/app/components/JsonLd";
 import Link from "next/link";
+import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
 export const metadata = {
   title: "Where to Watch French Open 2026 by Country | Roland Garros TV & Streaming",
@@ -87,6 +88,7 @@ export default function WhereToWatchFrenchOpenPage() {
           </div>
         </section>
 
+        <FrenchOpenStreamingDecision />
         <FrenchOpenCountryGuides />
         <FrenchOpenConversionCluster compact title="Keep following Roland Garros" />
 
