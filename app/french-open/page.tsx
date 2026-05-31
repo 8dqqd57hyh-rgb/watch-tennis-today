@@ -8,6 +8,7 @@ import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
+import FrenchOpenNextMatchesStrip from "@/app/components/FrenchOpenNextMatchesStrip";
 
 export const metadata = {
   title: "French Open 2026 Hub: Live Matches, Results, Draw & TV Schedule",
@@ -164,6 +165,7 @@ export default function FrenchOpenHubPage() {
 
         <DailyTennisLoop tournamentName="French Open" compact />
         <FrenchOpenSeoBridge compact />
+        <FrenchOpenNextMatchesStrip compact />
         <FrenchOpenDrawTracker compact />
         <FrenchOpenCountryGuides compact title="Popular French Open viewing countries" description="Jump to high-intent country guides from the main Roland Garros hub." />
         <FrenchOpenConversionCluster compact title="All French Open resources" />

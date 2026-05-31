@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
+import FrenchOpenNextMatchesStrip from "@/app/components/FrenchOpenNextMatchesStrip";
 import JsonLd from "@/app/components/JsonLd";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
@@ -119,6 +120,7 @@ export default function FrenchOpenDrawPage() {
           </div>
         </section>
 
+        <FrenchOpenNextMatchesStrip />
         <FrenchOpenDrawTracker />
 
         <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
