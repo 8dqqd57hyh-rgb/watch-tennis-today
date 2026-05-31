@@ -210,6 +210,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/players/live-now",
     "/my-players",
     "/my-tournament",
+    "/tennis-watchlist-today",
     "/players",
     "/players/atp",
     "/players/wta",

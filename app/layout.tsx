@@ -175,6 +175,7 @@ export default function RootLayout({
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
           <a href="/my-players" className="block hover:text-white">My Players</a>
           <a href="/my-tournament" className="block hover:text-white">My Tournament</a>
+          <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
           <a href="/french-open-live" className="block hover:text-white">French Open</a>
           <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>
           <a href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</a>
