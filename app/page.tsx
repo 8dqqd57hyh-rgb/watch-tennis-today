@@ -10,6 +10,7 @@ import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import EmailSignup from "@/app/components/EmailSignup";
 import DailyTennisLoop from "@/app/components/DailyTennisLoop";
+import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -517,10 +518,10 @@ async function subscribeToFinals(
 
   <div className="flex flex-wrap gap-4">
     <a
-      href="/french-open-live"
+      href="/french-open"
       className="inline-flex items-center rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
     >
-      Watch French Open →
+      French Open Hub →
     </a>
 
     <a
@@ -533,6 +534,7 @@ async function subscribeToFinals(
 </section>
 
 <DailyTennisLoop tournamentName="French Open" />
+<FrenchOpenConversionCluster compact title="French Open daily hub" />
 
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule

@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import EmailSignup from "@/app/components/EmailSignup";
+import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
@@ -365,6 +366,7 @@ export default async function RolandGarrosRecapPage() {
         </section>
 
         <DailyTennisLoop compact />
+        <FrenchOpenConversionCluster compact title="Keep following Roland Garros" />
 
         <section
           className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6"

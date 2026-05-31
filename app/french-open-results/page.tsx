@@ -1,3 +1,5 @@
+import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -171,6 +173,8 @@ export default async function FrenchOpenResultsPage() {
             </div>
           ))}
         </section>
+
+        <FrenchOpenConversionCluster compact title="Next step after results" />
 
         <section id="latest-results" className="mb-12">
           <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">

@@ -1,3 +1,5 @@
+import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -208,6 +210,8 @@ export default async function FrenchOpenTodayPage() {
             </div>
           ))}
         </section>
+
+        <FrenchOpenConversionCluster compact title="More French Open coverage" />
 
         <section id="live" className="mb-12">
           <h2 className="mb-5 text-4xl font-black">Live French Open Matches</h2>
