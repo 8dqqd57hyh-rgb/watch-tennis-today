@@ -131,6 +131,9 @@ export default function RootLayout({
           Players
         </a>
         <MyPlayersNavLink />
+        <a href="/my-tournament" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
+          My Tournament
+        </a>
         <a href="/tournament" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
           Grand Slams
         </a>
@@ -171,6 +174,7 @@ export default function RootLayout({
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
           <a href="/my-players" className="block hover:text-white">My Players</a>
+          <a href="/my-tournament" className="block hover:text-white">My Tournament</a>
           <a href="/french-open-live" className="block hover:text-white">French Open</a>
           <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>
           <a href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</a>
