@@ -32,6 +32,15 @@ const STATUS_PRIORITY: Record<string, number> = {
   RETIRED: 4,
 };
 
+const STARTER_PLAYERS = [
+  "jannik-sinner",
+  "carlos-alcaraz",
+  "aryna-sabalenka",
+  "coco-gauff",
+  "iga-swiatek",
+  "novak-djokovic",
+] as const;
+
 function readFollowedPlayers(): FollowedPlayer[] {
   if (typeof window === "undefined") return [];
 
@@ -217,6 +226,26 @@ export default function MyPlayersClient() {
     setFollowedPlayers(nextPlayers);
   }
 
+  function addPlayer(playerSlug: string) {
+    const canonicalSlug = getCanonicalPlayerSlug(playerSlug);
+    if (!canonicalSlug) return;
+
+    const alreadyAdded = followedPlayers.some((player) => player.slug === canonicalSlug);
+    if (alreadyAdded) return;
+
+    const nextPlayers = [
+      ...followedPlayers,
+      {
+        slug: canonicalSlug,
+        name: players[canonicalSlug].name,
+        addedAt: new Date().toISOString(),
+      },
+    ];
+
+    saveFollowedPlayers(nextPlayers);
+    setFollowedPlayers(nextPlayers);
+  }
+
   function clearPlayers() {
     saveFollowedPlayers([]);
     setFollowedPlayers([]);
@@ -273,9 +302,30 @@ export default function MyPlayersClient() {
           Open any player page and tap “Follow player”. Your choices are stored on this device,
           so visitors get a useful dashboard without creating an account.
         </p>
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {STARTER_PLAYERS.map((playerSlug) => (
+            <button
+              key={playerSlug}
+              type="button"
+              onClick={() => addPlayer(playerSlug)}
+              className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-left hover:border-green-400 hover:bg-green-50"
+            >
+              <span className="block text-sm font-black uppercase tracking-[0.14em] text-green-700">
+                Quick follow
+              </span>
+              <span className="mt-1 block text-lg font-black text-zinc-950">
+                {players[playerSlug].name}
+              </span>
+              <span className="mt-1 block text-sm text-zinc-500">
+                {players[playerSlug].tour} · add to dashboard
+              </span>
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-wrap gap-3">
           <Link href="/players" className="rounded-2xl bg-black px-5 py-3 font-black text-white hover:bg-zinc-800">
-            Browse players →
+            Browse all players →
           </Link>
           <Link href="/french-open-draw" className="rounded-2xl border border-zinc-200 px-5 py-3 font-black hover:border-green-400 hover:bg-green-50">
             Open draw tracker →
