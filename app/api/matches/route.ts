@@ -55,6 +55,31 @@ function normalizeCategory(eventType?: string) {
   return "UNKNOWN";
 }
 
+
+function normalizeSearchName(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function apiNameMatchesPlayer(playerName: string, sideName: string) {
+  const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
+  const sideParts = normalizeSearchName(sideName).split(/\s+/).filter(Boolean);
+
+  const targetFirst = targetParts[0] || "";
+  const targetLast = targetParts[targetParts.length - 1] || "";
+  const sideFirst = sideParts[0] || "";
+  const sideLast = sideParts[sideParts.length - 1] || "";
+
+  if (!targetLast || !sideLast) return false;
+  if (targetParts.join(" ") === sideParts.join(" ")) return true;
+
+  return targetLast === sideLast && (!targetFirst || !sideFirst || targetFirst[0] === sideFirst[0]);
+}
+
 function normalizeStatus(match: ApiTennisMatch) {
   const status = (match.event_status || "").toLowerCase();
   const startTime = getStartTime(match);
@@ -573,6 +598,9 @@ export async function GET(request: Request) {
   const playerKeyFromQuery = searchParams.get("playerKey");
   const playerName = searchParams.get("playerName");
   const matchId = searchParams.get("matchId");
+  const includeFinished = searchParams.get("includeFinished") === "1";
+  const daysBack = Number.parseInt(searchParams.get("daysBack") || "3", 10);
+  const daysForward = Number.parseInt(searchParams.get("daysForward") || "30", 10);
 
   const apiKey = process.env.API_TENNIS_KEY;
 
@@ -589,11 +617,14 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
+const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), 30) : 3;
+const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : 30;
+
 const dateStartDate = new Date();
-dateStartDate.setDate(today.getDate() - 3);
+dateStartDate.setDate(today.getDate() - safeDaysBack);
 
 const dateStopDate = new Date();
-dateStopDate.setDate(today.getDate() + 30);
+dateStopDate.setDate(today.getDate() + safeDaysForward);
 
 const dateStart = formatDate(dateStartDate);
 const dateStop = formatDate(dateStopDate);
@@ -642,13 +673,12 @@ console.log(
     );
 
     const filteredMatches = playerName
-  ? uniqueMatches.filter((match) => {
-      const fullText = `${match.event_first_player} ${match.event_second_player}`.toLowerCase();
-      const parts = playerName.toLowerCase().split(/\s+/);
-
-      return parts.some((part) => fullText.includes(part));
-    })
-  : uniqueMatches;
+      ? uniqueMatches.filter((match) =>
+          [match.event_first_player, match.event_second_player].some((sideName) =>
+            apiNameMatchesPlayer(playerName, sideName || "")
+          )
+        )
+      : uniqueMatches;
 
     const mappedMatches = filteredMatches.map((match) => {
       const category = normalizeCategory(match.event_type_type);
@@ -705,13 +735,12 @@ console.log(
     }
 
     const matches = mappedMatches
-      .filter(
-        (match) =>
-          match.status !== "FINISHED" &&
-          match.status !== "CANCELLED" &&
-          match.status !== "RETIRED" &&
-          match.status !== "EXPIRED"
-      )
+      .filter((match) => {
+        if (match.status === "CANCELLED" || match.status === "EXPIRED") return false;
+        if (includeFinished) return true;
+
+        return match.status !== "FINISHED" && match.status !== "RETIRED";
+      })
       .sort((a, b) => {
         if (a.status === "LIVE" && b.status !== "LIVE") return -1;
         if (a.status !== "LIVE" && b.status === "LIVE") return 1;

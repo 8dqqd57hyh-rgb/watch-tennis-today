@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
+import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
@@ -339,9 +341,9 @@ const playerMatches = allMatches
   return (
     <main className="max-w-4xl mx-auto p-4">
         <nav className="text-sm text-zinc-400 mb-6 flex flex-wrap gap-2">
-  <a href="/" className="hover:text-white">
+  <Link href="/" className="hover:text-white">
     Home
-  </a>
+  </Link>
 
   <span>/</span>
 
@@ -373,6 +375,11 @@ const playerMatches = allMatches
   </section>
 ) : null}
 
+      <LocalPlayerFollowButton
+        playerName={playerName}
+        playerSlug={pageSlug}
+      />
+
       {playerMatches.some(
   (match) => match.status === "LIVE"
 ) ? (
@@ -397,13 +404,13 @@ const playerMatches = allMatches
         .filter((match) => match.status === "LIVE")
         .slice(0, 2)
         .map((match) => (
-          <a
+          <Link
             key={match.id}
             href={`/watch/${getMatchSlug(match)}`}
             className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white hover:bg-red-400 transition-all"
           >
             Open Match Page →
-          </a>
+          </Link>
         ))}
     </div>
   </section>
@@ -589,19 +596,19 @@ const playerMatches = allMatches
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <a
+          <Link
             href="/watch"
             className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
           >
             View Tennis Schedule
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/live-tennis"
             className="rounded-2xl bg-zinc-800 px-5 py-3 font-black text-white hover:bg-zinc-700 transition-all"
           >
             Live Tennis Schedule
-          </a>
+          </Link>
         </div>
       </section>
 
