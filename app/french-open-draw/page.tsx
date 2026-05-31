@@ -1,134 +1,181 @@
+import Link from "next/link";
+import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
+import JsonLd from "@/app/components/JsonLd";
+import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
+
 export const metadata = {
-  title: "French Open Draw 2026 | Roland Garros Bracket & Matches",
+  title: "French Open Draw Tracker 2026 | Roland Garros Player Paths",
   description:
-    "French Open draw for Roland Garros 2026. Follow tournament brackets, matchups, live matches, results, schedules and streaming guides.",
+    "Track the French Open draw by player. Follow Roland Garros bracket paths, who advanced, who was eliminated, next opponents, possible matchups, live matches and results.",
   alternates: { canonical: "https://watchtennistoday.com/french-open-draw" },
 };
 
+const drawLinks = [
+  ["French Open Live", "/french-open-live"],
+  ["French Open Today", "/french-open-today"],
+  ["Order of Play", "/french-open-order-of-play"],
+  ["French Open Results", "/french-open-results"],
+  ["TV Schedule", "/french-open-tv-schedule"],
+  ["Where to Watch", "/where-to-watch-french-open"],
+];
+
+const trackerFeatures = [
+  {
+    title: "Follow one player’s path",
+    text: "Instead of reading a full bracket, users can pick only players who are still alive in the draw and follow that exact route.",
+  },
+  {
+    title: "See next and potential opponents",
+    text: "The tracker separates completed, upcoming and potential matchups so fans quickly understand what matters next.",
+  },
+  {
+    title: "Move users into money pages",
+    text: "Each path links to live pages, tomorrow’s schedule, results and where-to-watch pages where affiliate blocks can convert.",
+  },
+];
+
 export default function FrenchOpenDrawPage() {
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "French Open Draw Tracker 2026",
+      description:
+        "Roland Garros draw tracker for player paths, next opponents, possible matchups, results and streaming guide links.",
+      url: "https://watchtennistoday.com/french-open-draw",
+      hasPart: drawLinks.map(([label, href]) => ({
+        "@type": "WebPage",
+        name: label,
+        url: `https://watchtennistoday.com${href}`,
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is the French Open draw tracker?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "It is a player-focused Roland Garros draw page that helps fans follow completed rounds, next opponents and potential future matchups.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Can I follow a specific player through the Roland Garros draw?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes. The tracker is built around active player paths, so fans can follow top ATP and WTA players who are still in the tournament without reading the full bracket.",
+          },
+        },
+      ],
+    },
+  ];
+
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-10">
-      <div className="max-w-7xl mx-auto">
+    <main className="min-h-screen bg-black p-6 text-white md:p-10">
+      <JsonLd data={jsonLd} />
+
+      <div className="mx-auto max-w-7xl">
         <section className="mb-12 rounded-[2.5rem] border border-orange-500 bg-gradient-to-br from-orange-950/40 to-black p-8">
           <div className="mb-5 inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-black">
-            🧩 DRAW
+            🧩 DRAW TRACKER
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
-            French Open Draw:
+          <h1 className="mb-6 text-5xl font-black leading-tight md:text-7xl">
+            French Open Draw Tracker:
             <br />
-            Roland Garros Bracket
+            Follow Player Paths
           </h1>
 
-          <p className="max-w-3xl text-lg leading-8 text-zinc-300 mb-8">
-            Follow the French Open draw with Roland Garros matchups, bracket
-            links, live matches, results, schedules and streaming information.
+          <p className="mb-8 max-w-3xl text-lg leading-8 text-zinc-300">
+            Track Roland Garros by player: who advanced, who was eliminated,
+            next opponent slots, possible late-round matchups, results and live
+            viewing links.
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <a
+            <Link
               href="/french-open-live"
-              className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
+              className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black transition-all hover:bg-orange-400"
             >
               Live Matches →
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/french-open-results"
-              className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
+              className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition-all hover:border-orange-500"
             >
               Results
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/french-open-order-of-play"
-              className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
+              className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition-all hover:border-orange-500"
             >
               Order of Play
-            </a>
+            </Link>
           </div>
         </section>
 
+        <FrenchOpenDrawTracker />
+
         <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
-          <h2 className="text-4xl font-black mb-6">
-            🎾 Roland Garros draw hub
+          <h2 className="mb-6 text-4xl font-black">
+            🎾 Why this draw tracker helps fans
           </h2>
 
-          <p className="max-w-4xl text-zinc-300 leading-8 mb-6">
-            Use this page as a French Open draw hub. Follow match pages,
-            completed results, upcoming matches and daily Roland Garros schedule
-            links as the tournament progresses.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {[
-              ["Men’s Singles", "/french-open-live"],
-              ["Women’s Singles", "/french-open-live"],
-              ["Today’s Matches", "/french-open-today"],
-              ["Completed Results", "/french-open-results"],
-            ].map(([title, href]) => (
-              <a
-                key={title}
-                href={href}
-                className="rounded-3xl border border-zinc-800 bg-black p-5 hover:border-orange-500 transition-all"
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {trackerFeatures.map((feature) => (
+              <div
+                key={feature.title}
+                className="rounded-3xl border border-zinc-800 bg-black p-5"
               >
-                <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">
-                  Draw section
-                </p>
-
-                <h3 className="text-xl font-black">
-                  {title}
-                </h3>
-              </a>
+                <h3 className="mb-3 text-xl font-black">{feature.title}</h3>
+                <p className="leading-7 text-zinc-400">{feature.text}</p>
+              </div>
             ))}
           </div>
         </section>
 
-        <section className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {[
-            ["French Open Live", "/french-open-live"],
-            ["French Open Today", "/french-open-today"],
-            ["Order of Play", "/french-open-order-of-play"],
-            ["French Open Results", "/french-open-results"],
-            ["TV Schedule", "/french-open-tv-schedule"],
-            ["Where to Watch", "/where-to-watch-french-open"],
-          ].map(([title, href]) => (
-            <a
+        <FrenchOpenStreamingDecision compact />
+
+        <section className="mb-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+          {drawLinks.map(([title, href]) => (
+            <Link
               key={href}
               href={href}
-              className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 hover:border-orange-500 transition-all"
+              className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 transition-all hover:border-orange-500"
             >
-              <h3 className="text-xl font-black mb-3">
-                {title}
-              </h3>
+              <h3 className="mb-3 text-xl font-black">{title}</h3>
 
               <p className="text-sm text-zinc-400">
                 Roland Garros draw, matches, schedules and streaming guides.
               </p>
-            </a>
+            </Link>
           ))}
         </section>
 
         <section className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 to-black p-8">
-          <h2 className="text-3xl font-black mb-5">
-            About the French Open draw
+          <h2 className="mb-5 text-3xl font-black">
+            About the French Open draw tracker
           </h2>
 
-          <div className="space-y-5 text-zinc-300 leading-8 max-w-4xl">
+          <div className="max-w-4xl space-y-5 text-zinc-300 leading-8">
             <p>
               The French Open draw shows the Roland Garros tournament path,
-              including possible matchups, completed matches and upcoming rounds.
+              including completed matches, possible matchups and upcoming rounds.
             </p>
 
             <p>
-              Watch Tennis Today helps fans follow Roland Garros with live match
-              pages, daily schedules, results, TV guides and streaming
-              information.
+              Watch Tennis Today turns the draw into a player-focused tracker so
+              fans can follow their favorite players without scanning the full
+              bracket every day.
             </p>
           </div>
         </section>
       </div>
     </main>
   );
-
 }
