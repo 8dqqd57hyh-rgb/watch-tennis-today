@@ -60,6 +60,10 @@ type PlayerPath = {
   section: string;
   tour: "ATP" | "WTA";
   currentStatus: "Active";
+  nextMatchDate?: string;
+  nextMatchTime?: string;
+  nextMatchStatus?: "LIVE" | "Scheduled";
+  nextOpponent?: string;
   summary: string;
   matches: DrawTrackerMatch[];
 };
@@ -245,6 +249,15 @@ function matchHasPlayer(match: NormalizedMatch, player: string) {
   return playerKey(match.player1) === key || playerKey(match.player2) === key;
 }
 
+function getMatchSortTime(match?: NormalizedMatch) {
+  if (!match) return Number.MAX_SAFE_INTEGER;
+  if (match.status === "LIVE") return 0;
+
+  const parsed = parseParisMatchDateTime(match.date, match.time);
+
+  return parsed?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
 function buildPlayerPath(player: string, matches: NormalizedMatch[]): PlayerPath {
   const playerMatches = matches
     .filter((match) => matchHasPlayer(match, player))
@@ -297,7 +310,11 @@ function buildPlayerPath(player: string, matches: NormalizedMatch[]): PlayerPath
     section: latestTour === "WTA" ? "Women’s singles" : "Men’s singles",
     tour: latestTour,
     currentStatus: "Active",
-    summary: `${player} has a live or future main-draw Roland Garros match in the fixture feed, so this player is still treated as active.`,
+    nextMatchDate: nextMatch?.date,
+    nextMatchTime: nextMatch?.time,
+    nextMatchStatus: nextMatch?.status === "LIVE" || nextMatch?.status === "Scheduled" ? nextMatch.status : undefined,
+    nextOpponent: nextMatch ? getOpponent(player, nextMatch) : undefined,
+    summary: `${player} is active because the fixture feed still has a live or future main-draw Roland Garros match for this player. The selector is sorted by next match urgency, not alphabetically.`,
     matches: trackerMatches,
   };
 }
@@ -341,7 +358,17 @@ export async function GET() {
       ),
     ).sort((a, b) => a.localeCompare(b));
 
-    const activePlayers = activeNames.map((player) => buildPlayerPath(player, matches));
+    const activePlayers = activeNames
+      .map((player) => buildPlayerPath(player, matches))
+      .sort((a, b) => {
+        if (a.nextMatchStatus === "LIVE" && b.nextMatchStatus !== "LIVE") return -1;
+        if (b.nextMatchStatus === "LIVE" && a.nextMatchStatus !== "LIVE") return 1;
+
+        const aNextMatch = matches.find((match) => matchHasPlayer(match, a.player) && (match.status === "LIVE" || match.status === "Scheduled"));
+        const bNextMatch = matches.find((match) => matchHasPlayer(match, b.player) && (match.status === "LIVE" || match.status === "Scheduled"));
+
+        return getMatchSortTime(aNextMatch) - getMatchSortTime(bNextMatch) || a.player.localeCompare(b.player);
+      });
     const eliminatedNames = new Set<string>();
 
     matches

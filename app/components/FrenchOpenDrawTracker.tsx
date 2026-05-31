@@ -22,6 +22,10 @@ type PlayerPath = {
   section: string;
   tour: "ATP" | "WTA";
   currentStatus: "Active";
+  nextMatchDate?: string;
+  nextMatchTime?: string;
+  nextMatchStatus?: "LIVE" | "Scheduled";
+  nextOpponent?: string;
   summary: string;
   matches: DrawMatch[];
 };
@@ -90,6 +94,7 @@ function getFallbackPlayerId(players: PlayerPath[], tour: "All" | "ATP" | "WTA")
 export default function FrenchOpenDrawTracker({ compact = false }: { compact?: boolean }) {
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [tour, setTour] = useState<"All" | "ATP" | "WTA">("All");
+  const [searchTerm, setSearchTerm] = useState("");
   const [trackerData, setTrackerData] = useState<DrawTrackerResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -132,8 +137,21 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
   }, [trackerData]);
 
   const visiblePlayers = useMemo(() => {
-    return activePlayerPaths.filter((path) => tour === "All" || path.tour === tour);
-  }, [activePlayerPaths, tour]);
+    const query = searchTerm.trim().toLowerCase();
+
+    return activePlayerPaths.filter((path) => {
+      const matchesTour = tour === "All" || path.tour === tour;
+      const matchesSearch =
+        !query ||
+        path.player.toLowerCase().includes(query) ||
+        path.nextOpponent?.toLowerCase().includes(query);
+
+      return matchesTour && matchesSearch;
+    });
+  }, [activePlayerPaths, searchTerm, tour]);
+
+  const liveCount = activePlayerPaths.filter((path) => path.nextMatchStatus === "LIVE").length;
+  const scheduledCount = activePlayerPaths.filter((path) => path.nextMatchStatus === "Scheduled").length;
 
   const selectedPlayer =
     visiblePlayers.find((path) => path.id === selectedPlayerId) ??
@@ -200,11 +218,33 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
         </div>
       ) : null}
 
+      <div className="mb-5 grid gap-3 md:grid-cols-3">
+        <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Live now</p>
+          <p className="mt-2 text-2xl font-black text-orange-300">{liveCount}</p>
+        </div>
+        <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Upcoming</p>
+          <p className="mt-2 text-2xl font-black text-sky-300">{scheduledCount}</p>
+        </div>
+        <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Hidden eliminated</p>
+          <p className="mt-2 text-2xl font-black text-zinc-300">{eliminatedCount}</p>
+        </div>
+      </div>
+
       <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
         <div className="rounded-3xl border border-zinc-800 bg-black/80 p-4">
           <p className="mb-3 text-xs font-black uppercase tracking-widest text-zinc-500">
             Choose active player
           </p>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search player or opponent"
+            className="mb-3 w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm font-bold text-white outline-none transition placeholder:text-zinc-600 focus:border-orange-500"
+          />
           <div className="space-y-2">
             {visiblePlayers.map((path) => (
               <button
@@ -224,15 +264,20 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-zinc-500">{path.seed}</p>
+                {path.nextOpponent ? (
+                  <p className="mt-2 text-sm font-bold text-zinc-300">
+                    Next: <span className="text-white">{path.nextOpponent}</span>
+                  </p>
+                ) : null}
                 <p className="mt-2 text-xs font-black uppercase tracking-widest text-emerald-300">
-                  Still in draw
+                  {path.nextMatchStatus === "LIVE" ? "Live / still in draw" : "Still in draw"}
                 </p>
               </button>
             ))}
           </div>
           {visiblePlayers.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-red-500/30 bg-red-950/20 p-4 text-sm font-bold text-red-200">
-              No active players are currently available for this tour filter.
+              No active players match this filter/search.
             </div>
           ) : null}
         </div>
