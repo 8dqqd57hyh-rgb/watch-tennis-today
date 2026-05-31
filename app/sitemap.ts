@@ -208,6 +208,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     "",
     "/players/live-now",
+    "/my-dashboard",
     "/my-players",
     "/my-tournament",
     "/tennis-watchlist-today",

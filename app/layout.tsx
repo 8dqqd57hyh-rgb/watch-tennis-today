@@ -106,40 +106,48 @@ export default function RootLayout({
   }}
 />
   <header className="site-header sticky top-0 z-50 border-b border-zinc-800 bg-black backdrop-blur" style={{ backgroundColor: "#050505", color: "#ffffff" }}>
-    <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
+    <div className="site-header-inner mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3">
       <a
         href="/"
-        className="site-brand text-xl font-black tracking-tight text-white md:text-2xl" style={{ color: "#ffffff" }}
+        className="site-brand text-xl font-black tracking-tight text-white" style={{ color: "#ffffff" }}
       >
         🎾 Watch Tennis Today
       </a>
 
       <nav
         aria-label="Primary navigation"
-        className="site-nav flex items-center gap-4 overflow-x-auto whitespace-nowrap text-sm font-semibold"
+        className="site-nav text-sm font-semibold"
       >
-        <a href="/live-tennis" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
+        <a href="/live-tennis" className="site-nav-link">
           Live Tennis
         </a>
-        <a href="/best-tennis-matches-today" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
+        <a href="/best-tennis-matches-today" className="site-nav-link">
           Matches Today
         </a>
-        <a href="/tv-schedule" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
-          TV Schedule
-        </a>
-        <a href="/players" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
+        <a href="/players" className="site-nav-link">
           Players
         </a>
         <MyPlayersNavLink />
-        <a href="/my-tournament" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
-          My Tournament
+        <a href="/my-dashboard" className="site-nav-link site-nav-link-highlight">
+          My Dashboard
         </a>
-        <a href="/tournament" className="text-zinc-100 hover:text-white" style={{ color: "#f4f4f5" }}>
-          Grand Slams
-        </a>
-        <a href="/tennis-tv-broadcast-finder" className="hidden text-emerald-300 hover:text-emerald-200 md:inline" style={{ color: "#6ee7b7" }}>
-          Where to Watch
-        </a>
+
+        <details className="site-more-menu">
+          <summary className="site-more-summary" aria-label="Open more navigation links">
+            More
+          </summary>
+          <div className="site-more-panel">
+            <a href="/tv-schedule">TV Schedule</a>
+            <a href="/my-tournament">My Tournament</a>
+            <a href="/tournament">Grand Slams</a>
+            <a href="/tennis-tv-broadcast-finder">Where to Watch</a>
+            <a href="/tennis-on-tv-today">Tennis on TV Today</a>
+            <a href="/tennis-time-zone-converter">Time Zone Converter</a>
+            <a href="/tennis-watchlist-today">Tennis Watchlist</a>
+            <a href="/french-open-live">French Open</a>
+            <a href="/wimbledon-live">Wimbledon</a>
+          </div>
+        </details>
       </nav>
     </div>
   </header>
@@ -174,6 +182,7 @@ export default function RootLayout({
           <a href="/players" className="block hover:text-white">Players</a>
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
+          <a href="/my-dashboard" className="block hover:text-white">My Tennis Dashboard</a>
           <a href="/my-players" className="block hover:text-white">My Players</a>
           <a href="/my-tournament" className="block hover:text-white">My Tournament</a>
           <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
