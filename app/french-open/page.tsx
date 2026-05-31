@@ -1,6 +1,9 @@
 import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import EmailSignup from "@/app/components/EmailSignup";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+import FrenchOpenSeoBridge from "@/app/components/FrenchOpenSeoBridge";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const metadata = {
@@ -59,28 +62,42 @@ const faq = [
 ];
 
 export default function FrenchOpenHubPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "French Open 2026 Hub",
-    description:
-      "Daily Roland Garros hub for live matches, results, draw, recap, schedule and legal viewing guides.",
-    url: "https://watchtennistoday.com/french-open",
-    mainEntity: faq.map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.a,
-      },
-    })),
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "French Open 2026 Hub",
+      description:
+        "Daily Roland Garros hub for live matches, results, draw, recap, schedule and legal viewing guides.",
+      url: "https://watchtennistoday.com/french-open",
+      hasPart: resourceLinks.map(([label, href]) => ({
+        "@type": "WebPage",
+        name: label,
+        url: `https://watchtennistoday.com${href}`,
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
+        },
+      })),
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <JsonLd data={jsonLd} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "French Open", url: "https://watchtennistoday.com/french-open" },
+        ]}
       />
 
       <div className="mx-auto max-w-7xl">
@@ -140,6 +157,7 @@ export default function FrenchOpenHubPage() {
         </section>
 
         <DailyTennisLoop tournamentName="French Open" compact />
+        <FrenchOpenSeoBridge compact />
         <FrenchOpenConversionCluster compact title="All French Open resources" />
         <RevenueConversionPanel context="article" tournament="French Open" />
 

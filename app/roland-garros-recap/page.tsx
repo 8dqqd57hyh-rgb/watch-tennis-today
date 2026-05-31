@@ -2,6 +2,9 @@ import { headers } from "next/headers";
 import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import EmailSignup from "@/app/components/EmailSignup";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+import FrenchOpenSeoBridge from "@/app/components/FrenchOpenSeoBridge";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
@@ -312,8 +315,69 @@ export default async function RolandGarrosRecapPage() {
     },
   ];
 
+  const recapSchema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: `Roland Garros recap for ${readableDate}`,
+      description:
+        "Daily French Open recap with completed match results, advancement notes and next matches to watch.",
+      url: "https://watchtennistoday.com/roland-garros-recap",
+      isPartOf: {
+        "@type": "CollectionPage",
+        name: "French Open 2026 Hub",
+        url: "https://watchtennistoday.com/french-open",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: `Roland Garros completed results for ${readableDate}`,
+      itemListElement: topResults.slice(0, 10).map((match, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
+        name: `${match.player1 || "TBD"} vs ${match.player2 || "TBD"}`,
+        description: [match.winner ? `Winner: ${match.winner}` : "Completed match", match.score || match.setScore]
+          .filter(Boolean)
+          .join(" · "),
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Upcoming Roland Garros matches to watch",
+      itemListElement: upcomingMatches.slice(0, 6).map((match, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
+        name: `${match.player1 || "TBD"} vs ${match.player2 || "TBD"}`,
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
+        },
+      })),
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
+      <JsonLd data={recapSchema} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "French Open", url: "https://watchtennistoday.com/french-open" },
+          { name: "Roland Garros Recap", url: "https://watchtennistoday.com/roland-garros-recap" },
+        ]}
+      />
       <div className="mx-auto max-w-7xl">
         <section className="mb-10 rounded-[2.5rem] border border-orange-500/50 bg-gradient-to-br from-orange-950/60 via-black to-black p-8">
           <div className="mb-5 inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-black">
@@ -366,6 +430,7 @@ export default async function RolandGarrosRecapPage() {
         </section>
 
         <DailyTennisLoop compact />
+        <FrenchOpenSeoBridge compact />
         <FrenchOpenConversionCluster compact title="Keep following Roland Garros" />
 
         <section
@@ -643,24 +708,6 @@ export default async function RolandGarrosRecapPage() {
             ))}
           </div>
         </section>
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: faq.map((item) => ({
-                "@type": "Question",
-                name: item.q,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: item.a,
-                },
-              })),
-            }),
-          }}
-        />
       </div>
     </main>
   );
