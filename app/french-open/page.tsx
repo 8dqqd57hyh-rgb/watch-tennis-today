@@ -2,6 +2,7 @@ import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import EmailSignup from "@/app/components/EmailSignup";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import FrenchOpenSeoBridge from "@/app/components/FrenchOpenSeoBridge";
+import FrenchOpenCountryGuides from "@/app/components/FrenchOpenCountryGuides";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
@@ -41,6 +42,9 @@ const resourceLinks = [
   ["Order of play", "/french-open-order-of-play"],
   ["TV schedule", "/french-open-tv-schedule"],
   ["Where to watch", "/where-to-watch-french-open"],
+  ["French Open in USA", "/watch-tennis-in/usa"],
+  ["French Open in UK", "/watch-tennis-in/uk"],
+  ["French Open in Poland", "/watch-tennis-in/poland"],
   ["Streaming countries", "/french-open-streaming-countries"],
   ["Watch French Open online", "/watch-french-open-online"],
   ["Best VPN for Roland Garros", "/best-vpn-for-roland-garros"],
@@ -158,6 +162,7 @@ export default function FrenchOpenHubPage() {
 
         <DailyTennisLoop tournamentName="French Open" compact />
         <FrenchOpenSeoBridge compact />
+        <FrenchOpenCountryGuides compact title="Popular French Open viewing countries" description="Jump to high-intent country guides from the main Roland Garros hub." />
         <FrenchOpenConversionCluster compact title="All French Open resources" />
         <RevenueConversionPanel context="article" tournament="French Open" />
 
