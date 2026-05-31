@@ -406,6 +406,7 @@ export async function GET() {
       womenMatches,
       longMatches,
       retirements,
+      upcomingMatches: upcomingMatches.slice(0, 12),
       matches,
     });
   } catch (error) {

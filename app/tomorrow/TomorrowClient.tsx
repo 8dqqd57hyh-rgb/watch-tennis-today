@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import EmailSignup from "@/app/components/EmailSignup";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
@@ -147,9 +148,9 @@ export default function TomorrowClient() {
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
       <div className="mx-auto max-w-7xl">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <div className="mb-5 inline-flex items-center rounded-full bg-blue-500/20 px-4 py-2 text-sm font-bold text-blue-300">
@@ -281,10 +282,10 @@ export default function TomorrowClient() {
             <h2 className="mb-2 text-2xl font-black">Tennis on TV</h2>
             <p className="text-zinc-400">Find official broadcasters and TV listings by region.</p>
           </a>
-          <a href="/compare" className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600">
+          <Link href="/compare" className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600">
             <h2 className="mb-2 text-2xl font-black">Compare services</h2>
             <p className="text-zinc-400">Choose the right legal streaming option before subscribing.</p>
-          </a>
+          </Link>
         </section>
 
         <section className="mb-12">

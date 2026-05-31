@@ -53,6 +53,7 @@ type RecapData = {
   womenMatches?: Match[];
   longMatches?: Match[];
   retirements?: Match[];
+  upcomingMatches?: Match[];
   matches?: Match[];
 };
 
@@ -140,45 +141,78 @@ function MatchCard({
   );
 }
 
-function AdvancementCard({ item }: { item: AdvancementSummary }) {
-  return (
-    <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
-        <span className="rounded-full bg-orange-500/10 px-3 py-1 font-black text-orange-300">
-          {item.category || "Roland Garros"}
-        </span>
-        <span className="text-zinc-500">{item.round || "Completed match"}</span>
+function QuickAdvancementList({
+  items,
+}: {
+  items: AdvancementSummary[];
+}) {
+  if (items.length === 0) {
+    return (
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
+        <p className="leading-8 text-zinc-300">
+          The quick advancement list will appear once completed match winner
+          data is available.
+        </p>
       </div>
+    );
+  }
 
-      <div className="space-y-3">
-        <p className="text-lg font-black text-green-300">
-          ✅ {item.winner || "Winner"} advanced
-        </p>
-        <p className="text-zinc-400">
-          ❌ {item.eliminated || "Opponent"} was eliminated
-        </p>
-        {item.score ? (
-          <p className="text-sm font-bold text-zinc-300">Score: {item.score}</p>
-        ) : null}
-        <div className="rounded-2xl bg-zinc-900 p-4">
-          <p className="mb-1 text-xs font-bold uppercase tracking-widest text-zinc-500">
-            Next match
-          </p>
-          <p className="font-black">
-            vs{" "}
-            {item.nextOpponent && item.nextOpponent !== "TBD"
-              ? item.nextOpponent
-              : "TBD"}
-          </p>
-          <p className="mt-1 text-sm leading-6 text-zinc-500">
-            {[item.nextMatchRound, item.nextMatchDate]
-              .filter(Boolean)
-              .join(" · ") ||
-              "Opponent will be updated when the draw data is available."}
-          </p>
-        </div>
+  return (
+    <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950">
+      <div className="grid grid-cols-[1.1fr_1fr_1.1fr] gap-3 border-b border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-black uppercase tracking-widest text-zinc-500">
+        <span>Advanced</span>
+        <span>Eliminated</span>
+        <span>Next</span>
+      </div>
+      <div className="divide-y divide-zinc-900">
+        {items.slice(0, 12).map((item) => (
+          <div
+            key={`quick-${item.id}-${item.winner}`}
+            className="grid grid-cols-1 gap-3 px-4 py-4 md:grid-cols-[1.1fr_1fr_1.1fr] md:items-center"
+          >
+            <div>
+              <p className="font-black text-green-300">✅ {item.winner}</p>
+              <p className="mt-1 text-xs text-zinc-500">
+                {item.category || "Roland Garros"} · {item.round || "Round TBC"}
+              </p>
+            </div>
+            <p className="font-bold text-zinc-300">❌ {item.eliminated}</p>
+            <p className="text-sm leading-6 text-zinc-400">
+              {item.nextOpponent && item.nextOpponent !== "TBD"
+                ? `vs ${item.nextOpponent}`
+                : "Next opponent TBC"}
+              {item.nextMatchRound ? ` · ${item.nextMatchRound}` : ""}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+function UpcomingMatchCard({ match }: { match: Match }) {
+  return (
+    <a
+      href={`/watch/${matchSlug(match)}`}
+      className="block rounded-3xl border border-blue-500/25 bg-zinc-950 p-5 transition hover:border-blue-400 hover:bg-zinc-900"
+    >
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <span className="rounded-full bg-blue-500/10 px-3 py-1 font-black text-blue-300">
+          Next to watch
+        </span>
+        <span className="text-zinc-500">{match.category || "Tennis"}</span>
+      </div>
+      <h3 className="mb-3 text-xl font-black leading-tight">
+        {match.player1 || "TBD"}
+        <span className="text-zinc-500"> vs </span>
+        {match.player2 || "TBD"}
+      </h3>
+      <p className="text-sm leading-6 text-zinc-400">
+        {[match.round, match.court, formatMatchDate(match)]
+          .filter(Boolean)
+          .join(" · ") || "Schedule details TBC"}
+      </p>
+    </a>
   );
 }
 
@@ -233,6 +267,9 @@ export default async function RolandGarrosRecapPage() {
     : [];
   const longMatches = Array.isArray(data.longMatches) ? data.longMatches : [];
   const retirements = Array.isArray(data.retirements) ? data.retirements : [];
+  const upcomingMatches = Array.isArray(data.upcomingMatches)
+    ? data.upcomingMatches
+    : [];
   const storylines = Array.isArray(data.storylines) ? data.storylines : [];
   const advancementSummaries = Array.isArray(data.advancementSummaries)
     ? data.advancementSummaries
@@ -244,6 +281,7 @@ export default async function RolandGarrosRecapPage() {
     { label: "Men’s matches", value: menMatches.length },
     { label: "Women’s matches", value: womenMatches.length },
     { label: "Long matches", value: longMatches.length },
+    { label: "Next matches", value: upcomingMatches.length },
   ];
 
   const relatedLinks = [
@@ -349,26 +387,48 @@ export default async function RolandGarrosRecapPage() {
             </a>
           </div>
 
-          {advancementSummaries.length > 0 ? (
+          <QuickAdvancementList items={advancementSummaries} />
+        </section>
+
+        <section className="mb-10 rounded-[2rem] border border-blue-500/20 bg-gradient-to-br from-blue-950/30 via-zinc-950 to-black p-6">
+          <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+            <div>
+              <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-300">
+                Watch next
+              </p>
+              <h2 className="text-3xl font-black">Tomorrow’s must-watch Roland Garros matches</h2>
+              <p className="mt-3 max-w-3xl leading-8 text-zinc-400">
+                Keep users moving from yesterday’s recap into the next viewing
+                session with upcoming French Open matches from the available
+                schedule data.
+              </p>
+            </div>
+            <a
+              href="/tomorrow"
+              className="rounded-full border border-zinc-700 px-5 py-3 text-sm font-bold transition hover:border-blue-400"
+            >
+              Full tomorrow schedule →
+            </a>
+          </div>
+
+          {upcomingMatches.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {advancementSummaries.slice(0, 9).map((item) => (
-                <AdvancementCard
-                  key={`advanced-${item.id}-${item.winner}`}
-                  item={item}
-                />
+              {upcomingMatches.slice(0, 6).map((match) => (
+                <UpcomingMatchCard key={`upcoming-${match.id}`} match={match} />
               ))}
             </div>
           ) : (
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
               <p className="leading-8 text-zinc-300">
-                Advancement details are not available yet. The section will
-                populate after completed matches are linked with winner data.
+                Upcoming Roland Garros matches are not listed yet. Tournament
+                schedules can move after long matches, weather delays and court
+                changes.
               </p>
             </div>
           )}
         </section>
 
-        <section className="mb-10 grid gap-4 md:grid-cols-4">
+        <section className="mb-10 grid gap-4 md:grid-cols-5">
           {statCards.map((card) => (
             <div
               key={card.label}
