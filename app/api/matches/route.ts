@@ -77,7 +77,11 @@ async function fetchFixtureWindows(
   resolvedPlayerKey: string | null
 ) {
   const windows = buildDateWindows(dateStartDate, dateStopDate);
-  const fixtureResponses = await Promise.all(
+
+  // Keep the public /api/matches endpoint fast and resilient. API-Tennis can
+  // return intermittent 500s on get_fixtures; a single failed chunk must not
+  // make Vercel logs look broken or slow down the whole site.
+  const fixtureResponses = await Promise.allSettled(
     windows.map((window) =>
       fetchApiTennis(
         "get_fixtures",
@@ -89,7 +93,9 @@ async function fetchFixtureWindows(
     )
   );
 
-  return fixtureResponses.flat();
+  return fixtureResponses.flatMap((response) =>
+    response.status === "fulfilled" ? response.value : []
+  );
 }
 
 function normalizeCategory(eventType?: string) {
@@ -586,35 +592,44 @@ function getWatchProviders(category: string, tournament: string) {
 
 async function fetchApiTennis(method: string, apiKey: string, params = "") {
   const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4500);
 
-const response = await fetch(url, {
-  cache: "no-store",
-});
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
 
-  if (!response.ok) {
-  console.error(
-    `API-Tennis request failed: ${method} (${response.status})`
-  );
+    if (!response.ok) {
+      // External API outages are expected sometimes. Use warn instead of error
+      // so Vercel does not surface healthy 200 responses as scary function errors.
+      console.warn(`API-Tennis ${method} unavailable (${response.status})`);
+      return [];
+    }
 
-  return [];
-}
+    const text = await response.text();
+    let data;
 
-  const text = await response.text();
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.warn("API-Tennis returned invalid JSON");
+      return [];
+    }
 
-let data;
+    if (data.success !== 1) {
+      return [];
+    }
 
-try {
-  data = JSON.parse(text);
-} catch (error) {
-  console.error("API-Tennis returned invalid JSON:", text.slice(0, 500));
-  return [];
-}
-
-  if (data.success !== 1) {
+    return Array.isArray(data.result) ? data.result : [];
+  } catch (error) {
+    const message = error instanceof Error ? error.name : "unknown";
+    console.warn(`API-Tennis ${method} fetch skipped (${message})`);
     return [];
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return Array.isArray(data.result) ? data.result : [];
 }
 
 async function getPlayerKeyByName(apiKey: string, playerName: string) {
@@ -643,6 +658,40 @@ async function getPlayerKeyByName(apiKey: string, playerName: string) {
   return player?.player_key ? String(player.player_key) : null;
 }
 
+async function getArchivedMatches(dateStart: string, limit = 600) {
+  try {
+    const { data, error } = await supabase
+      .from("match_archive")
+      .select("id, player1, player2, tournament, category, status, score, start_time, watch_providers")
+      .gte("start_time", `${dateStart}T00:00:00.000Z`)
+      .order("start_time", { ascending: false })
+      .limit(limit);
+
+    if (error || !Array.isArray(data)) {
+      if (error) console.warn("match_archive fallback unavailable:", error.message);
+      return [];
+    }
+
+    return data.map((match: any) => ({
+      id: String(match.id),
+      player1: match.player1 || "Unknown player",
+      player2: match.player2 || "Unknown player",
+      tournament: match.tournament || "Unknown tournament",
+      category: match.category || "UNKNOWN",
+      status: match.status || "FINISHED",
+      score: match.score || "",
+      pointScore: "",
+      startTime: match.start_time || "",
+      winner: null,
+      winnerId: null,
+      watchProviders: match.watch_providers || [],
+    }));
+  } catch (error) {
+    console.warn("match_archive fallback skipped:", error);
+    return [];
+  }
+}
+
 async function getArchivedMatchesForPlayer(playerName: string, dateStart: string) {
   try {
     const { data, error } = await supabase
@@ -653,7 +702,7 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
       .limit(600);
 
     if (error || !Array.isArray(data)) {
-      if (error) console.error("match_archive lookup failed:", error.message);
+      if (error) console.warn("match_archive lookup failed:", error.message);
       return [];
     }
 
@@ -678,7 +727,7 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
         watchProviders: match.watch_providers || [],
       }));
   } catch (error) {
-    console.error("match_archive lookup crashed:", error);
+    console.warn("match_archive lookup skipped:", error);
     return [];
   }
 }
@@ -793,23 +842,33 @@ const dateStop = formatDate(dateStopDate);
       );
     }
 
-    await supabase.from("match_archive").upsert(
-      mappedMatches.map((match) => ({
-        id: String(match.id),
-        player1: match.player1,
-        player2: match.player2,
-        tournament: match.tournament,
-        category: match.category,
-        status: match.status,
-        score: match.score || null,
-        start_time: match.startTime || null,
-        watch_providers: match.watchProviders || [],
-        updated_at: new Date().toISOString(),
-      })),
-      {
-        onConflict: "id",
+    if (mappedMatches.length === 0) {
+      mappedMatches = await getArchivedMatches(dateStart);
+    }
+
+    if (mappedMatches.length > 0) {
+      const { error: archiveUpsertError } = await supabase.from("match_archive").upsert(
+        mappedMatches.map((match) => ({
+          id: String(match.id),
+          player1: match.player1,
+          player2: match.player2,
+          tournament: match.tournament,
+          category: match.category,
+          status: match.status,
+          score: match.score || null,
+          start_time: match.startTime || null,
+          watch_providers: match.watchProviders || [],
+          updated_at: new Date().toISOString(),
+        })),
+        {
+          onConflict: "id",
+        }
+      );
+
+      if (archiveUpsertError) {
+        console.warn("match_archive upsert skipped:", archiveUpsertError.message);
       }
-    );
+    }
 
     if (matchId) {
       return NextResponse.json(
@@ -852,7 +911,7 @@ const dateStop = formatDate(dateStopDate);
       },
     });
   } catch (error) {
-  console.error("Failed to fetch tennis matches:", error);
+  console.warn("Failed to fetch tennis matches:", error);
 
   return NextResponse.json(
     {
