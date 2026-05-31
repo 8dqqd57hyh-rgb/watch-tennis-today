@@ -89,6 +89,7 @@ export default async function FrenchOpenResultsPage() {
   const relatedLinks = [
     ["French Open Live", "/french-open-live"],
     ["French Open Today", "/french-open-today"],
+    ["Roland Garros Recap", "/roland-garros-recap"],
     ["Order of Play", "/french-open-order-of-play"],
     ["French Open Draw", "/french-open-draw"],
     ["TV Schedule", "/french-open-tv-schedule"],

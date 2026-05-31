@@ -385,6 +385,7 @@ const frenchOpenPages = [
   "/french-open-today",
   "/french-open-order-of-play",
   "/french-open-results",
+  "/roland-garros-recap",
   "/french-open-draw",
   "/where-to-watch-french-open",
 ];
