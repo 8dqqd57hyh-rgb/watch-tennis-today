@@ -3,6 +3,7 @@ import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
 import FrenchOpenNextMatchesStrip from "@/app/components/FrenchOpenNextMatchesStrip";
 import JsonLd from "@/app/components/JsonLd";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
+import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 
 export const metadata = {
   title: "French Open Draw Tracker 2026 | Roland Garros Player Paths",
@@ -121,6 +122,7 @@ export default function FrenchOpenDrawPage() {
         </section>
 
         <FrenchOpenNextMatchesStrip />
+        <FrenchOpenWatchIntent compact />
         <FrenchOpenDrawTracker />
 
         <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">

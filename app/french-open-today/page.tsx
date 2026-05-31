@@ -1,4 +1,5 @@
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 
 export const dynamic = "force-dynamic";
 
@@ -212,6 +213,7 @@ export default async function FrenchOpenTodayPage() {
         </section>
 
         <FrenchOpenConversionCluster compact title="More French Open coverage" />
+        <FrenchOpenWatchIntent compact />
 
         <section id="live" className="mb-12">
           <h2 className="mb-5 text-4xl font-black">Live French Open Matches</h2>

@@ -10,6 +10,7 @@ import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDec
 import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
 import FrenchOpenNextMatchesStrip from "@/app/components/FrenchOpenNextMatchesStrip";
 import FrenchOpenLiveSnapshot from "@/app/components/FrenchOpenLiveSnapshot";
+import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 
 export const metadata = {
   title: "French Open 2026 Hub: Live Matches, Results, Draw & TV Schedule",
@@ -149,6 +150,7 @@ export default function FrenchOpenHubPage() {
         </section>
 
         <FrenchOpenLiveSnapshot compact />
+        <FrenchOpenWatchIntent compact />
 
         <section className="mb-10 grid gap-4 md:grid-cols-3">
           {primaryCards.map((card) => (
