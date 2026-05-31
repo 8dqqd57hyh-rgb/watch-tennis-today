@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import SpoilerFreeScoreToggle, { SpoilerSafeScore, useSpoilerFreeScores } from "@/app/components/SpoilerFreeScoreToggle";
 import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
 type Match = {
@@ -74,6 +75,7 @@ function formatTime(value: string) {
 export default function TodayPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [spoilerFree, setSpoilerFree] = useSpoilerFreeScores();
 
   useEffect(() => {
     async function loadMatches() {
@@ -158,6 +160,8 @@ export default function TodayPage() {
           </div>
         </section>
 
+        <SpoilerFreeScoreToggle enabled={spoilerFree} onChange={setSpoilerFree} />
+
         {featuredMatch ? (
           <section className="mb-14 rounded-[2.5rem] border border-green-500 bg-gradient-to-br from-zinc-900 to-black p-8">
             <div className="flex flex-wrap items-center gap-3 mb-5">
@@ -190,7 +194,7 @@ export default function TodayPage() {
             <div className="flex flex-wrap gap-6 mb-8 text-lg">
               <div>
                 <p className="text-zinc-500 text-sm mb-1">Score</p>
-                <p className="font-black">{featuredMatch.score || "-"}</p>
+                <p className="font-black"><SpoilerSafeScore score={featuredMatch.score} hidden={spoilerFree} /></p>
               </div>
 
               <div>
@@ -276,8 +280,12 @@ export default function TodayPage() {
 
                   <p className="text-zinc-400 mb-3">{match.tournament}</p>
 
-                  <p className="text-zinc-500 text-sm mb-5">
+                  <p className="text-zinc-500 text-sm mb-3">
                     {formatTime(match.startTime)}
+                  </p>
+
+                  <p className="mb-5 text-sm font-black text-zinc-200">
+                    Score: <SpoilerSafeScore score={match.score} hidden={spoilerFree} />
                   </p>
 
                   <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
