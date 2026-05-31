@@ -38,6 +38,8 @@ type Match = {
   status: string;
   score: string;
   startTime: string;
+  winner?: string | null;
+  winnerId?: string | number | null;
 };
 
 
@@ -222,10 +224,22 @@ async function getBaseUrl() {
   return `${protocol}://${host}`;
 }
 
-async function getMatches(): Promise<Match[]> {
+async function getMatches(
+  playerName?: string,
+  options: { daysBack?: number; daysForward?: number } = {}
+): Promise<Match[]> {
   const baseUrl = await getBaseUrl();
+  const params = new URLSearchParams({
+    includeFinished: "1",
+    daysBack: String(options.daysBack ?? 120),
+    daysForward: String(options.daysForward ?? 45),
+  });
 
-  const response = await fetch(`${baseUrl}/api/matches`, {
+  if (playerName) {
+    params.set("playerName", playerName);
+  }
+
+  const response = await fetch(`${baseUrl}/api/matches?${params.toString()}`, {
     cache: "no-store",
   });
 
@@ -253,6 +267,30 @@ async function getMatches(): Promise<Match[]> {
   }
 
   return [];
+}
+
+function mergeMatchesById(matches: Match[]) {
+  return Array.from(new Map(matches.map((match) => [String(match.id), match])).values());
+}
+
+async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
+  const [playerScopedMatches, globalMatches] = await Promise.all([
+    getMatches(playerName, { daysBack: 120, daysForward: 45 }),
+    // Keep the broad fallback small. The player-scoped API now fetches history in
+    // chunks; the global feed is only a safety net for current/live rows that may
+    // not resolve by player_key.
+    getMatches(undefined, { daysBack: 14, daysForward: 45 }),
+  ]);
+
+  // Do not stop at the first finished match from the player-scoped endpoint.
+  // API-Tennis can return only the current tournament row for a player, while the
+  // broader fixture/archive response may contain earlier completed wins. Merge both
+  // sources and then filter locally with the same name matcher used by Player Form.
+  const localMatches = globalMatches.filter((match) =>
+    [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
+  );
+
+  return mergeMatchesById([...playerScopedMatches, ...localMatches]);
 }
 
 function slugify(value: string) {
@@ -290,24 +328,60 @@ function formatMatchDateTime(value?: string) {
   }).format(date);
 }
 
-function getOpponentForPlayer(match: Match, playerName: string) {
-  const target = normalizePlayerName(playerName);
-  const player1 = normalizePlayerName(match.player1);
-  const player2 = normalizePlayerName(match.player2);
+function doPlayerNamesMatch(candidateName: string, targetName: string) {
+  const candidate = normalizePlayerName(candidateName || "");
+  const target = normalizePlayerName(targetName || "");
 
-  if (player1 === target) return match.player2;
-  if (player2 === target) return match.player1;
+  if (!candidate || !target) return false;
+  if (candidate === target) return true;
+
+  const candidateParts = candidate.split(" ").filter(Boolean);
+  const targetParts = target.split(" ").filter(Boolean);
+  const candidateLast = candidateParts.at(-1);
+  const targetLast = targetParts.at(-1);
+  const candidateFirst = candidateParts[0];
+  const targetFirst = targetParts[0];
+
+  if (!candidateLast || !targetLast || candidateLast !== targetLast) {
+    return false;
+  }
+
+  // API feeds often abbreviate tennis names as "A. Rublev" / "A Rublev" while
+  // player pages use the full display name "Andrey Rublev". Treat matching last
+  // name + first initial as the same player so the form block and match center share
+  // the exact same normalized dataset.
+  if (candidateFirst && targetFirst && candidateFirst[0] === targetFirst[0]) {
+    return true;
+  }
+
+  return false;
+}
+
+function getOpponentForPlayer(match: Match, playerName: string) {
+  if (doPlayerNamesMatch(match.player1, playerName)) return match.player2;
+  if (doPlayerNamesMatch(match.player2, playerName)) return match.player1;
 
   return `${match.player1} / ${match.player2}`;
 }
 
 function isLiveMatch(match: Match) {
-  return match.status?.toUpperCase() === "LIVE";
+  return match.status?.toUpperCase() === "LIVE" && !isFinishedMatch(match);
+}
+
+function hasUsableScore(match: Match) {
+  const score = String(match.score || "").trim();
+  return Boolean(score && score !== "-" && score !== "0-0" && score !== "0 - 0");
 }
 
 function isFinishedMatch(match: Match) {
   const normalized = match.status?.toUpperCase() || "";
-  return ["FINISHED", "ENDED", "COMPLETED", "FINAL"].includes(normalized);
+  if (["FINISHED", "ENDED", "COMPLETED", "FINAL", "RETIRED", "WALKOVER"].includes(normalized)) {
+    return true;
+  }
+
+  // Some live feeds keep a match marked LIVE after the score is already complete.
+  // A clearly completed tennis score must be treated as FINAL everywhere.
+  return Boolean(inferMatchWinnerSideFromScore(match));
 }
 
 function isUpcomingMatch(match: Match) {
@@ -337,6 +411,204 @@ function getPlayerPageSummary(playerName: string, playerMatches: Match[]) {
 }
 
 
+type PlayerFormItem = {
+  match: Match;
+  result: "W" | "L";
+  opponent: string;
+};
+
+function getPlayerSide(match: Match, playerName: string) {
+  if (doPlayerNamesMatch(match.player1, playerName)) return "player1";
+  if (doPlayerNamesMatch(match.player2, playerName)) return "player2";
+
+  return null;
+}
+
+function parseSetScore(setScore: string) {
+  const cleaned = setScore
+    .replace(/\([^)]*\)/g, "")
+    .replace(/[–—]/g, "-")
+    .trim();
+
+  const match = cleaned.match(/(\d+)\s*-\s*(\d+)/);
+  if (!match) return null;
+
+  const first = Number.parseInt(match[1], 10);
+  const second = Number.parseInt(match[2], 10);
+
+  if (!Number.isFinite(first) || !Number.isFinite(second) || first === second) {
+    return null;
+  }
+
+  return { first, second };
+}
+
+function getWinnerSideFromWinnerField(match: Match) {
+  const winner = normalizePlayerName(String(match.winner || match.winnerId || ""));
+  if (!winner) return null;
+
+  const player1 = normalizePlayerName(match.player1 || "");
+  const player2 = normalizePlayerName(match.player2 || "");
+
+  if (["1", "first", "first player", "player1", "player 1", "home", "homeplayer", "event first player", "event_first_player"].includes(winner)) return "player1";
+  if (["2", "second", "second player", "player2", "player 2", "away", "awayplayer", "event second player", "event_second_player"].includes(winner)) return "player2";
+  if (winner === player1 || player1.includes(winner) || winner.includes(player1) || doPlayerNamesMatch(match.player1, winner)) return "player1";
+  if (winner === player2 || player2.includes(winner) || winner.includes(player2) || doPlayerNamesMatch(match.player2, winner)) return "player2";
+
+  return null;
+}
+
+function isCompletedTennisSet(first: number, second: number) {
+  const high = Math.max(first, second);
+  const low = Math.min(first, second);
+
+  if (high >= 6 && high - low >= 2) return true;
+  if (high === 7 && low >= 5) return true;
+
+  return false;
+}
+
+function inferMatchWinnerSideFromScore(match: Match) {
+  if (!match.score || match.score === "-") return null;
+
+  const sets = match.score
+    .split(/[,;]/)
+    .map(parseSetScore)
+    .filter((set): set is { first: number; second: number } => Boolean(set));
+
+  if (!sets.length) return null;
+
+  let player1Sets = 0;
+  let player2Sets = 0;
+  let incompleteSets = 0;
+
+  for (const set of sets) {
+    if (!isCompletedTennisSet(set.first, set.second)) {
+      incompleteSets += 1;
+      continue;
+    }
+
+    if (set.first > set.second) {
+      player1Sets += 1;
+    } else {
+      player2Sets += 1;
+    }
+  }
+
+  if (incompleteSets > 0) return null;
+  if (player1Sets === player2Sets) return null;
+
+  const requiredSets = sets.length >= 5 ? 3 : 2;
+
+  if (player1Sets >= requiredSets && player1Sets > player2Sets) return "player1";
+  if (player2Sets >= requiredSets && player2Sets > player1Sets) return "player2";
+
+  return null;
+}
+
+function inferMatchWinnerSide(match: Match) {
+  return getWinnerSideFromWinnerField(match) || inferMatchWinnerSideFromScore(match);
+}
+
+function canUseMatchInPlayerForm(match: Match) {
+  if (getWinnerSideFromWinnerField(match)) return true;
+  if (!isFinishedMatch(match)) return false;
+
+  return Boolean(inferMatchWinnerSideFromScore(match));
+}
+
+function buildPlayerForm(playerName: string, candidateMatches: Match[]) {
+  const sortedMatches = [...candidateMatches].sort((a, b) => getMatchTime(b) - getMatchTime(a));
+  const excludedMatches: Match[] = [];
+  const form: PlayerFormItem[] = [];
+
+  for (const match of sortedMatches) {
+    if (form.length >= 10) break;
+
+    const playerSide = getPlayerSide(match, playerName);
+    const winnerSide = inferMatchWinnerSide(match);
+
+    if (!playerSide || !winnerSide || !canUseMatchInPlayerForm(match)) {
+      excludedMatches.push(match);
+      continue;
+    }
+
+    form.push({
+      match,
+      result: playerSide === winnerSide ? "W" : "L",
+      opponent: getOpponentForPlayer(match, playerName),
+    });
+  }
+
+  const wins = form.filter((item) => item.result === "W").length;
+  const losses = form.filter((item) => item.result === "L").length;
+  const winRate = form.length ? Math.round((wins / form.length) * 100) : null;
+
+  let currentStreakType: "W" | "L" | null = null;
+  let currentStreakCount = 0;
+
+  for (const item of form) {
+    if (!currentStreakType) {
+      currentStreakType = item.result;
+      currentStreakCount = 1;
+      continue;
+    }
+
+    if (item.result === currentStreakType) {
+      currentStreakCount += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  const allTournaments = Array.from(
+    new Set(form.map((item) => item.match.tournament).filter(Boolean))
+  );
+  const tournaments = allTournaments.slice(0, 4);
+
+  // Do not present a single-tournament mini sample as "Last 10 matches" form.
+  // Some feeds only return the active tournament even when a wider date window is
+  // requested. Showing 3-4 Roland Garros rows as a player's overall recent form is
+  // misleading and not useful, so only show win-rate/streak stats when we have a
+  // broader sample.
+  const hasMeaningfulRecentHistory = form.length >= 8 || (form.length >= 6 && allTournaments.length >= 2);
+
+  if (process.env.NODE_ENV !== "production") {
+    console.info("Player form debug", {
+      playerName,
+      totalMatchesFound: candidateMatches.length,
+      validMatchesUsed: form.length,
+      excludedMatches: excludedMatches.map((match) => ({
+        id: match.id,
+        player1: match.player1,
+        player2: match.player2,
+        status: match.status,
+        score: match.score,
+        winner: match.winner || null,
+      })),
+    });
+  }
+
+  return {
+    form,
+    wins,
+    losses,
+    winRate,
+    currentStreakType,
+    currentStreakCount,
+    tournaments,
+    hasMeaningfulRecentHistory,
+    debug: {
+      playerName,
+      totalMatchesFound: candidateMatches.length,
+      validMatchesUsed: form.length,
+      excludedMatches,
+    },
+  };
+}
+
+
 export default async function PlayerPage({
   params,
 }: {
@@ -345,18 +617,33 @@ export default async function PlayerPage({
   const { slug } = await params;
   const { canonicalSlug, pageSlug, playerName, isVerifiedPlayer } = getPlayerDisplay(slug);
 
-  const allMatches = await getMatches();
+  const allMatches = await getMatchesForPlayer(playerName);
 
 
 
 const playerMatches = allMatches
-  .filter((match) => matchContainsPlayerText(match, pageSlug))
+  .filter((match) =>
+    [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName)) ||
+    matchContainsPlayerText(match, pageSlug)
+  )
   .sort(sortMatchesByUserIntent);
 
   const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
   const pageSummary = getPlayerPageSummary(playerName, playerMatches);
   const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments, headline } = pageSummary;
+  const currentTournament = tournaments[0] || finishedMatches[0]?.tournament || upcomingMatches[0]?.tournament || liveMatches[0]?.tournament || "Not listed";
+  const playerForm = buildPlayerForm(playerName, playerMatches);
+
+  if (process.env.NODE_ENV !== "production") {
+    console.info("Player page match dataset debug", {
+      playerName,
+      matchCenterMatches: playerMatches.length,
+      formMatches: playerForm.form.length,
+      finishedMatches: finishedMatches.length,
+      liveMatches: liveMatches.length,
+    });
+  }
 
   const personSchema = {
     "@context": "https://schema.org",
@@ -454,38 +741,10 @@ const playerMatches = allMatches
               <p className="mt-1 text-3xl font-black">{upcomingMatches.length}</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Recent results</p>
-              <p className="mt-1 text-3xl font-black">{finishedMatches.length}</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Current tournament</p>
+              <p className="mt-1 truncate text-2xl font-black">{currentTournament}</p>
             </div>
           </div>
-
-          {nextMatch ? (
-            <div className="mt-6 rounded-2xl border border-green-400/40 bg-green-400/10 p-5">
-              <p className="text-sm font-black uppercase tracking-wide text-green-300">
-                {isLiveMatch(nextMatch) ? "Match live now" : "Next listed match"}
-              </p>
-              <p className="mt-2 text-2xl font-black">
-                {nextMatch.player1} vs {nextMatch.player2}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-zinc-300">
-                {nextMatch.tournament} · {nextMatch.category} · {formatMatchDateTime(nextMatch.startTime)}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href={`/watch/${getMatchSlug(nextMatch)}`}
-                  className="rounded-2xl bg-green-400 px-5 py-3 text-sm font-black text-black hover:bg-green-300"
-                >
-                  Open match page →
-                </Link>
-                <Link
-                  href={`/watch-player-live/${pageSlug}`}
-                  className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black text-white hover:border-green-400"
-                >
-                  {playerName} live hub
-                </Link>
-              </div>
-            </div>
-          ) : null}
         </div>
       </section>
 
@@ -507,9 +766,7 @@ const playerMatches = allMatches
         />
       </div>
 
-      {playerMatches.some(
-  (match) => match.status === "LIVE"
-) ? (
+      {playerMatches.some(isLiveMatch) ? (
   <section className="mb-8 rounded-2xl border border-red-500 bg-red-500/10 p-6">
     <div className="flex flex-wrap items-center gap-3 mb-4">
       <span className="bg-red-500 text-white text-sm font-black px-4 py-2 rounded-full animate-pulse">
@@ -528,7 +785,7 @@ const playerMatches = allMatches
 
     <div className="flex flex-wrap gap-3">
       {playerMatches
-        .filter((match) => match.status === "LIVE")
+        .filter(isLiveMatch)
         .slice(0, 2)
         .map((match) => (
           <Link
@@ -543,8 +800,111 @@ const playerMatches = allMatches
   </section>
 ) : null}
 
-      <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+
+      <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
+              Player form
+            </p>
+            <h2 className="text-2xl font-black text-zinc-950">
+              {playerName} recent form and winning streak
+            </h2>
+          </div>
+          <span className="rounded-full bg-zinc-100 px-4 py-2 text-xs font-black uppercase text-zinc-600">
+            {playerForm.hasMeaningfulRecentHistory ? "Last 10 matches" : "Limited history"}
+          </span>
+        </div>
+
+        {playerForm.hasMeaningfulRecentHistory ? (
+          <>
+            <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+                <p className="text-sm font-bold text-zinc-600">Form guide</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {playerForm.form.map((item) => (
+                    <span
+                      key={item.match.id}
+                      title={`${item.match.player1} vs ${item.match.player2}`}
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-black ${
+                        item.result === "W"
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                      }`}
+                    >
+                      {item.result}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-4 text-sm leading-7 text-zinc-600">
+                  Based only on completed matches where the winner can be determined from the feed.
+                  Unclear score rows are excluded from form and streak calculations.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-950 p-5 text-white">
+                <p className="text-sm font-bold text-zinc-400">Current streak</p>
+                <p className="mt-3 text-3xl font-black">
+                  {playerForm.currentStreakType && playerForm.currentStreakCount
+                    ? `${playerForm.currentStreakType === "W" ? "🔥" : "⚠️"} ${playerForm.currentStreakCount} ${playerForm.currentStreakType === "W" ? "win" : "loss"}${playerForm.currentStreakCount === 1 ? "" : "es"}`
+                    : "Not enough data"}
+                </p>
+                <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-xs text-zinc-400">Wins</p>
+                    <p className="text-xl font-black">{playerForm.wins}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-xs text-zinc-400">Losses</p>
+                    <p className="text-xl font-black">{playerForm.losses}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-xs text-zinc-400">Win rate</p>
+                    <p className="text-xl font-black">{playerForm.winRate === null ? "—" : `${playerForm.winRate}%`}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              {playerForm.form.slice(0, 5).map((item) => (
+                <a
+                  key={item.match.id}
+                  href={`/watch/${getMatchSlug(item.match)}`}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 p-4 hover:border-green-500 hover:bg-green-50"
+                >
+                  <div>
+                    <p className="font-black text-zinc-950">
+                      {item.result === "W" ? "Won" : "Lost"} vs {item.opponent}
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-600">
+                      {item.match.tournament} · {formatMatchDateTime(item.match.startTime)}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold text-zinc-700">{item.match.score}</span>
+                </a>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
+            <p className="font-bold text-zinc-800">Not enough broad recent history yet.</p>
+            <p className="mt-2">
+              The feed currently returns only {playerForm.form.length ? "a small current-tournament sample" : "no usable completed matches"} for {playerName}.
+              To avoid misleading stats, win rate and streak are hidden until there are enough completed matches across a wider recent window.
+            </p>
+            {playerForm.form.length ? (
+              <p className="mt-2">
+                Current available sample: {playerForm.form.length} completed match{playerForm.form.length === 1 ? "" : "es"}
+                {playerForm.tournaments.length ? ` from ${playerForm.tournaments.join(", ")}` : ""}.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </section>
+
+      <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
               Player match center
@@ -559,7 +919,7 @@ const playerMatches = allMatches
         </div>
 
         {playerMatches.length > 0 ? (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {playerMatches.slice(0, 10).map((match) => {
               const live = isLiveMatch(match);
               const finished = isFinishedMatch(match);
@@ -568,24 +928,20 @@ const playerMatches = allMatches
               return (
                 <article
                   key={match.id}
-                  className="rounded-2xl border border-zinc-200 p-4 transition hover:border-green-500 hover:bg-green-50/40"
+                  className="rounded-2xl border border-zinc-200 p-3 transition hover:border-green-500 hover:bg-green-50/40"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="mb-2 flex flex-wrap gap-2">
                         {live ? (
                           <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-black uppercase text-white animate-pulse">
-                            Live now
+                            Live
                           </span>
-                        ) : finished ? (
-                          <span className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-black uppercase text-zinc-700">
-                            Result
-                          </span>
-                        ) : (
+                        ) : !finished ? (
                           <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-black uppercase text-green-700">
-                            Upcoming
+                            Next
                           </span>
-                        )}
+                        ) : null}
                         <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-600">
                           {match.category}
                         </span>
@@ -594,7 +950,7 @@ const playerMatches = allMatches
                       <h3 className="text-lg font-black text-zinc-950">
                         {match.player1} vs {match.player2}
                       </h3>
-                      <p className="mt-1 text-sm leading-6 text-zinc-600">
+                      <p className="mt-1 text-sm text-zinc-600">
                         Opponent/context: {opponent} · {formatMatchDateTime(match.startTime)}
                       </p>
                       {match.score ? (
@@ -610,16 +966,16 @@ const playerMatches = allMatches
                     </a>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-3 flex flex-wrap gap-2">
                     <a
                       href={`/watch/${getMatchSlug(match)}`}
-                      className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800 transition-all"
+                      className="inline-flex items-center rounded-xl bg-black px-3 py-2 text-sm font-bold text-white hover:bg-zinc-800 transition-all"
                     >
                       {live ? "Follow live match" : finished ? "Open result" : "Open match"} →
                     </a>
                     <a
                       href={`/watch-player-live/${pageSlug}`}
-                      className="inline-flex items-center rounded-xl border border-zinc-200 px-4 py-2 text-sm font-bold text-zinc-900 hover:border-green-500 hover:bg-white"
+                      className="inline-flex items-center rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900 hover:border-green-500 hover:bg-white"
                     >
                       {playerName} live stream guide
                     </a>

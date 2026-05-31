@@ -14,6 +14,8 @@ type ApiTennisMatch = {
   event_live_score?: string;
   event_status: string;
   event_type_type: string;
+  event_winner?: string | null;
+  event_winner_player?: string | null;
   tournament_name: string;
   event_live: string;
   tournament_round?: string;
@@ -42,6 +44,52 @@ type ApiTennisMatch = {
 
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
+}
+
+function buildDateWindows(dateStartDate: Date, dateStopDate: Date, chunkDays = 28) {
+  const windows: { start: string; stop: string }[] = [];
+  const cursor = new Date(dateStartDate);
+
+  while (cursor <= dateStopDate) {
+    const windowStart = new Date(cursor);
+    const windowStop = new Date(cursor);
+    windowStop.setDate(windowStop.getDate() + chunkDays - 1);
+
+    if (windowStop > dateStopDate) {
+      windowStop.setTime(dateStopDate.getTime());
+    }
+
+    windows.push({
+      start: formatDate(windowStart),
+      stop: formatDate(windowStop),
+    });
+
+    cursor.setDate(cursor.getDate() + chunkDays);
+  }
+
+  return windows;
+}
+
+async function fetchFixtureWindows(
+  apiKey: string,
+  dateStartDate: Date,
+  dateStopDate: Date,
+  resolvedPlayerKey: string | null
+) {
+  const windows = buildDateWindows(dateStartDate, dateStopDate);
+  const fixtureResponses = await Promise.all(
+    windows.map((window) =>
+      fetchApiTennis(
+        "get_fixtures",
+        apiKey,
+        `&date_start=${window.start}&date_stop=${window.stop}&timezone=Europe/Warsaw${
+          resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
+        }`
+      )
+    )
+  );
+
+  return fixtureResponses.flat();
 }
 
 function normalizeCategory(eventType?: string) {
@@ -142,7 +190,12 @@ const hasScore = Boolean(
     return "LIVE";
   }
 
-  if (status.includes("finished")) {
+  if (
+    status.includes("finished") ||
+    status.includes("ended") ||
+    status.includes("complete") ||
+    status.includes("final")
+  ) {
     return "FINISHED";
   }
 
@@ -150,13 +203,16 @@ const hasScore = Boolean(
     return "CANCELLED";
   }
 
-  if (status.includes("retired")) {
+  if (status.includes("retired") || status.includes("walkover")) {
     return "RETIRED";
   }
 
+  // API-Tennis fixtures often return past completed matches with a score but
+  // without a reliable `event_status`. Treat scored past fixtures as finished
+  // so player form / recent results pages do not look empty for active players.
   if (hasScore) {
-  return "SUSPENDED";
-}
+    return startsInFuture ? "SUSPENDED" : "FINISHED";
+  }
 
 // fixtures without official time yet
 if (
@@ -571,9 +627,6 @@ async function getPlayerKeyByName(apiKey: string, playerName: string) {
     `&player_name=${encodeURIComponent(lastName)}`
   );
 
-  console.log("PLAYER SEARCH QUERY:", lastName);
-  console.log("PLAYER SEARCH RESULTS:", players.slice(0, 10));
-
   const normalizedTarget = playerName.toLowerCase();
   const normalizedLastName = lastName.toLowerCase();
 
@@ -587,9 +640,47 @@ async function getPlayerKeyByName(apiKey: string, playerName: string) {
     );
   });
 
-  console.log("RESOLVED PLAYER:", player);
-
   return player?.player_key ? String(player.player_key) : null;
+}
+
+async function getArchivedMatchesForPlayer(playerName: string, dateStart: string) {
+  try {
+    const { data, error } = await supabase
+      .from("match_archive")
+      .select("id, player1, player2, tournament, category, status, score, start_time, watch_providers")
+      .gte("start_time", `${dateStart}T00:00:00.000Z`)
+      .order("start_time", { ascending: false })
+      .limit(600);
+
+    if (error || !Array.isArray(data)) {
+      if (error) console.error("match_archive lookup failed:", error.message);
+      return [];
+    }
+
+    return data
+      .filter((match: any) =>
+        [match.player1, match.player2].some((sideName) =>
+          apiNameMatchesPlayer(playerName, String(sideName || ""))
+        )
+      )
+      .map((match: any) => ({
+        id: String(match.id),
+        player1: match.player1 || "Unknown player",
+        player2: match.player2 || "Unknown player",
+        tournament: match.tournament || "Unknown tournament",
+        category: match.category || "UNKNOWN",
+        status: match.status || "FINISHED",
+        score: match.score || "",
+        pointScore: "",
+        startTime: match.start_time || "",
+        winner: null,
+        winnerId: null,
+        watchProviders: match.watch_providers || [],
+      }));
+  } catch (error) {
+    console.error("match_archive lookup crashed:", error);
+    return [];
+  }
 }
 
 export async function GET(request: Request) {
@@ -617,7 +708,7 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
-const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), 30) : 3;
+const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), 120) : 3;
 const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : 30;
 
 const dateStartDate = new Date();
@@ -642,23 +733,13 @@ const dateStop = formatDate(dateStopDate);
         ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw${cacheBust}`
         : `&timezone=Europe/Warsaw${cacheBust}`
   ),
-  fetchApiTennis(
-    "get_fixtures",
-    apiKey,
-    `&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw${
-      resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
-    }`
-  ),
+  // API-Tennis can silently return a very small slice when the fixture date range
+  // is too wide. Player Form needs a real history window, so split the requested
+  // range into smaller chunks and merge them. This is especially important for
+  // pages like Andrey Rublev where the latest Match Center row exists but earlier
+  // wins disappear from a single 120-day request.
+  fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey),
 ]);
-
-console.log("FIXTURES COUNT:", fixtureMatches.length);
-
-console.log(
-  "RYBAKINA BY FULL RESPONSE",
-  fixtureMatches.filter((match: ApiTennisMatch) =>
-    JSON.stringify(match).toLowerCase().includes("rybakina")
-  )
-);
 
     // Important: the live endpoint contains the freshest point-by-point payload.
     // Fixtures can contain the same event_key with older/limited data, so merge fixtures first
@@ -680,7 +761,7 @@ console.log(
         )
       : uniqueMatches;
 
-    const mappedMatches = filteredMatches.map((match) => {
+    let mappedMatches: any[] = filteredMatches.map((match) => {
       const category = normalizeCategory(match.event_type_type);
       const tournament = match.tournament_name || "Unknown tournament";
 
@@ -699,9 +780,18 @@ console.log(
         score: formatScore(match),
         pointScore: formatPointScore(match),
         startTime: getStartTime(match),
+        winner: match.event_winner || match.event_winner_player || null,
+        winnerId: null,
         watchProviders: getWatchProviders(category, tournament),
       };
     });
+
+    if (includeFinished && playerName) {
+      const archivedMatches = await getArchivedMatchesForPlayer(playerName, dateStart);
+      mappedMatches = Array.from(
+        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+      );
+    }
 
     await supabase.from("match_archive").upsert(
       mappedMatches.map((match) => ({
