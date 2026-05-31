@@ -4,6 +4,8 @@ import { supabase } from "@/app/lib/supabase";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export const dynamic = "force-dynamic";
+
 type Subscription = {
   email: string;
   player_slug: string;
@@ -20,6 +22,16 @@ type Match = {
   score?: string | null;
   startTime?: string | null;
 };
+
+function isBrowserProbe(request: Request) {
+  const userAgent = request.headers.get("user-agent") || "";
+  const accept = request.headers.get("accept") || "";
+
+  return (
+    accept.includes("text/html") ||
+    /Chrome|Safari|Firefox|Edg|OPR/i.test(userAgent)
+  );
+}
 
 function getAlertType(match: Match) {
   if (match.status === "LIVE") return "live";
@@ -101,7 +113,29 @@ export async function GET(request: Request) {
     const cronSecret = process.env.CRON_SECRET;
     const authHeader = request.headers.get("authorization");
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "CRON_SECRET is not configured. Player alerts were not sent.",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      if (isBrowserProbe(request)) {
+        return NextResponse.json({
+          ok: true,
+          endpoint: "send-player-alerts",
+          protected: true,
+          sent: 0,
+          skipped: 0,
+          message:
+            "This is a protected cron endpoint. No player alerts were sent from this browser request.",
+        });
+      }
+
       return NextResponse.json(
         { ok: false, message: "Unauthorized" },
         { status: 401 }
@@ -147,31 +181,28 @@ export async function GET(request: Request) {
         }
 
         const recipientEmail =
-  process.env.ALERT_TEST_MODE === "true"
-    ? "8dqqd57hyh@privaterelay.appleid.com"
-    : subscription.email;
+          process.env.ALERT_TEST_MODE === "true"
+            ? "8dqqd57hyh@privaterelay.appleid.com"
+            : subscription.email;
 
-const resendResult = await resend.emails.send({
-  from: "Watch Tennis Today <alerts@watchtennistoday.com>",
-  to: recipientEmail,
-  subject: getSubject(subscription.player_name, match, alertType),
-  html: getEmailHtml(subscription.player_name, subscription.player_slug, match),
-});
+        const resendResult = await resend.emails.send({
+          from: "Watch Tennis Today <alerts@watchtennistoday.com>",
+          to: recipientEmail,
+          subject: getSubject(subscription.player_name, match, alertType),
+          html: getEmailHtml(subscription.player_name, subscription.player_slug, match),
+        });
 
-console.log("RESEND RESULT:", resendResult);
+        if (resendResult.error) {
+          console.error("RESEND ERROR:", resendResult.error);
+          skipped++;
+          continue;
+        }
 
-if (resendResult.error) {
-  console.error("RESEND ERROR:", resendResult.error);
-  skipped++;
-  continue;
-}
-
-sent++;
+        sent++;
         console.log("RESEND RESULT:", resendResult);
       }
-      
     }
-    
+
 
     return NextResponse.json({
       ok: true,
