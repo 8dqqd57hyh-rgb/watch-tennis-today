@@ -1,4 +1,7 @@
 import { headers } from "next/headers";
+import DailyTennisLoop from "@/app/components/DailyTennisLoop";
+import EmailSignup from "@/app/components/EmailSignup";
+import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -361,6 +364,8 @@ export default async function RolandGarrosRecapPage() {
           </p>
         </section>
 
+        <DailyTennisLoop compact />
+
         <section
           className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6"
           id="who-advanced"
@@ -427,6 +432,8 @@ export default async function RolandGarrosRecapPage() {
             </div>
           )}
         </section>
+
+        <RevenueConversionPanel context="recap" tournament="Roland Garros" />
 
         <section className="mb-10 grid gap-4 md:grid-cols-5">
           {statCards.map((card) => (
@@ -595,6 +602,16 @@ export default async function RolandGarrosRecapPage() {
             </div>
           </div>
         </section>
+
+        <div className="mb-12">
+          <EmailSignup
+            title="Get the next Roland Garros catch-up"
+            description="Get useful tennis schedule reminders and Grand Slam viewing notes without popups or spam."
+            source="roland-garros-recap"
+            buttonLabel="Send me tennis updates"
+            context="Roland Garros recap page"
+          />
+        </div>
 
         <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 to-black p-8">
           <h2 className="mb-5 text-3xl font-black">Why this recap exists</h2>

@@ -1,14 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
-import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import EmailSignup from "@/app/components/EmailSignup";
+import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -531,6 +532,8 @@ async function subscribeToFinals(
   </div>
 </section>
 
+<DailyTennisLoop tournamentName="French Open" />
+
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
             </h1>
@@ -561,12 +564,12 @@ tennis viewing information.
   >
     Tomorrow&apos;s schedule
   </a>
-  <a
+  <Link
     href="/compare"
     className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold text-zinc-300 hover:border-zinc-500 hover:text-white"
   >
     Compare streaming services
-  </a>
+  </Link>
 </div>
 
 <HomepageGrowthEngine matches={homepageMatches} />
@@ -751,12 +754,12 @@ tennis viewing information.
                 Live Tennis Today
               </a>
 
-              <a
+              <Link
                 href="/tournament"
                 className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 transition-all"
               >
                 Tennis Tournaments
-              </a>
+              </Link>
 
               <a
                 href="/best-ways-to-watch-tennis-online"
@@ -795,19 +798,19 @@ tennis viewing information.
 
             </div>
 
-            <a
+            <Link
               href="/watch"
               className="inline-block mt-5 bg-green-500 text-black font-bold px-5 py-3 rounded-2xl hover:bg-green-400 transition-all"
             >
               📺 Where to watch
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/tv-schedule"
               className="inline-block mt-5 ml-3 bg-zinc-800 text-white font-bold px-5 py-3 rounded-2xl hover:bg-zinc-700 transition-all"
             >
               📺 TV Schedule
-            </a>
+            </Link>
 
             <a
               href="/live-tennis"

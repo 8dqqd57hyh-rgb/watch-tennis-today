@@ -1,7 +1,7 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type RevenueConversionPanelProps = {
-  context?: "homepage" | "player" | "matchup" | "article" | "tomorrow-schedule";
+  context?: "homepage" | "player" | "matchup" | "article" | "tomorrow-schedule" | "recap";
   playerName?: string;
   opponentName?: string;
   tournament?: string;
@@ -37,6 +37,12 @@ const contextCopy = {
     title: "Check the best legal way to watch tomorrow's matches",
     text:
       "Tomorrow schedules are useful for planning ahead, comparing official broadcasters and checking travel-friendly viewing options before match day.",
+  },
+  recap: {
+    eyebrow: "After the recap",
+    title: "Found the match you missed? Check the safest way to watch the next one",
+    text:
+      "Daily recaps are high-intent pages: fans catch up first, then need today's official broadcaster, travel viewing options and safe streaming guidance.",
   },
 };
 
