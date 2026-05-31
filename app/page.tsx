@@ -61,6 +61,13 @@ const priorityPlayers = [
   "Coco Gauff",
 ];
 
+const MAX_HOME_MATCHES = 60;
+const MAX_MATCH_CARDS = 24;
+
+function capHomepageMatches(matches: Match[]) {
+  return matches.slice(0, MAX_HOME_MATCHES);
+}
+
 function isGrandSlamTournament(tournament: string) {
   const name = tournament.toLowerCase();
 
@@ -239,6 +246,7 @@ export default function Home() {
   const [finalsEmail, setFinalsEmail] = useState("");
 const [finalsLoading, setFinalsLoading] = useState(false);
 const [finalsMessage, setFinalsMessage] = useState("");
+const [showHeavyHomeSections, setShowHeavyHomeSections] = useState(false);
 async function subscribeToFinals(
   event: React.FormEvent<HTMLFormElement>
 ) {
@@ -286,8 +294,13 @@ async function subscribeToFinals(
 
   useEffect(() => {
     async function loadMatches() {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 4500);
+
       try {
-        const matchesResponse = await fetch("/api/matches");
+        const matchesResponse = await fetch("/api/matches", {
+          signal: controller.signal,
+        });
 
         if (!matchesResponse.ok) {
           setMatches([]);
@@ -302,16 +315,28 @@ async function subscribeToFinals(
             ? matchesData.matches
             : [];
 
-        setMatches(safeMatches);
+        setMatches(capHomepageMatches(safeMatches));
       } catch (error) {
         console.error("Failed to load matches");
+        setMatches([]);
       } finally {
+        window.clearTimeout(timeoutId);
         setLoading(false);
       }
     }
 
     loadMatches();
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const timer = window.setTimeout(() => {
+      setShowHeavyHomeSections(true);
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+  }, [loading]);
 
   const homepageMatches = getHomepageMatches(matches);
   const seoPlayers = uniquePlayers(homepageMatches);
@@ -331,6 +356,8 @@ async function subscribeToFinals(
 
     return matchesFilter && matchesSearch;
   });
+
+  const visibleFilteredMatches = filteredMatches.slice(0, MAX_MATCH_CARDS);
 
   const livePlayers = [
     ...new Set(
@@ -535,10 +562,14 @@ async function subscribeToFinals(
   </div>
 </section>
 
-<DailyTennisLoop tournamentName="French Open" />
-<FrenchOpenConversionCluster compact title="French Open daily hub" />
-<FrenchOpenSurvivorsBoard compact />
-<TennisWatchlistHub matches={homepageMatches} />
+{showHeavyHomeSections ? (
+  <>
+    <DailyTennisLoop tournamentName="French Open" />
+    <FrenchOpenConversionCluster compact title="French Open daily hub" />
+    <FrenchOpenSurvivorsBoard compact />
+    <TennisWatchlistHub matches={homepageMatches} />
+  </>
+) : null}
 
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
@@ -578,10 +609,18 @@ tennis viewing information.
   </Link>
 </div>
 
-<HomepageGrowthEngine matches={homepageMatches} />
-<TodaysTennisHub matches={homepageMatches} />
-<BestMatchesTodayEngine matches={homepageMatches} />
-<BroadcastFinder />
+{showHeavyHomeSections ? (
+  <>
+    <HomepageGrowthEngine matches={homepageMatches} />
+    <TodaysTennisHub matches={homepageMatches} />
+    <BestMatchesTodayEngine matches={homepageMatches} />
+    <BroadcastFinder />
+  </>
+) : (
+  <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 text-zinc-400">
+    Preparing today&apos;s tennis picks...
+  </section>
+)}
 
         <RevenueConversionPanel context="homepage" />
 
@@ -1281,7 +1320,7 @@ tennis viewing information.
           <div className="text-zinc-400 text-xl">Loading matches...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredMatches.map((match) => (
+            {visibleFilteredMatches.map((match) => (
               <div
                 key={match.id}
                 className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 hover:scale-[1.02] transition-all"
