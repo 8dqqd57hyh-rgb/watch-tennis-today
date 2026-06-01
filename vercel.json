@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/send-player-digest",
+      "schedule": "30 8 * * *"
+    },
+    {
       "path": "/api/send-player-alerts",
       "schedule": "0 9 * * *"
     }
