@@ -33,6 +33,31 @@ function isBrowserProbe(request: Request) {
   );
 }
 
+function normalizeName(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function matchIncludesPlayer(match: Match, playerName: string) {
+  const targetParts = normalizeName(playerName).split(/\s+/).filter(Boolean);
+
+  if (targetParts.length === 0) return false;
+
+  return [match.player1, match.player2].some((sideName) => {
+    const side = normalizeName(sideName || "");
+
+    if (!side) return false;
+    if (side === normalizeName(playerName)) return true;
+
+    return targetParts.every((part) => side.includes(part));
+  });
+}
+
 function getAlertType(match: Match) {
   if (match.status === "LIVE") return "live";
   if (match.status === "UPCOMING") return "next-match";
@@ -42,36 +67,91 @@ function getAlertType(match: Match) {
 }
 
 function getSubject(playerName: string, match: Match, alertType: string) {
+  const opponent = getOpponent(playerName, match);
+
   if (alertType === "live") {
-    return `🎾 ${playerName} is LIVE now`;
+    return opponent
+      ? `🎾 ${playerName} vs ${opponent} is LIVE now`
+      : `🎾 ${playerName} is LIVE now`;
   }
 
   if (alertType === "result") {
-    return `✅ ${playerName} match result is available`;
+    return opponent
+      ? `✅ ${playerName} vs ${opponent} result is available`
+      : `✅ ${playerName} match result is available`;
   }
 
-  return `🎾 ${playerName} has an upcoming match`;
+  return opponent
+    ? `🎾 ${playerName} plays ${opponent} next`
+    : `🎾 ${playerName} has an upcoming match`;
+}
+
+function getOpponent(playerName: string, match: Match) {
+  const player1Matches = matchIncludesPlayer(
+    { ...match, player2: "" },
+    playerName
+  );
+  const player2Matches = matchIncludesPlayer(
+    { ...match, player1: "" },
+    playerName
+  );
+
+  if (player1Matches && match.player2) return match.player2;
+  if (player2Matches && match.player1) return match.player1;
+
+  return null;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatStartTime(startTime?: string | null) {
+  if (!startTime) return "Date/time not confirmed yet";
+
+  const date = new Date(startTime);
+
+  if (Number.isNaN(date.getTime())) return startTime;
+
+  return new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/Warsaw",
+  }).format(date);
 }
 
 function getEmailHtml(playerName: string, playerSlug: string, match: Match) {
-  const matchUrl = `https://watchtennistoday.com/watch/${match.id}`;
+  const matchUrl = `https://watchtennistoday.com/watch/${encodeURIComponent(match.id)}`;
   const playerUrl = `https://watchtennistoday.com/player/${playerSlug}`;
+  const opponent = getOpponent(playerName, match);
+  const title = opponent
+    ? `${escapeHtml(playerName)} vs ${escapeHtml(opponent)}`
+    : `${escapeHtml(match.player1)} vs ${escapeHtml(match.player2)}`;
 
   return `
-    <div style="font-family:Arial,sans-serif;padding:24px;line-height:1.5;color:#111;">
-      <h1 style="margin:0 0 12px;">
-        🎾 ${playerName} match update
-      </h1>
-
-      <p style="font-size:16px;margin:0 0 20px;">
-        ${match.player1} vs ${match.player2}
+    <div style="font-family:Arial,sans-serif;padding:24px;line-height:1.5;color:#111;max-width:640px;margin:0 auto;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;color:#16803c;">
+        Watch Tennis Today alert
       </p>
 
-      <div style="border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:20px;">
-        <p><strong>Tournament:</strong> ${match.tournament}</p>
-        <p><strong>Status:</strong> ${match.status}</p>
-        <p><strong>Start time:</strong> ${match.startTime || "Date/time not confirmed yet"}</p>
-        <p><strong>Score:</strong> ${match.score || "Not available yet"}</p>
+      <h1 style="margin:0 0 12px;font-size:28px;line-height:1.2;">
+        🎾 ${title}
+      </h1>
+
+      <p style="font-size:16px;margin:0 0 20px;color:#444;">
+        This alert was sent because you follow <strong>${escapeHtml(playerName)}</strong>.
+      </p>
+
+      <div style="border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:20px;background:#fafafa;">
+        <p><strong>Tournament:</strong> ${escapeHtml(match.tournament || "Unknown tournament")}</p>
+        <p><strong>Status:</strong> ${escapeHtml(match.status)}</p>
+        <p><strong>Start time:</strong> ${escapeHtml(formatStartTime(match.startTime))}</p>
+        <p><strong>Score:</strong> ${escapeHtml(match.score || "Not available yet")}</p>
       </div>
 
       <a
@@ -81,9 +161,9 @@ function getEmailHtml(playerName: string, playerSlug: string, match: Match) {
         Open Match Page
       </a>
 
-      <p style="margin-top:20px;">
-        You can also visit the player page:
-        <a href="${playerUrl}">${playerName}</a>
+      <p style="margin-top:20px;color:#555;">
+        Player page:
+        <a href="${playerUrl}">${escapeHtml(playerName)}</a>
       </p>
     </div>
   `;
@@ -104,8 +184,11 @@ async function fetchPlayerMatches(playerName: string): Promise<Match[]> {
   }
 
   const data = await response.json();
+  const matches = Array.isArray(data) ? data : [];
 
-  return Array.isArray(data) ? data : [];
+  // Safety net: never send a player alert for a match that does not include
+  // the subscribed player, even if an upstream data source returns a fallback.
+  return matches.filter((match) => matchIncludesPlayer(match, playerName));
 }
 
 export async function GET(request: Request) {
@@ -161,7 +244,7 @@ export async function GET(request: Request) {
       for (const match of matches.slice(0, 3)) {
         const alertType = getAlertType(match);
 
-        if (!alertType) {
+        if (!alertType || !matchIncludesPlayer(match, subscription.player_name)) {
           skipped++;
           continue;
         }

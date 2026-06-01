@@ -842,7 +842,10 @@ const dateStop = formatDate(dateStopDate);
       );
     }
 
-    if (mappedMatches.length === 0) {
+    // Only fall back to the general archive for the global matches feed.
+    // For player-specific requests, returning all archived matches can create
+    // wrong player alerts, e.g. a Jannik Sinner email for an unrelated match.
+    if (mappedMatches.length === 0 && !playerName && !resolvedPlayerKey) {
       mappedMatches = await getArchivedMatches(dateStart);
     }
 
