@@ -13,6 +13,7 @@ import FrenchOpenLiveSnapshot from "@/app/components/FrenchOpenLiveSnapshot";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 import FrenchOpenSurvivorsBoard from "@/app/components/FrenchOpenSurvivorsBoard";
 import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToday";
+import FrenchOpenTournamentRecords from "@/app/components/FrenchOpenTournamentRecords";
 
 export const metadata = {
   title: "French Open 2026 Hub: Live Matches, Results, Draw & TV Schedule",
@@ -153,6 +154,7 @@ export default function FrenchOpenHubPage() {
         </section>
 
         <FrenchOpenStorylinesToday compact />
+        <FrenchOpenTournamentRecords compact />
         <FrenchOpenLiveSnapshot compact />
         <FrenchOpenWatchIntent compact />
 

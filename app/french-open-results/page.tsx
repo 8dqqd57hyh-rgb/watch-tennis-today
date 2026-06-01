@@ -1,4 +1,5 @@
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
+import FrenchOpenTournamentRecords from "@/app/components/FrenchOpenTournamentRecords";
 
 export const dynamic = "force-dynamic";
 
@@ -173,6 +174,8 @@ export default async function FrenchOpenResultsPage() {
             </div>
           ))}
         </section>
+
+        <FrenchOpenTournamentRecords />
 
         <FrenchOpenConversionCluster compact title="Next step after results" />
 
