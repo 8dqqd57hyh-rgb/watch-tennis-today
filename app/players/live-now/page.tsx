@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl, verifiedPlayerNameForLink } from "@/data/playerSlugs";
 
 type Match = {
@@ -113,18 +114,8 @@ export default function LiveNowPlayersPage() {
 
     async function load() {
       try {
-        const res = await fetch("/api/matches");
-        if (!res.ok) {
-          setMatches([]);
-          return;
-        }
-        const data = await res.json();
-        const list: Match[] = Array.isArray(data)
-          ? data
-          : Array.isArray(data.matches)
-          ? data.matches
-          : [];
-        if (mounted) setMatches(list);
+        const list = await fetchClientMatches();
+        if (mounted) setMatches(list as Match[]);
       } catch {
         if (mounted) setMatches([]);
       } finally {

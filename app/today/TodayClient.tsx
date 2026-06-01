@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import TennisTimeZonePlanner from "@/app/components/TennisTimeZonePlanner";
@@ -81,22 +82,8 @@ export default function TodayPage() {
   useEffect(() => {
     async function loadMatches() {
       try {
-        const response = await fetch("/api/matches");
-
-        if (!response.ok) {
-          setMatches([]);
-          return;
-        }
-
-        const data = await response.json();
-
-        const safeMatches = Array.isArray(data)
-          ? data
-          : Array.isArray(data.matches)
-          ? data.matches
-          : [];
-
-        setMatches(safeMatches);
+        const safeMatches = await fetchClientMatches();
+        setMatches(safeMatches as Match[]);
       } catch {
         setMatches([]);
       } finally {

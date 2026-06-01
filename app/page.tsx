@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
+import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
@@ -299,24 +300,13 @@ async function subscribeToFinals(
       const timeoutId = window.setTimeout(() => controller.abort(), 4500);
 
       try {
-        const matchesResponse = await fetch("/api/matches", {
+        const safeMatches = await fetchClientMatches("/api/matches", {
           signal: controller.signal,
+          ttlMs: 25_000,
+          timeoutMs: 4500,
         });
 
-        if (!matchesResponse.ok) {
-          setMatches([]);
-          return;
-        }
-
-        const matchesData = await matchesResponse.json();
-
-        const safeMatches = Array.isArray(matchesData)
-          ? matchesData
-          : Array.isArray(matchesData.matches)
-            ? matchesData.matches
-            : [];
-
-        setMatches(capHomepageMatches(safeMatches));
+        setMatches(capHomepageMatches(safeMatches as Match[]));
       } catch {
         console.error("Failed to load matches");
         setMatches([]);

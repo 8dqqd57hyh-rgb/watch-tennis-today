@@ -44,6 +44,23 @@ type ApiTennisMatch = {
   }[];
 };
 
+
+function getMatchesCacheHeaders(matches: { status?: string | null }[], options: { realtime?: boolean } = {}) {
+  if (options.realtime || matches.some((match) => String(match.status || "").toUpperCase() === "LIVE")) {
+    return {
+      "Cache-Control": "public, s-maxage=25, stale-while-revalidate=25",
+      "CDN-Cache-Control": "public, s-maxage=25, stale-while-revalidate=25",
+      "Vercel-CDN-Cache-Control": "public, s-maxage=25, stale-while-revalidate=25",
+    };
+  }
+
+  return {
+    "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+    "CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+    "Vercel-CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+  };
+}
+
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
@@ -1151,11 +1168,7 @@ const dateStop = formatDate(dateStopDate);
       });
 
     return NextResponse.json(matches, {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-        "CDN-Cache-Control": "no-store",
-        "Vercel-CDN-Cache-Control": "no-store",
-      },
+      headers: getMatchesCacheHeaders(matches, { realtime: Boolean(playerName || resolvedPlayerKey || includeFinished || formHistory) }),
     });
   } catch (error) {
   console.warn("Failed to fetch tennis matches:", error);
@@ -1165,7 +1178,14 @@ const dateStop = formatDate(dateStopDate);
       matches: [],
       error: "External tennis API temporarily unavailable",
     },
-    { status: 200 }
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+        "CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+        "Vercel-CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+      },
+    }
   );
 }
 }
