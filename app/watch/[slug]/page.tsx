@@ -350,6 +350,154 @@ function getRelatedMatches(match: Match, matches: Match[]) {
     .slice(0, 6);
 }
 
+
+type RelatedCoverageLink = {
+  title: string;
+  eyebrow: string;
+  description: string;
+  href: string;
+  priority: number;
+};
+
+function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
+  const rivalryGuide = getRivalryForMatch(match.player1, match.player2);
+  const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
+  const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
+  const tournamentSlug = slugify(match.tournament);
+  const sameTournamentMatches = getRelatedMatches(match, matches).slice(0, 2);
+
+  const links: RelatedCoverageLink[] = [
+    {
+      title: `${match.tournament} hub`,
+      eyebrow: "Tournament",
+      description: "Open the tournament page for more matches, schedules and live coverage from the same event.",
+      href: `/tournament/${tournamentSlug}`,
+      priority: 70,
+    },
+    {
+      title: "Today’s tennis schedule",
+      eyebrow: "Schedule",
+      description: "See the full tennis schedule for today, including live, upcoming and completed matches.",
+      href: "/tennis-schedule-today",
+      priority: 55,
+    },
+    {
+      title: "Legal tennis streaming guide",
+      eyebrow: "Watching",
+      description: "Compare official ways to watch tennis online without using unsafe or unauthorized streams.",
+      href: "/best-ways-to-watch-tennis-online",
+      priority: 35,
+    },
+  ];
+
+  if (rivalryGuide) {
+    links.push({
+      title: rivalryGuide.title,
+      eyebrow: "Rivalry guide",
+      description: rivalryGuide.angle,
+      href: `/rivalries/${rivalryGuide.slug}`,
+      priority: 100,
+    });
+  } else {
+    links.push({
+      title: "Tennis rivalry guides",
+      eyebrow: "Rivalries",
+      description: "Explore the biggest tennis rivalries with matchup notes, player links and schedule context.",
+      href: "/rivalries",
+      priority: 38,
+    });
+  }
+
+  if (player1Url) {
+    links.push({
+      title: `${match.player1} player hub`,
+      eyebrow: "Player",
+      description: `Follow ${match.player1} matches, schedules and tournament context.`,
+      href: player1Url,
+      priority: 90,
+    });
+  }
+
+  if (player2Url) {
+    links.push({
+      title: `${match.player2} player hub`,
+      eyebrow: "Player",
+      description: `Follow ${match.player2} matches, schedules and tournament context.`,
+      href: player2Url,
+      priority: 88,
+    });
+  }
+
+  for (const relatedMatch of sameTournamentMatches) {
+    links.push({
+      title: `${relatedMatch.player1} vs ${relatedMatch.player2}`,
+      eyebrow: "Related match",
+      description: `${relatedMatch.tournament} • ${getMatchPhase(relatedMatch)} • ${formatShortTime(relatedMatch.startTime)}`,
+      href: `/watch/${getMatchSlug(relatedMatch)}`,
+      priority: 65,
+    });
+  }
+
+  if (isGrandSlamTournament(match.tournament)) {
+    links.push({
+      title: "Grand Slam live coverage",
+      eyebrow: "Grand Slam",
+      description: "Open the Grand Slam hub for live matches, schedules and major tournament coverage.",
+      href: "/grand-slam-live",
+      priority: 50,
+    });
+  }
+
+  return links
+    .filter((link, index, list) => list.findIndex((item) => item.href === link.href) === index)
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, 8);
+}
+
+function RelatedCoverageEngine({
+  match,
+  matches,
+}: {
+  match: Match;
+  matches: Match[];
+}) {
+  const links = buildRelatedCoverageLinks(match, matches);
+
+  return (
+    <section className="mb-12 rounded-[2rem] border border-green-500/25 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.18),_transparent_35%),#09090b] p-6">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">
+            Related tennis coverage
+          </p>
+          <h2 className="text-3xl font-black">Keep following this matchup</h2>
+        </div>
+        <Link href="/rivalries" className="text-sm font-bold text-green-400 hover:text-green-300">
+          Browse rivalry guides →
+        </Link>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="group rounded-3xl border border-zinc-800 bg-black/70 p-5 transition hover:border-green-500 hover:bg-zinc-950"
+          >
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-green-400">
+              {link.eyebrow}
+            </p>
+            <h3 className="mb-3 text-xl font-black leading-tight group-hover:text-green-300">
+              {link.title}
+            </h3>
+            <p className="text-sm leading-6 text-zinc-400">{link.description}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export async function generateStaticParams() {
   return [];
 }
@@ -679,6 +827,8 @@ export default async function MatchPage({
             </section>
 
             <MatchEdgePredictor match={match} matches={matches} />
+
+            <RelatedCoverageEngine match={match} matches={matches} />
 
             {rivalryGuide ? (
               <section className="mb-10 rounded-[2rem] border border-orange-500/30 bg-orange-500/10 p-6">
