@@ -1,15 +1,16 @@
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { safePlayerUrl } from "@/data/playerSlugs";
-import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
-import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import PathToTitle from "@/app/components/PathToTitle";
+import { getRivalry, getRivalryForMatch } from "@/data/rivalries";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Match = {
   id: string;
@@ -27,33 +28,6 @@ type Props = {
     slug: string;
   }>;
 };
-
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
-async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) return [];
-
-  const data = await response.json();
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.matches)) return data.matches;
-
-  return [];
-}
 
 function slugify(value: string) {
   return value
@@ -89,6 +63,16 @@ function parseVsSlug(slug: string) {
   };
 }
 
+function getKnownRivalrySlug(slug: string) {
+  const direct = getRivalry(slug);
+  if (direct) return direct.slug;
+
+  const parsed = parseVsSlug(slug);
+  if (!parsed) return null;
+
+  return getRivalryForMatch(parsed.playerA, parsed.playerB)?.slug ?? null;
+}
+
 function matchContainsPlayer(match: Match, playerName: string) {
   const lastName = playerName.toLowerCase().split(" ").pop() || playerName;
 
@@ -110,13 +94,28 @@ function formatDateTime(value?: string | null) {
   });
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const knownRivalrySlug = getKnownRivalrySlug(slug);
+
+  if (knownRivalrySlug) {
+    const rivalry = getRivalry(knownRivalrySlug);
+
+    return {
+      title: `${rivalry?.title ?? "Tennis Rivalry"} moved | Watch Tennis Today`,
+      robots: { index: false, follow: true },
+      alternates: {
+        canonical: `https://watchtennistoday.com/rivalries/${knownRivalrySlug}`,
+      },
+    };
+  }
+
   const parsed = parseVsSlug(slug);
 
   if (!parsed) {
     return {
       title: "Tennis Match Not Found | Watch Tennis Today",
+      robots: { index: false, follow: true },
     };
   }
 
@@ -125,14 +124,21 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${title} Live Stream & TV Schedule | Watch Tennis Today`,
     description: `Watch ${title} live today. Find tennis live streams, TV schedule, match time, score updates and official broadcaster information.`,
+    robots: { index: false, follow: true },
     alternates: {
-      canonical: `https://watchtennistoday.com/vs/${slug}`,
+      canonical: `https://watchtennistoday.com/rivalries`,
     },
   };
 }
 
 export default async function VsPage({ params }: Props) {
   const { slug } = await params;
+  const knownRivalrySlug = getKnownRivalrySlug(slug);
+
+  if (knownRivalrySlug) {
+    redirect(`/rivalries/${knownRivalrySlug}`);
+  }
+
   const parsed = parseVsSlug(slug);
 
   if (!parsed) {
@@ -141,7 +147,7 @@ export default async function VsPage({ params }: Props) {
 
   const { playerA, playerB } = parsed;
 
-  const matches = await getMatches();
+  const matches = await getServerMatches(60);
 
   const directMatches = matches
     .filter(
@@ -174,9 +180,9 @@ export default async function VsPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           🎾 {title} Live Stream & TV Schedule
@@ -242,12 +248,12 @@ export default async function VsPage({ params }: Props) {
               </div>
             </div>
 
-            <a
+            <Link
               href={`/watch/${getMatchSlug(mainMatch)}`}
               className="inline-block bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
             >
               Open Match Page →
-            </a>
+            </Link>
           </section>
         ) : (
           <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
@@ -268,7 +274,7 @@ export default async function VsPage({ params }: Props) {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a
+            <Link
               href={safePlayerUrl(playerA) || "/players"}
               className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
             >
@@ -276,9 +282,9 @@ export default async function VsPage({ params }: Props) {
               <p className="text-zinc-400">
                 Live matches, schedule and streaming information.
               </p>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href={safePlayerUrl(playerB) || "/players"}
               className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
             >
@@ -286,7 +292,7 @@ export default async function VsPage({ params }: Props) {
               <p className="text-zinc-400">
                 Live matches, schedule and streaming information.
               </p>
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -300,7 +306,7 @@ export default async function VsPage({ params }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {relatedMatches.map((match) => (
-                <a
+                <Link
                   key={match.id}
                   href={`/watch/${getMatchSlug(match)}`}
                   className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
@@ -332,7 +338,7 @@ export default async function VsPage({ params }: Props) {
                   <p className="text-zinc-500">
                     {match.tournament}
                   </p>
-                </a>
+                </Link>
               ))}
             </div>
           </section>
