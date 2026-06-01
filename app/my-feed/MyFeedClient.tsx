@@ -169,6 +169,36 @@ function getTime(match: Match) {
   return Number.isNaN(value) ? Number.MAX_SAFE_INTEGER : value;
 }
 
+function getMatchAgeMs(match: Match | FollowedMatch) {
+  const value = new Date(match.startTime || "").getTime();
+  if (Number.isNaN(value)) return 0;
+  return Date.now() - value;
+}
+
+function isStaleLiveMatch(match: Match | FollowedMatch) {
+  const normalized = String(match.status || "").toUpperCase();
+  if (normalized !== "LIVE") return false;
+
+  // API-Tennis and saved localStorage rows can keep yesterday's matches marked
+  // as LIVE. A stale LIVE card is worse than a missing one because it makes the
+  // personal feed look fake. After a generous tennis window, demote it.
+  const staleAfterMs = 8 * 60 * 60 * 1000;
+  return getMatchAgeMs(match) > staleAfterMs;
+}
+
+function normalizeFeedStatus(match: Match | FollowedMatch) {
+  const normalized = String(match.status || "").toUpperCase();
+  if (isStaleLiveMatch(match)) {
+    return match.score ? "FINISHED" : "EXPIRED";
+  }
+  return normalized || "MATCH";
+}
+
+function withSafeFeedStatus<T extends Match | FollowedMatch>(match: T): T {
+  const safeStatus = normalizeFeedStatus(match);
+  return safeStatus === String(match.status || "").toUpperCase() ? match : { ...match, status: safeStatus };
+}
+
 function removeFromStorage(key: string, predicate: (item: any) => boolean) {
   const parsed = readJson<unknown[]>(key, []);
   if (!Array.isArray(parsed)) return;
@@ -255,7 +285,7 @@ export default function MyFeedClient() {
 
     followedMatches.forEach((savedMatch) => {
       const liveVersion = liveMap.get(String(savedMatch.id));
-      const match = liveVersion || savedMatch;
+      const match = withSafeFeedStatus(liveVersion || savedMatch);
       items.set(String(match.id), {
         ...match,
         slug: matchSlug(match),
@@ -271,7 +301,9 @@ export default function MyFeedClient() {
 
       const reason = player ? `Saved player: ${player.name}` : tournament ? `Saved tournament: ${tournament.name}` : "Saved match";
       const priority = player ? 1 : tournament ? 2 : 3;
-      items.set(String(match.id), { ...match, slug: matchSlug(match), reason, priority });
+      const safeMatch = withSafeFeedStatus(match);
+      if (safeMatch.status === "EXPIRED") return;
+      items.set(String(safeMatch.id), { ...safeMatch, slug: matchSlug(safeMatch), reason, priority });
     });
 
     return Array.from(items.values()).sort((left, right) => {

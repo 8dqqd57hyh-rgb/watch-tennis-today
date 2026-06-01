@@ -187,6 +187,10 @@ const hasScore = Boolean(
     return "SUSPENDED";
   }
 
+  if (isStaleLiveFixture(match)) {
+    return hasScore ? "FINISHED" : "EXPIRED";
+  }
+
   if (
     match.event_live === "1" ||
     status.includes("live") ||
@@ -450,14 +454,18 @@ function getStartTime(match: ApiTennisMatch) {
   return `${match.event_date}T${match.event_time}:00`;
 }
 
-function isPastUnplayedFixture(match: ApiTennisMatch, hasScore: boolean) {
-  if (hasScore || match.event_live === "1") return false;
-
+function getFixtureAgeMs(match: ApiTennisMatch) {
   const startTime = getStartTime(match);
-  if (!startTime) return false;
+  if (!startTime) return 0;
 
   const startDate = new Date(startTime);
-  if (Number.isNaN(startDate.getTime())) return false;
+  if (Number.isNaN(startDate.getTime())) return 0;
+
+  return Date.now() - startDate.getTime();
+}
+
+function isPastUnplayedFixture(match: ApiTennisMatch, hasScore: boolean) {
+  if (hasScore || match.event_live === "1") return false;
 
   // API-Tennis sometimes keeps old fixtures as Scheduled/Upcoming even after the
   // match has finished or disappeared from the live feed. Hide those stale rows
@@ -465,7 +473,23 @@ function isPastUnplayedFixture(match: ApiTennisMatch, hasScore: boolean) {
   // window is intentionally generous.
   const staleAfterMs = 12 * 60 * 60 * 1000;
 
-  return Date.now() - startDate.getTime() > staleAfterMs;
+  return getFixtureAgeMs(match) > staleAfterMs;
+}
+
+function isStaleLiveFixture(match: ApiTennisMatch) {
+  const status = (match.event_status || "").toLowerCase();
+  const looksLive =
+    match.event_live === "1" ||
+    status.includes("live") ||
+    status.includes("in progress") ||
+    status.includes("progress");
+
+  if (!looksLive) return false;
+
+  // Defensive guard for API-Tennis/live endpoint stale rows. If a fixture started
+  // many hours ago, do not let it keep poisoning retention pages as LIVE.
+  const staleAfterMs = 8 * 60 * 60 * 1000;
+  return getFixtureAgeMs(match) > staleAfterMs;
 }
 
 function isGrandSlamTournament(tournament: string) {
