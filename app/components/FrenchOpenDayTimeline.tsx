@@ -99,6 +99,33 @@ function winnerLine(match: TimelineMatch) {
 }
 
 
+
+function normalizeMatchPart(value?: string) {
+  return `${value || ""}`.trim().toLowerCase();
+}
+
+function matchIdentity(match: TimelineMatch) {
+  const stableId = match.id ? `id:${match.id}` : "";
+  if (stableId) return stableId;
+
+  const slug = match.player1 && match.player2 ? matchSlug(match) : "";
+  if (slug && !slug.endsWith("-match")) return `slug:${slug}`;
+
+  return [
+    normalizeMatchPart(match.player1),
+    normalizeMatchPart(match.player2),
+    normalizeMatchPart(match.tournament),
+    normalizeMatchPart(match.round),
+    normalizeMatchPart(match.date),
+    normalizeMatchPart(match.time || match.startTime),
+  ].join("|");
+}
+
+function isSameMatch(a?: TimelineMatch | null, b?: TimelineMatch | null) {
+  if (!a || !b) return false;
+  return matchIdentity(a) === matchIdentity(b);
+}
+
 function isMainTourSingles(match: TimelineMatch) {
   const haystack = [match.category, match.round, match.tournament]
     .filter(Boolean)
@@ -182,6 +209,11 @@ export default function FrenchOpenDayTimeline({ compact = false }: { compact?: b
     return sourceMatches.slice(0, compact ? 8 : 18);
   }, [matches, compact]);
   const focus = useMemo(() => buildCurrentFocus(timeline), [timeline]);
+  const visibleTimeline = useMemo(() => {
+    if (!focus) return timeline;
+
+    return timeline.filter((match) => !isSameMatch(match, focus.match));
+  }, [timeline, focus]);
 
   if (loading) {
     return (
@@ -230,7 +262,7 @@ export default function FrenchOpenDayTimeline({ compact = false }: { compact?: b
       ) : null}
 
       <div className="relative space-y-3 before:absolute before:bottom-2 before:left-[4.25rem] before:top-2 before:w-px before:bg-zinc-800 md:before:left-[5.25rem]">
-        {timeline.map((match) => (
+        {visibleTimeline.map((match) => (
           <a
             key={`${match.id}-${match.status}-${match.time}`}
             href={matchHref(match)}
