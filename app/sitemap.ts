@@ -3,7 +3,7 @@ import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { comparisons } from "@/data/comparisons";
 import { rivalries } from "@/data/rivalries";
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Match = {
   id: string;
@@ -243,6 +243,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/who-plays-tennis-today",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",
+    "/how-to-watch-tennis-legally",
+    "/content-guidelines",
     "/watch-tennis-in/uk",
     "/watch-tennis-in/usa",
     "/watch-tennis-in/germany",
@@ -275,6 +277,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-alcaraz-live",
     "/watch-djokovic-live",
     "/watch-sinner-live",
+    "/watch-sabalenka-live",
+    "/watch-swiatek-live",
   ].map((path) => {
   const livePages = [
     "",
@@ -364,6 +368,10 @@ const frenchOpenPages = [
   "/french-open-draw",
   "/french-open-survivors",
   "/where-to-watch-french-open",
+  "/watch-french-open-in-usa",
+  "/watch-french-open-in-uk",
+  "/watch-french-open-in-canada",
+  "/watch-french-open-in-australia",
 ];
 
   const comparisonPages: MetadataRoute.Sitemap = comparisons.map((comparison) => ({
