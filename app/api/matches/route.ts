@@ -7,6 +7,8 @@ type ApiTennisMatch = {
   event_time: string;
   event_first_player: string;
   event_second_player: string;
+  first_player_key?: string | number | null;
+  second_player_key?: string | number | null;
   event_final_result: string;
   event_game_result?: string;
   event_current_result?: string;
@@ -74,9 +76,10 @@ async function fetchFixtureWindows(
   apiKey: string,
   dateStartDate: Date,
   dateStopDate: Date,
-  resolvedPlayerKey: string | null
+  resolvedPlayerKey: string | null,
+  options: { formHistory?: boolean; playerName?: string | null } = {}
 ) {
-  const windows = buildDateWindows(dateStartDate, dateStopDate);
+  const windows = buildDateWindows(dateStartDate, dateStopDate, options.formHistory ? 14 : 28);
 
   // Keep the public /api/matches endpoint fast and resilient. API-Tennis can
   // return intermittent 500s on get_fixtures; a single failed chunk must not
@@ -88,13 +91,135 @@ async function fetchFixtureWindows(
         apiKey,
         `&date_start=${window.start}&date_stop=${window.stop}&timezone=Europe/Warsaw${
           resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
-        }`
+        }`,
+        options.formHistory ? 9000 : 4500
       )
     )
   );
 
   return fixtureResponses.flatMap((response) =>
     response.status === "fulfilled" ? response.value : []
+  );
+}
+
+function getOpponentKeysForPlayerForm(
+  matches: ApiTennisMatch[],
+  resolvedPlayerKey: string | null,
+  playerName: string | null,
+  limit = 4
+) {
+  if (!resolvedPlayerKey && !playerName) return [];
+
+  const sortedMatches = [...matches].sort((a, b) => {
+    const left = new Date(getStartTime(a) || "").getTime();
+    const right = new Date(getStartTime(b) || "").getTime();
+
+    return (Number.isFinite(right) ? right : 0) - (Number.isFinite(left) ? left : 0);
+  });
+
+  const opponentKeys: string[] = [];
+
+  const addOpponentKey = (key?: string | number | null) => {
+    const normalizedKey = key ? String(key) : null;
+    if (!normalizedKey || normalizedKey === resolvedPlayerKey || opponentKeys.includes(normalizedKey)) return;
+    opponentKeys.push(normalizedKey);
+  };
+
+  for (const match of sortedMatches) {
+    if (opponentKeys.length >= limit) break;
+
+    const firstKey = match.first_player_key ? String(match.first_player_key) : null;
+    const secondKey = match.second_player_key ? String(match.second_player_key) : null;
+    const firstName = match.event_first_player || "";
+    const secondName = match.event_second_player || "";
+
+    if (resolvedPlayerKey && firstKey === resolvedPlayerKey) {
+      addOpponentKey(secondKey);
+      continue;
+    }
+
+    if (resolvedPlayerKey && secondKey === resolvedPlayerKey) {
+      addOpponentKey(firstKey);
+      continue;
+    }
+
+    if (playerName && apiNameMatchesPlayer(playerName, firstName)) {
+      addOpponentKey(secondKey);
+      continue;
+    }
+
+    if (playerName && apiNameMatchesPlayer(playerName, secondName)) {
+      addOpponentKey(firstKey);
+    }
+  }
+
+  return opponentKeys;
+}
+
+async function fetchPlayerRecentResultsFromH2H(
+  apiKey: string,
+  resolvedPlayerKey: string | null,
+  playerName: string | null,
+  seedMatches: ApiTennisMatch[]
+) {
+  if (!resolvedPlayerKey || !playerName) return [];
+
+  const opponentKeys = getOpponentKeysForPlayerForm(seedMatches, resolvedPlayerKey, playerName);
+  if (!opponentKeys.length) return [];
+
+  // API-Tennis get_fixtures can be sparse for broad historical player windows.
+  // get_H2H explicitly returns recent games for each submitted player. Query a few
+  // known opponents instead of a single seed opponent because the API may return
+  // richer recent-player payloads depending on the pair.
+  const h2hResponses = await Promise.allSettled(
+    opponentKeys.map((opponentKey) =>
+      fetchApiTennisResult(
+        "get_H2H",
+        apiKey,
+        `&first_player_key=${encodeURIComponent(resolvedPlayerKey)}&second_player_key=${encodeURIComponent(opponentKey)}`,
+        12000
+      )
+    )
+  );
+
+  const recentMatches: ApiTennisMatch[] = [];
+
+  for (const response of h2hResponses) {
+    if (response.status !== "fulfilled") continue;
+
+    const result = response.value;
+    if (!result || typeof result !== "object" || Array.isArray(result)) continue;
+
+    const payload = result as {
+      firstPlayerResults?: unknown;
+      secondPlayerResults?: unknown;
+      H2H?: unknown;
+    };
+
+    const candidateGroups = [
+      payload.firstPlayerResults,
+      payload.secondPlayerResults,
+      payload.H2H,
+    ];
+
+    for (const group of candidateGroups) {
+      if (!Array.isArray(group)) continue;
+
+      for (const match of group as ApiTennisMatch[]) {
+        if (
+          String(match.first_player_key || "") === resolvedPlayerKey ||
+          String(match.second_player_key || "") === resolvedPlayerKey ||
+          apiNameMatchesPlayer(playerName, match.event_first_player || "") ||
+          apiNameMatchesPlayer(playerName, match.event_second_player || "")
+        ) {
+          recentMatches.push(match);
+        }
+      }
+    }
+  }
+
+  return Array.from(
+    new Map(recentMatches.map((match) => [String(match.event_key), match])).values()
   );
 }
 
@@ -119,6 +244,10 @@ function normalizeSearchName(value: string) {
     .trim();
 }
 
+function isInitialToken(value: string) {
+  return /^[a-z]$/.test(value.replace(/\./g, ""));
+}
+
 function apiNameMatchesPlayer(playerName: string, sideName: string) {
   const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
   const sideParts = normalizeSearchName(sideName).split(/\s+/).filter(Boolean);
@@ -128,10 +257,25 @@ function apiNameMatchesPlayer(playerName: string, sideName: string) {
   const sideFirst = sideParts[0] || "";
   const sideLast = sideParts[sideParts.length - 1] || "";
 
-  if (!targetLast || !sideLast) return false;
+  if (!targetLast || !sideParts.length) return false;
   if (targetParts.join(" ") === sideParts.join(" ")) return true;
 
-  return targetLast === sideLast && (!targetFirst || !sideFirst || targetFirst[0] === sideFirst[0]);
+  // Common API-Tennis formats for the same player include:
+  // - "Alexander Zverev"
+  // - "A. Zverev" / "A Zverev"
+  // - "Zverev A." / "Zverev A"
+  // Treat all of these as the same player. Without the reversed surname+initial
+  // branch, get_H2H recent rows are filtered out before they can reach the form
+  // tracker, which makes pages like /player/alexander-zverev miss Rome/Madrid/etc.
+  if (targetLast === sideLast) {
+    return !targetFirst || !sideFirst || targetFirst[0] === sideFirst[0];
+  }
+
+  if (sideFirst === targetLast && sideLast && targetFirst) {
+    return sideLast === targetFirst || (isInitialToken(sideLast) && sideLast[0] === targetFirst[0]);
+  }
+
+  return false;
 }
 
 function normalizeStatus(match: ApiTennisMatch) {
@@ -614,10 +758,10 @@ function getWatchProviders(category: string, tournament: string) {
   return [];
 }
 
-async function fetchApiTennis(method: string, apiKey: string, params = "") {
+async function fetchApiTennisResult(method: string, apiKey: string, params = "", timeoutMs = 4500) {
   const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4500);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(url, {
@@ -629,7 +773,7 @@ async function fetchApiTennis(method: string, apiKey: string, params = "") {
       // External API outages are expected sometimes. Use warn instead of error
       // so Vercel does not surface healthy 200 responses as scary function errors.
       console.warn(`API-Tennis ${method} unavailable (${response.status})`);
-      return [];
+      return null;
     }
 
     const text = await response.text();
@@ -639,14 +783,14 @@ async function fetchApiTennis(method: string, apiKey: string, params = "") {
       data = JSON.parse(text);
     } catch {
       console.warn("API-Tennis returned invalid JSON");
-      return [];
+      return null;
     }
 
     if (data.success !== 1) {
-      return [];
+      return null;
     }
 
-    return Array.isArray(data.result) ? data.result : [];
+    return data.result ?? null;
   } catch (error) {
     const message = error instanceof Error ? error.name : "unknown";
 
@@ -656,39 +800,92 @@ async function fetchApiTennis(method: string, apiKey: string, params = "") {
       console.warn(`API-Tennis ${method} fetch skipped (${message})`);
     }
 
-    return [];
+    return null;
   } finally {
     clearTimeout(timeout);
   }
 }
 
-async function getPlayerKeyByName(apiKey: string, playerName: string) {
-  const parts = playerName.trim().split(/\s+/);
-  const lastName = parts[parts.length - 1];
+async function fetchApiTennis(method: string, apiKey: string, params = "", timeoutMs = 4500) {
+  const result = await fetchApiTennisResult(method, apiKey, params, timeoutMs);
 
-  const players = await fetchApiTennis(
-    "get_players",
-    apiKey,
-    `&player_name=${encodeURIComponent(lastName)}`
-  );
-
-  const normalizedTarget = playerName.toLowerCase();
-  const normalizedLastName = lastName.toLowerCase();
-
-  const player = players?.find((p: any) => {
-    const apiName = String(p.player_name || "").toLowerCase();
-
-    return (
-      apiName === normalizedTarget ||
-      apiName.includes(normalizedTarget) ||
-      apiName.includes(normalizedLastName)
-    );
-  });
-
-  return player?.player_key ? String(player.player_key) : null;
+  return Array.isArray(result) ? result : [];
 }
 
-async function getArchivedMatches(dateStart: string, limit = 600) {
+function getPlayerNameScore(apiNameRaw: string, targetNameRaw: string) {
+  const apiParts = normalizeSearchName(apiNameRaw).split(/\s+/).filter(Boolean);
+  const targetParts = normalizeSearchName(targetNameRaw).split(/\s+/).filter(Boolean);
+
+  if (!apiParts.length || !targetParts.length) return 0;
+
+  const apiName = apiParts.join(" ");
+  const targetName = targetParts.join(" ");
+  const apiFirst = apiParts[0] || "";
+  const apiLast = apiParts.at(-1) || "";
+  const targetFirst = targetParts[0] || "";
+  const targetLast = targetParts.at(-1) || "";
+
+  if (apiName === targetName) return 100;
+  if (apiName.includes(targetName) || targetName.includes(apiName)) return 90;
+
+  // API-Tennis player search commonly returns abbreviated or reversed display
+  // names, for example "Zverev A." or "Zverev Alexander" for
+  // "Alexander Zverev". The old scorer rejected those because the last token was
+  // "a" / "alexander" instead of "zverev", so player_key stayed null and the
+  // form tracker could only scan a thin global fixture slice. Resolve those keys.
+  const apiLooksReversed = apiFirst === targetLast;
+  if (apiLooksReversed) {
+    if (apiLast === targetFirst) return 95;
+    if (apiLast && targetFirst && isInitialToken(apiLast) && apiLast[0] === targetFirst[0]) return 92;
+    return 60;
+  }
+
+  if (apiLast !== targetLast) return 0;
+
+  if (apiFirst && targetFirst && apiFirst === targetFirst) return 85;
+  if (apiFirst && targetFirst && apiFirst[0] === targetFirst[0]) return 75;
+
+  // Last-name-only is weak. Use it only if the API gives no stronger option.
+  return 30;
+}
+
+async function getPlayerKeyByName(apiKey: string, playerName: string) {
+  const parts = playerName.trim().split(/\s+/).filter(Boolean);
+  const lastName = parts[parts.length - 1] || playerName;
+
+  const queryResults = await Promise.allSettled([
+    fetchApiTennis(
+      "get_players",
+      apiKey,
+      `&player_name=${encodeURIComponent(playerName)}`,
+      9000
+    ),
+    fetchApiTennis(
+      "get_players",
+      apiKey,
+      `&player_name=${encodeURIComponent(lastName)}`,
+      9000
+    ),
+  ]);
+
+  const players = queryResults.flatMap((result) =>
+    result.status === "fulfilled" ? result.value : []
+  );
+
+  const scoredPlayers = players
+    .map((player: any) => ({
+      player,
+      score: getPlayerNameScore(String(player.player_name || ""), playerName),
+    }))
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score);
+
+  const best = scoredPlayers[0]?.player;
+
+  return best?.player_key ? String(best.player_key) : null;
+}
+
+async function getArchivedMatches(dateStart: string, limit = 2500) {
   try {
     const { data, error } = await supabase
       .from("match_archive")
@@ -729,7 +926,7 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
       .select("id, player1, player2, tournament, category, status, score, start_time, watch_providers")
       .gte("start_time", `${dateStart}T00:00:00.000Z`)
       .order("start_time", { ascending: false })
-      .limit(600);
+      .limit(5000);
 
     if (error || !Array.isArray(data)) {
       if (error) console.warn("match_archive lookup failed:", error.message);
@@ -769,6 +966,7 @@ export async function GET(request: Request) {
   const playerName = searchParams.get("playerName");
   const matchId = searchParams.get("matchId");
   const includeFinished = searchParams.get("includeFinished") === "1";
+  const formHistory = searchParams.get("formHistory") === "1";
   const daysBack = Number.parseInt(searchParams.get("daysBack") || "3", 10);
   const daysForward = Number.parseInt(searchParams.get("daysForward") || "30", 10);
 
@@ -787,7 +985,8 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
-const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), 120) : 3;
+const maxDaysBack = playerName || resolvedPlayerKey || formHistory ? 365 : 120;
+const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : 3;
 const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : 30;
 
 const dateStartDate = new Date();
@@ -817,13 +1016,17 @@ const dateStop = formatDate(dateStopDate);
   // range into smaller chunks and merge them. This is especially important for
   // pages like Andrey Rublev where the latest Match Center row exists but earlier
   // wins disappear from a single 120-day request.
-  fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey),
+  fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey, { formHistory, playerName }),
 ]);
 
+    const h2hRecentMatches = formHistory && playerName && resolvedPlayerKey
+      ? await fetchPlayerRecentResultsFromH2H(apiKey, resolvedPlayerKey, playerName, [...fixtureMatches, ...liveMatches])
+      : [];
+
     // Important: the live endpoint contains the freshest point-by-point payload.
-    // Fixtures can contain the same event_key with older/limited data, so merge fixtures first
-    // and live matches last. That lets the live match object win in the Map below.
-    const allMatches: ApiTennisMatch[] = [...fixtureMatches, ...liveMatches];
+    // Fixtures can contain the same event_key with older/limited data, so merge historical/H2H
+    // rows first and live matches last. That lets the live match object win in the Map below.
+    const allMatches: ApiTennisMatch[] = [...h2hRecentMatches, ...fixtureMatches, ...liveMatches];
     if (allMatches.length === 0) {
  
 }
@@ -867,6 +1070,17 @@ const dateStop = formatDate(dateStopDate);
 
     if (includeFinished && playerName) {
       const archivedMatches = await getArchivedMatchesForPlayer(playerName, dateStart);
+      mappedMatches = Array.from(
+        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+      );
+    }
+
+    if (includeFinished && formHistory && !playerName && !resolvedPlayerKey) {
+      // Player pages can request a broad history scan and then filter locally by
+      // normalized player name. Merge the archive even when the live API returns
+      // rows, otherwise form widgets can stay stuck at a single current-tournament
+      // match for players with known archived results.
+      const archivedMatches = await getArchivedMatches(dateStart, 5000);
       mappedMatches = Array.from(
         new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
       );

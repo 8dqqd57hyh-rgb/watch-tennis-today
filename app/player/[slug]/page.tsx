@@ -40,6 +40,7 @@ type Match = {
   startTime: string;
   winner?: string | null;
   winnerId?: string | number | null;
+  round?: string;
 };
 
 
@@ -226,44 +227,53 @@ async function getBaseUrl() {
 
 async function getMatches(
   playerName?: string,
-  options: { daysBack?: number; daysForward?: number } = {}
+  options: { daysBack?: number; daysForward?: number; formHistory?: boolean } = {}
 ): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-  const params = new URLSearchParams({
-    includeFinished: "1",
-    daysBack: String(options.daysBack ?? 120),
-    daysForward: String(options.daysForward ?? 45),
-  });
+  try {
+    const baseUrl = await getBaseUrl();
+    const params = new URLSearchParams({
+      includeFinished: "1",
+      daysBack: String(options.daysBack ?? 120),
+      daysForward: String(options.daysForward ?? 45),
+    });
 
-  if (playerName) {
-    params.set("playerName", playerName);
-  }
+    if (options.formHistory) {
+      params.set("formHistory", "1");
+    }
 
-  const response = await fetch(`${baseUrl}/api/matches?${params.toString()}`, {
-    cache: "no-store",
-  });
+    if (playerName) {
+      params.set("playerName", playerName);
+    }
 
-  if (!response.ok) {
-    console.error("/api/matches failed:", response.status);
-    return [];
-  }
+    const response = await fetch(`${baseUrl}/api/matches?${params.toString()}`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
 
-  const contentType = response.headers.get("content-type") || "";
+    if (!response.ok) {
+      console.error("/api/matches failed:", response.status);
+      return [];
+    }
 
-  if (!contentType.includes("application/json")) {
-    const text = await response.text();
-    console.error("/api/matches returned non-JSON:", text.slice(0, 300));
-    return [];
-  }
+    const contentType = response.headers.get("content-type") || "";
 
-  const data = await response.json();
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error("/api/matches returned non-JSON:", text.slice(0, 300));
+      return [];
+    }
 
-  if (Array.isArray(data)) {
-    return data;
-  }
+    const data = await response.json();
 
-  if (Array.isArray(data.matches)) {
-    return data.matches;
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    if (Array.isArray(data.matches)) {
+      return data.matches;
+    }
+  } catch (error) {
+    console.error("/api/matches request failed on player page:", error);
   }
 
   return [];
@@ -274,23 +284,33 @@ function mergeMatchesById(matches: Match[]) {
 }
 
 async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
-  const [playerScopedMatches, globalMatches] = await Promise.all([
-    getMatches(playerName, { daysBack: 120, daysForward: 45 }),
-    // Keep the broad fallback small. The player-scoped API now fetches history in
-    // chunks; the global feed is only a safety net for current/live rows that may
-    // not resolve by player_key.
-    getMatches(undefined, { daysBack: 14, daysForward: 45 }),
-  ]);
+  try {
+    const playerScopedMatches = await getMatches(playerName, { daysBack: 365, daysForward: 45, formHistory: true });
 
-  // Do not stop at the first finished match from the player-scoped endpoint.
-  // API-Tennis can return only the current tournament row for a player, while the
-  // broader fixture/archive response may contain earlier completed wins. Merge both
-  // sources and then filter locally with the same name matcher used by Player Form.
-  const localMatches = globalMatches.filter((match) =>
-    [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
-  );
+    const scopedPlayerMatches = playerScopedMatches.filter((match) =>
+      [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
+    );
 
-  return mergeMatchesById([...playerScopedMatches, ...localMatches]);
+    const scopedCompletedSingles = scopedPlayerMatches
+      .filter(isSinglesMatchForPlayerForm)
+      .filter((match) => isFinishedMatch(match));
+
+    // Player pages must not depend on the form-history feed. If the scoped
+    // player lookup is thin, try a broad archive scan; if that fails, render the
+    // player page with the data already available instead of returning 404.
+    const globalMatches = scopedCompletedSingles.length >= 5
+      ? []
+      : await getMatches(undefined, { daysBack: 365, daysForward: 0, formHistory: true });
+
+    const localMatches = globalMatches.filter((match) =>
+      [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
+    );
+
+    return mergeMatchesById([...playerScopedMatches, ...localMatches]);
+  } catch (error) {
+    console.error("Player form history lookup failed:", error);
+    return [];
+  }
 }
 
 function slugify(value: string) {
@@ -328,9 +348,13 @@ function formatMatchDateTime(value?: string) {
   }).format(date);
 }
 
+function isInitialNamePart(value?: string) {
+  return /^[a-z]$/i.test(String(value || "").replace(/\./g, ""));
+}
+
 function doPlayerNamesMatch(candidateName: string, targetName: string) {
-  const candidate = normalizePlayerName(candidateName || "");
-  const target = normalizePlayerName(targetName || "");
+  const candidate = normalizePlayerName(candidateName || "").replace(/\./g, "");
+  const target = normalizePlayerName(targetName || "").replace(/\./g, "");
 
   if (!candidate || !target) return false;
   if (candidate === target) return true;
@@ -342,16 +366,29 @@ function doPlayerNamesMatch(candidateName: string, targetName: string) {
   const candidateFirst = candidateParts[0];
   const targetFirst = targetParts[0];
 
-  if (!candidateLast || !targetLast || candidateLast !== targetLast) {
+  if (!candidateLast || !targetLast || !candidateFirst || !targetFirst) {
     return false;
   }
 
-  // API feeds often abbreviate tennis names as "A. Rublev" / "A Rublev" while
-  // player pages use the full display name "Andrey Rublev". Treat matching last
-  // name + first initial as the same player so the form block and match center share
-  // the exact same normalized dataset.
-  if (candidateFirst && targetFirst && candidateFirst[0] === targetFirst[0]) {
+  // API feeds often abbreviate tennis names as "A. Zverev" / "A Zverev" while
+  // player pages use the full display name "Alexander Zverev".
+  if (candidateLast === targetLast && candidateFirst[0] === targetFirst[0]) {
     return true;
+  }
+
+  // API-Tennis H2H recent-player rows commonly use reversed abbreviated names,
+  // e.g. "Zverev A.". Support surname + first initial so we do not drop Rome,
+  // Madrid and other history rows before the form tracker can use them.
+  if (candidateFirst === targetLast) {
+    return candidateLast === targetFirst || (
+      isInitialNamePart(candidateLast) && candidateLast[0] === targetFirst[0]
+    );
+  }
+
+  if (targetFirst === candidateLast) {
+    return targetLast === candidateFirst || (
+      isInitialNamePart(targetLast) && targetLast[0] === candidateFirst[0]
+    );
   }
 
   return false;
@@ -517,8 +554,34 @@ function canUseMatchInPlayerForm(match: Match) {
   return Boolean(inferMatchWinnerSideFromScore(match));
 }
 
+
+function isSinglesMatchForPlayerForm(match: Match) {
+  const searchable = [match.category, match.tournament, match.round, match.player1, match.player2]
+    .join(" ")
+    .toLowerCase();
+
+  const isMainTourSingles = /\b(atp|wta)\b/.test(searchable);
+  if (!isMainTourSingles) return false;
+
+  return ![
+    "double",
+    "doubles",
+    "mixed",
+    "boys",
+    "girls",
+    "junior",
+    "juniors",
+    "wheelchair",
+    "legend",
+    "legends",
+  ].some((blocked) => searchable.includes(blocked));
+}
+
 function buildPlayerForm(playerName: string, candidateMatches: Match[]) {
-  const sortedMatches = [...candidateMatches].sort((a, b) => getMatchTime(b) - getMatchTime(a));
+  const sortedMatches = [...candidateMatches]
+    .filter(isSinglesMatchForPlayerForm)
+    .filter((match) => isFinishedMatch(match))
+    .sort((a, b) => getMatchTime(b) - getMatchTime(a));
   const excludedMatches: Match[] = [];
   const form: PlayerFormItem[] = [];
 
@@ -567,18 +630,45 @@ function buildPlayerForm(playerName: string, candidateMatches: Match[]) {
   );
   const tournaments = allTournaments.slice(0, 4);
 
-  // Do not present a single-tournament mini sample as "Last 10 matches" form.
-  // Some feeds only return the active tournament even when a wider date window is
-  // requested. Showing 3-4 Roland Garros rows as a player's overall recent form is
-  // misleading and not useful, so only show win-rate/streak stats when we have a
-  // broader sample.
-  const hasMeaningfulRecentHistory = form.length >= 8 || (form.length >= 6 && allTournaments.length >= 2);
+  const tournamentSnapshots = tournaments.map((tournament) => {
+    const matches = form.filter((item) => item.match.tournament === tournament);
+    const wins = matches.filter((item) => item.result === "W").length;
+
+    return {
+      tournament,
+      played: matches.length,
+      wins,
+      losses: matches.length - wins,
+    };
+  });
+
+  const datedFormItems = form
+    .map((item) => ({ item, timestamp: getMatchTime(item.match) }))
+    .filter(({ timestamp }) => Number.isFinite(timestamp) && timestamp < Number.MAX_SAFE_INTEGER);
+
+  const largestGapDays = datedFormItems.reduce((largestGap, current, index) => {
+    const next = datedFormItems[index + 1];
+    if (!next) return largestGap;
+
+    const gapDays = Math.floor(Math.abs(current.timestamp - next.timestamp) / (1000 * 60 * 60 * 24));
+    return Math.max(largestGap, gapDays);
+  }, 0);
+
+  const hasLargeDateGap = largestGapDays > 30;
+
+  // Use win-rate/streak only when the available feed has enough continuous completed
+  // singles rows to support a real recent-form read. Scattered archive rows are
+  // useful as available results, but must not be presented as season/career form.
+  const hasMeaningfulRecentHistory = form.length >= 5 && !hasLargeDateGap;
+  const isPartialAvailableHistory = form.length > 0 && !hasMeaningfulRecentHistory;
 
   if (process.env.NODE_ENV !== "production") {
     console.info("Player form debug", {
       playerName,
       totalMatchesFound: candidateMatches.length,
       validMatchesUsed: form.length,
+      hasLargeDateGap,
+      largestGapDays,
       excludedMatches: excludedMatches.map((match) => ({
         id: match.id,
         player1: match.player1,
@@ -598,7 +688,11 @@ function buildPlayerForm(playerName: string, candidateMatches: Match[]) {
     currentStreakType,
     currentStreakCount,
     tournaments,
+    tournamentSnapshots,
     hasMeaningfulRecentHistory,
+    isPartialAvailableHistory,
+    hasLargeDateGap,
+    largestGapDays,
     debug: {
       playerName,
       totalMatchesFound: candidateMatches.length,
@@ -802,103 +896,147 @@ const playerMatches = allMatches
 
 
       <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
-              Player form
+              Player form tracker
             </p>
             <h2 className="text-2xl font-black text-zinc-950">
-              {playerName} recent form and winning streak
+              {playerName} recent results and form guide
             </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600">
+              {playerForm.hasMeaningfulRecentHistory
+                ? "Recent completed singles results from API-Tennis player history. Doubles, juniors, wheelchair and legends events are filtered out."
+                : "Available feed results. This feed does not include every match from the player's season. Singles only, with doubles, juniors, wheelchair and legends events filtered out."}
+            </p>
           </div>
           <span className="rounded-full bg-zinc-100 px-4 py-2 text-xs font-black uppercase text-zinc-600">
-            {playerForm.hasMeaningfulRecentHistory ? "Last 10 matches" : "Limited history"}
+            {playerForm.hasMeaningfulRecentHistory ? "Recent form" : "Available feed results"}
           </span>
         </div>
 
-        {playerForm.hasMeaningfulRecentHistory ? (
+        {playerForm.form.length ? (
           <>
-            <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
+            <div className={`grid gap-4 ${playerForm.hasMeaningfulRecentHistory ? "lg:grid-cols-[1.35fr_0.9fr]" : ""}`}>
               <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
-                <p className="text-sm font-bold text-zinc-600">Form guide</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {playerForm.form.map((item) => (
-                    <span
-                      key={item.match.id}
-                      title={`${item.match.player1} vs ${item.match.player2}`}
-                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-black ${
-                        item.result === "W"
-                          ? "bg-green-500 text-white"
-                          : "bg-red-500 text-white"
-                      }`}
-                    >
-                      {item.result}
-                    </span>
-                  ))}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm font-bold text-zinc-600">
+                    {playerForm.hasMeaningfulRecentHistory ? "Continuous form guide" : "Partial results found"}
+                  </p>
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">
+                    {playerForm.form.length} match{playerForm.form.length === 1 ? "" : "es"}
+                  </p>
                 </div>
-                <p className="mt-4 text-sm leading-7 text-zinc-600">
-                  Based only on completed matches where the winner can be determined from the feed.
-                  Unclear score rows are excluded from form and streak calculations.
-                </p>
+
+                {playerForm.hasMeaningfulRecentHistory ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {playerForm.form.map((item) => (
+                      <a
+                        key={item.match.id}
+                        href={`/watch/${getMatchSlug(item.match)}`}
+                        title={`${item.result === "W" ? "Won" : "Lost"} vs ${item.opponent}`}
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-black transition hover:scale-105 ${
+                          item.result === "W"
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
+                      >
+                        {item.result}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+
+                {!playerForm.hasMeaningfulRecentHistory ? (
+                  <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm leading-7 text-amber-900">
+                    This feed does not include every match from the player's season{playerForm.hasLargeDateGap ? ` and has a ${playerForm.largestGapDays}-day gap between available results` : ""}. These rows are shown as partial available results, not as recent form, season form or career form.
+                  </p>
+                ) : (
+                  <p className="mt-4 text-sm leading-7 text-zinc-600">
+                    Winner is taken from the feed when available, otherwise inferred only from clearly completed tennis scores. Unclear rows are excluded.
+                  </p>
+                )}
               </div>
 
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-950 p-5 text-white">
-                <p className="text-sm font-bold text-zinc-400">Current streak</p>
-                <p className="mt-3 text-3xl font-black">
-                  {playerForm.currentStreakType && playerForm.currentStreakCount
-                    ? `${playerForm.currentStreakType === "W" ? "🔥" : "⚠️"} ${playerForm.currentStreakCount} ${playerForm.currentStreakType === "W" ? "win" : "loss"}${playerForm.currentStreakCount === 1 ? "" : "es"}`
-                    : "Not enough data"}
-                </p>
-                <div className="mt-5 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-xs text-zinc-400">Wins</p>
-                    <p className="text-xl font-black">{playerForm.wins}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-xs text-zinc-400">Losses</p>
-                    <p className="text-xl font-black">{playerForm.losses}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-xs text-zinc-400">Win rate</p>
-                    <p className="text-xl font-black">{playerForm.winRate === null ? "—" : `${playerForm.winRate}%`}</p>
+              {playerForm.hasMeaningfulRecentHistory ? (
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-950 p-5 text-white">
+                  <p className="text-sm font-bold text-zinc-400">Current streak</p>
+                  <p className="mt-3 text-3xl font-black">
+                    {playerForm.currentStreakType && playerForm.currentStreakCount
+                      ? `${playerForm.currentStreakType === "W" ? "🔥" : "⚠️"} ${playerForm.currentStreakCount} ${playerForm.currentStreakType === "W" ? "win" : "loss"}${playerForm.currentStreakCount === 1 ? "" : "es"}`
+                      : `${playerForm.wins}-${playerForm.losses}`}
+                  </p>
+                  <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl bg-white/10 p-3">
+                      <p className="text-xs text-zinc-400">Wins</p>
+                      <p className="text-xl font-black">{playerForm.wins}</p>
+                    </div>
+                    <div className="rounded-xl bg-white/10 p-3">
+                      <p className="text-xs text-zinc-400">Losses</p>
+                      <p className="text-xl font-black">{playerForm.losses}</p>
+                    </div>
+                    <div className="rounded-xl bg-white/10 p-3">
+                      <p className="text-xs text-zinc-400">Win rate</p>
+                      <p className="text-xl font-black">
+                        {playerForm.winRate !== null ? `${playerForm.winRate}%` : "TBC"}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
             </div>
 
-            <div className="mt-5 grid gap-3">
-              {playerForm.form.slice(0, 5).map((item) => (
-                <a
-                  key={item.match.id}
-                  href={`/watch/${getMatchSlug(item.match)}`}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 p-4 hover:border-green-500 hover:bg-green-50"
-                >
-                  <div>
-                    <p className="font-black text-zinc-950">
-                      {item.result === "W" ? "Won" : "Lost"} vs {item.opponent}
-                    </p>
-                    <p className="mt-1 text-sm text-zinc-600">
-                      {item.match.tournament} · {formatMatchDateTime(item.match.startTime)}
+            {playerForm.hasMeaningfulRecentHistory && playerForm.tournamentSnapshots.length ? (
+              <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                {playerForm.tournamentSnapshots.map((snapshot) => (
+                  <div key={snapshot.tournament} className="rounded-2xl border border-zinc-200 bg-white p-4">
+                    <p className="truncate text-sm font-black text-zinc-950">{snapshot.tournament}</p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-wide text-zinc-500">
+                      {snapshot.played} completed · {snapshot.wins}-{snapshot.losses}
                     </p>
                   </div>
-                  <span className="text-sm font-bold text-zinc-700">{item.match.score}</span>
-                </a>
-              ))}
+                ))}
+              </div>
+            ) : null}
+
+            <div className="mt-5 grid gap-3">
+              {playerForm.form.slice(0, 10).map((item) => {
+                const opponentSlug = getPlayerSlugByName(item.opponent);
+
+                return (
+                  <div
+                    key={item.match.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 p-4"
+                  >
+                    <div>
+                      <p className="font-black text-zinc-950">
+                        {item.result === "W" ? "Won" : "Lost"} vs {opponentSlug ? (
+                          <Link href={`/player/${opponentSlug}`} className="hover:text-green-600">
+                            {item.opponent}
+                          </Link>
+                        ) : item.opponent}
+                      </p>
+                      <p className="mt-1 text-sm text-zinc-600">
+                        {item.match.tournament} · {formatMatchDateTime(item.match.startTime)}
+                      </p>
+                    </div>
+                    <a
+                      href={`/watch/${getMatchSlug(item.match)}`}
+                      className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-800 hover:border-green-500 hover:bg-green-50"
+                    >
+                      {item.match.score || "Open result"} →
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </>
         ) : (
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
-            <p className="font-bold text-zinc-800">Not enough broad recent history yet.</p>
+            <p className="font-bold text-zinc-800">No usable completed matches yet.</p>
             <p className="mt-2">
-              The feed currently returns only {playerForm.form.length ? "a small current-tournament sample" : "no usable completed matches"} for {playerName}.
-              To avoid misleading stats, win rate and streak are hidden until there are enough completed matches across a wider recent window.
+              The available feed does not currently provide completed singles results with a reliable winner for {playerName}. Doubles, juniors, wheelchair and legends events are intentionally excluded.
             </p>
-            {playerForm.form.length ? (
-              <p className="mt-2">
-                Current available sample: {playerForm.form.length} completed match{playerForm.form.length === 1 ? "" : "es"}
-                {playerForm.tournaments.length ? ` from ${playerForm.tournaments.join(", ")}` : ""}.
-              </p>
-            ) : null}
           </div>
         )}
       </section>
