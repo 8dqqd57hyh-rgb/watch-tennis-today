@@ -52,14 +52,36 @@ function normalizeMatches(data: unknown): ServerMatch[] {
   return rawMatches.map((item) => normalizeMatch(item as ServerMatch));
 }
 
-export async function getServerMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
+async function fetchServerMatches(path: string, revalidateSeconds = 60): Promise<ServerMatch[]> {
   const baseUrl = await getBaseUrl();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    next: { revalidate: revalidateSeconds },
-  });
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      signal: controller.signal,
+      next: { revalidate: revalidateSeconds },
+    });
 
-  if (!response.ok) return [];
+    if (!response.ok) return [];
 
-  return normalizeMatches(await response.json());
+    return normalizeMatches(await response.json());
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+export async function getServerMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
+  return fetchServerMatches("/api/matches", revalidateSeconds);
+}
+
+export async function getServerMatchById(matchId: string, revalidateSeconds = 30): Promise<ServerMatch | null> {
+  const matches = await fetchServerMatches(
+    `/api/matches?matchId=${encodeURIComponent(matchId)}&daysBack=1&daysForward=7`,
+    revalidateSeconds
+  );
+
+  return matches.find((match) => String(match.id) === String(matchId)) || null;
 }

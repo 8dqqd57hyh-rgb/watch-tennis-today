@@ -1008,9 +1008,11 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
-const maxDaysBack = playerName || resolvedPlayerKey || formHistory ? 365 : 120;
-const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : 3;
-const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : 30;
+const maxDaysBack = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 365 : 120;
+const defaultDaysBack = matchId ? 1 : 3;
+const defaultDaysForward = matchId ? 7 : 30;
+const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : defaultDaysBack;
+const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : defaultDaysForward;
 
 const dateStartDate = new Date();
 dateStartDate.setDate(today.getDate() - safeDaysBack);
@@ -1116,7 +1118,7 @@ const dateStop = formatDate(dateStopDate);
       mappedMatches = await getArchivedMatches(dateStart);
     }
 
-    if (mappedMatches.length > 0) {
+    if (mappedMatches.length > 0 && !matchId) {
       const { error: archiveUpsertError } = await supabase.from("match_archive").upsert(
         mappedMatches.map((match) => ({
           id: String(match.id),

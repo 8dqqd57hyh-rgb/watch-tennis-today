@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
@@ -15,7 +14,7 @@ import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import PathToTitle from "@/app/components/PathToTitle";
 import { getRivalryForMatch } from "@/data/rivalries";
-import { getServerMatches } from "@/app/lib/serverMatches";
+import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -125,55 +124,6 @@ const playerDescriptions: Record<string, string> = {
   "iga swiatek":
     "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
 };
-
-async function getBaseUrl() {
-  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_SITE_HOST;
-
-  if (configuredSiteUrl) {
-    const normalized = configuredSiteUrl.replace(/\/$/, "");
-    return normalized.startsWith("http") ? normalized : `https://${normalized}`;
-  }
-
-  const headersList = await headers();
-  const requestHost = headersList.get("host");
-
-  if (requestHost) {
-    const protocol = requestHost.includes("localhost") ? "http" : "https";
-    return `${protocol}://${requestHost}`;
-  }
-
-  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
-
-  if (productionHost) {
-    const normalizedHost = productionHost.replace(/^https?:\/\//, "");
-    return `https://${normalizedHost}`;
-  }
-
-  return "http://localhost:3000";
-}
-
-async function getArchivedMatchById(id: string): Promise<Match | null> {
-  const baseUrl = await getBaseUrl();
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 1200);
-
-  try {
-    const response = await fetch(`${baseUrl}/api/match-archive/${id}`, {
-      signal: controller.signal,
-      next: { revalidate: 300 },
-    });
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-
-    return data.match || null;
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
 
 function getMatchIdFromSlug(slug: string) {
   return slug.match(/(\d+)$/)?.[1] ?? null;
@@ -526,24 +476,23 @@ export default async function MatchPage({
 
   if (!matchId) notFound();
 
-  const matches = await getServerMatches(60);
-  const liveMatch = matches.find((item) => String(item.id) === matchId);
+  const liveMatch = await getServerMatchById(matchId, 30);
   const localArchivedMatch = liveMatch ? null : getArchivedMatch(matchId);
-  const archivedDbMatch = liveMatch || localArchivedMatch ? null : await getArchivedMatchById(matchId);
-  const match = liveMatch || archivedDbMatch;
-  const archivedMatch = localArchivedMatch || archivedDbMatch;
 
-  if (!liveMatch && archivedMatch) {
-    return <ArchivedMatchPage archivedMatch={archivedMatch} />;
+  if (!liveMatch && localArchivedMatch) {
+    return <ArchivedMatchPage archivedMatch={localArchivedMatch} />;
   }
 
-  if (!match) {
+  if (!liveMatch) {
     if (decodedSlug.includes("-vs-") && decodedSlug.match(/\d+$/)) {
       redirect("/");
     }
 
     notFound();
   }
+
+  const match = liveMatch;
+  const matches = await getServerMatches(60);
 
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
