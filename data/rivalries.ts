@@ -188,3 +188,59 @@ export const rivalries: Rivalry[] = [
 export function getRivalry(slug: string) {
   return rivalries.find((rivalry) => rivalry.slug === slug);
 }
+
+
+function normalizeRivalryPlayerName(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function isSameRivalryPlayer(candidate: string, target: string) {
+  const candidateName = normalizeRivalryPlayerName(candidate);
+  const targetName = normalizeRivalryPlayerName(target);
+
+  if (!candidateName || !targetName) return false;
+  if (candidateName === targetName) return true;
+
+  const candidateParts = candidateName.split(" ").filter(Boolean);
+  const targetParts = targetName.split(" ").filter(Boolean);
+  const candidateLast = candidateParts.at(-1);
+  const targetLast = targetParts.at(-1);
+  const candidateFirst = candidateParts[0];
+  const targetFirst = targetParts[0];
+
+  if (!candidateLast || !targetLast || !candidateFirst || !targetFirst) return false;
+
+  // Support abbreviated feed names such as "A Sabalenka" and reversed names
+  // such as "Sabalenka A" when matching against curated rivalry pages.
+  return (
+    candidateLast === targetLast && candidateFirst[0] === targetFirst[0]
+  ) || (
+    candidateFirst === targetLast && candidateLast[0] === targetFirst[0]
+  ) || (
+    targetFirst === candidateLast && targetLast[0] === candidateFirst[0]
+  );
+}
+
+export function getRivalryForMatch(player1: string, player2: string) {
+  return rivalries.find((rivalry) => {
+    const direct =
+      isSameRivalryPlayer(player1, rivalry.playerA) &&
+      isSameRivalryPlayer(player2, rivalry.playerB);
+    const reverse =
+      isSameRivalryPlayer(player1, rivalry.playerB) &&
+      isSameRivalryPlayer(player2, rivalry.playerA);
+
+    return direct || reverse;
+  });
+}
+
+export function getRivalriesForPlayer(playerName: string) {
+  return rivalries.filter((rivalry) =>
+    isSameRivalryPlayer(playerName, rivalry.playerA) ||
+    isSameRivalryPlayer(playerName, rivalry.playerB)
+  );
+}

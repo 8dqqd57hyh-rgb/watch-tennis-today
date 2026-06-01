@@ -9,6 +9,7 @@ import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import { getRivalriesForPlayer } from "@/data/rivalries";
 
 export const dynamic = "force-dynamic";
 
@@ -724,6 +725,7 @@ const playerMatches = allMatches
   .sort(sortMatchesByUserIntent);
 
   const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
+  const playerRivalries = getRivalriesForPlayer(playerName).slice(0, 4);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
   const pageSummary = getPlayerPageSummary(playerName, playerMatches);
   const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments, headline } = pageSummary;
@@ -1166,29 +1168,55 @@ const playerMatches = allMatches
 
       <RevenueConversionPanel context="player" playerName={playerName} />
 
-      <section className="mb-10 rounded-2xl border border-zinc-200 p-6">
-        <h2 className="mb-4 text-2xl font-semibold">High-interest matchups</h2>
-        <p className="mb-5 text-sm leading-7 text-zinc-600">
-          These head-to-head pages help fans compare popular matchups, find schedule
-          context and continue to official viewing guides instead of leaving after one page.
-        </p>
-        <div className="grid gap-3 md:grid-cols-2">
-          {[
-            ["Alcaraz vs Sinner", "/vs/alcaraz-vs-sinner"],
-            ["Djokovic vs Alcaraz", "/vs/djokovic-vs-alcaraz"],
-            ["Sinner vs Djokovic", "/vs/sinner-vs-djokovic"],
-            ["Swiatek vs Sabalenka", "/vs/swiatek-vs-sabalenka"],
-          ].map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="rounded-2xl border border-zinc-200 p-4 font-bold hover:border-green-500 hover:bg-green-50"
-            >
-              {label} →
-            </a>
-          ))}
-        </div>
-      </section>
+      {playerRivalries.length ? (
+        <section className="mb-10 rounded-2xl border border-orange-200 bg-orange-50 p-6">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-orange-600">
+            Rivalry paths
+          </p>
+          <h2 className="mb-4 text-2xl font-semibold text-zinc-950">
+            {playerName} rivalry guides
+          </h2>
+          <p className="mb-5 text-sm leading-7 text-zinc-700">
+            These matchup pages add internal links from player hubs to high-intent rivalry searches, helping fans continue from schedules into deeper match context.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {playerRivalries.map((rivalry) => (
+              <a
+                key={rivalry.slug}
+                href={`/rivalries/${rivalry.slug}`}
+                className="rounded-2xl border border-orange-200 bg-white p-4 transition hover:border-orange-500 hover:bg-orange-100"
+              >
+                <span className="font-bold text-zinc-950">{rivalry.title} →</span>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">{rivalry.angle}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section className="mb-10 rounded-2xl border border-zinc-200 p-6">
+          <h2 className="mb-4 text-2xl font-semibold">High-interest matchups</h2>
+          <p className="mb-5 text-sm leading-7 text-zinc-600">
+            These rivalry pages help fans compare popular matchups, find schedule
+            context and continue to official viewing guides instead of leaving after one page.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {[
+              ["Alcaraz vs Sinner", "/rivalries/alcaraz-vs-sinner"],
+              ["Djokovic vs Alcaraz", "/rivalries/djokovic-vs-alcaraz"],
+              ["Sinner vs Djokovic", "/rivalries/djokovic-vs-sinner"],
+              ["Swiatek vs Sabalenka", "/rivalries/sabalenka-vs-swiatek"],
+            ].map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                className="rounded-2xl border border-zinc-200 p-4 font-bold hover:border-green-500 hover:bg-green-50"
+              >
+                {label} →
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
     <ContentQualityNotice pageType="player page" />
 

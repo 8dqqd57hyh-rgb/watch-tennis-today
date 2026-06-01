@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
@@ -13,6 +14,7 @@ import EmailSignup from "@/app/components/EmailSignup";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import PathToTitle from "@/app/components/PathToTitle";
+import { getRivalryForMatch } from "@/data/rivalries";
 
 export const dynamic = "force-dynamic";
 
@@ -460,9 +462,9 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
       <div className="mx-auto max-w-4xl">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <div className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
           <div className="mb-5 inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400">
@@ -561,6 +563,7 @@ export default async function MatchPage({
   const scoreDisplay = getScoreDisplay(match);
   const countryLinks = buildCountryWatchLinks(match);
   const relatedMatches = getRelatedMatches(match, matches);
+  const rivalryGuide = getRivalryForMatch(match.player1, match.player2);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
   const playerDescription =
@@ -632,9 +635,9 @@ export default async function MatchPage({
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
       <div className="mx-auto max-w-6xl">
         <nav className="mb-8 text-sm text-zinc-400">
-          <a href="/" className="hover:text-white">Home</a> /{" "}
-          <a href="/watch" className="hover:text-white">Watch</a> /{" "}
-          <a href={`/tournament/${tournamentSlug}`} className="hover:text-white">{match.tournament}</a>
+          <Link href="/" className="hover:text-white">Home</Link> /{" "}
+          <Link href="/watch" className="hover:text-white">Watch</Link> /{" "}
+          <Link href={`/tournament/${tournamentSlug}`} className="hover:text-white">{match.tournament}</Link>
         </nav>
 
         <article className="overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900">
@@ -739,6 +742,28 @@ export default async function MatchPage({
             </section>
 
             <MatchEdgePredictor match={match} matches={matches} />
+
+            {rivalryGuide ? (
+              <section className="mb-10 rounded-[2rem] border border-orange-500/30 bg-orange-500/10 p-6">
+                <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-orange-400">
+                  Rivalry guide
+                </p>
+                <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
+                  <div>
+                    <h2 className="mb-3 text-3xl font-black">{rivalryGuide.title}</h2>
+                    <p className="max-w-3xl leading-8 text-zinc-300">
+                      {rivalryGuide.angle}
+                    </p>
+                  </div>
+                  <a
+                    href={`/rivalries/${rivalryGuide.slug}`}
+                    className="rounded-2xl bg-orange-500 px-6 py-4 text-center font-black text-black transition hover:bg-orange-400"
+                  >
+                    Open rivalry page →
+                  </a>
+                </div>
+              </section>
+            ) : null}
 
             <PathToTitle match={match} matches={matches} />
 
