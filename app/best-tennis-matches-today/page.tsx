@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers } from "next/headers";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import MustWatchMatchesToday from "@/app/components/MustWatchMatchesToday";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Best Tennis Matches Today | Live ATP, WTA & Grand Slam Picks",
@@ -38,32 +38,8 @@ type Match = {
   round?: string;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(): Promise<Match[]> {
-  try {
-    const baseUrl = await getBaseUrl();
-    const response = await fetch(`${baseUrl}/api/matches`, { cache: "no-store" });
-
-    if (!response.ok) return [];
-
-    const data = await response.json();
-
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data.matches)) return data.matches;
-
-    return [];
-  } catch {
-    return [];
-  }
+  return (await getServerMatches(60)) as Match[];
 }
 
 export default async function BestTennisMatchesTodayPage() {

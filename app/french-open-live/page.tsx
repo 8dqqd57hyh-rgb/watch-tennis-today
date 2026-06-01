@@ -1,8 +1,9 @@
 import VpnPromo from "@/app/components/VpnPromo";
 import AuthorBox from "@/app/components/AuthorBox";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
   description:
@@ -22,15 +23,7 @@ type TennisMatch = {
 };
 
 export default async function FrenchOpenLivePage() {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-
-  const res = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  const data = await res.json();
-  const matches: TennisMatch[] = Array.isArray(data) ? data : data.matches || [];
+  const matches = (await getServerMatches(60)) as TennisMatch[];
 
   const frenchOpenMatches = matches.filter((match) => {
     const tournament = match.tournament?.toLowerCase() || "";

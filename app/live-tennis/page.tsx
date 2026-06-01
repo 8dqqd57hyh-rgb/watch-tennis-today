@@ -1,8 +1,9 @@
-import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import { getServerMatches } from "@/app/lib/serverMatches";
+import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Match = {
   id: string;
@@ -15,44 +16,8 @@ type Match = {
   startTime: string;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-
-  const host = headersList.get("host");
-
-  if (!host) {
-    return "http://localhost:3000";
-  }
-
-  const protocol = host.includes("localhost")
-    ? "http"
-    : "https";
-
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if (Array.isArray(data.matches)) {
-    return data.matches;
-  }
-
-  return [];
+  return (await getServerMatches(60)) as Match[];
 }
 
 function matchSlug(match: Match) {
@@ -115,12 +80,12 @@ const matchesToShow =
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
-        <a
+        <Link
           href="/"
           className="text-zinc-400 hover:text-white"
         >
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-4">
           🔴 Tennis Match Schedule

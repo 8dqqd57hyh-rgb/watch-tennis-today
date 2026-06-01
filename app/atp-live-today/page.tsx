@@ -1,8 +1,9 @@
-import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import { getServerMatches } from "@/app/lib/serverMatches";
+import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Match = {
   id: string;
@@ -27,32 +28,8 @@ export const metadata = {
   alternates: { canonical: "https://watchtennistoday.com/atp-live-today" },
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) return [];
-
-  const data = await response.json();
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.matches)) return data.matches;
-
-  return [];
+  return (await getServerMatches(60)) as Match[];
 }
 
 function slugify(value: string) {
@@ -172,9 +149,9 @@ export default async function AtpLiveTodayPage() {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
         <nav className="text-sm text-zinc-400 mb-8 flex flex-wrap gap-2">
-          <a href="/" className="hover:text-white">
+          <Link href="/" className="hover:text-white">
             Home
-          </a>
+          </Link>
           <span>/</span>
           <span className="text-white">ATP Live Today</span>
         </nav>
@@ -368,12 +345,12 @@ export default async function AtpLiveTodayPage() {
               Best Ways to Watch Tennis Online
             </a>
 
-            <a
+            <Link
               href="/watch"
               className="rounded-2xl border border-zinc-700 px-6 py-4 font-black hover:border-green-500 hover:text-green-400 transition-all"
             >
               Where to Watch Tennis
-            </a>
+            </Link>
           </div>
         </section>
 
