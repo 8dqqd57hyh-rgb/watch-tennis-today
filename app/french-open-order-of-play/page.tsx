@@ -1,4 +1,5 @@
 import { safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
+import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -213,6 +214,8 @@ export default async function FrenchOpenOrderOfPlayPage() {
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
       <div className="mx-auto max-w-7xl">
+        <FrenchOpenDayTimeline compact />
+
         <section className="mb-10 rounded-[2.5rem] border border-orange-500/50 bg-gradient-to-br from-orange-950/50 to-black p-8">
           <p className="mb-4 inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-black">
             Roland Garros schedule

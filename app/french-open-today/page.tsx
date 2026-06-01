@@ -1,6 +1,7 @@
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToday";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
+import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
 
 export const dynamic = "force-dynamic";
 
@@ -213,6 +214,7 @@ export default async function FrenchOpenTodayPage() {
           ))}
         </section>
 
+        <FrenchOpenDayTimeline />
         <FrenchOpenStorylinesToday compact />
         <FrenchOpenConversionCluster compact title="More French Open coverage" />
         <FrenchOpenWatchIntent compact />
