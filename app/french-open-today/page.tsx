@@ -3,6 +3,7 @@ import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToda
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
 import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
+import MatchImportanceHub from "@/app/components/MatchImportanceHub";
 
 export const dynamic = "force-dynamic";
 
@@ -216,6 +217,12 @@ export default async function FrenchOpenTodayPage() {
         </section>
 
         <RolandGarrosPickemChallenge compact />
+        <MatchImportanceHub
+          matches={frenchOpenMatches}
+          compact
+          title="French Open matches that matter most today"
+          subtitle="A ranked shortcut for fans: live matches, Grand Slam stakes, big names and late rounds first."
+        />
         <FrenchOpenDayTimeline />
         <FrenchOpenStorylinesToday compact />
         <FrenchOpenConversionCluster compact title="More French Open coverage" />

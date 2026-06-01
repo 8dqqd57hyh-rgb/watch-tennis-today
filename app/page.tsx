@@ -15,6 +15,7 @@ import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCl
 import FrenchOpenSurvivorsBoard from "@/app/components/FrenchOpenSurvivorsBoard";
 import TennisWatchlistHub from "@/app/components/TennisWatchlistHub";
 import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
+import MatchImportanceHub from "@/app/components/MatchImportanceHub";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
@@ -558,6 +559,7 @@ async function subscribeToFinals(
   <>
     <DailyTennisLoop tournamentName="French Open" />
     <RolandGarrosPickemChallenge compact />
+    <MatchImportanceHub matches={homepageMatches} compact />
     <FrenchOpenConversionCluster compact title="French Open daily hub" />
     <FrenchOpenSurvivorsBoard compact />
     <TennisWatchlistHub matches={homepageMatches} />
