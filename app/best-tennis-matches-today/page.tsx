@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
+import MustWatchMatchesToday from "@/app/components/MustWatchMatchesToday";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 
@@ -88,6 +89,8 @@ export default async function BestTennisMatchesTodayPage() {
             H2H pages and safe legal viewing routes.
           </p>
         </section>
+
+        <MustWatchMatchesToday matches={matches} />
 
         <BestMatchesTodayEngine matches={matches} />
 
