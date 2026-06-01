@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type DrawStatus = "advanced" | "eliminated" | "live" | "upcoming" | "potential";
 
@@ -97,6 +97,9 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
   const [searchTerm, setSearchTerm] = useState("");
   const [trackerData, setTrackerData] = useState<DrawTrackerResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [emailMessage, setEmailMessage] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -173,6 +176,49 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
   const eliminatedCount = trackerData?.eliminatedCount ?? 0;
   const sourceMatchCount = trackerData?.sourceMatchCount ?? 0;
   const isUsingFallback = (trackerData?.activePlayers || []).length === 0;
+
+  async function subscribeToSelectedPlayer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedPlayer || emailStatus === "sending") return;
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail.includes("@")) {
+      setEmailStatus("error");
+      setEmailMessage("Enter a valid email address.");
+      return;
+    }
+
+    setEmailStatus("sending");
+    setEmailMessage("");
+
+    try {
+      const response = await fetch("/api/subscribe-player", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          playerName: selectedPlayer.player,
+          playerSlug: selectedPlayer.id,
+          source: "french-open-draw-tracker",
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || data?.ok === false) {
+        throw new Error(data?.message || "Subscription failed");
+      }
+
+      setEmailStatus("success");
+      setEmailMessage(`You will get match alerts for ${selectedPlayer.player}.`);
+      setEmail("");
+    } catch (error) {
+      setEmailStatus("error");
+      setEmailMessage(error instanceof Error ? error.message : "Could not subscribe right now.");
+    }
+  }
 
   return (
     <section className="mb-12 rounded-[2rem] border border-orange-500/40 bg-gradient-to-br from-zinc-950 via-black to-orange-950/20 p-6 md:p-8">
@@ -304,6 +350,52 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
               </div>
 
               <p className="mb-6 leading-8 text-zinc-300">{selectedPlayer.summary}</p>
+
+              <form
+                onSubmit={subscribeToSelectedPlayer}
+                className="mb-6 rounded-3xl border border-orange-500/40 bg-gradient-to-br from-orange-950/30 to-black p-5"
+              >
+                <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-orange-300">Email alert</p>
+                    <h3 className="mt-1 text-2xl font-black text-white">Get notified when {selectedPlayer.player} plays next</h3>
+                    <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-zinc-400">
+                      Capture fans while they are checking the draw: one email for next match, live status and result updates.
+                    </p>
+                  </div>
+
+                  <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+                    <label className="sr-only" htmlFor={`draw-email-${selectedPlayer.id}`}>Email address</label>
+                    <input
+                      id={`draw-email-${selectedPlayer.id}`}
+                      type="email"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        if (emailStatus !== "sending") {
+                          setEmailStatus("idle");
+                          setEmailMessage("");
+                        }
+                      }}
+                      placeholder="you@example.com"
+                      className="min-w-0 rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm font-bold text-white outline-none transition placeholder:text-zinc-600 focus:border-orange-400 sm:w-72"
+                    />
+                    <button
+                      type="submit"
+                      disabled={emailStatus === "sending"}
+                      className="rounded-2xl bg-orange-400 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-300 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {emailStatus === "sending" ? "Saving…" : "Notify me"}
+                    </button>
+                  </div>
+                </div>
+
+                {emailMessage ? (
+                  <p className={`mt-3 text-sm font-bold ${emailStatus === "success" ? "text-emerald-300" : "text-red-200"}`}>
+                    {emailMessage}
+                  </p>
+                ) : null}
+              </form>
 
               <div className="space-y-3">
                 {selectedPlayer.matches.map((match) => (
