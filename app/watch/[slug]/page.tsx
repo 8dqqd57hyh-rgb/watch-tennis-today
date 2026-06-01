@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
@@ -126,28 +127,52 @@ const playerDescriptions: Record<string, string> = {
 };
 
 async function getBaseUrl() {
-  const host = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_SITE_HOST;
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_SITE_HOST;
 
-  if (host) {
-    const normalizedHost = host.replace(/^https?:\/\//, "");
+  if (configuredSiteUrl) {
+    const normalized = configuredSiteUrl.replace(/\/$/, "");
+    return normalized.startsWith("http") ? normalized : `https://${normalized}`;
+  }
+
+  const headersList = await headers();
+  const requestHost = headersList.get("host");
+
+  if (requestHost) {
+    const protocol = requestHost.includes("localhost") ? "http" : "https";
+    return `${protocol}://${requestHost}`;
+  }
+
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+
+  if (productionHost) {
+    const normalizedHost = productionHost.replace(/^https?:\/\//, "");
     return `https://${normalizedHost}`;
   }
 
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  return "http://localhost:3000";
 }
 
 async function getArchivedMatchById(id: string): Promise<Match | null> {
   const baseUrl = await getBaseUrl();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 1200);
 
-  const response = await fetch(`${baseUrl}/api/match-archive/${id}`, {
-    cache: "no-store",
-  });
+  try {
+    const response = await fetch(`${baseUrl}/api/match-archive/${id}`, {
+      signal: controller.signal,
+      next: { revalidate: 300 },
+    });
 
-  if (!response.ok) return null;
+    if (!response.ok) return null;
 
-  const data = await response.json();
+    const data = await response.json();
 
-  return data.match || null;
+    return data.match || null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function getMatchIdFromSlug(slug: string) {
@@ -503,9 +528,10 @@ export default async function MatchPage({
 
   const matches = await getServerMatches(60);
   const liveMatch = matches.find((item) => String(item.id) === matchId);
-  const archivedDbMatch = liveMatch ? null : await getArchivedMatchById(matchId);
+  const localArchivedMatch = liveMatch ? null : getArchivedMatch(matchId);
+  const archivedDbMatch = liveMatch || localArchivedMatch ? null : await getArchivedMatchById(matchId);
   const match = liveMatch || archivedDbMatch;
-  const archivedMatch = match || getArchivedMatch(matchId);
+  const archivedMatch = localArchivedMatch || archivedDbMatch;
 
   if (!liveMatch && archivedMatch) {
     return <ArchivedMatchPage archivedMatch={archivedMatch} />;
