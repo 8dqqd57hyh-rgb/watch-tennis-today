@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { players } from "@/data/players";
-import { getCanonicalPlayerSlug, normalizePlayerName } from "@/data/playerSlugs";
 
-const STORAGE_KEY = "watchTennisToday.followedPlayers";
+const STORAGE_KEY = "watchTennisToday.followedTournaments";
 
-type FollowedPlayer = { slug: string; name: string; addedAt?: string };
+type FollowedTournament = { slug: string; name: string; addedAt?: string };
 type Match = {
   id: string;
   player1: string;
@@ -19,16 +17,16 @@ type Match = {
   startTime?: string;
 };
 
-type PersonalMatch = Match & { followedPlayer: FollowedPlayer; opponent: string };
+type TournamentMatch = Match & { followedTournament: FollowedTournament };
 
-const STARTER_PLAYERS = [
-  "jannik-sinner",
-  "carlos-alcaraz",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "iga-swiatek",
-  "novak-djokovic",
-] as const;
+const STARTER_TOURNAMENTS: FollowedTournament[] = [
+  { slug: "french-open", name: "French Open" },
+  { slug: "roland-garros", name: "Roland Garros" },
+  { slug: "wimbledon", name: "Wimbledon" },
+  { slug: "us-open", name: "US Open" },
+  { slug: "australian-open", name: "Australian Open" },
+  { slug: "atp-finals", name: "ATP Finals" },
+];
 
 const STATUS_WEIGHT: Record<string, number> = {
   LIVE: 0,
@@ -37,67 +35,6 @@ const STATUS_WEIGHT: Record<string, number> = {
   FINISHED: 3,
   RETIRED: 4,
 };
-
-function readFollowedPlayers(): FollowedPlayer[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .map((player) => {
-        const slug = getCanonicalPlayerSlug(String(player.slug || player.name || ""));
-        if (!slug) return null;
-        return { slug, name: players[slug].name, addedAt: String(player.addedAt || "") };
-      })
-      .filter(Boolean) as FollowedPlayer[];
-  } catch {
-    return [];
-  }
-}
-
-function saveFollowedPlayers(nextPlayers: FollowedPlayer[]) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlayers));
-  window.dispatchEvent(new Event("watch-tennis-followed-players-changed"));
-}
-
-function getNameParts(value: string) {
-  const normalized = normalizePlayerName(value);
-  const parts = normalized.split(" ").filter(Boolean);
-  return { normalized, first: parts[0] || "", last: parts[parts.length - 1] || "" };
-}
-
-function playerNameMatchesSide(playerName: string, sideName: string) {
-  const target = getNameParts(playerName);
-  const side = getNameParts(sideName);
-
-  if (!target.normalized || !side.normalized) return false;
-  if (target.normalized === side.normalized) return true;
-
-  if (target.last && side.last && target.last === side.last) {
-    if (!target.first || !side.first) return true;
-    return target.first[0] === side.first[0];
-  }
-
-  return false;
-}
-
-function matchContainsPlayer(match: Match, playerSlug: string) {
-  const canonicalSlug = getCanonicalPlayerSlug(playerSlug);
-  if (!canonicalSlug) return false;
-  const targetName = players[canonicalSlug].name;
-  return [match.player1, match.player2].some((side) => playerNameMatchesSide(targetName, side));
-}
-
-function getOpponent(match: Match, playerSlug: string) {
-  const canonicalSlug = getCanonicalPlayerSlug(playerSlug);
-  if (!canonicalSlug) return "Opponent TBA";
-  const targetName = players[canonicalSlug].name;
-  if (playerNameMatchesSide(targetName, match.player1)) return match.player2;
-  if (playerNameMatchesSide(targetName, match.player2)) return match.player1;
-  return `${match.player1} / ${match.player2}`;
-}
 
 function slugify(value: string) {
   return value
@@ -109,10 +46,43 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
-function getMatchSlug(match: Match) {
-  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
-  const numericId = String(match.id || "").split(":").pop();
-  return `${readablePart}-${numericId}`;
+function readFollowedTournaments(): FollowedTournament[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((item) => {
+        const name = String(item?.name || "").trim();
+        const slug = slugify(String(item?.slug || name));
+        if (!name || !slug) return null;
+        return { slug, name, addedAt: String(item?.addedAt || "") };
+      })
+      .filter(Boolean) as FollowedTournament[];
+  } catch {
+    return [];
+  }
+}
+
+function saveFollowedTournaments(tournaments: FollowedTournament[]) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tournaments));
+  window.dispatchEvent(new Event("watch-tennis-followed-tournaments-changed"));
+}
+
+function tournamentMatches(matchTournament: string, tournament: FollowedTournament) {
+  const matchSlug = slugify(matchTournament);
+  const followedSlug = slugify(tournament.slug || tournament.name);
+  const followedNameSlug = slugify(tournament.name);
+
+  if (!matchSlug || !followedSlug) return false;
+  return (
+    matchSlug.includes(followedSlug) ||
+    followedSlug.includes(matchSlug) ||
+    matchSlug.includes(followedNameSlug) ||
+    followedNameSlug.includes(matchSlug)
+  );
 }
 
 function getMatchTime(match: Match) {
@@ -133,7 +103,13 @@ function formatTime(value?: string) {
   });
 }
 
-function Section({ title, subtitle, matches, emptyText }: { title: string; subtitle: string; matches: PersonalMatch[]; emptyText: string }) {
+function getMatchSlug(match: Match) {
+  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
+  const numericId = String(match.id || "").split(":").pop();
+  return `${readablePart}-${numericId}`;
+}
+
+function Section({ title, subtitle, matches, emptyText }: { title: string; subtitle: string; matches: TournamentMatch[]; emptyText: string }) {
   return (
     <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div className="mb-5">
@@ -143,12 +119,12 @@ function Section({ title, subtitle, matches, emptyText }: { title: string; subti
 
       {matches.length > 0 ? (
         <div className="grid gap-4">
-          {matches.slice(0, 8).map((match) => (
-            <article key={`${title}-${match.followedPlayer.slug}-${match.id}`} className="rounded-2xl border border-zinc-200 p-5 hover:border-emerald-400 hover:bg-emerald-50/50">
+          {matches.slice(0, 10).map((match) => (
+            <article key={`${title}-${match.followedTournament.slug}-${match.id}`} className="rounded-2xl border border-zinc-200 p-5 hover:border-emerald-400 hover:bg-emerald-50/50">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="mb-1 text-sm font-black uppercase tracking-[0.14em] text-emerald-700">
-                    {match.followedPlayer.name} vs {match.opponent}
+                    {match.followedTournament.name}
                   </p>
                   <h3 className="text-xl font-black text-zinc-950">{match.player1} vs {match.player2}</h3>
                   <p className="mt-1 text-sm text-zinc-600">
@@ -163,7 +139,7 @@ function Section({ title, subtitle, matches, emptyText }: { title: string; subti
 
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link href={`/watch/${getMatchSlug(match)}`} className="rounded-xl bg-black px-4 py-2 text-sm font-black text-white hover:bg-zinc-800">Open match →</Link>
-                <Link href={`/player/${match.followedPlayer.slug}`} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-emerald-400 hover:bg-white">Player page →</Link>
+                <Link href={`/tournament/${match.followedTournament.slug}`} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-emerald-400 hover:bg-white">Tournament page →</Link>
               </div>
             </article>
           ))}
@@ -176,36 +152,33 @@ function Section({ title, subtitle, matches, emptyText }: { title: string; subti
 }
 
 export default function MyTournamentClient() {
-  const [followedPlayers, setFollowedPlayers] = useState<FollowedPlayer[]>(() => readFollowedPlayers());
+  const [followedTournaments, setFollowedTournaments] = useState<FollowedTournament[]>(() => readFollowedTournaments());
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadMatches() {
-      if (followedPlayers.length === 0) {
-        setMatches([]);
-        setLoading(false);
-        return;
-      }
+    function sync() {
+      setFollowedTournaments(readFollowedTournaments());
+    }
 
+    window.addEventListener("watch-tennis-followed-tournaments-changed", sync);
+    window.addEventListener("storage", sync);
+
+    return () => {
+      window.removeEventListener("watch-tennis-followed-tournaments-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function loadMatches() {
       setLoading(true);
       try {
-        const results = await Promise.all(
-          followedPlayers.map(async (player) => {
-            const params = new URLSearchParams({
-              playerName: player.name,
-              includeFinished: "1",
-              daysBack: "3",
-              daysForward: "21",
-            });
-            const response = await fetch(`/api/matches?${params.toString()}`, { cache: "no-store" });
-            const data = await response.json();
-            const nextMatches = Array.isArray(data) ? data : data.matches;
-            return Array.isArray(nextMatches) ? nextMatches : [];
-          })
-        );
-
-        setMatches(Array.from(new Map(results.flat().map((match) => [String(match.id), match])).values()) as Match[]);
+        const params = new URLSearchParams({ includeFinished: "1", daysBack: "7", daysForward: "14" });
+        const response = await fetch(`/api/matches?${params.toString()}`, { cache: "no-store" });
+        const data = await response.json();
+        const nextMatches = Array.isArray(data) ? data : data.matches;
+        setMatches(Array.isArray(nextMatches) ? nextMatches : []);
       } catch (error) {
         console.error(error);
         setMatches([]);
@@ -215,41 +188,43 @@ export default function MyTournamentClient() {
     }
 
     loadMatches();
-    const interval = window.setInterval(loadMatches, 60_000);
+    const interval = window.setInterval(loadMatches, 120_000);
     return () => window.clearInterval(interval);
-  }, [followedPlayers]);
+  }, []);
 
-  function addPlayer(playerSlug: string) {
-    const slug = getCanonicalPlayerSlug(playerSlug);
-    if (!slug || followedPlayers.some((player) => player.slug === slug)) return;
-    const nextPlayers = [...followedPlayers, { slug, name: players[slug].name, addedAt: new Date().toISOString() }].slice(-30);
-    saveFollowedPlayers(nextPlayers);
-    setFollowedPlayers(nextPlayers);
+  function addTournament(tournament: FollowedTournament) {
+    if (followedTournaments.some((item) => item.slug === tournament.slug)) return;
+    const nextTournaments = [
+      { ...tournament, addedAt: new Date().toISOString() },
+      ...followedTournaments.filter((item) => item.slug !== tournament.slug),
+    ].slice(0, 20);
+    saveFollowedTournaments(nextTournaments);
+    setFollowedTournaments(nextTournaments);
   }
 
-  function removePlayer(playerSlug: string) {
-    const nextPlayers = followedPlayers.filter((player) => player.slug !== playerSlug);
-    saveFollowedPlayers(nextPlayers);
-    setFollowedPlayers(nextPlayers);
+  function removeTournament(slug: string) {
+    const nextTournaments = followedTournaments.filter((tournament) => tournament.slug !== slug);
+    saveFollowedTournaments(nextTournaments);
+    setFollowedTournaments(nextTournaments);
   }
 
-  const personalMatches = useMemo(() => {
-    return followedPlayers
-      .flatMap((player) =>
+  const tournamentMatchesList = useMemo(() => {
+    return followedTournaments
+      .flatMap((tournament) =>
         matches
-          .filter((match) => matchContainsPlayer(match, player.slug))
-          .map((match) => ({ ...match, followedPlayer: player, opponent: getOpponent(match, player.slug) }))
+          .filter((match) => tournamentMatches(match.tournament, tournament))
+          .map((match) => ({ ...match, followedTournament: tournament }))
       )
       .sort((left, right) => {
         const statusDiff = (STATUS_WEIGHT[left.status?.toUpperCase()] ?? 3) - (STATUS_WEIGHT[right.status?.toUpperCase()] ?? 3);
         if (statusDiff !== 0) return statusDiff;
         return getMatchTime(left) - getMatchTime(right);
       });
-  }, [followedPlayers, matches]);
+  }, [followedTournaments, matches]);
 
-  const liveMatches = personalMatches.filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()));
-  const nextMatches = personalMatches.filter((match) => match.status?.toUpperCase() === "UPCOMING");
-  const recentResults = personalMatches.filter((match) => ["FINISHED", "RETIRED"].includes(match.status?.toUpperCase()));
+  const liveMatches = tournamentMatchesList.filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()));
+  const nextMatches = tournamentMatchesList.filter((match) => match.status?.toUpperCase() === "UPCOMING");
+  const recentResults = tournamentMatchesList.filter((match) => ["FINISHED", "RETIRED"].includes(match.status?.toUpperCase()));
 
   return (
     <div className="space-y-8">
@@ -257,9 +232,9 @@ export default function MyTournamentClient() {
         <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="mb-2 text-sm font-black uppercase tracking-[0.18em] text-emerald-700">Private tournament dashboard</p>
-            <h2 className="text-3xl font-black text-zinc-950">Your tournament in one screen</h2>
+            <h2 className="text-3xl font-black text-zinc-950">Follow tournaments, not only players</h2>
             <p className="mt-2 max-w-2xl leading-7 text-zinc-600">
-              Pick players once, then come back here for their live matches, next fixtures and latest results. It uses the same saved players as My Players.
+              Save a tournament once, then return here for its live matches, upcoming fixtures and recent results. This now uses the same tournament follow button shown across the site.
             </p>
           </div>
 
@@ -270,20 +245,22 @@ export default function MyTournamentClient() {
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          {followedPlayers.map((player) => (
-            <span key={player.slug} className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2">
-              <Link href={`/player/${player.slug}`} className="font-bold text-zinc-900 hover:text-emerald-700">{player.name}</Link>
-              <button type="button" onClick={() => removePlayer(player.slug)} className="font-black text-zinc-400 hover:text-red-600" aria-label={`Remove ${player.name}`}>×</button>
-            </span>
-          ))}
-        </div>
+        {followedTournaments.length > 0 ? (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {followedTournaments.map((tournament) => (
+              <span key={tournament.slug} className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2">
+                <Link href={`/tournament/${tournament.slug}`} className="font-bold text-zinc-900 hover:text-emerald-700">{tournament.name}</Link>
+                <button type="button" onClick={() => removeTournament(tournament.slug)} className="font-black text-zinc-400 hover:text-red-600" aria-label={`Remove ${tournament.name}`}>×</button>
+              </span>
+            ))}
+          </div>
+        ) : null}
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {STARTER_PLAYERS.filter((slug) => !followedPlayers.some((player) => player.slug === slug)).slice(0, 6).map((slug) => (
-            <button key={slug} type="button" onClick={() => addPlayer(slug)} className="rounded-2xl border border-zinc-200 bg-white p-4 text-left hover:border-emerald-400 hover:bg-emerald-50">
+          {STARTER_TOURNAMENTS.filter((tournament) => !followedTournaments.some((item) => item.slug === tournament.slug)).slice(0, 6).map((tournament) => (
+            <button key={tournament.slug} type="button" onClick={() => addTournament(tournament)} className="rounded-2xl border border-zinc-200 bg-white p-4 text-left hover:border-emerald-400 hover:bg-emerald-50">
               <span className="block text-sm font-black uppercase tracking-[0.14em] text-emerald-700">Add to My Tournament</span>
-              <span className="mt-1 block text-lg font-black text-zinc-950">{players[slug].name}</span>
+              <span className="mt-1 block text-lg font-black text-zinc-950">{tournament.name}</span>
             </button>
           ))}
         </div>
@@ -291,9 +268,9 @@ export default function MyTournamentClient() {
 
       {loading ? <div className="rounded-3xl border border-zinc-200 bg-white p-6 font-bold text-zinc-600 shadow-sm">Loading your tournament board...</div> : null}
 
-      <Section title="Live now" subtitle="Matches involving your saved players that are live or suspended." matches={liveMatches} emptyText="No saved player is live right now." />
-      <Section title="Next matches" subtitle="Upcoming fixtures for your saved players." matches={nextMatches} emptyText="No upcoming matches found for your saved players yet." />
-      <Section title="Recent results" subtitle="Latest completed matches for your saved players." matches={recentResults} emptyText="No recent results found yet." />
+      <Section title="Live now" subtitle="Live or suspended matches from your saved tournaments." matches={liveMatches} emptyText="No saved tournament is live right now." />
+      <Section title="Next matches" subtitle="Upcoming fixtures from your saved tournaments." matches={nextMatches} emptyText="No upcoming matches found for your saved tournaments yet." />
+      <Section title="Recent results" subtitle="Latest completed matches from your saved tournaments." matches={recentResults} emptyText="No recent results found yet." />
     </div>
   );
 }
