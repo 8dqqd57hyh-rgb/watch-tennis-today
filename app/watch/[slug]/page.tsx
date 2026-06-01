@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
@@ -15,6 +14,7 @@ import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import PathToTitle from "@/app/components/PathToTitle";
 import { getRivalryForMatch } from "@/data/rivalries";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -126,30 +126,14 @@ const playerDescriptions: Record<string, string> = {
 };
 
 async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
+  const host = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_SITE_HOST;
 
-  if (!host) return "http://localhost:3000";
+  if (host) {
+    const normalizedHost = host.replace(/^https?:\/\//, "");
+    return `https://${normalizedHost}`;
+  }
 
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
-async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) return [];
-
-  const data = await response.json();
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.matches)) return data.matches;
-
-  return [];
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 }
 
 async function getArchivedMatchById(id: string): Promise<Match | null> {
@@ -294,23 +278,6 @@ function getScoreDisplay(match: Match) {
   return score;
 }
 
-function getTimeContext(match: Match) {
-  if (!match.startTime) return "Official start time has not been confirmed yet.";
-
-  const start = new Date(match.startTime).getTime();
-  if (Number.isNaN(start)) return "Official start time has not been confirmed yet.";
-
-  const diff = start - Date.now();
-  const minutes = Math.round(Math.abs(diff) / 60000);
-
-  if (isLive(match.status)) return "Match is marked as live in the current feed.";
-  if (diff > 0 && minutes <= 90) return `Scheduled to start in about ${minutes} minutes.`;
-  if (diff > 0) return `Scheduled for ${formatDateTime(match.startTime)}.`;
-  if (isFinished(match.status)) return "This match is no longer active.";
-
-  return "Start time may have moved. Check official order of play before watching.";
-}
-
 function buildCountryWatchLinks(match: Match) {
   const tournament = match.tournament.toLowerCase();
   const category = match.category.toUpperCase();
@@ -419,29 +386,24 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
-  const matchId = getMatchIdFromSlug(decodedSlug);
   const readableTitle = titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
-  const matches = await getMatches();
-  const match = matches.find((item) => String(item.id) === matchId);
-  const isLiveMatch = match?.status?.toUpperCase() === "LIVE";
-
   return {
-    title: buildWatchSeoTitle(readableTitle, isLiveMatch),
-    description: buildWatchSeoDescription(readableTitle, isLiveMatch),
+    title: buildWatchSeoTitle(readableTitle, false),
+    description: buildWatchSeoDescription(readableTitle, false),
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
     openGraph: {
-      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
-      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
+      title: buildWatchSeoTitle(readableTitle, false),
+      description: buildWatchSeoDescription(readableTitle, false),
       url: `https://watchtennistoday.com/watch/${slug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
-      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
+      title: buildWatchSeoTitle(readableTitle, false),
+      description: buildWatchSeoDescription(readableTitle, false),
     },
   };
 }
@@ -539,7 +501,7 @@ export default async function MatchPage({
 
   if (!matchId) notFound();
 
-  const matches = await getMatches();
+  const matches = await getServerMatches(60);
   const liveMatch = matches.find((item) => String(item.id) === matchId);
   const archivedDbMatch = liveMatch ? null : await getArchivedMatchById(matchId);
   const match = liveMatch || archivedDbMatch;

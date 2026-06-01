@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -9,8 +8,9 @@ import PathToTitle from "@/app/components/PathToTitle";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Match = {
   id: string;
@@ -29,33 +29,6 @@ type Props = {
     slug: string;
   }>;
 };
-
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
-async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) return [];
-
-  const data = await response.json();
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.matches)) return data.matches;
-
-  return [];
-}
 
 function slugify(value: string) {
   return value
@@ -137,7 +110,7 @@ export default async function RivalryPage({ params }: Props) {
 
   if (!rivalry) notFound();
 
-  const matches = await getMatches();
+  const matches = await getServerMatches(60);
   const directMatches = matches
     .filter(
       (match) =>
