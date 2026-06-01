@@ -288,30 +288,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((path) => {
   const livePages = [
     "",
-    "/today",
-    "/tomorrow",
-    "/tennis-schedule-tomorrow",
-    "/tennis-spoiler-free-scores",
-    "/live-tennis",
-    "/matches/live-now",
-    "/watch",
-    "/tennis-schedule-today",
-    "/tennis-order-of-play-today",
-    "/tennis-results-today",
-    "/tennis-on-tv-today",
-    "/who-plays-tennis-today",
-    "/best-tennis-matches-today",
-    "/tennis-tv-broadcast-finder",
-    "/watch-tennis-in",
-    "/tennis-tv-not-working",
-    "/tennis-streaming-services",
-    "/tennis-live-alerts",
-    "/wimbledon-live",
-    "/wimbledon-live-stream",
-    "/wimbledon-schedule",
-    "/wimbledon-results",
-    "/wimbledon-tv-schedule",
-    "/where-to-watch-wimbledon",
   ];
   return {
     url: `${BASE_URL}${path}`,
@@ -398,7 +374,6 @@ const frenchOpenPages = [
   "/french-open-draw",
   "/french-open-survivors",
   "/where-to-watch-french-open",
-  "/roland-garros-predictions",
 ];
 
   const comparisonPages: MetadataRoute.Sitemap = comparisons.map((comparison) => ({

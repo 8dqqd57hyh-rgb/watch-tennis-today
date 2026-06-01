@@ -32,6 +32,9 @@ type Match = {
   status?: string;
   score?: string;
   startTime?: string | null;
+  round?: string;
+  court?: string;
+  winner?: string;
 };
 type FeedMatch = Match & { reason: string; slug: string; priority: number };
 
@@ -44,6 +47,56 @@ const STATUS_PRIORITY: Record<string, number> = {
   COMPLETED: 3,
   RETIRED: 4,
 };
+
+
+const STAR_PLAYERS = [
+  "Jannik Sinner",
+  "Carlos Alcaraz",
+  "Novak Djokovic",
+  "Alexander Zverev",
+  "Aryna Sabalenka",
+  "Iga Swiatek",
+  "Coco Gauff",
+  "Naomi Osaka",
+  "Elena Rybakina",
+  "Mirra Andreeva",
+  "Daniil Medvedev",
+  "Ons Jabeur",
+];
+
+function starPower(name: string) {
+  const parts = getNameParts(name);
+  const index = STAR_PLAYERS.findIndex((player) => {
+    const star = getNameParts(player);
+    return star.normalized === parts.normalized || (star.last && star.last === parts.last);
+  });
+
+  return index >= 0 ? 100 - index * 4 : 0;
+}
+
+function matchStarPower(match: Match) {
+  return Math.max(starPower(match.player1), starPower(match.player2));
+}
+
+function getStatusValue(match: Match | FollowedMatch) {
+  return String(match.status || "").toUpperCase();
+}
+
+function isLiveStatus(match: Match | FollowedMatch) {
+  return ["LIVE", "SUSPENDED"].includes(getStatusValue(match));
+}
+
+function isUpcomingStatus(match: Match | FollowedMatch) {
+  return ["UPCOMING", "SCHEDULED"].includes(getStatusValue(match));
+}
+
+function isResultStatus(match: Match | FollowedMatch) {
+  return ["FINISHED", "COMPLETED", "RETIRED"].includes(getStatusValue(match));
+}
+
+function formatShortMatch(match: Match) {
+  return `${match.player1} vs ${match.player2}`;
+}
 
 function slugify(value: string) {
   return value
@@ -199,7 +252,7 @@ function withSafeFeedStatus<T extends Match | FollowedMatch>(match: T): T {
   return safeStatus === String(match.status || "").toUpperCase() ? match : { ...match, status: safeStatus };
 }
 
-function removeFromStorage(key: string, predicate: (item: any) => boolean) {
+function removeFromStorage(key: string, predicate: (item: unknown) => boolean) {
   const parsed = readJson<unknown[]>(key, []);
   if (!Array.isArray(parsed)) return;
   window.localStorage.setItem(key, JSON.stringify(parsed.filter((item) => !predicate(item))));
@@ -226,6 +279,39 @@ function FeedMatchCard({ match }: { match: FeedMatch }) {
         <Link href={`/tournament/${slugify(match.tournament)}`} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-emerald-400">Tournament →</Link>
       </div>
     </article>
+  );
+}
+
+
+type InsightCard = {
+  eyebrow: string;
+  title: string;
+  detail: string;
+  href: string;
+  cta: string;
+};
+
+function InsightCardView({ item }: { item: InsightCard }) {
+  return (
+    <Link href={item.href} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50/60">
+      <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">{item.eyebrow}</p>
+      <h3 className="text-xl font-black text-zinc-950">{item.title}</h3>
+      <p className="mt-3 text-sm font-semibold leading-6 text-zinc-600">{item.detail}</p>
+      <p className="mt-4 text-sm font-black text-emerald-700">{item.cta}</p>
+    </Link>
+  );
+}
+
+function MiniMatchRow({ match }: { match: Match }) {
+  return (
+    <Link href={`/watch/${matchSlug(match)}`} className="flex items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 transition hover:border-emerald-400 hover:bg-emerald-50/60">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">{statusLabel(match.status)} · {match.tournament}</p>
+        <p className="mt-1 font-black text-zinc-950">{formatShortMatch(match)}</p>
+        <p className="mt-1 text-sm font-semibold text-zinc-600">{match.score || formatTime(match.startTime)}</p>
+      </div>
+      <span className="text-sm font-black text-emerald-700">Open →</span>
+    </Link>
   );
 }
 
@@ -314,18 +400,103 @@ export default function MyFeedClient() {
     });
   }, [followedMatches, followedPlayers, followedTournaments, matches]);
 
-  const live = feedMatches.filter((match) => ["LIVE", "SUSPENDED"].includes(String(match.status || "").toUpperCase()));
-  const next = feedMatches.filter((match) => ["UPCOMING", "SCHEDULED"].includes(String(match.status || "").toUpperCase()));
-  const results = feedMatches.filter((match) => ["FINISHED", "COMPLETED", "RETIRED"].includes(String(match.status || "").toUpperCase()));
+  const live = feedMatches.filter(isLiveStatus);
+  const next = feedMatches.filter(isUpcomingStatus);
+  const results = feedMatches.filter(isResultStatus);
   const empty = followedPlayers.length === 0 && followedMatches.length === 0 && followedTournaments.length === 0;
 
+  const savedPlayerNames = useMemo(() => new Set(followedPlayers.map((player) => normalize(player.name))), [followedPlayers]);
+  const feedMatchIds = useMemo(() => new Set(feedMatches.map((match) => String(match.id))), [feedMatches]);
+
+  const followedPlayerStatus = useMemo(() => {
+    return followedPlayers.map((player) => {
+      const playerMatches = feedMatches.filter((match) => matchContainsPlayer(match, player));
+      const liveMatch = playerMatches.find(isLiveStatus);
+      const nextMatch = playerMatches.find(isUpcomingStatus);
+      const resultMatch = playerMatches.find(isResultStatus);
+      const bestMatch = liveMatch || nextMatch || resultMatch;
+
+      return {
+        player,
+        match: bestMatch,
+        label: liveMatch ? "Live now" : nextMatch ? "Next up" : resultMatch ? "Result in" : "Quiet today",
+      };
+    });
+  }, [feedMatches, followedPlayers]);
+
+  const discoveryMatches = useMemo(() => {
+    return matches
+      .map(withSafeFeedStatus)
+      .filter((match) => match.status !== "EXPIRED")
+      .filter((match) => !feedMatchIds.has(String(match.id)))
+      .filter((match) => matchStarPower(match) > 0)
+      .sort((left, right) => {
+        const statusDiff = (STATUS_PRIORITY[getStatusValue(left)] ?? 5) - (STATUS_PRIORITY[getStatusValue(right)] ?? 5);
+        if (statusDiff !== 0) return statusDiff;
+        const starDiff = matchStarPower(right) - matchStarPower(left);
+        if (starDiff !== 0) return starDiff;
+        return getTime(left) - getTime(right);
+      })
+      .slice(0, 4);
+  }, [feedMatchIds, matches]);
+
+  const insightCards = useMemo<InsightCard[]>(() => {
+    const cards: InsightCard[] = [];
+    const followedPlayerLive = live.find((match) => [match.player1, match.player2].some((name) => savedPlayerNames.has(normalize(name))));
+    const followedPlayerNext = next.find((match) => [match.player1, match.player2].some((name) => savedPlayerNames.has(normalize(name))));
+    const followedPlayerResult = results.find((match) => [match.player1, match.player2].some((name) => savedPlayerNames.has(normalize(name))));
+    const bigName = discoveryMatches[0];
+
+    if (followedPlayerLive) {
+      cards.push({
+        eyebrow: "Your player live",
+        title: formatShortMatch(followedPlayerLive),
+        detail: followedPlayerLive.score ? `Current score: ${followedPlayerLive.score}` : "Open now before the match ends.",
+        href: `/watch/${followedPlayerLive.slug}`,
+        cta: "Watch match →",
+      });
+    }
+
+    if (followedPlayerNext) {
+      cards.push({
+        eyebrow: "Your next match",
+        title: formatShortMatch(followedPlayerNext),
+        detail: `${followedPlayerNext.tournament} · ${formatTime(followedPlayerNext.startTime)}`,
+        href: `/watch/${followedPlayerNext.slug}`,
+        cta: "Set up before start →",
+      });
+    }
+
+    if (followedPlayerResult) {
+      cards.push({
+        eyebrow: "Result to check",
+        title: formatShortMatch(followedPlayerResult),
+        detail: followedPlayerResult.score ? `Final score: ${followedPlayerResult.score}` : `${followedPlayerResult.tournament} finished recently.`,
+        href: `/watch/${followedPlayerResult.slug}`,
+        cta: "Open result →",
+      });
+    }
+
+    if (bigName) {
+      cards.push({
+        eyebrow: "Big name outside your feed",
+        title: formatShortMatch(bigName),
+        detail: `${bigName.tournament} · ${bigName.score || formatTime(bigName.startTime)}`,
+        href: `/watch/${matchSlug(bigName)}`,
+        cta: "Discover match →",
+      });
+    }
+
+    return cards.slice(0, 3);
+  }, [discoveryMatches, live, next, results, savedPlayerNames]);
+
   function clearMatch(id: string) {
-    removeFromStorage(MATCHES_KEY, (item) => String(item?.id) === String(id));
+    removeFromStorage(MATCHES_KEY, (item) => String((item as Partial<FollowedMatch>)?.id) === String(id));
     window.dispatchEvent(new Event("watch-tennis-followed-matches-changed"));
   }
 
   function clearTournament(slug: string) {
-    removeFromStorage(TOURNAMENTS_KEY, (item) => item?.slug === slug);
+    removeFromStorage(TOURNAMENTS_KEY, (item) => (item as Partial<FollowedTournament>)?.slug === slug);
     window.dispatchEvent(new Event("watch-tennis-followed-tournaments-changed"));
   }
 
@@ -352,6 +523,71 @@ export default function MyFeedClient() {
       ) : null}
 
       {loading ? <div className="rounded-3xl border border-zinc-200 bg-white p-6 font-bold text-zinc-600 shadow-sm">Loading your feed...</div> : null}
+
+      {insightCards.length > 0 ? (
+        <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.14em] text-emerald-700">Personal feed briefing</p>
+              <h2 className="text-2xl font-black text-zinc-950">What deserves attention right now</h2>
+              <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-zinc-600">
+                This replaces the generic tournament pulse: it prioritizes your saved players and only adds a big outside match when your feed is quiet.
+              </p>
+            </div>
+            <Link href="/tennis-watchlist-today" className="rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-black hover:border-emerald-500">Watchlist tools →</Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {insightCards.map((item) => <InsightCardView key={`${item.eyebrow}-${item.title}`} item={item} />)}
+          </div>
+        </section>
+      ) : null}
+
+      {followedPlayerStatus.length > 0 ? (
+        <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.14em] text-emerald-700">Your players</p>
+              <h2 className="text-2xl font-black text-zinc-950">Player status board</h2>
+            </div>
+            <Link href="/players" className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-emerald-400">Add more players →</Link>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {followedPlayerStatus.map(({ player, match, label }) => (
+              <div key={player.slug} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-700">{label}</p>
+                    <Link href={`/player/${player.slug}`} className="mt-1 block text-lg font-black text-zinc-950 hover:text-emerald-700">{player.name}</Link>
+                  </div>
+                  {match ? <span className={`rounded-full px-3 py-1 text-xs font-black ${statusClass(match.status)}`}>{statusLabel(match.status)}</span> : null}
+                </div>
+                {match ? (
+                  <Link href={`/watch/${match.slug}`} className="mt-3 block text-sm font-bold leading-6 text-zinc-600 hover:text-emerald-700">
+                    {formatShortMatch(match)} · {match.score || formatTime(match.startTime)} →
+                  </Link>
+                ) : (
+                  <p className="mt-3 text-sm font-semibold leading-6 text-zinc-600">No live, upcoming or recent result found in the current feed window.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {discoveryMatches.length > 0 ? (
+        <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.14em] text-emerald-700">Outside your feed</p>
+              <h2 className="text-2xl font-black text-zinc-950">Big names playing today</h2>
+              <p className="mt-2 text-sm font-semibold text-zinc-600">A small discovery lane keeps the page useful even when saved players are not active.</p>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {discoveryMatches.map((match) => <MiniMatchRow key={`discover-${match.id}`} match={match} />)}
+          </div>
+        </section>
+      ) : null}
 
       <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">

@@ -6,7 +6,6 @@ import { withTracking } from "@/app/lib/tracking";
 import TodaysTennisHub from "@/app/components/TodaysTennisHub";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
-import MustWatchMatchesToday from "@/app/components/MustWatchMatchesToday";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import EmailSignup from "@/app/components/EmailSignup";
@@ -285,7 +284,7 @@ async function subscribeToFinals(
     );
 
     setFinalsEmail("");
-  } catch (error) {
+  } catch {
     setFinalsMessage(
       "Something went wrong. Please try again."
     );
@@ -318,7 +317,7 @@ async function subscribeToFinals(
             : [];
 
         setMatches(capHomepageMatches(safeMatches));
-      } catch (error) {
+      } catch {
         console.error("Failed to load matches");
         setMatches([]);
       } finally {
