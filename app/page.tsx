@@ -14,6 +14,7 @@ import DailyTennisLoop from "@/app/components/DailyTennisLoop";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import FrenchOpenSurvivorsBoard from "@/app/components/FrenchOpenSurvivorsBoard";
 import TennisWatchlistHub from "@/app/components/TennisWatchlistHub";
+import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 type WatchProvider = {
@@ -566,6 +567,7 @@ async function subscribeToFinals(
 {showHeavyHomeSections ? (
   <>
     <DailyTennisLoop tournamentName="French Open" />
+    <RolandGarrosPickemChallenge compact />
     <FrenchOpenConversionCluster compact title="French Open daily hub" />
     <FrenchOpenSurvivorsBoard compact />
     <TennisWatchlistHub matches={homepageMatches} />

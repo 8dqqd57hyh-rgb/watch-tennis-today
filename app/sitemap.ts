@@ -219,6 +219,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-in",
     "/watch-tennis-in/poland",
     "/french-open",
+    "/roland-garros-predictions",
     "/today",
     "/tomorrow",
     "/tennis-schedule-tomorrow",
@@ -397,6 +398,7 @@ const frenchOpenPages = [
   "/french-open-draw",
   "/french-open-survivors",
   "/where-to-watch-french-open",
+  "/roland-garros-predictions",
 ];
 
   const comparisonPages: MetadataRoute.Sitemap = comparisons.map((comparison) => ({

@@ -2,6 +2,7 @@ import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCl
 import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToday";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
+import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
 
 export const dynamic = "force-dynamic";
 
@@ -214,6 +215,7 @@ export default async function FrenchOpenTodayPage() {
           ))}
         </section>
 
+        <RolandGarrosPickemChallenge compact />
         <FrenchOpenDayTimeline />
         <FrenchOpenStorylinesToday compact />
         <FrenchOpenConversionCluster compact title="More French Open coverage" />
