@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, normalizePlayerName } from "@/data/playerSlugs";
 import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
+import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 
 const STORAGE_KEY = "watchTennisToday.followedPlayers";
 
@@ -200,10 +201,9 @@ export default function MyDashboardClient() {
               daysBack: "7",
               daysForward: "30",
             });
-            const response = await fetch(`/api/matches?${params.toString()}`, { cache: "no-store" });
-            const data = await response.json();
-            const nextMatches = Array.isArray(data) ? data : data.matches;
-            return Array.isArray(nextMatches) ? nextMatches : [];
+            return fetchClientMatches(`/api/matches?${params.toString()}`, {
+              ttlMs: 60_000,
+            });
           })
         );
 

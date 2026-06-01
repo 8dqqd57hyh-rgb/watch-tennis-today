@@ -183,7 +183,7 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       try {
         setIsRefreshing(true);
         const response = await fetch(
-          `/api/matches?matchId=${encodeURIComponent(initialMatch.id)}&_=${Date.now()}`,
+          `/api/matches?matchId=${encodeURIComponent(initialMatch.id)}`,
           {
             cache: "no-store",
             headers: {
@@ -220,7 +220,7 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
 
     function scheduleRefresh() {
       if (!isMounted || document.hidden) return;
-      timeoutId = setTimeout(refreshMatch, 30000);
+      timeoutId = setTimeout(refreshMatch, 60000);
     }
 
     function handleVisibilityChange() {

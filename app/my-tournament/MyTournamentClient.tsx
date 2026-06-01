@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
+import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 
 const STORAGE_KEY = "watchTennisToday.followedTournaments";
 
@@ -176,10 +177,9 @@ export default function MyTournamentClient() {
       setLoading(true);
       try {
         const params = new URLSearchParams({ includeFinished: "1", daysBack: "7", daysForward: "14" });
-        const response = await fetch(`/api/matches?${params.toString()}`, { cache: "no-store" });
-        const data = await response.json();
-        const nextMatches = Array.isArray(data) ? data : data.matches;
-        const safeMatches = Array.isArray(nextMatches) ? nextMatches : [];
+        const safeMatches = await fetchClientMatches(`/api/matches?${params.toString()}`, {
+          ttlMs: 60_000,
+        });
         setMatches(safeMatches);
         return safeMatches;
       } catch (error) {

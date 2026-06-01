@@ -15,7 +15,7 @@ type CacheEntry = {
   promise: Promise<ClientMatch[]>;
 };
 
-const DEFAULT_TTL_MS = 25_000;
+const DEFAULT_TTL_MS = 60_000;
 const cache = new Map<string, CacheEntry>();
 
 function normalizeMatches(data: unknown): ClientMatch[] {
@@ -63,6 +63,10 @@ export async function fetchClientMatches(
     .then(async (response) => {
       if (!response.ok) return [];
       return normalizeMatches(await response.json());
+    })
+    .catch((error) => {
+      cache.delete(cacheKey);
+      throw error;
     })
     .finally(timeout.clear);
 

@@ -4,8 +4,8 @@ export type PollableMatch = {
   state?: string | null;
 };
 
-const LIVE_POLL_MS = 30_000;
-const IDLE_POLL_MS = 5 * 60_000;
+const LIVE_POLL_MS = 60_000;
+const IDLE_POLL_MS = 10 * 60_000;
 
 function normalizeStatus(value: unknown) {
   return String(value ?? "").trim().toLowerCase();
@@ -50,9 +50,13 @@ export function getSmartMatchesPollingDelay(matches: PollableMatch[]) {
 type SmartPollingOptions = {
   load: () => Promise<PollableMatch[]>;
   onError?: (error: unknown) => void;
+  minDelayMs?: number;
 };
 
-export function startSmartMatchPolling({ load, onError }: SmartPollingOptions) {
+let lastGlobalRunAt = 0;
+const MIN_GLOBAL_MATCH_POLL_GAP_MS = 55_000;
+
+export function startSmartMatchPolling({ load, onError, minDelayMs = MIN_GLOBAL_MATCH_POLL_GAP_MS }: SmartPollingOptions) {
   let active = true;
   let timeoutId: number | null = null;
 
@@ -75,6 +79,16 @@ export function startSmartMatchPolling({ load, onError }: SmartPollingOptions) {
 
   async function run() {
     if (!active || document.hidden) return;
+
+    const now = Date.now();
+    const waitMs = Math.max(0, minDelayMs - (now - lastGlobalRunAt));
+    if (waitMs > 0) {
+      clearTimer();
+      timeoutId = window.setTimeout(run, waitMs);
+      return;
+    }
+
+    lastGlobalRunAt = now;
 
     try {
       const matches = await load();
