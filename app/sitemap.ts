@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { comparisons } from "@/data/comparisons";
+import { rivalries } from "@/data/rivalries";
 export const dynamic = "force-dynamic";
 
 type Match = {
@@ -182,22 +183,10 @@ function matchSlug(match: Match) {
 }
 
 async function getMatches(): Promise<Match[]> {
-  try {
-    const response = await fetch(`${BASE_URL}/api/matches`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) return [];
-
-    const data = await response.json();
-
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data.matches)) return data.matches;
-
-    return [];
-  } catch {
-    return [];
-  }
+  // Avoid live API calls while Vercel is collecting metadata/routes.
+  // Dynamic match URLs are discoverable from the app itself; the sitemap keeps
+  // stable SEO pages only so deployments do not stall on external data.
+  return [];
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -214,6 +203,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-watchlist-today",
     "/tennis-time-zone-converter",
     "/players",
+    "/rivalries",
     "/players/atp",
     "/players/wta",
     "/watch-tennis-in",
@@ -383,9 +373,17 @@ const frenchOpenPages = [
     priority: 0.82,
   }));
 
+  const rivalryPages: MetadataRoute.Sitemap = rivalries.map((rivalry) => ({
+    url: `${BASE_URL}/rivalries/${rivalry.slug}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.86,
+  }));
+
  return [
   ...staticPages,
   ...comparisonPages,
+  ...rivalryPages,
   ...playerPages,
   ...tournamentPages,
   ...matchPages,

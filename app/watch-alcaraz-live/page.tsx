@@ -1,6 +1,7 @@
 import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
 import PlayerAuthoritySections from "@/app/components/PlayerAuthoritySections";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Carlos Alcaraz Live Stream Today | TV Schedule and Legal Ways to Watch",
   description:

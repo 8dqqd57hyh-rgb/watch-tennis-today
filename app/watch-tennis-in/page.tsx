@@ -3,6 +3,7 @@ import EmailSignup from "@/app/components/EmailSignup";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { broadcastCountries } from "@/data/broadcastFinder";
 
+export const dynamic = "force-dynamic";
 const BASE_URL = "https://watchtennistoday.com";
 
 export const metadata: Metadata = {

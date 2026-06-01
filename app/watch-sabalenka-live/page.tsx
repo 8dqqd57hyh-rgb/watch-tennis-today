@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Watch Aryna Sabalenka Live | Watch Tennis Today",
   description:

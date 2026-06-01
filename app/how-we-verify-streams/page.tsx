@@ -7,6 +7,7 @@ export const metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
 export default function HowWeVerifyStreamsPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">

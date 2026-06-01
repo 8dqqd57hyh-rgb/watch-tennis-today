@@ -1,5 +1,6 @@
 import TomorrowClient from "./TomorrowClient";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Matches Tomorrow: Schedule, Start Times & TV Guide",
   description:

@@ -4,6 +4,7 @@ import JsonLd from "@/app/components/JsonLd";
 import Link from "next/link";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Where to Watch French Open 2026 by Country | Roland Garros TV & Streaming",
   description:

@@ -1,5 +1,6 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Best VPN for Tennis Streaming | Watch Tennis While Traveling",
   description:

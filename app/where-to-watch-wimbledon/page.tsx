@@ -1,5 +1,6 @@
 import WimbledonGuidePage from "@/app/components/WimbledonGuidePage";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Where to Watch Wimbledon | Official Broadcasters and Safe Streams",
   description:

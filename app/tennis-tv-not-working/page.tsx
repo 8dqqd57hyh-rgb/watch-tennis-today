@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Tennis TV Not Working? Legal Streaming Fixes & Region Checks",
   description:

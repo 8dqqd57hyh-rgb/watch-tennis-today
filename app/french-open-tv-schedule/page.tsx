@@ -5,6 +5,7 @@ export const metadata = {
   alternates: { canonical: "https://watchtennistoday.com/french-open-tv-schedule" },
 };
 
+export const dynamic = "force-dynamic";
 export default function FrenchOpenTvSchedulePage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">

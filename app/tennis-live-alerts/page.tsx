@@ -3,6 +3,7 @@ import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import EmailSignup from "@/app/components/EmailSignup";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Tennis Live Alerts | Daily Match Schedule & TV Updates",
   description:

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl, verifiedPlayerNameForLink } from "@/data/playerSlugs";
 
+export const dynamic = "force-dynamic";
 type Match = {
   id?: string;
   player1?: string;

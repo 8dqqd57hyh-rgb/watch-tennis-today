@@ -2,6 +2,7 @@ import FrenchOpenCountryGuides from "@/app/components/FrenchOpenCountryGuides";
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import JsonLd from "@/app/components/JsonLd";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "French Open Streaming by Country | Roland Garros Broadcasters",
   description:

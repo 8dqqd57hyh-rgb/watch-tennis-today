@@ -7,6 +7,7 @@ export const metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
 export default function TennisStreamingRightsExplainedPage() {
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">

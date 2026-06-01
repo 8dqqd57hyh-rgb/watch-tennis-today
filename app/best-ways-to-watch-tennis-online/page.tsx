@@ -8,6 +8,7 @@ import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
 import VpnPromo from "@/app/components/VpnPromo";
 
+export const dynamic = "force-dynamic";
 const countries = [
   ["Poland", "/watch-tennis-in/poland"],
   ["UK", "/watch-tennis-in/uk"],

@@ -3,6 +3,7 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "How to Watch Tennis Abroad Safely | Official TV & VPN Guide",
   description:

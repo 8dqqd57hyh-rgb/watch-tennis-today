@@ -2,6 +2,7 @@ import Link from "next/link";
 import { comparisons } from "@/data/comparisons";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Compare Tennis Streaming Options | Watch Tennis Today",
   description:

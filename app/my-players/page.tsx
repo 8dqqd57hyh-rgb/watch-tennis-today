@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import MyPlayersClient from "./MyPlayersClient";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "My Players: Follow Tennis Players, Matches & Live Updates | Watch Tennis Today",
   description:

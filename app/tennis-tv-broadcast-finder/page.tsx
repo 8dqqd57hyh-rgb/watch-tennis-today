@@ -6,6 +6,7 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import { broadcastCountries } from "@/data/broadcastFinder";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Tennis TV Broadcast Finder | ATP, WTA & Grand Slam Channels by Country",
   description:

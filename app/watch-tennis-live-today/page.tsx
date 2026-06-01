@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LiveTennisPage from "../live-tennis/page";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Watch Tennis Live Today | ATP & WTA Live Matches",
   description:

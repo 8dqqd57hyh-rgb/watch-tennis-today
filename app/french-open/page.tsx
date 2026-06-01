@@ -16,6 +16,7 @@ import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToda
 import FrenchOpenTournamentRecords from "@/app/components/FrenchOpenTournamentRecords";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "French Open 2026 Hub: Live Matches, Results, Draw & TV Schedule",
   description:

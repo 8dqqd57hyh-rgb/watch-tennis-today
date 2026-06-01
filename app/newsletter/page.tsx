@@ -2,6 +2,7 @@ import EmailSignup from "@/app/components/EmailSignup";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Newsletter | Live Match Alerts & Streaming Updates",
   description:

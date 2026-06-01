@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import MyDashboardClient from "./MyDashboardClient";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "My Tennis Dashboard: Follow Players, Matches & Results | Watch Tennis Today",
   description:

@@ -4,6 +4,7 @@ export const metadata = {
     "Learn about the Watch Tennis Today editorial team, our tennis coverage, update policy and how we help fans find official tennis streaming and TV schedule information.",
 };
 
+export const dynamic = "force-dynamic";
 export default function AuthorPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">

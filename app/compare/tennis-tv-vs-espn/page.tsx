@@ -1,6 +1,7 @@
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis TV vs ESPN+ | Which Is Better for Tennis?",
   description:

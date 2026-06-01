@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { players } from "@/data/players";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Watch Tennis Players Live | ATP & WTA Live Streams",
   description:

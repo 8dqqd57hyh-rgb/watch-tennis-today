@@ -1,5 +1,6 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "How to Watch Tennis Without Cable | Legal Streaming Guide",
   description:

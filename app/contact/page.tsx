@@ -7,6 +7,7 @@ export const metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">

@@ -5,6 +5,7 @@ import JsonLd from "@/app/components/JsonLd";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "French Open Draw Tracker 2026 | Roland Garros Player Paths",
   description:

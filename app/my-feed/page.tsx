@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MyFeedClient from "./MyFeedClient";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "My Tennis Feed: Follow Matches, Players & Tournaments | Watch Tennis Today",
   description:

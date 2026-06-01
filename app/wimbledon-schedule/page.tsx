@@ -1,5 +1,6 @@
 import WimbledonGuidePage from "@/app/components/WimbledonGuidePage";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Wimbledon Schedule Today | Order of Play and TV Planning Guide",
   description:

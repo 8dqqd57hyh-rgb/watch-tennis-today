@@ -1,5 +1,6 @@
 import MoneyGuidePage from "@/app/components/MoneyGuidePage";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Best VPN for Wimbledon Streaming | Safe Tennis Viewing Guide",
   description:

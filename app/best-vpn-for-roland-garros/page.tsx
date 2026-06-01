@@ -1,5 +1,6 @@
 import MoneyGuidePage from "@/app/components/MoneyGuidePage";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Best VPN for Roland Garros Streaming | Safe French Open Guide",
   description:

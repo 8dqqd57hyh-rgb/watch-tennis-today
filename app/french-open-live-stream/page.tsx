@@ -4,6 +4,7 @@ export const metadata = {
     "A practical guide to finding legal French Open live streams, official broadcasters, schedules and Roland Garros viewing options by region.",
 };
 
+export const dynamic = "force-dynamic";
 const resources = [
   { href: "/french-open-live", label: "French Open live hub" },
   { href: "/where-to-watch-french-open", label: "Where to watch by country" },

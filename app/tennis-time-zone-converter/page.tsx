@@ -1,6 +1,7 @@
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Time Zone Converter | Watch Tennis Today",
   description:

@@ -4,6 +4,7 @@ export const metadata = {
     "Affiliate disclosure for Watch Tennis Today. Learn how we may earn commissions from links on our website.",
 };
 
+export const dynamic = "force-dynamic";
 export default function AffiliateDisclosurePage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 text-zinc-100">

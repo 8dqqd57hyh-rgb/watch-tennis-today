@@ -12,7 +12,6 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 
 export const dynamic = "force-dynamic";
 
-const PLAYERS = Object.keys(players) as PlayerSlug[];
 const CURRENT_SEASON = new Date().getFullYear();
 
 function buildPlayerSeoTitle(playerName: string) {
@@ -24,9 +23,9 @@ function buildPlayerSeoDescription(playerName: string) {
 }
 
 export async function generateStaticParams() {
-  return PLAYERS.map((slug) => ({
-    slug,
-  }));
+  // Keep player pages on-demand. Prebuilding every player page makes Vercel
+  // spend a long time in Collecting page data and can stall deployments.
+  return [];
 }
 
 type Match = {
@@ -43,6 +42,8 @@ type Match = {
   round?: string;
 };
 
+
+const PLAYER_SLUGS = Object.keys(players) as PlayerSlug[];
 
 const PRIORITY_PLAYERS: PlayerSlug[] = [
   "jannik-sinner",
@@ -87,7 +88,7 @@ function sortMatchesByUserIntent(a: Match, b: Match) {
 function getPlayerSlugByName(name: string) {
   const normalizedName = normalizePlayerName(name);
 
-  return PLAYERS.find((playerSlug) =>
+  return PLAYER_SLUGS.find((playerSlug) =>
     normalizePlayerName(players[playerSlug].name) === normalizedName
   );
 }
@@ -119,7 +120,7 @@ function getRelatedPlayers(
     (!currentTour || players[playerSlug].tour === currentTour)
   );
 
-  const sameTourFallback = PLAYERS.filter((playerSlug) =>
+  const sameTourFallback = PLAYER_SLUGS.filter((playerSlug) =>
     playerSlug !== currentSlug &&
     (!currentTour || players[playerSlug].tour === currentTour)
   );
@@ -907,7 +908,7 @@ const playerMatches = allMatches
             <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600">
               {playerForm.hasMeaningfulRecentHistory
                 ? "Recent completed singles results from API-Tennis player history. Doubles, juniors, wheelchair and legends events are filtered out."
-                : "Available feed results. This feed does not include every match from the player's season. Singles only, with doubles, juniors, wheelchair and legends events filtered out."}
+                : "Available feed results. This feed does not include every match from the player&apos;s season. Singles only, with doubles, juniors, wheelchair and legends events filtered out."}
             </p>
           </div>
           <span className="rounded-full bg-zinc-100 px-4 py-2 text-xs font-black uppercase text-zinc-600">
@@ -949,7 +950,7 @@ const playerMatches = allMatches
 
                 {!playerForm.hasMeaningfulRecentHistory ? (
                   <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm leading-7 text-amber-900">
-                    This feed does not include every match from the player's season{playerForm.hasLargeDateGap ? ` and has a ${playerForm.largestGapDays}-day gap between available results` : ""}. These rows are shown as partial available results, not as recent form, season form or career form.
+                    This feed does not include every match from the player&apos;s season{playerForm.hasLargeDateGap ? ` and has a ${playerForm.largestGapDays}-day gap between available results` : ""}. These rows are shown as partial available results, not as recent form, season form or career form.
                   </p>
                 ) : (
                   <p className="mt-4 text-sm leading-7 text-zinc-600">

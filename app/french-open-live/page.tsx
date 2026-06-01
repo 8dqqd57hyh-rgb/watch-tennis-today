@@ -2,6 +2,7 @@ import VpnPromo from "@/app/components/VpnPromo";
 import AuthorBox from "@/app/components/AuthorBox";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
   description:

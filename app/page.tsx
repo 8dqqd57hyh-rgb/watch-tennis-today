@@ -17,6 +17,7 @@ import TennisWatchlistHub from "@/app/components/TennisWatchlistHub";
 import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
+export const dynamic = "force-dynamic";
 type WatchProvider = {
   name: string;
   url: string;
@@ -562,6 +563,43 @@ async function subscribeToFinals(
     <TennisWatchlistHub matches={homepageMatches} />
   </>
 ) : null}
+
+<section className="mb-10 rounded-3xl border border-orange-500/30 bg-zinc-950 p-6 md:p-8">
+  <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-orange-400">
+        Rivalry guides
+      </p>
+      <h2 className="text-3xl font-black md:text-4xl">
+        Big matchups fans search before they watch
+      </h2>
+    </div>
+
+    <Link
+      href="/rivalries"
+      className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-orange-500"
+    >
+      Open rivalries →
+    </Link>
+  </div>
+
+  <div className="grid gap-4 md:grid-cols-3">
+    {[
+      ["Alcaraz vs Sinner", "/rivalries/alcaraz-vs-sinner", "The modern ATP blockbuster."],
+      ["Djokovic vs Alcaraz", "/rivalries/djokovic-vs-alcaraz", "Experience against electricity."],
+      ["Sabalenka vs Swiatek", "/rivalries/sabalenka-vs-swiatek", "Power against pressure."],
+    ].map(([title, href, text]) => (
+      <Link
+        key={href}
+        href={href}
+        className="rounded-2xl border border-zinc-800 bg-black p-5 transition hover:border-orange-500"
+      >
+        <h3 className="mb-2 text-xl font-black">{title}</h3>
+        <p className="text-sm leading-6 text-zinc-400">{text}</p>
+      </Link>
+    ))}
+  </div>
+</section>
 
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule

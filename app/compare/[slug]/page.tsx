@@ -6,6 +6,7 @@ import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import AdSlot from "@/app/components/AdSlot";
 
+export const dynamic = "force-dynamic";
 type Props = {
   params: Promise<{
     slug: string;

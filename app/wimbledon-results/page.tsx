@@ -1,5 +1,6 @@
 import WimbledonGuidePage from "@/app/components/WimbledonGuidePage";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Wimbledon Results Today | Match Updates and Draw Context",
   description:

@@ -4,6 +4,7 @@ export const metadata = {
     "Understand the French Open schedule, daily order of play, match timing and where to check official Roland Garros updates.",
 };
 
+export const dynamic = "force-dynamic";
 export default function FrenchOpenSchedulePage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
