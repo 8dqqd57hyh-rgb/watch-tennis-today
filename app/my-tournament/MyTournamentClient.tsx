@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
 
 const STORAGE_KEY = "watchTennisToday.followedTournaments";
 
@@ -178,18 +179,19 @@ export default function MyTournamentClient() {
         const response = await fetch(`/api/matches?${params.toString()}`, { cache: "no-store" });
         const data = await response.json();
         const nextMatches = Array.isArray(data) ? data : data.matches;
-        setMatches(Array.isArray(nextMatches) ? nextMatches : []);
+        const safeMatches = Array.isArray(nextMatches) ? nextMatches : [];
+        setMatches(safeMatches);
+        return safeMatches;
       } catch (error) {
         console.error(error);
         setMatches([]);
+        return [];
       } finally {
         setLoading(false);
       }
     }
 
-    loadMatches();
-    const interval = window.setInterval(loadMatches, 120_000);
-    return () => window.clearInterval(interval);
+    return startSmartMatchPolling({ load: loadMatches });
   }, []);
 
   function addTournament(tournament: FollowedTournament) {

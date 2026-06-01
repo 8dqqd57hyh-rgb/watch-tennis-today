@@ -213,16 +213,33 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       } finally {
         if (isMounted) {
           setIsRefreshing(false);
-          timeoutId = setTimeout(refreshMatch, 30000);
+          scheduleRefresh();
         }
       }
     }
 
-    timeoutId = setTimeout(refreshMatch, 30000);
+    function scheduleRefresh() {
+      if (!isMounted || document.hidden) return;
+      timeoutId = setTimeout(refreshMatch, 30000);
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = null;
+        return;
+      }
+
+      void refreshMatch();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    scheduleRefresh();
 
     return () => {
       isMounted = false;
       if (timeoutId) clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [initialMatch.id, shouldPoll]);
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
 
 type FrenchOpenMatch = {
   id?: string;
@@ -67,21 +68,21 @@ export default function FrenchOpenLiveSnapshot({ compact = false }: { compact?: 
         const payload: FrenchOpenTodayResponse = await response.json();
 
         if (!ignore) setData(payload);
+        return payload.matches || [];
       } catch (error) {
         console.error("French Open live snapshot failed:", error);
         if (!ignore) setData({ error: "Unable to load French Open live snapshot." });
+        return [];
       } finally {
         if (!ignore) setIsLoading(false);
       }
     }
 
-    loadSnapshot();
-
-    const interval = window.setInterval(loadSnapshot, 60_000);
+    const stopPolling = startSmartMatchPolling({ load: loadSnapshot });
 
     return () => {
       ignore = true;
-      window.clearInterval(interval);
+      stopPolling();
     };
   }, []);
 

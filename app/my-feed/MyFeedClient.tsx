@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, normalizePlayerName } from "@/data/playerSlugs";
+import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
 
 const PLAYERS_KEY = "watchTennisToday.followedPlayers";
 const MATCHES_KEY = "watchTennisToday.followedMatches";
@@ -350,18 +351,19 @@ export default function MyFeedClient() {
         const response = await fetch("/api/matches?includeFinished=1&daysBack=7&daysForward=30", { cache: "no-store" });
         const data = await response.json();
         const nextMatches = Array.isArray(data) ? data : data.matches;
-        setMatches(Array.isArray(nextMatches) ? nextMatches : []);
+        const safeMatches = Array.isArray(nextMatches) ? nextMatches : [];
+        setMatches(safeMatches);
+        return safeMatches;
       } catch (error) {
         console.error(error);
         setMatches([]);
+        return [];
       } finally {
         setLoading(false);
       }
     }
 
-    loadMatches();
-    const interval = window.setInterval(loadMatches, 60_000);
-    return () => window.clearInterval(interval);
+    return startSmartMatchPolling({ load: loadMatches });
   }, []);
 
   const feedMatches = useMemo(() => {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, normalizePlayerName } from "@/data/playerSlugs";
+import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
 
 const STORAGE_KEY = "watchTennisToday.followedPlayers";
 
@@ -186,7 +187,7 @@ export default function MyDashboardClient() {
       if (followedPlayers.length === 0) {
         setMatches([]);
         setLoading(false);
-        return;
+        return [];
       }
 
       setLoading(true);
@@ -206,18 +207,19 @@ export default function MyDashboardClient() {
           })
         );
 
-        setMatches(Array.from(new Map(results.flat().map((match) => [String(match.id), match])).values()) as Match[]);
+        const uniqueMatches = Array.from(new Map(results.flat().map((match) => [String(match.id), match])).values()) as Match[];
+        setMatches(uniqueMatches);
+        return uniqueMatches;
       } catch (error) {
         console.error(error);
         setMatches([]);
+        return [];
       } finally {
         setLoading(false);
       }
     }
 
-    loadMatches();
-    const interval = window.setInterval(loadMatches, 60_000);
-    return () => window.clearInterval(interval);
+    return startSmartMatchPolling({ load: loadMatches });
   }, [followedPlayers]);
 
   function addPlayer(playerSlug: string) {
