@@ -262,6 +262,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareStatus, setShareStatus] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -315,6 +316,21 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
     }).length;
   }, [matches, picks]);
 
+  const pendingPickCount = Math.max(picks.length - completedPickCount, 0);
+
+  const pickedMatches = useMemo(() => {
+    return picks
+      .map((pick) => {
+        const match = matches.find((candidate) => matchId(candidate) === pick.matchId);
+        return match ? { match, pick } : null;
+      })
+      .filter(Boolean) as { match: PickemMatch; pick: StoredPick }[];
+  }, [matches, picks]);
+
+  const maxPossibleScore = useMemo(() => {
+    return pickedMatches.reduce((total, item) => total + (isUpsetPick(item.match, item.pick.pickedPlayer) ? 3 : 1), 0);
+  }, [pickedMatches]);
+
   function savePick(match: PickemMatch, pickedPlayer: string) {
     const id = matchId(match);
     const nextPicks = [
@@ -328,7 +344,48 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
 
   function clearPicks() {
     setPicks([]);
+    setShareStatus("");
     window.localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function buildShareText() {
+    const pickLines = pickedMatches.slice(0, 6).map(({ match, pick }) => {
+      const reward = isUpsetPick(match, pick.pickedPlayer) ? "+3 upset" : "+1";
+      return `• ${normalize(match.player1)} vs ${normalize(match.player2)} → ${pick.pickedPlayer} (${reward})`;
+    });
+
+    const hiddenPickCount = Math.max(pickedMatches.length - pickLines.length, 0);
+    const moreLine = hiddenPickCount > 0 ? [`• +${hiddenPickCount} more picks`] : [];
+
+    return [
+      `My Roland Garros Pick’em score: ${score}/${maxPossibleScore || picks.length}`,
+      `${completedPickCount} settled · ${pendingPickCount} pending`,
+      ...pickLines,
+      ...moreLine,
+      "Play here: https://watchtennistoday.com/roland-garros-predictions",
+    ].join("\n");
+  }
+
+  async function sharePicks() {
+    const text = buildShareText();
+    setShareStatus("");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "My Roland Garros Pick’em picks",
+          text,
+          url: "https://watchtennistoday.com/roland-garros-predictions",
+        });
+        setShareStatus("Shared");
+        return;
+      }
+
+      await navigator.clipboard.writeText(text);
+      setShareStatus("Copied to clipboard");
+    } catch {
+      setShareStatus("Copy failed — select and copy your picks manually.");
+    }
   }
 
   if (isLoading) {
@@ -368,7 +425,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
         <div className="rounded-3xl border border-zinc-800 bg-black p-5 text-right">
           <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Your score</p>
           <p className="text-4xl font-black text-orange-400">{score}</p>
-          <p className="text-sm text-zinc-500">{completedPickCount} settled picks</p>
+          <p className="text-sm text-zinc-500">{completedPickCount} settled · {pendingPickCount} pending</p>
         </div>
       </div>
 
@@ -382,8 +439,8 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
           <p className="mt-2 text-3xl font-black">{visibleMatches.length}</p>
         </div>
         <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-          <p className="text-sm font-bold text-zinc-500">Best reward</p>
-          <p className="mt-2 text-3xl font-black">+3 seed upset</p>
+          <p className="text-sm font-bold text-zinc-500">Max possible</p>
+          <p className="mt-2 text-3xl font-black">{maxPossibleScore || "—"}</p>
         </div>
       </div>
 
@@ -457,10 +514,16 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
           See match schedule →
         </Link>
         {picks.length > 0 ? (
+          <button type="button" onClick={sharePicks} className="rounded-2xl border border-orange-500/60 px-5 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
+            Share my picks
+          </button>
+        ) : null}
+        {picks.length > 0 ? (
           <button type="button" onClick={clearPicks} className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black text-zinc-400 transition hover:border-red-500 hover:text-red-200">
             Reset my picks
           </button>
         ) : null}
+        {shareStatus ? <p className="flex items-center text-sm font-bold text-zinc-400">{shareStatus}</p> : null}
       </div>
     </section>
   );
