@@ -7,6 +7,7 @@ import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
+import PathToTitle from "@/app/components/PathToTitle";
 
 export const dynamic = "force-dynamic";
 
@@ -219,6 +220,8 @@ export default async function VsPage({ params }: Props) {
             </h2>
 
             <MatchEdgePredictor match={mainMatch} matches={matches} />
+
+            <PathToTitle match={mainMatch} matches={matches} />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
               <div>

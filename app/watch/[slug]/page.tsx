@@ -12,6 +12,7 @@ import LiveMatchScore from "./LiveMatchScore";
 import EmailSignup from "@/app/components/EmailSignup";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
+import PathToTitle from "@/app/components/PathToTitle";
 
 export const dynamic = "force-dynamic";
 
@@ -738,6 +739,8 @@ export default async function MatchPage({
             </section>
 
             <MatchEdgePredictor match={match} matches={matches} />
+
+            <PathToTitle match={match} matches={matches} />
 
             <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
               <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match context</p>
