@@ -213,12 +213,12 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       } finally {
         if (isMounted) {
           setIsRefreshing(false);
-          refreshMatch();
+          timeoutId = setTimeout(refreshMatch, 30000);
         }
       }
     }
 
-    timeoutId = setTimeout(refreshMatch, 15000);
+    timeoutId = setTimeout(refreshMatch, 30000);
 
     return () => {
       isMounted = false;

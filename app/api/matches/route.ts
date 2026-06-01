@@ -625,7 +625,13 @@ async function fetchApiTennis(method: string, apiKey: string, params = "") {
     return Array.isArray(data.result) ? data.result : [];
   } catch (error) {
     const message = error instanceof Error ? error.name : "unknown";
-    console.warn(`API-Tennis ${method} fetch skipped (${message})`);
+
+    // AbortError is our own timeout guard, not a broken deployment. Keep it
+    // silent so normal 200 responses do not flood Vercel warnings.
+    if (message !== "AbortError") {
+      console.warn(`API-Tennis ${method} fetch skipped (${message})`);
+    }
+
     return [];
   } finally {
     clearTimeout(timeout);

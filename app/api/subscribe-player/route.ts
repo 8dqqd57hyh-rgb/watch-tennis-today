@@ -72,12 +72,12 @@ export async function POST(request: Request) {
 
       to: email,
 
-      subject: `🎾 ${playerName} is in your tennis digest`,
+      subject: `🎾 You are following ${playerName}`,
 
       html: `
         <div style="font-family:Arial;padding:24px;">
           <h1>
-            🎾 ${playerName} is now in your tennis digest
+            🎾 You are now following ${playerName}
           </h1>
 
           <p>
@@ -85,16 +85,16 @@ export async function POST(request: Request) {
           </p>
 
           <ul>
-            <li>Your daily player digest</li>
-            <li>Next match updates</li>
-            <li>Live status and results</li>
+            <li>New match starts</li>
+            <li>Match goes LIVE</li>
+            <li>Results are available</li>
           </ul>
 
           <a
             href="https://watchtennistoday.com/player/${playerSlug}"
             style="display:inline-block;padding:12px 18px;background:#111;color:#fff;border-radius:8px;text-decoration:none;"
           >
-            View Player Hub
+            View Player Page
           </a>
         </div>
       `,
