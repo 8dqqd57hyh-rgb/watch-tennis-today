@@ -68,75 +68,48 @@ function formatDateTime(value: string | null) {
   });
 }
 
+function isLowerTierTournament(tournament: string) {
+  const value = tournament.toLowerCase();
+
+  return (
+    value.includes("challenger") ||
+    value.includes("itf") ||
+    /\b[wm](15|25|35|50|75|100)\b/.test(value)
+  );
+}
+
+function isAtpMatch(match: Match) {
+  const category = (match.category || "").toLowerCase();
+  const tournament = (match.tournament || "").toLowerCase();
+
+  if (isLowerTierTournament(tournament)) return false;
+
+  return (
+    category === "atp" ||
+    category.includes("atp") ||
+    tournament.includes("atp") ||
+    /\b(men|mens|men's|gentlemen)\b/.test(category) ||
+    /\b(men|mens|men's|gentlemen)\b/.test(tournament)
+  );
+}
+
 export default async function AtpLiveTodayPage() {
   const matches = await getMatches();
 
-  const liveAtpMatches = matches.filter((m) => {
-  const status = (m.status || "").toUpperCase();
+  const liveAtpMatches = matches
+    .filter((match) => {
+      const status = (match.status || "").toUpperCase();
 
-  const category = (
-    m.category || ""
-  ).toLowerCase();
-
-  const tournament = (
-    m.tournament || ""
-  ).toLowerCase();
-
-  const isITF =
-    tournament.includes("w15") ||
-    tournament.includes("w25") ||
-    tournament.includes("w35") ||
-    tournament.includes("w50") ||
-    tournament.includes("w75") ||
-    tournament.includes("w100") ||
-    tournament.includes("m15") ||
-    tournament.includes("m25") ||
-    tournament.includes("itf");
-
-  const isChallenger =
-    tournament.includes("challenger");
-
-  return (
-    status === "LIVE" &&
-    category === "atp" &&
-    !isITF &&
-    !isChallenger
-  );
-});
+      return isAtpMatch(match) && ["LIVE", "SUSPENDED"].includes(status);
+    })
+    .sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
 
   const upcomingAtpMatches = matches
-    .filter((m) => {
-  const status = (m.status || "").toUpperCase();
+    .filter((match) => {
+      const status = (match.status || "").toUpperCase();
 
-  const category = (
-    m.category || ""
-  ).toLowerCase();
-
-  const tournament = (
-    m.tournament || ""
-  ).toLowerCase();
-
-  const isITF =
-    tournament.includes("w15") ||
-    tournament.includes("w25") ||
-    tournament.includes("w35") ||
-    tournament.includes("w50") ||
-    tournament.includes("w75") ||
-    tournament.includes("w100") ||
-    tournament.includes("m15") ||
-    tournament.includes("m25") ||
-    tournament.includes("itf");
-
-  const isChallenger =
-    tournament.includes("challenger");
-
-  return (
-    status === "UPCOMING" &&
-    category === "atp" &&
-    !isITF &&
-    !isChallenger
-  );
-})
+      return isAtpMatch(match) && status === "UPCOMING";
+    })
     .sort((a, b) => {
       const pr = statusPriority(a.status) - statusPriority(b.status);
       if (pr !== 0) return pr;

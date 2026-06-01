@@ -240,13 +240,19 @@ async function fetchPlayerRecentResultsFromH2H(
   );
 }
 
-function normalizeCategory(eventType?: string) {
-  const value = (eventType || "").toLowerCase();
+function normalizeCategory(eventType?: string, tournamentName?: string) {
+  const value = `${eventType || ""} ${tournamentName || ""}`.toLowerCase();
 
   if (value.includes("challenger")) return "CHALLENGER";
-  if (value.includes("atp")) return "ATP";
-  if (value.includes("wta")) return "WTA";
   if (value.includes("itf")) return "ITF";
+  if (value.includes("wta")) return "WTA";
+  if (value.includes("atp")) return "ATP";
+
+  // Grand Slam feeds often come from API-Tennis as "Men Singles" / "Women Singles"
+  // instead of ATP/WTA. Classify those so ATP/WTA landing pages do not miss
+  // Roland Garros, Wimbledon, Australian Open or US Open matches.
+  if (/(women|woman|womens|women's|ladies)/.test(value)) return "WTA";
+  if (/(men|man|mens|men's|gentlemen)/.test(value)) return "ATP";
 
   return "UNKNOWN";
 }
@@ -1061,8 +1067,8 @@ const dateStop = formatDate(dateStopDate);
       : uniqueMatches;
 
     let mappedMatches: any[] = filteredMatches.map((match) => {
-      const category = normalizeCategory(match.event_type_type);
       const tournament = match.tournament_name || "Unknown tournament";
+      const category = normalizeCategory(match.event_type_type, tournament);
 
       return {
         id: String(match.event_key),
