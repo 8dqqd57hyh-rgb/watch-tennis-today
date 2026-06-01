@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
@@ -14,7 +15,7 @@ import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import PathToTitle from "@/app/components/PathToTitle";
 import { getRivalryForMatch } from "@/data/rivalries";
-import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
+import { getServerMatches } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -124,6 +125,24 @@ const playerDescriptions: Record<string, string> = {
   "iga swiatek":
     "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
 };
+
+
+function isCrawlerUserAgent(userAgent: string) {
+  const value = userAgent.toLowerCase();
+
+  return (
+    value.includes("bot") ||
+    value.includes("crawler") ||
+    value.includes("spider") ||
+    value.includes("ahrefs") ||
+    value.includes("dotbot") ||
+    value.includes("semrush") ||
+    value.includes("mj12") ||
+    value.includes("bingpreview") ||
+    value.includes("facebookexternalhit") ||
+    value.includes("slurp")
+  );
+}
 
 function getMatchIdFromSlug(slug: string) {
   return slug.match(/(\d+)$/)?.[1] ?? null;
@@ -624,23 +643,34 @@ export default async function MatchPage({
 
   if (!matchId) notFound();
 
-  const liveMatch = await getServerMatchById(matchId, 30);
-  const localArchivedMatch = liveMatch ? null : getArchivedMatch(matchId);
+  const localArchivedMatch = getArchivedMatch(matchId);
 
-  if (!liveMatch && localArchivedMatch) {
+  if (localArchivedMatch) {
     return <ArchivedMatchPage archivedMatch={localArchivedMatch} />;
   }
 
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+
+  // Crawlers frequently request stale /watch/* URLs. Do not spend server time
+  // loading the live match feed for pages that are likely gone from the current
+  // schedule. Send them to the current live hub immediately.
+  if (isCrawlerUserAgent(userAgent)) {
+    redirect("/tennis-live-today");
+  }
+
+  const matches = await getServerMatches(60);
+  const liveMatch = matches.find((item) => String(item.id) === String(matchId)) || null;
+
   if (!liveMatch) {
     if (decodedSlug.includes("-vs-") && decodedSlug.match(/\d+$/)) {
-      redirect("/");
+      redirect("/tennis-live-today");
     }
 
     notFound();
   }
 
   const match = liveMatch;
-  const matches = await getServerMatches(60);
 
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
