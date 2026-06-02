@@ -89,6 +89,33 @@ function buildDateWindows(dateStartDate: Date, dateStopDate: Date, chunkDays = 2
   return windows;
 }
 
+async function runWithConcurrency<T>(
+  tasks: (() => Promise<T>)[],
+  limit = 3
+) {
+  const results: T[] = [];
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < tasks.length) {
+      const currentIndex = cursor;
+      cursor += 1;
+
+      try {
+        results[currentIndex] = await tasks[currentIndex]();
+      } catch {
+        results[currentIndex] = [] as T;
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, tasks.length) }, () => worker())
+  );
+
+  return results;
+}
+
 async function fetchFixtureWindows(
   apiKey: string,
   dateStartDate: Date,
@@ -96,27 +123,31 @@ async function fetchFixtureWindows(
   resolvedPlayerKey: string | null,
   options: { formHistory?: boolean; playerName?: string | null } = {}
 ) {
-  const windows = buildDateWindows(dateStartDate, dateStopDate, options.formHistory ? 14 : 28);
+  const windows = buildDateWindows(
+    dateStartDate,
+    dateStopDate,
+    options.formHistory && resolvedPlayerKey ? 30 : options.formHistory ? 21 : 28
+  );
 
   // Keep the public /api/matches endpoint fast and resilient. API-Tennis can
-  // return intermittent 500s on get_fixtures; a single failed chunk must not
-  // make Vercel logs look broken or slow down the whole site.
-  const fixtureResponses = await Promise.allSettled(
-    windows.map((window) =>
+  // return intermittent 500s on get_fixtures, especially for long player-form
+  // ranges. Limit concurrency so one player page cannot fan out into dozens of
+  // simultaneous external calls and flood Vercel with warnings.
+  const fixtureResponses = await runWithConcurrency(
+    windows.map((window) => () =>
       fetchApiTennis(
         "get_fixtures",
         apiKey,
         `&date_start=${window.start}&date_stop=${window.stop}&timezone=Europe/Warsaw${
           resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
         }`,
-        options.formHistory ? 9000 : 4500
+        options.formHistory ? 6500 : 4500
       )
-    )
+    ),
+    options.formHistory ? 2 : 4
   );
 
-  return fixtureResponses.flatMap((response) =>
-    response.status === "fulfilled" ? response.value : []
-  );
+  return fixtureResponses.flatMap((response) => response);
 }
 
 function getOpponentKeysForPlayerForm(
@@ -793,9 +824,12 @@ async function fetchApiTennisResult(method: string, apiKey: string, params = "",
     });
 
     if (!response.ok) {
-      // External API outages are expected sometimes. Use warn instead of error
-      // so Vercel does not surface healthy 200 responses as scary function errors.
-      console.warn(`API-Tennis ${method} unavailable (${response.status})`);
+      // API-Tennis intermittently returns 5xx for valid fixture queries. The
+      // route still returns a healthy 200 with cached/archive fallbacks, so do
+      // not turn expected provider outages into noisy Vercel warnings.
+      if (process.env.DEBUG_API_TENNIS === "1") {
+        console.info(`API-Tennis ${method} unavailable (${response.status})`);
+      }
       return null;
     }
 
@@ -1011,8 +1045,9 @@ const today = new Date();
 const maxDaysBack = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 365 : 120;
 const defaultDaysBack = matchId ? 1 : 3;
 const defaultDaysForward = matchId ? 7 : 30;
+const maxDaysForward = formHistory ? 45 : 90;
 const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : defaultDaysBack;
-const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), 90) : defaultDaysForward;
+const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), maxDaysForward) : defaultDaysForward;
 
 const dateStartDate = new Date();
 dateStartDate.setDate(today.getDate() - safeDaysBack);

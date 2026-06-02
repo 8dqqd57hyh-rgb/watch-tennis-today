@@ -158,6 +158,25 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
+function getFallbackMatchFromSlug(slug: string, matchId: string): ArchivedMatchLike | null {
+  const titlePart = slug.replace(/-?\d+$/, "");
+  const [left, right] = titlePart.split("-vs-");
+
+  if (!left || !right) return null;
+
+  return {
+    id: matchId,
+    player1: titleCaseMatchName(left.replace(/-/g, " ")),
+    player2: titleCaseMatchName(right.replace(/-/g, " ")),
+    tournament: "Current tennis schedule",
+    category: "Tennis",
+    status: "No longer in live feed",
+    score: "Score unavailable",
+    startTime: null,
+    watchProviders: [],
+  };
+}
+
 function getMatchSlug(match: Match) {
   return `${slugify(match.player1)}-vs-${slugify(match.player2)}-${match.id}`;
 }
@@ -654,8 +673,15 @@ export default async function MatchPage({
 
   // Crawlers frequently request stale /watch/* URLs. Do not spend server time
   // loading the live match feed for pages that are likely gone from the current
-  // schedule. Send them to the current live hub immediately.
+  // schedule. Return a lightweight archived-style page instead of a temporary
+  // redirect so Googlebot does not keep creating 307 runtime-log noise.
   if (isCrawlerUserAgent(userAgent)) {
+    const fallbackMatch = getFallbackMatchFromSlug(decodedSlug, matchId);
+
+    if (fallbackMatch) {
+      return <ArchivedMatchPage archivedMatch={fallbackMatch} />;
+    }
+
     redirect("/tennis-live-today");
   }
 
