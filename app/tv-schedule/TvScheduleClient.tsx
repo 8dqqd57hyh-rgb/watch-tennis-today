@@ -17,11 +17,16 @@ export default function TvSchedulePage() {
 
   useEffect(() => {
     async function loadChannels() {
-      const response = await fetch("/api/tv-channels");
-      const data = await response.json();
+      try {
+        const response = await fetch("/api/tv-channels");
+        const data = await response.json();
 
-      setChannels(data);
-      setLoading(false);
+        setChannels(Array.isArray(data) ? data : []);
+      } catch {
+        setChannels([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadChannels();
@@ -167,6 +172,25 @@ export default function TvSchedulePage() {
 
         {loading ? (
           <p className="text-zinc-400">Loading channels...</p>
+        ) : channels.length === 0 ? (
+          <section className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
+            <h2 className="mb-4 text-3xl font-black">TV channel data is temporarily unavailable</h2>
+            <p className="max-w-3xl leading-8 text-zinc-300">
+              The official tennis TV schedule can change by country, tournament and subscription service.
+              Use the live tennis hub, today&apos;s matches and broadcaster guide while the channel list refreshes.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-4">
+              <a href="/live-tennis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+                Live Tennis →
+              </a>
+              <a href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+                Today&apos;s Matches →
+              </a>
+              <a href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+                Broadcaster Guide →
+              </a>
+            </div>
+          </section>
         ) : (
           <div className="space-y-8">
             {Object.entries(grouped).map(([platform, items]) => (
