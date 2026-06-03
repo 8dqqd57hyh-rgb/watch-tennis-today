@@ -362,7 +362,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
       `${completedPickCount} settled · ${pendingPickCount} pending`,
       ...pickLines,
       ...moreLine,
-      "Play here: https://watchtennistoday.com/roland-garros-predictions",
+      "Play here: https://watchtennistoday.com/french-open-today",
     ].join("\n");
   }
 
@@ -375,7 +375,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
         await navigator.share({
           title: "My Roland Garros Pick’em picks",
           text,
-          url: "https://watchtennistoday.com/roland-garros-predictions",
+          url: "https://watchtennistoday.com/french-open-today",
         });
         setShareStatus("Shared");
         return;
@@ -506,7 +506,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
 
       <div className="mt-6 flex flex-wrap gap-3">
         {compact ? (
-          <Link href="/roland-garros-predictions" className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400">
+          <Link href="/french-open-today" className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400">
             Open full Pick’em board →
           </Link>
         ) : null}

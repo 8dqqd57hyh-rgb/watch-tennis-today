@@ -201,7 +201,7 @@ export default function RolandGarrosTournamentPulse({ compact = false }: Props) 
         </div>
 
         <Link
-          href="/roland-garros-pulse"
+          href="/french-open"
           className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black transition hover:border-orange-500 hover:text-orange-300"
         >
           Open pulse →

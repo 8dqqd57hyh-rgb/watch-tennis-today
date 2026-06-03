@@ -52,7 +52,7 @@ export default function FrenchOpenSurvivorsBoard({ compact = false }: { compact?
     async function loadData() {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/french-open-draw-tracker", { cache: "no-store" });
+        const response = await fetch("/api/french-open-schedule-tracker", { cache: "no-store" });
         const result = await response.json();
 
         if (!ignore) setData(result);
@@ -126,7 +126,7 @@ export default function FrenchOpenSurvivorsBoard({ compact = false }: { compact?
         </div>
 
         <a
-          href="/french-open-draw"
+          href="/french-open-schedule"
           className="inline-flex rounded-2xl border border-emerald-500/50 px-5 py-3 font-black text-emerald-100 transition hover:border-emerald-300 hover:text-white"
         >
           Open full draw tracker →

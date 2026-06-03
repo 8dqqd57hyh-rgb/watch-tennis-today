@@ -176,7 +176,7 @@ export default async function FrenchOpenLivePage() {
             ["French Open Today", "/french-open-today"],
             ["French Open Order of Play", "/french-open-order-of-play"],
             ["French Open Results", "/french-open-results"],
-            ["French Open Draw", "/french-open-draw"],
+            ["French Open Schedule", "/french-open-schedule"],
             ["Where to Watch French Open", "/where-to-watch-french-open"],
           ].map(([title, href]) => (
             <a

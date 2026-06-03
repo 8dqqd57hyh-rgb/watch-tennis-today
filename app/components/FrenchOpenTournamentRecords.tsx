@@ -155,7 +155,7 @@ function buildRecordCards(results: ResultMatch[], upsets: Upset[]): RecordCard[]
       title: `${biggestUpset.winner} def. ${biggestUpset.loser}`,
       value: biggestUpset.loserSeed ? `#${biggestUpset.loserSeed} seed out` : "Seeded exit",
       detail: [biggestUpset.round, biggestUpset.score].filter(Boolean).join(" · ") || "Verified from the Roland Garros upset tracker.",
-      href: biggestUpset.href || "/french-open-upsets",
+      href: biggestUpset.href || "/french-open-results",
       badge: "UPSET",
     });
   }
@@ -244,7 +244,7 @@ export default function FrenchOpenTournamentRecords({ compact = false }: { compa
         setIsLoading(true);
         const [resultsResponse, upsetsResponse] = await Promise.allSettled([
           fetch("/api/french-open-results", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/api/french-open-upsets", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/api/french-open-results", { cache: "no-store" }).then((response) => response.json()),
         ]);
 
         if (ignore) return;

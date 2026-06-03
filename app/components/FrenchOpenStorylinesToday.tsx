@@ -114,8 +114,8 @@ export default function FrenchOpenStorylinesToday({ compact = false }: { compact
         setIsLoading(true);
         const [todayResponse, upsetResponse, drawResponse] = await Promise.allSettled([
           fetch("/api/french-open-today", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/api/french-open-upsets", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/api/french-open-draw-tracker", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/api/french-open-results", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/api/french-open-schedule-tracker", { cache: "no-store" }).then((response) => response.json()),
         ]);
 
         if (ignore) return;
@@ -173,7 +173,7 @@ export default function FrenchOpenStorylinesToday({ compact = false }: { compact
         label: "Biggest shock",
         title: `${biggestUpset.winner} def. ${biggestUpset.loser}`,
         text: [biggestUpset.loserSeed ? `Seed #${biggestUpset.loserSeed} eliminated` : "Seeded exit", biggestUpset.round, biggestUpset.score].filter(Boolean).join(" · "),
-        href: "/french-open-upsets",
+        href: "/french-open-results",
         badge: biggestUpset.severity === "major" ? "MAJOR" : "UPSET",
       });
     }
@@ -185,7 +185,7 @@ export default function FrenchOpenStorylinesToday({ compact = false }: { compact
         label: "Draw pulse",
         title: `${draw?.activeCount ?? activePlayers.length} players still active`,
         text: `${liveSurvivors} live · ${scheduledSurvivors} scheduled from the current Roland Garros feed`,
-        href: "/french-open-survivors",
+        href: "/french-open-results",
         badge: "DRAW",
       });
     }

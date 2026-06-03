@@ -106,7 +106,7 @@ function hasStarPlayer(match: IntelligenceMatch) {
   return STAR_PLAYERS.some((player) => text.includes(player.toLowerCase()));
 }
 
-function isRivalry(match: IntelligenceMatch) {
+function isHighProfileMatch(match: IntelligenceMatch) {
   const text = `${match.player1 || ""} ${match.player2 || ""}`.toLowerCase();
 
   return RIVALRY_PAIRS.some(([first, second]) => text.includes(first) && text.includes(second));
@@ -124,7 +124,7 @@ function getImportanceScore(match: IntelligenceMatch) {
   if (isGrandSlam(match)) score += 30;
   score += getRoundWeight(match);
   if (hasStarPlayer(match)) score += 20;
-  if (isRivalry(match)) score += 12;
+  if (isHighProfileMatch(match)) score += 12;
   if (status === "LIVE") score += 12;
   if (status === "UPCOMING" || status === "SCHEDULED") score += 7;
   if (isMainTourSingles(match)) score += 6;
@@ -142,7 +142,7 @@ function getReasons(match: IntelligenceMatch) {
   if (getRoundWeight(match) >= 18) reasons.push(match.round || "High-stakes round");
   if (getRoundWeight(match) > 0 && getRoundWeight(match) < 18) reasons.push(match.round || "Important round");
   if (hasStarPlayer(match)) reasons.push("star player involved");
-  if (isRivalry(match)) reasons.push("rivalry matchup");
+  if (isHighProfileMatch(match)) reasons.push("high-profile matchup");
   if (isMainTourSingles(match)) reasons.push(`${match.category} singles`);
   if (match.score && status === "LIVE") reasons.push("score moving now");
 
@@ -187,7 +187,7 @@ export default function MatchImportanceHub({
   matches,
   compact = false,
   title = "Must-watch matches today",
-  subtitle = "Ranked by tournament weight, round, star power, live status and rivalry context.",
+  subtitle = "Ranked by tournament weight, round, star power, live status and player context.",
 }: Props) {
   const importantMatches = pickMatches(matches, compact);
 

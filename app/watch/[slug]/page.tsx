@@ -13,8 +13,8 @@ import LiveMatchScore from "./LiveMatchScore";
 import EmailSignup from "@/app/components/EmailSignup";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
+import MatchReminderPanel from "@/app/components/MatchReminderPanel";
 import PathToTitle from "@/app/components/PathToTitle";
-import { getRivalryForMatch } from "@/data/rivalries";
 import { getServerMatches } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
@@ -398,7 +398,6 @@ type RelatedCoverageLink = {
 };
 
 function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
-  const rivalryGuide = getRivalryForMatch(match.player1, match.player2);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
   const tournamentSlug = slugify(match.tournament);
@@ -427,24 +426,6 @@ function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
       priority: 35,
     },
   ];
-
-  if (rivalryGuide) {
-    links.push({
-      title: rivalryGuide.title,
-      eyebrow: "Rivalry guide",
-      description: rivalryGuide.angle,
-      href: `/rivalries/${rivalryGuide.slug}`,
-      priority: 100,
-    });
-  } else {
-    links.push({
-      title: "Tennis rivalry guides",
-      eyebrow: "Rivalries",
-      description: "Explore the biggest tennis rivalries with matchup notes, player links and schedule context.",
-      href: "/rivalries",
-      priority: 38,
-    });
-  }
 
   if (player1Url) {
     links.push({
@@ -510,8 +491,8 @@ function RelatedCoverageEngine({
           </p>
           <h2 className="text-3xl font-black">Keep following this matchup</h2>
         </div>
-        <Link href="/rivalries" className="text-sm font-bold text-green-400 hover:text-green-300">
-          Browse rivalry guides →
+        <Link href="/tennis-schedule-today" className="text-sm font-bold text-green-400 hover:text-green-300">
+          Open today’s schedule →
         </Link>
       </div>
 
@@ -704,7 +685,6 @@ export default async function MatchPage({
   const scoreDisplay = getScoreDisplay(match);
   const countryLinks = buildCountryWatchLinks(match);
   const relatedMatches = getRelatedMatches(match, matches);
-  const rivalryGuide = getRivalryForMatch(match.player1, match.player2);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
   const playerDescription =
@@ -882,31 +862,17 @@ export default async function MatchPage({
               </div>
             </section>
 
+            <MatchReminderPanel
+              matchTitle={matchTitle}
+              tournament={match.tournament}
+              status={match.status}
+              startTime={match.startTime}
+              matchUrl={currentUrl}
+            />
+
             <MatchEdgePredictor match={match} matches={matches} />
 
             <RelatedCoverageEngine match={match} matches={matches} />
-
-            {rivalryGuide ? (
-              <section className="mb-10 rounded-[2rem] border border-orange-500/30 bg-orange-500/10 p-6">
-                <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-orange-400">
-                  Rivalry guide
-                </p>
-                <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
-                  <div>
-                    <h2 className="mb-3 text-3xl font-black">{rivalryGuide.title}</h2>
-                    <p className="max-w-3xl leading-8 text-zinc-300">
-                      {rivalryGuide.angle}
-                    </p>
-                  </div>
-                  <a
-                    href={`/rivalries/${rivalryGuide.slug}`}
-                    className="rounded-2xl bg-orange-500 px-6 py-4 text-center font-black text-black transition hover:bg-orange-400"
-                  >
-                    Open rivalry page →
-                  </a>
-                </div>
-              </section>
-            ) : null}
 
             <PathToTitle match={match} matches={matches} />
 

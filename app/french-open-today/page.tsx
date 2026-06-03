@@ -1,8 +1,6 @@
 import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
-import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToday";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
-import RolandGarrosPickemChallenge from "@/app/components/RolandGarrosPickemChallenge";
 import MatchImportanceHub from "@/app/components/MatchImportanceHub";
 
 export const dynamic = "force-dynamic";
@@ -143,7 +141,6 @@ export default async function FrenchOpenTodayPage() {
     ["Order of Play", "/french-open-order-of-play"],
     ["French Open Results", "/french-open-results"],
     ["Yesterday’s Roland Garros recap", "/roland-garros-recap"],
-    ["French Open Draw", "/french-open-draw"],
     ["TV Schedule", "/french-open-tv-schedule"],
     ["Streaming Countries", "/french-open-streaming-countries"],
     ["Watch Online", "/watch-french-open-online"],
@@ -216,7 +213,6 @@ export default async function FrenchOpenTodayPage() {
           ))}
         </section>
 
-        <RolandGarrosPickemChallenge compact />
         <MatchImportanceHub
           matches={frenchOpenMatches}
           compact
@@ -224,7 +220,6 @@ export default async function FrenchOpenTodayPage() {
           subtitle="A ranked shortcut for fans: live matches, Grand Slam stakes, big names and late rounds first."
         />
         <FrenchOpenDayTimeline />
-        <FrenchOpenStorylinesToday compact />
         <FrenchOpenConversionCluster compact title="More French Open coverage" />
         <FrenchOpenWatchIntent compact />
 
@@ -315,7 +310,7 @@ export default async function FrenchOpenTodayPage() {
 
             <p>
               This page is designed as a daily Roland Garros hub with quick
-              links to live matches, results, draw updates, TV schedule and
+              links to live matches, verified results, TV schedule and
               official streaming guides.
             </p>
           </div>

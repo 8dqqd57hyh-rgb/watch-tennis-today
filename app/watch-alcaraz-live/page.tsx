@@ -82,7 +82,7 @@ export default function WatchCarlosAlcarazLivePage() {
             "All-court style creates highlight-friendly matches and strong casual fan demand.",
             "Grand Slam and Masters sessions with Alcaraz are often heavily promoted by broadcasters.",
             "Clay, grass and hard-court results all generate seasonal search interest.",
-            "Rivalry matches against Sinner, Djokovic or Zverev can become breakout traffic pages.",
+            "High-profile matches against Sinner, Djokovic or Zverev can become breakout traffic pages.",
           ]}
         />
 

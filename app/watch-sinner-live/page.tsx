@@ -82,7 +82,7 @@ export default function WatchJannikSinnerLivePage() {
             "Elite baseline timing makes rallies easy to follow and attractive for highlights.",
             "Top-seeded matches often receive better TV placement and wider broadcaster coverage.",
             "Hard-court and indoor events can create strong demand for live viewing.",
-            "Rivalry matches against Alcaraz, Djokovic or Medvedev often attract search traffic.",
+            "High-profile matches against Alcaraz, Djokovic or Medvedev often attract search traffic.",
           ]}
         />
 

@@ -7,20 +7,16 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import JsonLd from "@/app/components/JsonLd";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import FrenchOpenStreamingDecision from "@/app/components/FrenchOpenStreamingDecision";
-import FrenchOpenDrawTracker from "@/app/components/FrenchOpenDrawTracker";
-import FrenchOpenNextMatchesStrip from "@/app/components/FrenchOpenNextMatchesStrip";
 import FrenchOpenLiveSnapshot from "@/app/components/FrenchOpenLiveSnapshot";
 import FrenchOpenWatchIntent from "@/app/components/FrenchOpenWatchIntent";
-import FrenchOpenSurvivorsBoard from "@/app/components/FrenchOpenSurvivorsBoard";
-import FrenchOpenStorylinesToday from "@/app/components/FrenchOpenStorylinesToday";
 import FrenchOpenTournamentRecords from "@/app/components/FrenchOpenTournamentRecords";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "French Open 2026 Hub: Live Matches, Results, Draw & TV Schedule",
+  title: "French Open 2026 Hub: Live Matches, Results & TV Schedule",
   description:
-    "Follow the French Open with one daily hub for Roland Garros live matches, yesterday’s recap, tomorrow’s schedule, results, draw, TV schedule and official streaming guides.",
+    "Follow the French Open with one daily hub for Roland Garros live matches, yesterday’s recap, tomorrow’s schedule, verified results, TV schedule and official streaming guides.",
   alternates: { canonical: "https://watchtennistoday.com/french-open" },
 };
 
@@ -48,8 +44,6 @@ const primaryCards = [
 const resourceLinks = [
   ["French Open live", "/french-open-live"],
   ["French Open results", "/french-open-results"],
-  ["French Open draw", "/french-open-draw"],
-  ["Who is still in French Open", "/french-open-survivors"],
   ["Order of play", "/french-open-order-of-play"],
   ["TV schedule", "/french-open-tv-schedule"],
   ["Where to watch", "/where-to-watch-french-open"],
@@ -64,7 +58,7 @@ const resourceLinks = [
 const faq = [
   {
     q: "What is the French Open hub?",
-    a: "It is a central Roland Garros page that links daily match coverage, results, draw pages, order of play and official broadcaster guides.",
+    a: "It is a central Roland Garros page that links daily match coverage, verified results, order of play and official broadcaster guides.",
   },
   {
     q: "Where should I start if I missed yesterday’s Roland Garros matches?",
@@ -83,7 +77,7 @@ export default function FrenchOpenHubPage() {
       "@type": "CollectionPage",
       name: "French Open 2026 Hub",
       description:
-        "Daily Roland Garros hub for live matches, results, draw, recap, schedule and legal viewing guides.",
+        "Daily Roland Garros hub for live matches, verified results, recap, schedule and legal viewing guides.",
       url: "https://watchtennistoday.com/french-open",
       hasPart: resourceLinks.map(([label, href]) => ({
         "@type": "WebPage",
@@ -124,12 +118,12 @@ export default function FrenchOpenHubPage() {
           <h1 className="mb-6 text-5xl font-black leading-tight md:text-7xl">
             French Open 2026:
             <br />
-            Matches, Results, Draw & TV
+            Matches, Results & TV
           </h1>
 
           <p className="mb-8 max-w-3xl text-lg leading-8 text-zinc-300">
             One central French Open page for fans who want to catch up on
-            yesterday, check today’s matches, plan tomorrow, follow the draw and
+            yesterday, check today’s matches, plan tomorrow, follow verified results and
             find official Roland Garros viewing options.
           </p>
 
@@ -156,7 +150,6 @@ export default function FrenchOpenHubPage() {
         </section>
 
         <FrenchOpenDayTimeline compact />
-        <FrenchOpenStorylinesToday compact />
         <FrenchOpenTournamentRecords compact />
         <FrenchOpenLiveSnapshot compact />
         <FrenchOpenWatchIntent compact />
@@ -179,9 +172,6 @@ export default function FrenchOpenHubPage() {
 
         <DailyTennisLoop tournamentName="French Open" compact />
         <FrenchOpenSeoBridge compact />
-        <FrenchOpenNextMatchesStrip compact />
-        <FrenchOpenSurvivorsBoard compact />
-        <FrenchOpenDrawTracker compact />
         <FrenchOpenCountryGuides compact title="Popular French Open viewing countries" description="Jump to high-intent country guides from the main Roland Garros hub." />
         <FrenchOpenConversionCluster compact title="All French Open resources" />
         <FrenchOpenStreamingDecision compact />

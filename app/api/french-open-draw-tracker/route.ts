@@ -300,7 +300,7 @@ function buildPlayerPath(player: string, matches: NormalizedMatch[]): PlayerPath
     opponent: "Next bracket slot after this match",
     status: "potential",
     note: "The next opponent updates when the tournament feed publishes the following round.",
-    watchHref: "/french-open-draw",
+    watchHref: "/french-open-schedule",
   });
 
   return {

@@ -188,7 +188,7 @@ export default async function FrenchOpenOrderOfPlayPage() {
   const relatedLinks = [
     ["French Open Today", "/french-open-today"],
     ["French Open Results", "/french-open-results"],
-    ["French Open Draw", "/french-open-draw"],
+    ["French Open Schedule", "/french-open-schedule"],
     ["French Open Live", "/french-open-live"],
     ["TV Schedule", "/french-open-tv-schedule"],
     ["Live Stream Guide", "/french-open-live-stream"],
@@ -413,7 +413,7 @@ export default async function FrenchOpenOrderOfPlayPage() {
 
             <p>
               This page works as a daily Roland Garros schedule hub with quick
-              links to live matches, completed results, draw updates, TV
+              links to live matches, completed results, schedule updates, TV
               schedule and official streaming guides.
             </p>
           </div>

@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { comparisons } from "@/data/comparisons";
-import { rivalries } from "@/data/rivalries";
 export const revalidate = 3600;
 
 type Match = {
@@ -203,13 +202,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-watchlist-today",
     "/tennis-time-zone-converter",
     "/players",
-    "/rivalries",
     "/players/atp",
     "/players/wta",
     "/watch-tennis-in",
     "/watch-tennis-in/poland",
     "/french-open",
-    "/roland-garros-predictions",
     "/today",
     "/tomorrow",
     "/tennis-schedule-tomorrow",
@@ -365,8 +362,6 @@ const frenchOpenPages = [
   "/french-open-order-of-play",
   "/french-open-results",
   "/roland-garros-recap",
-  "/french-open-draw",
-  "/french-open-survivors",
   "/where-to-watch-french-open",
   "/watch-french-open-in-usa",
   "/watch-french-open-in-uk",
@@ -381,17 +376,9 @@ const frenchOpenPages = [
     priority: 0.82,
   }));
 
-  const rivalryPages: MetadataRoute.Sitemap = rivalries.map((rivalry) => ({
-    url: `${BASE_URL}/rivalries/${rivalry.slug}`,
-    lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.86,
-  }));
-
  return [
   ...staticPages,
   ...comparisonPages,
-  ...rivalryPages,
   ...playerPages,
   ...tournamentPages,
   ...matchPages,

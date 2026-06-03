@@ -107,7 +107,7 @@ export default function FrenchOpenDrawTracker({ compact = false }: { compact?: b
     async function loadDrawTracker() {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/french-open-draw-tracker", { cache: "no-store" });
+        const response = await fetch("/api/french-open-schedule-tracker", { cache: "no-store" });
         const data: DrawTrackerResponse = await response.json();
 
         if (!ignore) {

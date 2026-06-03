@@ -94,7 +94,7 @@ export default async function FrenchOpenResultsPage() {
     ["French Open Today", "/french-open-today"],
     ["Roland Garros Recap", "/roland-garros-recap"],
     ["Order of Play", "/french-open-order-of-play"],
-    ["French Open Draw", "/french-open-draw"],
+    ["French Open Schedule", "/french-open-schedule"],
     ["TV Schedule", "/french-open-tv-schedule"],
     ["Streaming by Country", "/french-open-streaming-countries"],
     ["Where to Watch", "/where-to-watch-french-open"],

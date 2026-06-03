@@ -24,11 +24,11 @@ const intentCards = [
     cta: "Find where to watch",
   },
   {
-    eyebrow: "Draw path",
+    eyebrow: "Schedule path",
     title: "I follow a player, not a schedule",
-    text: "Track who is still in the draw, next opponents and the matches that matter most.",
-    href: "/french-open-draw",
-    cta: "Open draw tracker",
+    text: "Track who is still in the schedule, next opponents and the matches that matter most.",
+    href: "/french-open-schedule",
+    cta: "Open schedule tracker",
   },
 ];
 
@@ -48,7 +48,7 @@ export default function FrenchOpenWatchIntent({ compact = false }: { compact?: b
           </h2>
           <p className="mt-3 max-w-3xl leading-8 text-zinc-300">
             Send visitors to the right high-intent page quickly: live matches,
-            today’s schedule, the active draw or official broadcaster guides.
+            today’s schedule, the active schedule or official broadcaster guides.
           </p>
         </div>
 

@@ -72,7 +72,7 @@ export default function PlayerAuthoritySections({
         </ul>
         <p className="mt-5 text-base leading-7 text-neutral-700">
           Demand usually rises during Grand Slams, late-round matches, prime-time sessions
-          and rivalry matchups. Before paying for a subscription, check the tournament,
+          and high-profile matchups. Before paying for a subscription, check the tournament,
           court assignment, local broadcaster and start time because tennis schedules can
           move after long matches or weather delays.
         </p>

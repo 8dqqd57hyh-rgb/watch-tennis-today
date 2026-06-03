@@ -26,10 +26,10 @@ const dailyLinks = [
     accent: "blue",
   },
   {
-    label: "Draw",
-    title: "French Open Draw",
+    label: "Schedule",
+    title: "French Open Schedule",
     description: "Follow player paths, next opponents and bracket context.",
-    href: "/french-open-draw",
+    href: "/french-open-schedule",
     accent: "purple",
   },
 ];

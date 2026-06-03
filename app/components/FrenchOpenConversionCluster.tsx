@@ -25,12 +25,12 @@ const clusters = [
   },
   {
     eyebrow: "Follow the tournament",
-    title: "Draw and results context",
+    title: "Schedule and results context",
     description:
-      "Give users the bracket context they search for after a match: results, draw paths and upcoming order of play.",
+      "Give users the bracket context they search for after a match: results, schedule paths and upcoming order of play.",
     links: [
       ["French Open results", "/french-open-results"],
-      ["French Open draw", "/french-open-draw"],
+      ["French Open schedule", "/french-open-schedule"],
       ["Order of play", "/french-open-order-of-play"],
     ],
   },

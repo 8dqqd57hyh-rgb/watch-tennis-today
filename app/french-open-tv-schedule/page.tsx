@@ -121,7 +121,7 @@ export default function FrenchOpenTvSchedulePage() {
               ["French Open live stream", "/french-open-live-stream"],
               ["Watch French Open online", "/watch-french-open-online"],
               ["French Open results", "/french-open-results"],
-              ["French Open draw", "/french-open-draw"],
+              ["French Open schedule", "/french-open-schedule"],
               ["Streaming countries", "/french-open-streaming-countries"],
               ["Where to watch French Open", "/where-to-watch-french-open"],
             ].map(([title, href]) => (
