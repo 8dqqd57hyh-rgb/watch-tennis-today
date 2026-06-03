@@ -85,3 +85,25 @@ export async function getServerMatchById(matchId: string, revalidateSeconds = 30
 
   return matches.find((match) => String(match.id) === String(matchId)) || null;
 }
+
+
+export async function getServerMatchesForPlayer(
+  playerName: string,
+  revalidateSeconds = 300
+): Promise<ServerMatch[]> {
+  const normalizedPlayerName = playerName.trim().toLowerCase();
+
+  if (!normalizedPlayerName) return [];
+
+  const matches = await fetchServerMatches(
+    `/api/matches?player=${encodeURIComponent(playerName)}&daysBack=180&daysForward=30`,
+    revalidateSeconds
+  );
+
+  return matches.filter((match) => {
+    const player1 = String(match.player1 || "").toLowerCase();
+    const player2 = String(match.player2 || "").toLowerCase();
+
+    return player1.includes(normalizedPlayerName) || player2.includes(normalizedPlayerName);
+  });
+}
