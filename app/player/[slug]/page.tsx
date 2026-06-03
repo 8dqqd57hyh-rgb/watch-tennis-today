@@ -843,6 +843,41 @@ const playerMatches = allMatches
         </div>
       </section>
 
+      <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
+          Editorial player guide
+        </p>
+        <h2 className="text-2xl font-black text-zinc-950">
+          How to follow {playerName} today
+        </h2>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h3 className="font-black text-zinc-950">Match context</h3>
+            <p className="mt-2 text-sm leading-7 text-zinc-600">
+              This page combines live status, upcoming matches, recent available results and tournament links so fans can understand whether {playerName} is scheduled, live, finished or waiting for an updated order of play.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h3 className="font-black text-zinc-950">Legal viewing checks</h3>
+            <p className="mt-2 text-sm leading-7 text-zinc-600">
+              Tennis broadcast rights depend on the event and viewer location. Before subscribing or clicking an external provider, confirm the tournament, court assignment and local broadcaster on official sources.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h3 className="font-black text-zinc-950">Schedule caution</h3>
+            <p className="mt-2 text-sm leading-7 text-zinc-600">
+              Tennis start times can move when earlier matches run long, rain interrupts play or a player withdraws. Treat listed times as planning information and check the official order of play close to match time.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h3 className="font-black text-zinc-950">Data transparency</h3>
+            <p className="mt-2 text-sm leading-7 text-zinc-600">
+              Live score and schedule feeds may be incomplete for lower-level events. When the available feed is limited, this page avoids presenting partial data as full season form or guaranteed broadcast availability.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {!isVerifiedPlayer ? (
         <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-sm leading-7 text-zinc-300">
           <p>

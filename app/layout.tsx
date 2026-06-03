@@ -4,7 +4,6 @@ import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
-import MyPlayersNavLink from "@/app/components/MyPlayersNavLink";
 import ClickAnalytics from "@/app/components/ClickAnalytics";
 import { ADSENSE_SCRIPT_SRC } from "@/app/lib/adsense";
 
@@ -127,7 +126,6 @@ export default function RootLayout({
         <a href="/players" className="site-nav-link">
           Players
         </a>
-        <MyPlayersNavLink />
         <a href="/guides" className="site-nav-link site-nav-link-highlight">
           Guides
         </a>
@@ -184,7 +182,6 @@ export default function RootLayout({
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
           <a href="/guides" className="block hover:text-white">Tennis Guides</a>
-          <a href="/my-players" className="block hover:text-white">My Players</a>
           <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
           <a href="/french-open-live" className="block hover:text-white">French Open</a>
           <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>

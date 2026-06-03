@@ -1,5 +1,3 @@
-import { affiliateLinks } from "@/app/lib/affiliateLinks";
-
 type RevenueConversionPanelProps = {
   context?: "homepage" | "player" | "matchup" | "article" | "tomorrow-schedule" | "recap";
   playerName?: string;
@@ -102,30 +100,28 @@ export default function RevenueConversionPanel({
         </a>
 
         <a
-          href="/best-vpn-for-tennis-streaming"
-          data-track-category="money_internal"
-          data-track-id="revenue_panel_best_vpn_guide"
+          href="/official-tennis-broadcasters-guide"
+          data-track-category="internal_guide"
+          data-track-id="revenue_panel_official_broadcasters"
           data-track-position="secondary"
           className="rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-center font-black text-white hover:border-emerald-400"
         >
-          Best VPN for Tennis
+          Official Broadcasters
         </a>
 
         <a
-          href={affiliateLinks.nordvpn}
-          data-track-category="affiliate"
-          data-track-id="revenue_panel_nordvpn_deal"
-          data-track-position="affiliate"
-          target="_blank"
-          rel="nofollow sponsored noopener noreferrer"
+          href="/guides/how-to-watch-tennis-online-legally"
+          data-track-category="internal_guide"
+          data-track-id="revenue_panel_legal_streaming"
+          data-track-position="tertiary"
           className="rounded-2xl border border-zinc-700 bg-black px-5 py-4 text-center font-black text-white hover:border-emerald-400"
         >
-          View VPN Deal
+          Legal Streaming Guide
         </a>
       </div>
 
       <p className="mt-4 text-xs text-zinc-500">
-        Affiliate disclosure: we may earn a commission from qualifying purchases. We do not stream matches or bypass broadcaster rules.
+        Watch Tennis Today does not host streams, bypass broadcaster rules or replace official tournament and broadcaster information.
       </p>
     </section>
   );
