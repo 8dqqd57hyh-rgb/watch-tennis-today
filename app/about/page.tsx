@@ -85,6 +85,36 @@ export default function AboutPage() {
   </p>
 </section>
 
+
+
+<section>
+  <h2 className="text-2xl font-black text-white mb-3">
+    Who writes and maintains the site
+  </h2>
+
+  <p>
+    Watch Tennis Today is maintained by an independent tennis-focused editorial
+    team. We follow professional tennis calendars, official tournament pages,
+    broadcaster information and live-score data to turn fragmented tennis
+    information into practical match and viewing guides for fans.
+  </p>
+</section>
+
+<section>
+  <h2 className="text-2xl font-black text-white mb-3">
+    How we create value beyond live data
+  </h2>
+
+  <p>
+    Live tennis data is only one part of the website. We add editorial context
+    explaining tournament rights, safe streaming choices, country-based viewing
+    differences, schedule terminology, time-zone planning and how fans can avoid
+    unsafe or illegal stream pages. Our guides are written to help readers make
+    better decisions before they leave for an external broadcaster or streaming
+    service.
+  </p>
+</section>
+
           <section>
             <h2 className="text-2xl font-black text-white mb-3">
               Accuracy and updates

@@ -37,7 +37,10 @@ export default function AuthorPage() {
               <p>
                 We cover ATP, WTA, Grand Slam, Challenger and ITF tennis
                 schedules, including live match pages, tournament hubs, player
-                pages and streaming information.
+                pages and streaming information. We also publish original guides
+                that explain tennis broadcast rights, schedule changes, live-score
+                terminology, safe streaming habits and country-specific viewing
+                differences.
               </p>
             </section>
 
@@ -50,6 +53,21 @@ export default function AuthorPage() {
                 Match and schedule pages may update frequently when live tennis
                 data changes. We focus on helping users find legal and official
                 viewing options instead of hosting or embedding streams.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-black text-white mb-3">
+                Experience and review process
+              </h2>
+
+              <p>
+                Our pages are written for tennis fans who need practical schedule
+                and viewing help. We review official tournament websites, public
+                broadcaster information and provider pages where available. When
+                rights or match times are uncertain, we avoid presenting guesses
+                as confirmed facts and tell readers to verify with the official
+                provider.
               </p>
             </section>
 

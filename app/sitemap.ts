@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { comparisons } from "@/data/comparisons";
+import { guideArticles } from "@/app/guides/articles";
 export const revalidate = 3600;
 
 type Match = {
@@ -216,6 +217,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/grand-slam-live",
     "/affiliate-disclosure",
     "/authors/watch-tennis-today",
+    "/guides",
     "/tennis-trending-now",
     "/best-tennis-matches-today",
     "/tennis-tv-broadcast-finder",
@@ -377,9 +379,17 @@ const frenchOpenPages = [
     priority: 0.82,
   }));
 
+  const guidePages: MetadataRoute.Sitemap = guideArticles.map((article) => ({
+    url: `${BASE_URL}/guides/${article.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.86,
+  }));
+
  return [
   ...staticPages,
   ...comparisonPages,
+  ...guidePages,
   ...playerPages,
   ...tournamentPages,
   ...matchPages,

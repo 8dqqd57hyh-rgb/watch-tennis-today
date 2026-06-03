@@ -128,11 +128,8 @@ export default function RootLayout({
           Players
         </a>
         <MyPlayersNavLink />
-        <a href="/my-feed" className="site-nav-link site-nav-link-highlight">
-          My Feed
-        </a>
-        <a href="/my-dashboard" className="site-nav-link">
-          My Dashboard
+        <a href="/guides" className="site-nav-link site-nav-link-highlight">
+          Guides
         </a>
 
         <details className="site-more-menu">
@@ -141,8 +138,8 @@ export default function RootLayout({
           </summary>
           <div className="site-more-panel">
             <a href="/tv-schedule">TV Schedule</a>
-            <a href="/my-feed">My Feed</a>
-            <a href="/my-tournament">My Tournament</a>
+            <a href="/guides">Guides</a>
+            <a href="/how-to-watch-tennis-legally">Legal Streaming Guide</a>
             <a href="/tournament">Grand Slams</a>
             <a href="/tennis-tv-broadcast-finder">Where to Watch</a>
             <a href="/tennis-on-tv-today">Tennis on TV Today</a>
@@ -186,10 +183,8 @@ export default function RootLayout({
           <a href="/players" className="block hover:text-white">Players</a>
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
-          <a href="/my-feed" className="block hover:text-white">My Tennis Feed</a>
-          <a href="/my-dashboard" className="block hover:text-white">My Tennis Dashboard</a>
+          <a href="/guides" className="block hover:text-white">Tennis Guides</a>
           <a href="/my-players" className="block hover:text-white">My Players</a>
-          <a href="/my-tournament" className="block hover:text-white">My Tournament</a>
           <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
           <a href="/french-open-live" className="block hover:text-white">French Open</a>
           <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>
@@ -200,6 +195,8 @@ export default function RootLayout({
       <div>
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Guides</p>
         <div className="space-y-2">
+          <a href="/guides" className="block hover:text-white">All Tennis Guides</a>
+          <a href="/guides/how-to-watch-tennis-online-legally" className="block hover:text-white">Watch Tennis Legally</a>
           <a href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</a>
           <a href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</a>
           <a href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</a>

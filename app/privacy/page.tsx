@@ -139,9 +139,12 @@ export default function PrivacyPolicyPage() {
             <p>
               You can adjust cookie preferences in your browser, use available
               device privacy controls and manage personalized advertising choices
-              through Google ad settings. If you are in a region with additional
-              privacy rights, you may contact us through the Contact page with a
-              privacy-related request.
+              through Google ad settings. You can learn more about how Google
+              uses information from sites and apps that use its services at
+              policies.google.com/technologies/partner-sites, and you can manage
+              Google ad personalization at adssettings.google.com. If you are in
+              a region with additional privacy rights, you may contact us through
+              the Contact page with a privacy-related request.
             </p>
           </section>
           <section>
