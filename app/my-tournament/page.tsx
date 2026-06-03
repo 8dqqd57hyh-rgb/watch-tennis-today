@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "My Tournament: Personal Tennis Dashboard | Watch Tennis Today",
   description:
     "Build a private tennis tournament dashboard with your favorite players, live matches, next matches and recent results.",
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/my-tournament" },
 };
 

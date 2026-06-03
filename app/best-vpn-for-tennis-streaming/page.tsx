@@ -3,6 +3,7 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Best VPN for Tennis Streaming | Watch Tennis While Traveling",
+  robots: { index: false, follow: true },
   description:
     "Find the best VPN for watching tennis streams while traveling. Learn how to stream tennis safely abroad using official services and a secure VPN connection.",
 };

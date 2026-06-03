@@ -205,6 +205,9 @@ export default function RootLayout({
           <a href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</a>
           <a href="/how-to-watch-tennis-legally" className="block hover:text-white">Legal Guide</a>
           <a href="/tennis-live-alerts" className="block hover:text-white">Tennis Alerts</a>
+          <a href="/tennis-scoring-explained" className="block hover:text-white">Tennis Scoring</a>
+          <a href="/atp-wta-rankings-explained" className="block hover:text-white">Rankings Guide</a>
+          <a href="/official-tennis-broadcasters-guide" className="block hover:text-white">Official Broadcasters</a>
         </div>
       </div>
     </div>

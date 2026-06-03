@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "My Tennis Feed: Follow Matches, Players & Tournaments | Watch Tennis Today",
   description:
     "Build a private tennis feed with followed matches, saved players and tournaments. Track live matches, upcoming fixtures and recent tennis results in one place.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/my-feed" },
 };
 

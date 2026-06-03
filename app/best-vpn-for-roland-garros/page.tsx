@@ -5,6 +5,7 @@ export const metadata = {
   title: "Best VPN for Roland Garros Streaming | Safe French Open Guide",
   description:
     "A safe, legal guide to using a VPN for Roland Garros and French Open streaming while traveling, with official broadcaster checks and tennis viewing tips.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/best-vpn-for-roland-garros",
   },

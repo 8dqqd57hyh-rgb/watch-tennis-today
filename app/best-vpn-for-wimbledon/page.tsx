@@ -5,6 +5,7 @@ export const metadata = {
   title: "Best VPN for Wimbledon Streaming | Safe Tennis Viewing Guide",
   description:
     "A practical guide to safe Wimbledon streaming, official broadcasters, travel viewing and VPN use for tennis fans.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/best-vpn-for-wimbledon",
   },

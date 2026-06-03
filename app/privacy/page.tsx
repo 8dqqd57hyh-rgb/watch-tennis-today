@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
         </h1>
 
         <p className="text-zinc-400 mb-8">
-          Last updated: May 20, 2026
+          Last updated: June 3, 2026
         </p>
 
         <div className="space-y-8 text-zinc-300 leading-relaxed">
@@ -69,10 +69,12 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               Watch Tennis Today may display advertisements through Google
-              AdSense or other advertising partners. Advertising partners may
-              use cookies or similar technologies to serve and measure ads,
-              personalize advertising where permitted, prevent fraud and
-              understand ad performance.
+              AdSense or other advertising partners. Google and other vendors may
+              use cookies, device identifiers or similar technologies to serve ads,
+              measure ad performance, limit repeated ads, personalize advertising
+              where permitted and prevent invalid activity or fraud. Google may use
+              advertising cookies to help serve ads based on a visitor's prior visits
+              to this website or other websites.
             </p>
           </section>
 
@@ -82,10 +84,12 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               Cookies are small files stored on your device. They may be used
-              for analytics, advertising, performance measurement and basic
-              website functionality. You can control or disable cookies through
-              your browser settings, but some website features may not work as
-              expected.
+              for analytics, advertising, performance measurement, affiliate
+              attribution and basic website functionality. You can control or
+              disable cookies through your browser settings, but some website
+              features may not work as expected. You can also manage how Google
+              uses information for ads through Google's ad settings and related
+              privacy controls available from Google.
             </p>
           </section>
 
@@ -97,7 +101,9 @@ export default function PrivacyPolicyPage() {
               Some links on Watch Tennis Today may be affiliate links. If you
               click an affiliate link or purchase through it, we may earn a
               commission at no additional cost to you. Affiliate partners may
-              track referrals according to their own privacy policies.
+              track referrals according to their own privacy policies. Affiliate
+              relationships do not change our editorial rule: we do not claim to
+              host tennis streams and we point readers toward legal viewing options.
             </p>
           </section>
 
@@ -125,9 +131,22 @@ export default function PrivacyPolicyPage() {
             </p>
           </section>
 
+
           <section>
             <h2 className="text-2xl font-black text-white mb-3">
-              9. Contact
+              9. Your choices
+            </h2>
+            <p>
+              You can adjust cookie preferences in your browser, use available
+              device privacy controls and manage personalized advertising choices
+              through Google ad settings. If you are in a region with additional
+              privacy rights, you may contact us through the Contact page with a
+              privacy-related request.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">
+              10. Contact
             </h2>
             <p>
               If you have questions about this Privacy Policy, you can contact

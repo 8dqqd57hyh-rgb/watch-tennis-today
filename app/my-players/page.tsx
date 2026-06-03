@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Create a private tennis dashboard with your followed ATP and WTA players, live matches, next matches and quick watch links.",
   robots: {
-    index: true,
+    index: false,
     follow: true,
   },
   alternates: {
