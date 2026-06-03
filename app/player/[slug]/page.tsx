@@ -14,6 +14,225 @@ export const dynamic = "force-dynamic";
 
 const CURRENT_SEASON = new Date().getFullYear();
 
+type PlayerEditorialProfile = {
+  nationality: string;
+  biography: string;
+  playingStyle: string;
+  careerContext: string;
+  strengths: string[];
+  surfaceContext: string;
+};
+
+const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfile>> = {
+  "jannik-sinner": {
+    nationality: "Italy",
+    biography: "Jannik Sinner became one of the central names in modern ATP tennis through clean baseline power, calm decision-making and consistent results at the biggest events. Fans often look for his matches during Grand Slams, Masters tournaments and night-session schedules because his matches combine high pace with unusually controlled shot selection.",
+    playingStyle: "Sinner plays first-strike baseline tennis. He takes the ball early, redirects pace well and can turn neutral rallies into attacking positions with both the forehand and backhand. His return games are especially important to watch because he can pressure servers quickly.",
+    careerContext: "When following Sinner, check whether he is playing on a hard court, indoors or in a late-round match. Those contexts often increase demand for official streams and make schedule confirmation more important.",
+    strengths: ["Early ball striking", "Backhand stability", "Return pressure", "Calm match management"],
+    surfaceContext: "Hard courts and indoor events are especially relevant contexts.",
+  },
+  "carlos-alcaraz": {
+    nationality: "Spain",
+    biography: "Carlos Alcaraz is one of the most watched players in tennis because his matches mix athletic defense, explosive attack and creative shotmaking. His schedule attracts high interest at Grand Slams, clay-court events and marquee evening sessions where broadcasters often prioritize his court.",
+    playingStyle: "Alcaraz uses heavy forehands, quick transitions, drop shots, net attacks and aggressive returning. His matches can change momentum quickly because he is comfortable defending, counterattacking and finishing points at the net.",
+    careerContext: "Before watching Alcaraz, check the surface and court assignment. Clay, grass and hard-court matches can look very different because he changes the amount of spin, pace and forward movement he uses.",
+    strengths: ["Explosive movement", "Drop-shot creativity", "Forehand acceleration", "All-court finishing"],
+    surfaceContext: "Clay and outdoor hard courts are key contexts, with grass also important during Wimbledon season.",
+  },
+  "novak-djokovic": {
+    nationality: "Serbia",
+    biography: "Novak Djokovic is one of the most accomplished players in tennis history, and his matches remain major viewing events whenever he appears in Grand Slams, Masters tournaments or national-team competitions. Fans often track his schedule because even early-round matches can carry historical or ranking significance.",
+    playingStyle: "Djokovic is built around elite returning, defensive balance, depth control and tactical patience. He absorbs pace, extends rallies and often forces opponents to hit extra balls under pressure.",
+    careerContext: "When following Djokovic, pay attention to best-of-five matches, late tournament rounds and surface speed. Those factors strongly shape how his tactical advantages appear during a match.",
+    strengths: ["Return of serve", "Movement and flexibility", "Tactical point construction", "Pressure handling"],
+    surfaceContext: "Hard courts and Grand Slam match formats are especially important contexts.",
+  },
+  "daniil-medvedev": {
+    nationality: "Russia",
+    biography: "Daniil Medvedev is a leading ATP player known for unusual court positioning, tactical patience and strong hard-court results. His matches are popular with fans who enjoy long rallies, defensive problem-solving and strategic adjustments.",
+    playingStyle: "Medvedev often starts points from deeper court positions, absorbs pace and redirects the ball into awkward spaces. His flat backhand and patient rally tolerance can make opponents uncomfortable.",
+    careerContext: "Hard-court events, indoor tournaments and matches against attacking players are especially useful contexts when evaluating Medvedev's schedule.",
+    strengths: ["Deep return positioning", "Flat backhand control", "Defensive coverage", "Tactical patience"],
+    surfaceContext: "Hard courts and indoor courts are the most relevant viewing contexts.",
+  },
+  "alexander-zverev": {
+    nationality: "Germany",
+    biography: "Alexander Zverev is a long-established ATP contender with a powerful serve, heavy baseline game and regular appearances deep in major tournaments. Fans often search for his match pages during Masters events, Grand Slams and clay-court swings.",
+    playingStyle: "Zverev builds many service games around a strong first serve and heavy backhand. From the baseline, he can control direction with depth and create pressure when his first serve percentage is high.",
+    careerContext: "Clay and hard-court tournaments are important contexts, especially when Zverev is scheduled on a main court or facing another top seed.",
+    strengths: ["First serve power", "Two-handed backhand", "Baseline depth", "Big-event experience"],
+    surfaceContext: "Clay and hard courts are both important contexts.",
+  },
+  "taylor-fritz": {
+    nationality: "United States",
+    biography: "Taylor Fritz is one of the leading American ATP players and is frequently featured in hard-court tournaments, United States events and Grand Slam coverage. His matches are useful for fans tracking American tennis and fast-court schedules.",
+    playingStyle: "Fritz relies on a strong serve, direct baseline hitting and efficient first-strike patterns. He is especially dangerous when he earns short balls after the first serve.",
+    careerContext: "Check Fritz during North American hard-court swings, indoor events and grass tournaments where his serve can become a major factor.",
+    strengths: ["Serve plus one", "Forehand pace", "Fast-court efficiency", "American fan interest"],
+    surfaceContext: "Hard courts, grass and indoor courts are especially relevant.",
+  },
+  "holger-rune": {
+    nationality: "Denmark",
+    biography: "Holger Rune is a high-energy ATP player whose matches often attract attention because of intensity, variety and momentum swings. Fans track his schedule closely at Masters and Grand Slam events.",
+    playingStyle: "Rune mixes aggressive baseline attacks with drop shots, net approaches and emotional momentum. His matches can become tactical and dramatic quickly.",
+    careerContext: "Clay, indoor hard courts and matches against top-ten opponents are useful contexts for following Rune.",
+    strengths: ["Aggressive return games", "Variety", "Competitive intensity", "Backhand attack"],
+    surfaceContext: "Clay and indoor hard courts are especially relevant.",
+  },
+  "andrey-rublev": {
+    nationality: "Russia",
+    biography: "Andrey Rublev is a regular ATP contender known for relentless pace and high-volume attacking tennis. His matches are easy for fans to identify because the rhythm is often fast, physical and direct.",
+    playingStyle: "Rublev attacks with heavy forehands, early baseline pressure and repeatable patterns. When he controls court position, he can rush opponents into short replies.",
+    careerContext: "Look at surface speed and opponent defense when following Rublev. Those factors often decide whether his power patterns control the match.",
+    strengths: ["Forehand power", "Aggressive tempo", "Baseline pressure", "High-intensity rallies"],
+    surfaceContext: "Hard courts and clay are strong viewing contexts.",
+  },
+  "casper-ruud": {
+    nationality: "Norway",
+    biography: "Casper Ruud is a top Norwegian player associated with strong clay-court results, disciplined point construction and consistent tournament performances. Fans often track him during clay swings and Grand Slams.",
+    playingStyle: "Ruud uses heavy topspin, structured patterns and reliable forehand pressure. His matches often reward fans who watch rally construction rather than only winners.",
+    careerContext: "Clay events and matches with long baseline exchanges are the best contexts for understanding Ruud's game.",
+    strengths: ["Heavy forehand topspin", "Clay-court patience", "Point construction", "Physical consistency"],
+    surfaceContext: "Clay is the most important context, with hard courts also relevant.",
+  },
+  "stefanos-tsitsipas": {
+    nationality: "Greece",
+    biography: "Stefanos Tsitsipas is a prominent ATP player whose matches attract fans because of attacking patterns, one-handed backhand rallies and strong clay-court history.",
+    playingStyle: "Tsitsipas likes to use the serve and forehand to move forward, while his one-handed backhand creates different rally shapes compared with most top players.",
+    careerContext: "Clay events, grass tournaments and matches where he can attack behind the serve are important contexts for his schedule.",
+    strengths: ["Serve and forehand", "Net approaches", "One-handed backhand variety", "Clay-court experience"],
+    surfaceContext: "Clay and faster courts where first-strike tennis matters are relevant.",
+  },
+  "alex-de-minaur": {
+    nationality: "Australia",
+    biography: "Alex de Minaur is one of the fastest players on the ATP Tour and is popular with fans who enjoy counterpunching, speed and long defensive points.",
+    playingStyle: "De Minaur wins many points through movement, anticipation and pressure through consistency. He can turn defense into offense by taking time away on the counterattack.",
+    careerContext: "Hard courts, grass and matches against bigger hitters are useful contexts because they show how his speed changes rallies.",
+    strengths: ["Court speed", "Counterpunching", "Return consistency", "Competitive energy"],
+    surfaceContext: "Hard courts and grass are especially relevant.",
+  },
+  "lorenzo-musetti": {
+    nationality: "Italy",
+    biography: "Lorenzo Musetti is an Italian ATP player known for stylish shotmaking, a one-handed backhand and clay-court creativity. His matches often appeal to fans who enjoy variety and touch.",
+    playingStyle: "Musetti uses spin, angles, slices and changes of pace to disrupt rhythm. His one-handed backhand and touch shots make his matches visually distinctive.",
+    careerContext: "Clay and slower outdoor courts are the most useful contexts when planning to watch Musetti.",
+    strengths: ["One-handed backhand", "Touch and angles", "Clay-court creativity", "Shot variety"],
+    surfaceContext: "Clay and slower outdoor courts are especially relevant.",
+  },
+  "tommy-paul": {
+    nationality: "United States",
+    biography: "Tommy Paul is an American ATP player with an athletic all-court game and strong results on hard courts. His matches are often relevant during North American events and Grand Slam coverage.",
+    playingStyle: "Paul combines movement, clean ball striking and willingness to finish points forward. He can defend well but also take control when he earns court position.",
+    careerContext: "Hard-court events and matches against aggressive baseliners are important contexts for his schedule.",
+    strengths: ["Athletic movement", "All-court balance", "Clean forehand timing", "Transition play"],
+    surfaceContext: "Hard courts are the main context, with grass also relevant.",
+  },
+  "ben-shelton": {
+    nationality: "United States",
+    biography: "Ben Shelton is an American ATP player whose matches draw attention because of left-handed serving power, athleticism and crowd energy. Fans often search for his schedule during U.S. events and Grand Slams.",
+    playingStyle: "Shelton builds points around a heavy left-handed serve, explosive forehand and aggressive court positioning. His service games can move quickly when the first serve lands.",
+    careerContext: "Fast courts, night sessions and matches against elite returners are key contexts for following Shelton.",
+    strengths: ["Left-handed serve", "Athletic explosiveness", "Forehand power", "Crowd energy"],
+    surfaceContext: "Hard courts and grass are especially relevant.",
+  },
+  "iga-swiatek": {
+    nationality: "Poland",
+    biography: "Iga Swiatek is one of the most dominant WTA players of her era and a major draw during Grand Slams, clay events and WTA 1000 tournaments. Her matches are frequently watched by fans tracking both title races and ranking implications.",
+    playingStyle: "Swiatek uses heavy topspin, fast footwork and intense return pressure. She can rush opponents by taking time away and controlling rally patterns with the forehand.",
+    careerContext: "Clay-court events, major finals and WTA 1000 draws are especially important contexts for following Swiatek.",
+    strengths: ["Heavy topspin forehand", "Return pressure", "Movement intensity", "Clay dominance"],
+    surfaceContext: "Clay is the signature context, with hard courts also important.",
+  },
+  "aryna-sabalenka": {
+    nationality: "Belarus",
+    biography: "Aryna Sabalenka is a leading WTA player known for power tennis, major-title contention and high-demand matchups against other top players. Her matches often become must-watch events when she is scheduled on a show court.",
+    playingStyle: "Sabalenka plays aggressive first-strike tennis with a big serve, heavy groundstrokes and direct baseline pressure. When her timing is sharp, she can control rallies quickly.",
+    careerContext: "Hard-court Grand Slams, WTA 1000 events and matchups against elite defenders are key contexts.",
+    strengths: ["Serve power", "Forehand aggression", "Backhand pace", "Big-match intensity"],
+    surfaceContext: "Hard courts are especially relevant, with clay and grass also important in major seasons.",
+  },
+  "coco-gauff": {
+    nationality: "United States",
+    biography: "Coco Gauff is one of the most followed WTA players, combining elite athleticism, strong defense and major-title relevance. Her matches carry strong fan interest, especially in the United States and at Grand Slams.",
+    playingStyle: "Gauff uses speed, defensive reach, a strong backhand and improving first-strike patterns. She can extend rallies until opponents overplay.",
+    careerContext: "Grand Slams, American hard-court events and matchups against power players are important contexts.",
+    strengths: ["Movement and defense", "Backhand strength", "Return games", "Crowd interest"],
+    surfaceContext: "Hard courts are especially relevant, with clay also important.",
+  },
+  "elena-rybakina": {
+    nationality: "Kazakhstan",
+    biography: "Elena Rybakina is a major WTA contender known for a calm presence, powerful serve and clean baseline hitting. Her matches are especially relevant on fast courts and during Grand Slam title races.",
+    playingStyle: "Rybakina uses a heavy first serve, flat groundstrokes and measured aggression. She can win points quickly when she controls the first shot after serve or return.",
+    careerContext: "Grass, hard courts and indoor conditions are strong contexts for following Rybakina.",
+    strengths: ["First serve", "Flat baseline power", "Calm execution", "Fast-court efficiency"],
+    surfaceContext: "Grass and hard courts are especially relevant.",
+  },
+  "jessica-pegula": {
+    nationality: "United States",
+    biography: "Jessica Pegula is a consistent WTA contender with strong hard-court results and regular appearances in deep tournament rounds. Her matches are useful for fans tracking reliable baseline tennis and American coverage.",
+    playingStyle: "Pegula plays compact, efficient baseline tennis with early timing and clean direction changes. She often wins by controlling errors and court position.",
+    careerContext: "Hard-court events, WTA 1000 tournaments and matches against power hitters are important contexts.",
+    strengths: ["Clean timing", "Return stability", "Baseline efficiency", "Hard-court consistency"],
+    surfaceContext: "Hard courts are the main context.",
+  },
+  "madison-keys": {
+    nationality: "United States",
+    biography: "Madison Keys is a powerful American WTA player whose matches are often defined by first-strike tennis, fast winners and aggressive baseline exchanges.",
+    playingStyle: "Keys uses a big serve and heavy forehand to shorten points. When she controls timing, her matches can move quickly and produce many winners.",
+    careerContext: "Hard courts, grass and matches against defensive players are useful contexts for following Keys.",
+    strengths: ["Forehand power", "Serve strength", "Fast-court attacking", "Winner production"],
+    surfaceContext: "Hard courts and grass are especially relevant.",
+  },
+  "naomi-osaka": {
+    nationality: "Japan",
+    biography: "Naomi Osaka remains one of the most recognizable names in WTA tennis, with major-title history and strong global fan interest. Her schedule draws attention whenever she enters hard-court events and Grand Slams.",
+    playingStyle: "Osaka plays powerful first-strike tennis, built around a strong serve and heavy baseline shots. She is especially dangerous when she dictates rallies early.",
+    careerContext: "Hard courts and major events are the most important contexts for following Osaka.",
+    strengths: ["Serve power", "Forehand pace", "Hard-court title history", "Global fan interest"],
+    surfaceContext: "Hard courts are the signature context.",
+  },
+  "mirra-andreeva": {
+    nationality: "Russia",
+    biography: "Mirra Andreeva is one of the most watched young WTA players because of tactical maturity, variety and rapid progress through major tournaments. Fans often track her schedule to follow the next stage of her development.",
+    playingStyle: "Andreeva uses smart point construction, changes of direction and calm shot selection. Her game is less about one huge weapon and more about reading rallies early.",
+    careerContext: "Grand Slams, clay events and matches against established top players are useful contexts.",
+    strengths: ["Tactical maturity", "Point construction", "Variety", "Composure"],
+    surfaceContext: "Clay and hard courts are especially relevant.",
+  },
+  "jasmine-paolini": {
+    nationality: "Italy",
+    biography: "Jasmine Paolini is an Italian WTA player whose rise made her matches increasingly popular with fans following energetic baseline tennis and deep tournament runs.",
+    playingStyle: "Paolini uses speed, compact strokes and aggressive court coverage. She can pressure opponents by taking the ball early and fighting for court position.",
+    careerContext: "Clay, grass and Grand Slam draws are important contexts for following Paolini.",
+    strengths: ["Speed", "Compact aggression", "Return pressure", "High-energy rallies"],
+    surfaceContext: "Clay and grass are especially relevant alongside hard courts.",
+  },
+  "emma-navarro": {
+    nationality: "United States",
+    biography: "Emma Navarro is a rising American WTA player known for steady improvement, disciplined patterns and strong tournament consistency.",
+    playingStyle: "Navarro plays controlled baseline tennis, using consistency and smart direction changes to create pressure without unnecessary risk.",
+    careerContext: "Hard-court tournaments and matches against more powerful opponents are useful contexts.",
+    strengths: ["Consistency", "Court discipline", "Return reliability", "Calm decision-making"],
+    surfaceContext: "Hard courts are especially relevant.",
+  },
+};
+
+function getEditorialProfile(playerSlug: PlayerSlug | null, playerName: string, tour: string): PlayerEditorialProfile {
+  if (playerSlug && PLAYER_EDITORIAL_PROFILES[playerSlug]) {
+    return PLAYER_EDITORIAL_PROFILES[playerSlug]!;
+  }
+
+  return {
+    nationality: "Professional tennis",
+    biography: `${playerName} is covered on Watch Tennis Today as part of our ${tour} tennis schedule and legal viewing guide. This page is designed to help fans understand match status, tournament context and official viewing checks without relying on unsafe stream pages.`,
+    playingStyle: `${playerName} matches should be evaluated through the event, surface, round and opponent rather than only the scoreline. Tennis styles vary by tournament conditions, so this page focuses on practical context for following the match live.`,
+    careerContext: `For ${playerName}, the most useful fan checks are the official order of play, local broadcaster rights, start window and whether the match is singles or doubles.`,
+    strengths: ["Tournament context", "Schedule tracking", "Legal viewing checks", "Live-score awareness"],
+    surfaceContext: "Surface context depends on the tournament and current draw.",
+  };
+}
+
 function buildPlayerSeoTitle(playerName: string) {
   return `Watch ${playerName} Live Today: Next Match, Schedule & Results`;
 }
@@ -725,6 +944,7 @@ const playerMatches = allMatches
 
   const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
+  const editorialProfile = getEditorialProfile(canonicalSlug, playerName, sameTourLabel);
   const pageSummary = getPlayerPageSummary(playerName, playerMatches);
   const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments, headline } = pageSummary;
   const currentTournament = tournaments[0] || finishedMatches[0]?.tournament || upcomingMatches[0]?.tournament || liveMatches[0]?.tournament || "Not listed";
@@ -840,6 +1060,45 @@ const playerMatches = allMatches
               <p className="mt-1 truncate text-2xl font-black">{currentTournament}</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
+          Player profile
+        </p>
+        <h2 className="text-2xl font-black text-zinc-950">
+          {playerName} biography, playing style and match context
+        </h2>
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-4 text-sm leading-7 text-zinc-700">
+            <p>{editorialProfile.biography}</p>
+            <p>{editorialProfile.playingStyle}</p>
+            <p>{editorialProfile.careerContext}</p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div>
+                <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Tour</p>
+                <p className="mt-1 font-black text-zinc-950">{sameTourLabel}</p>
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Country / context</p>
+                <p className="mt-1 font-black text-zinc-950">{editorialProfile.nationality}</p>
+              </div>
+              <div className="sm:col-span-2 lg:col-span-1">
+                <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Surface note</p>
+                <p className="mt-1 text-sm leading-6 text-zinc-700">{editorialProfile.surfaceContext}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {editorialProfile.strengths.map((strength) => (
+            <div key={strength} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-bold text-zinc-800">
+              <span className="text-green-600">✓</span> {strength}
+            </div>
+          ))}
         </div>
       </section>
 

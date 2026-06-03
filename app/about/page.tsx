@@ -1,13 +1,21 @@
 export const metadata = {
   title: "About | Watch Tennis Today",
   description:
-    "About Watch Tennis Today — a tennis schedule and streaming guide helping fans find live matches, tournament pages and legal broadcaster information.",
+    "About Watch Tennis Today — an independent tennis schedule, live score context and legal viewing guide for ATP, WTA and Grand Slam fans.",
   alternates: {
     canonical: "https://watchtennistoday.com/about",
   },
 };
 
 export const dynamic = "force-dynamic";
+
+const principles = [
+  "We do not host, embed or distribute live tennis streams.",
+  "We focus on legal broadcasters, licensed streaming services and official tournament information.",
+  "We separate editorial guidance from live-data feeds and explain when data may be incomplete.",
+  "We keep legal pages, contact information and editorial policies visible from the site footer.",
+];
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -22,135 +30,97 @@ export default function AboutPage() {
 
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           <p>
-            Watch Tennis Today is a tennis information website created to help
-            fans quickly find live tennis matches, daily schedules, tournament
-            pages, broadcaster information and legal ways to watch tennis online.
+            Watch Tennis Today is an independent tennis information website built to help fans
+            follow daily professional tennis without jumping between dozens of scoreboards,
+            tournament pages and broadcaster schedules. The site combines match schedules,
+            live-score context, player hubs, tournament pages and practical legal viewing guides
+            for ATP, WTA, Grand Slam and selected professional tennis events.
           </p>
-<p>
-  The website was built by tennis fans who wanted a simpler way to track
-  match schedules, tournament coverage and official viewing options
-  without searching across dozens of different sports websites.
-</p>
+
+          <p>
+            The project exists because tennis is unusually difficult to follow: matches move after
+            long previous matches, rain delays can change an order of play, and broadcast rights
+            vary by country, tournament and court. Our goal is to make that context easier to
+            understand before a fan leaves for an external broadcaster or official tournament page.
+          </p>
+
           <section>
-            <h2 className="text-2xl font-black text-white mb-3">
-              What we cover
-            </h2>
+            <h2 className="text-2xl font-black text-white mb-3">What we cover</h2>
             <ul className="list-disc pl-6 space-y-2">
-              <li>ATP and WTA live tennis matches</li>
-              <li>Grand Slam tournament pages</li>
-              <li>Daily tennis schedules</li>
-              <li>Player match pages</li>
-              <li>Country-specific broadcaster guides</li>
-              <li>Regional broadcasting and streaming access guides</li>
+              <li>ATP and WTA live match status and daily schedule context</li>
+              <li>Grand Slam and major tournament viewing guides</li>
+              <li>Player pages with schedule, form and legal viewing notes</li>
+              <li>Educational tennis guides for scoring, rankings, surfaces and tournament levels</li>
+              <li>Country and broadcaster guidance for legal tennis viewing</li>
+              <li>Explanations of tennis schedule terms, delays and live-score limitations</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-black text-white mb-3">
-              Our goal
-            </h2>
+            <h2 className="text-2xl font-black text-white mb-3">How we create our pages</h2>
             <p>
-              Tennis broadcasting can be confusing because availability changes
-              by country, tournament, provider and match round. Our goal is to
-              make it easier for fans to understand where a match may be shown
-              and what official sources they should check before watching.
+              Watch Tennis Today uses a mix of editorial writing, structured tennis data and public
+              tournament context. Schedule and live-score data can change quickly, so our pages are
+              written to help readers understand what to verify: event name, round, court, start
+              window, broadcaster and country availability. We avoid presenting partial live-data
+              feeds as complete season records when the source is limited.
+            </p>
+            <p className="mt-3">
+              Our guides are created for practical fan decisions, not for bypassing media rights.
+              When we mention a streaming option, the purpose is to point readers toward official
+              or licensed viewing routes and to explain why availability may differ by location.
             </p>
           </section>
 
           <section>
-  <h2 className="text-2xl font-black text-white mb-3">
-    Why this site exists
-  </h2>
-
-  <p>
-    Tennis fans often need to check several different sources to find out
-    when a match starts, whether it is live, which tournament it belongs to
-    and where it may be available to watch legally. Watch Tennis Today was
-    created to bring that information together in a simple, tennis-focused
-    format.
-  </p>
-</section>
-
-<section>
-  <h2 className="text-2xl font-black text-white mb-3">
-    Our approach
-  </h2>
-
-  <p>
-    We combine tennis schedule information, tournament context, country-based
-    broadcaster notes and practical viewing guides. We do not host live streams
-    or promote illegal streaming sources. Our goal is to point users toward
-    official broadcasters, legal streaming platforms and reliable tournament
-    information.
-  </p>
-</section>
-
-
-
-<section>
-  <h2 className="text-2xl font-black text-white mb-3">
-    Who writes and maintains the site
-  </h2>
-
-  <p>
-    Watch Tennis Today is maintained by an independent tennis-focused editorial
-    team. We follow professional tennis calendars, official tournament pages,
-    broadcaster information and live-score data to turn fragmented tennis
-    information into practical match and viewing guides for fans.
-  </p>
-</section>
-
-<section>
-  <h2 className="text-2xl font-black text-white mb-3">
-    How we create value beyond live data
-  </h2>
-
-  <p>
-    Live tennis data is only one part of the website. We add editorial context
-    explaining tournament rights, safe streaming choices, country-based viewing
-    differences, schedule terminology, time-zone planning and how fans can avoid
-    unsafe or illegal stream pages. Our guides are written to help readers make
-    better decisions before they leave for an external broadcaster or streaming
-    service.
-  </p>
-</section>
-
-          <section>
-            <h2 className="text-2xl font-black text-white mb-3">
-              Accuracy and updates
-            </h2>
+            <h2 className="text-2xl font-black text-white mb-3">Editorial standards</h2>
             <p>
-              Match schedules, scores, start times and broadcaster availability
-              can change quickly. We aim to keep pages useful and updated, but
-              users should always confirm final schedules and streaming access
-              through official tournament websites, broadcasters or streaming
-              providers.
+              We aim to write complete, readable pages with original explanations rather than only
+              listing scores or links. Tennis schedules are checked against event context where
+              possible, and sensitive claims about coverage are written cautiously because official
+              rights can change during a season. If a page relies on a limited feed, we say so rather
+              than implying that every match or broadcaster is guaranteed.
             </p>
           </section>
-
-          <section>
-  <h2 className="text-2xl font-black text-white mb-3">
-    Legal notice
-  </h2>
-
-  <p>
-    Watch Tennis Today does not host live streams, embed copyrighted
-    broadcasts or distribute sports content. The website only references
-    official broadcasters, licensed streaming services and publicly
-    available tournament information.
-  </p>
-</section>
 
           <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-            <h2 className="text-2xl font-black text-white mb-3">
-              Contact us
-            </h2>
+            <h2 className="text-2xl font-black text-white mb-4">Trust and legal viewing principles</h2>
+            <ul className="space-y-3">
+              {principles.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="text-green-400 font-black">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">Advertising and affiliate transparency</h2>
             <p>
-              Found outdated information or a broken link? Please visit our{" "}
-              <a
-                href="/contact"
-                className="text-green-400 hover:text-green-300 font-bold"
-              >
+              Watch Tennis Today may display advertising and may include affiliate links to relevant
+              services. Affiliate relationships do not change our core rule: the site should be useful
+              as a tennis information resource even when a reader does not click a commercial link.
+              Advertising and affiliate disclosures are linked from the footer.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-black text-white mb-3">Accuracy and corrections</h2>
+            <p>
+              Tennis information changes fast. Start times, court assignments, withdrawals and
+              broadcast availability can update after publication. Readers should confirm final
+              timing and access with official tournaments, broadcasters or streaming providers.
+              If you notice outdated information, a broken link or unclear wording, please contact us
+              so we can improve the page.
+            </p>
+          </section>
+
+          <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-black text-white mb-3">Contact us</h2>
+            <p>
+              Found outdated information, a broken link or a schedule issue? Please visit our{" "}
+              <a href="/contact" className="text-green-400 hover:text-green-300 font-bold">
                 Contact page
               </a>{" "}
               and send us a correction.

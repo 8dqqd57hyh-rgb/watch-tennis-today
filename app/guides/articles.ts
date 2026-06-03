@@ -1572,6 +1572,350 @@ export const guideArticles: GuideArticle[] = [
     }
   ]
 },
+{
+  "slug": "how-tennis-walkovers-and-retirements-work",
+  "title": "How Tennis Walkovers and Retirements Work",
+  "description": "Understand tennis walkovers, retirements, withdrawals and suspensions before checking live scores or broadcast schedules.",
+  "category": "Rules",
+  "intro": "Walkovers, retirements and suspensions are common reasons a tennis schedule suddenly changes. This guide explains what each label means for fans following a live scoreboard or trying to watch a match legally.",
+  "sections": [
+    {
+      "heading": "Walkover vs retirement",
+      "body": "A walkover usually means the match did not start because a player could not play. A retirement means the match began and then stopped because a player could not continue. For fans, the difference matters because live-score pages, tournament brackets and ticket expectations may show the match differently."
+    },
+    {
+      "heading": "Why withdrawals happen before a match",
+      "body": "Players can withdraw because of injury, illness, fatigue, scheduling pressure or personal reasons. The tournament normally updates the draw and order of play, but third-party schedules may take longer to refresh."
+    },
+    {
+      "heading": "What a suspended match means",
+      "body": "A suspension means the match started but will continue later. Rain, darkness, unsafe court conditions or local scheduling rules can pause play. Check the official tournament order of play before assuming the match is cancelled."
+    },
+    {
+      "heading": "How broadcasters handle changes",
+      "body": "Broadcasters may switch to another court, replay earlier matches or show studio coverage when a scheduled match disappears. This is why a streaming service may be correct even if the exact player you expected is not currently shown."
+    },
+    {
+      "heading": "Fan checklist",
+      "body": "If a match status changes, confirm the tournament, round, player names, official order of play and broadcaster schedule. Avoid unofficial pages that use status changes to push unsafe streams."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Is a walkover counted as a played match?",
+      "answer": "Usually no, because the match did not begin."
+    },
+    {
+      "question": "Can a retired match still have a score?",
+      "answer": "Yes. A retirement happens after play starts, so completed games or sets may remain in the scoreline."
+    },
+    {
+      "question": "Where should I confirm a suspension?",
+      "answer": "Use the official tournament order of play or official live-score source."
+    }
+  ]
+},
+{
+  "slug": "tennis-court-surfaces-explained",
+  "title": "Tennis Court Surfaces Explained",
+  "description": "A practical guide to clay, grass, hard courts and indoor conditions for tennis fans planning what to watch.",
+  "category": "Basics",
+  "intro": "Court surface changes how a tennis match feels. The same player can look different on clay, grass, outdoor hard courts or indoors, so surface context is useful before following a match.",
+  "sections": [
+    {
+      "heading": "Clay courts",
+      "body": "Clay usually slows the ball and creates higher bounces. Rallies can last longer, movement requires sliding and topspin becomes more valuable. Fans should expect more physical points and more schedule sensitivity during wet weather."
+    },
+    {
+      "heading": "Grass courts",
+      "body": "Grass tends to reward first serves, low slices and quick attacking patterns. Bounces can stay lower, so matches may move quickly. Wimbledon is the most famous grass event, but smaller warm-up tournaments are also important."
+    },
+    {
+      "heading": "Hard courts",
+      "body": "Hard courts are used across many ATP and WTA events. Speed can vary by tournament, but they often provide a balanced test between serving, returning and baseline exchanges."
+    },
+    {
+      "heading": "Indoor conditions",
+      "body": "Indoor courts remove wind and weather, which can help clean ball strikers and strong servers. Schedules are usually more predictable indoors because rain delays are not a factor."
+    },
+    {
+      "heading": "Why surface matters for viewing",
+      "body": "Surface helps explain match tempo, rally length and broadcaster demand. A clay specialist on clay or a big server on grass may be more compelling than the ranking alone suggests."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Which surface is fastest?",
+      "answer": "Grass and some indoor hard courts are often among the fastest, but conditions vary by event."
+    },
+    {
+      "question": "Why are clay matches longer?",
+      "answer": "Clay slows the ball and makes defense easier, which can extend rallies and games."
+    },
+    {
+      "question": "Does surface affect TV scheduling?",
+      "answer": "Indirectly yes, because long matches and weather delays can move later matches."
+    }
+  ]
+},
+{
+  "slug": "tennis-order-of-play-guide",
+  "title": "Tennis Order of Play Guide",
+  "description": "Learn how to read a tennis order of play, court schedule and not-before start time.",
+  "category": "Schedules",
+  "intro": "The order of play is the most important schedule document in tennis. It tells fans which matches are planned for each court and why start times are often approximate.",
+  "sections": [
+    {
+      "heading": "Court-by-court scheduling",
+      "body": "Tournaments schedule matches by court. A match listed fourth on Court 2 will not begin until the earlier matches on that court finish, even if another court is free."
+    },
+    {
+      "heading": "Not-before times",
+      "body": "A not-before time means the match cannot start earlier than that time, but it can still start later. Long previous matches, ceremonies or weather can delay it."
+    },
+    {
+      "heading": "Sessions and ticket windows",
+      "body": "Some events split play into day and night sessions. Broadcasters and ticket holders may see different coverage depending on which session includes the match."
+    },
+    {
+      "heading": "Why orders change",
+      "body": "Withdrawals, rain, darkness, court damage and TV scheduling can all change the order. Official tournament channels are the best place to confirm final updates."
+    },
+    {
+      "heading": "How to use it with live scores",
+      "body": "Use the order of play to know what should happen next and live scores to confirm what is happening now. Together they are more reliable than either source alone."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Does not-before mean exact start time?",
+      "answer": "No. It only means the match will not start earlier than that time."
+    },
+    {
+      "question": "Where is the official order of play?",
+      "answer": "Usually on the tournament website or official app."
+    },
+    {
+      "question": "Why did my match move courts?",
+      "answer": "Court moves can happen because of delays, withdrawals or scheduling decisions."
+    }
+  ]
+},
+{
+  "slug": "how-tennis-draws-work",
+  "title": "How Tennis Draws Work",
+  "description": "Understand seeds, qualifiers, wild cards, byes and draw sections in professional tennis.",
+  "category": "Tournaments",
+  "intro": "A tennis draw decides who plays whom and when a path through the tournament becomes difficult. Understanding the draw helps fans follow upcoming matches and likely broadcast demand.",
+  "sections": [
+    {
+      "heading": "Seeds",
+      "body": "Seeded players are placed in the draw to prevent the highest-ranked players from meeting too early. Seeds can still lose early, but their placement shapes the tournament path."
+    },
+    {
+      "heading": "Qualifiers and wild cards",
+      "body": "Qualifiers earn entry through a qualifying event, while wild cards are invited by the tournament. Both can create interesting early-round matches and local fan interest."
+    },
+    {
+      "heading": "Byes",
+      "body": "Some top seeds receive a bye, meaning they skip the first round. This can affect when a player first appears on the schedule."
+    },
+    {
+      "heading": "Sections and projected matchups",
+      "body": "Fans often look at draw quarters or halves to identify possible future opponents. Projected matchups are not guaranteed because every round must be played first."
+    },
+    {
+      "heading": "Why draw context matters for watching",
+      "body": "A player facing a dangerous unseeded opponent or a local wild card may be more watchable than ranking alone suggests."
+    }
+  ],
+  "faq": [
+    {
+      "question": "What is a seeded player?",
+      "answer": "A seeded player is placed in the draw based on ranking or tournament rules to balance the bracket."
+    },
+    {
+      "question": "Can a qualifier beat a top seed?",
+      "answer": "Yes. Qualifiers can be dangerous because they already have match rhythm from qualifying rounds."
+    },
+    {
+      "question": "Does a bye count as a win?",
+      "answer": "No. It means the player advances without playing that round."
+    }
+  ]
+},
+{
+  "slug": "tennis-tv-rights-by-country",
+  "title": "Why Tennis TV Rights Change by Country",
+  "description": "A clear guide to territorial tennis broadcast rights and why one streaming service does not show every match everywhere.",
+  "category": "Streaming",
+  "intro": "Tennis broadcasting is territorial. A service that works for one tournament or country may not work for another, which is why legal viewing checks are essential before subscribing.",
+  "sections": [
+    {
+      "heading": "Rights are sold by territory",
+      "body": "Tournaments and tours sell broadcast rights to different companies in different regions. A provider may have rights in one country but not in a neighboring country."
+    },
+    {
+      "heading": "Tours and Grand Slams differ",
+      "body": "ATP, WTA and the four Grand Slams can have different media agreements. One subscription may cover regular tour events but not every major."
+    },
+    {
+      "heading": "Court coverage may vary",
+      "body": "Even when a broadcaster has rights, it may not show every court. Early rounds often have more matches than a TV schedule can display."
+    },
+    {
+      "heading": "Why VPN claims are risky",
+      "body": "Some pages oversimplify territorial rights. Fans should check provider terms, local laws and official availability rather than relying on aggressive promises."
+    },
+    {
+      "heading": "Best legal check",
+      "body": "Confirm the event, country, round and provider schedule before paying. Official tournament and broadcaster pages are the strongest references."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Why can my friend watch a match abroad but I cannot?",
+      "answer": "Because broadcast rights are licensed separately by territory."
+    },
+    {
+      "question": "Does one service show all tennis?",
+      "answer": "No. Tennis rights are split across tours, tournaments and countries."
+    },
+    {
+      "question": "Should I check before subscribing?",
+      "answer": "Yes. Always confirm the exact event and country coverage."
+    }
+  ]
+},
+{
+  "slug": "how-to-follow-tennis-without-spoilers",
+  "title": "How to Follow Tennis Without Spoilers",
+  "description": "Tips for following tennis schedules, replays and results without ruining a match you plan to watch later.",
+  "category": "Fan guides",
+  "intro": "Tennis happens across time zones, so many fans cannot watch live. A spoiler-safe plan helps you check schedules and replays without accidentally seeing the result.",
+  "sections": [
+    {
+      "heading": "Separate schedule checks from score checks",
+      "body": "Use schedule pages when planning and avoid live-score pages if you want to watch later. The safest pages clearly label whether they contain results."
+    },
+    {
+      "heading": "Mute player and tournament terms",
+      "body": "Social platforms can reveal results instantly. Mute player names, tournament names and common phrases like match point if you plan to watch a replay."
+    },
+    {
+      "heading": "Use official replay sections",
+      "body": "Official broadcasters often separate replays from live score pages. Go directly to the replay library when possible rather than through a home page full of headlines."
+    },
+    {
+      "heading": "Watch time zones carefully",
+      "body": "A match listed late at night in one country may finish in the morning elsewhere. Convert times before deciding whether a replay is safer than staying awake."
+    },
+    {
+      "heading": "Avoid push notifications",
+      "body": "Disable score alerts for matches you plan to watch later. Even a simple notification can reveal the winner."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Can I use Watch Tennis Today without spoilers?",
+      "answer": "Use schedule-focused pages and avoid live-score/result sections if you plan to watch later."
+    },
+    {
+      "question": "What is the biggest spoiler risk?",
+      "answer": "Push notifications and social media headlines."
+    },
+    {
+      "question": "Are replays always available?",
+      "answer": "No. Replay availability depends on the broadcaster and tournament rights."
+    }
+  ]
+},
+{
+  "slug": "tennis-qualifying-rounds-explained",
+  "title": "Tennis Qualifying Rounds Explained",
+  "description": "Learn how tennis qualifying works and why qualifiers matter in ATP, WTA and Grand Slam draws.",
+  "category": "Tournaments",
+  "intro": "Qualifying rounds decide which players earn the final places in a main draw. They are important for fans because qualifiers often arrive with match rhythm and can create early upsets.",
+  "sections": [
+    {
+      "heading": "What qualifying is",
+      "body": "Qualifying is a smaller tournament played before the main draw. Players need to win enough qualifying matches to earn a main-draw place."
+    },
+    {
+      "heading": "Why qualifiers can be dangerous",
+      "body": "Qualifiers have already played competitive matches at the venue, while seeded players may be starting cold. That rhythm can matter in early rounds."
+    },
+    {
+      "heading": "Lucky losers",
+      "body": "A lucky loser is a player who lost in qualifying but enters the main draw after another player withdraws. This can change schedules quickly."
+    },
+    {
+      "heading": "Broadcast availability",
+      "body": "Qualifying coverage is often more limited than main-draw coverage. Some tournaments provide streams, while others only provide live scores."
+    },
+    {
+      "heading": "How to track qualifiers",
+      "body": "Check the official draw after qualifying finishes because placeholder names update once qualifiers are placed."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Do qualifiers count in rankings?",
+      "answer": "Yes, qualifying and main-draw results can affect ranking points depending on the event."
+    },
+    {
+      "question": "What is a lucky loser?",
+      "answer": "A player who lost in qualifying but enters after a withdrawal."
+    },
+    {
+      "question": "Are qualifying matches on TV?",
+      "answer": "Sometimes, but coverage is usually more limited than main-draw matches."
+    }
+  ]
+},
+{
+  "slug": "tennis-seeds-and-rankings-guide",
+  "title": "Tennis Seeds and Rankings Guide",
+  "description": "Understand the difference between rankings and seeds in ATP, WTA and Grand Slam tournaments.",
+  "category": "Rankings",
+  "intro": "Rankings and seeds are related but not identical. Knowing the difference helps fans read draws and understand why a player appears in a certain part of a tournament bracket.",
+  "sections": [
+    {
+      "heading": "What rankings measure",
+      "body": "Rankings are based on points earned across tournaments over a rolling period. They reflect performance across many events, not just the current week."
+    },
+    {
+      "heading": "What seeds do",
+      "body": "Seeds are used inside a specific tournament to position top players in the draw. Seeding helps prevent the highest-ranked players from meeting immediately."
+    },
+    {
+      "heading": "Why seeds can differ from rankings",
+      "body": "Tournament timing, withdrawals, protected rankings or event-specific rules can make the seed list differ slightly from the live ranking list fans see elsewhere."
+    },
+    {
+      "heading": "How seeds affect viewing",
+      "body": "Seeded players are often placed on bigger courts and receive more broadcast attention, but early upsets can change the schedule quickly."
+    },
+    {
+      "heading": "Unseeded danger",
+      "body": "An unseeded player can still be a former champion, returning star or dangerous specialist. Draw context matters more than seed number alone."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Is the number one seed always world number one?",
+      "answer": "Often, but not always. Withdrawals and tournament entry lists can change seeds."
+    },
+    {
+      "question": "Can seeds play each other early?",
+      "answer": "Top seeds are separated, but lower seeds can meet earlier depending on draw size."
+    },
+    {
+      "question": "Do seeds guarantee TV coverage?",
+      "answer": "No, but seeded players are more likely to appear on main courts."
+    }
+  ]
+}
 ];
 
 export function getGuideArticle(slug: string) {
