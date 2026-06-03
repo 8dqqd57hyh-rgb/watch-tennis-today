@@ -14,8 +14,8 @@ import EmailSignup from "@/app/components/EmailSignup";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
-import PathToTitle from "@/app/components/PathToTitle";
 import { getServerMatches } from "@/app/lib/serverMatches";
+import { buildMatchEditorialContext } from "@/data/tennisEditorial";
 
 export const dynamic = "force-dynamic";
 
@@ -691,6 +691,7 @@ export default async function MatchPage({
     playerDescriptions[match.player1.toLowerCase()] ||
     playerDescriptions[match.player2.toLowerCase()] ||
     "Follow tennis match schedules, score context, tournament details and official broadcaster information.";
+  const matchEditorialContext = buildMatchEditorialContext(match);
 
   const eventStatus = isLive(match.status)
     ? "https://schema.org/EventInProgress"
@@ -874,7 +875,6 @@ export default async function MatchPage({
 
             <RelatedCoverageEngine match={match} matches={matches} />
 
-            <PathToTitle match={match} matches={matches} />
 
             <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
               <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match context</p>
@@ -884,6 +884,16 @@ export default async function MatchPage({
                 <p className="leading-8 text-zinc-300">
                   Tennis schedules can move during the day because earlier matches run long, courts change, rain delays happen or withdrawals are announced. Re-check the official order of play before match time.
                 </p>
+              </div>
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-black p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Editorial preview</p>
+              <h2 className="mb-4 text-3xl font-black">{matchEditorialContext.title}</h2>
+              <div className="grid gap-5 md:grid-cols-3">
+                <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.preview}</p>
+                <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.scheduleNote}</p>
+                <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.tournamentNote}</p>
               </div>
             </section>
 

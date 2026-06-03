@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
+import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 
 export const dynamic = "force-dynamic";
 
@@ -157,6 +158,8 @@ export default async function Page({ params }: PageProps) {
     (match) => match.status === "LIVE"
   ).length;
 
+  const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
+
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
   ).length;
@@ -184,6 +187,38 @@ export default async function Page({ params }: PageProps) {
           Watch {tournamentName} tennis matches live today with match schedules,
           TV channels, streaming information, live scores and tournament updates.
         </p>
+
+        <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Tournament guide</p>
+          <h2 className="mb-4 text-3xl font-black">{tournamentName} tournament context</h2>
+          <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-4 text-zinc-300 leading-8">
+              <p>{tournamentProfile.history}</p>
+              <p>{tournamentProfile.format}</p>
+              <p>{tournamentProfile.viewingContext}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <div className="grid gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Level</p>
+                  <p className="mt-1 font-black text-white">{tournamentProfile.level}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Surface / conditions</p>
+                  <p className="mt-1 font-black text-white">{tournamentProfile.surface}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Fan checklist</p>
+                  <ul className="mt-2 space-y-2 text-sm text-zinc-300">
+                    {tournamentProfile.fanChecklist.map((item) => (
+                      <li key={item}>✓ {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <div className="mb-8">
           <LocalTournamentFollowButton slug={slug} name={tournamentName} />

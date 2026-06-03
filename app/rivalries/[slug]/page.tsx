@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { getRivalry, rivalries } from "@/data/rivalries";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
-import PathToTitle from "@/app/components/PathToTitle";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
@@ -214,7 +213,6 @@ export default async function RivalryPage({ params }: Props) {
             </h2>
 
             <MatchEdgePredictor match={mainMatch} matches={matches} />
-            <PathToTitle match={mainMatch} matches={matches} />
 
             <div className="mt-6 grid gap-5 md:grid-cols-3">
               <div className="rounded-2xl border border-zinc-800 bg-black p-5">
