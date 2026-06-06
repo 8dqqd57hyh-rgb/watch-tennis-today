@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 import TennisTimeZonePlanner from "@/app/components/TennisTimeZonePlanner";
 import SpoilerFreeScoreToggle, { SpoilerSafeScore, useSpoilerFreeScores } from "@/app/components/SpoilerFreeScoreToggle";
 import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
@@ -149,6 +150,27 @@ export default function TodayPage() {
         </section>
 
         <SpoilerFreeScoreToggle enabled={spoilerFree} onChange={setSpoilerFree} />
+
+        <AdSenseEditorialBlock
+          title="How we read today’s tennis schedule"
+          intro="A daily tennis schedule can change quickly because courts run long, weather delays happen and broadcasters sometimes switch coverage between matches. This page is designed to be useful even when the live feed is quiet."
+          paragraphs={[
+            "Use the match list as a practical starting point, not as an illegal stream directory. We focus on start windows, tournament names, player pages and official broadcaster resources so fans can confirm where a match is legitimately available in their country.",
+            "When there are no matches in the current feed, the safest next checks are tomorrow’s schedule, the TV schedule and official tournament pages. Tennis often has gaps between sessions, especially after late-night finishes or during the transition between weekly events.",
+            "For the best experience, compare the local start time with your own timezone, check whether the match is ATP, WTA, Challenger or Grand Slam, and open player or tournament pages for more context before choosing a legal viewing option.",
+          ]}
+          checklist={[
+            "Confirm the tournament and session first.",
+            "Use official broadcaster links only.",
+            "Check tomorrow if today’s feed is empty.",
+            "Use spoiler-free scores when you plan to watch later.",
+          ]}
+          links={[
+            { href: "/tomorrow", label: "Tomorrow schedule" },
+            { href: "/tv-schedule", label: "TV schedule" },
+            { href: "/how-to-watch-tennis-legally", label: "Legal viewing guide" },
+          ]}
+        />
 
         <TennisTimeZonePlanner matches={matches} />
 

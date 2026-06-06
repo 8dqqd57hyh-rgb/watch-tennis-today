@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
 type Match = {
@@ -109,6 +110,27 @@ export default function TennisTrendingNowPage() {
             })}
           </p>
         </section>
+
+        <AdSenseEditorialBlock
+          title="How we choose trending tennis items"
+          intro="Trending pages should help readers understand why a match or player is worth checking, not just repeat a live feed."
+          paragraphs={[
+            "This page gives extra weight to live matches, ATP and WTA events, Grand Slam context and players who regularly attract high fan interest. That makes the page useful during busy tournament days and still helpful when the current feed is quiet.",
+            "A trending match is not a prediction and it is not a guarantee of broadcast availability. It is a practical signal that a player, tournament or match status may be worth opening for schedule, score and legal viewing checks.",
+            "If no trending matches are available, use the evergreen player pages, today’s schedule and broadcaster guide. Those pages remain useful even between sessions or when smaller tournaments have limited public data.",
+          ]}
+          checklist={[
+            "Prioritize live ATP, WTA and Grand Slam matches.",
+            "Check official viewing options before subscribing.",
+            "Use player pages for background context.",
+            "Treat feed gaps as normal between sessions.",
+          ]}
+          links={[
+            { href: "/players", label: "Player directory" },
+            { href: "/best-tennis-matches-today", label: "Best matches" },
+            { href: "/tennis-live-scores-explained", label: "Scores explained" },
+          ]}
+        />
 
         {loading ? (
           <p className="text-zinc-500 text-xl">Loading trending tennis...</p>

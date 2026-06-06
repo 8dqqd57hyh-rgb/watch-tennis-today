@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import EmailSignup from "@/app/components/EmailSignup";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 
 type Match = {
   id: string;
@@ -169,6 +170,27 @@ export default function TomorrowClient() {
             Showing matches for {formatDateLabel()}. Watch Tennis Today does not host, embed or retransmit live tennis broadcasts.
           </p>
         </section>
+
+        <AdSenseEditorialBlock
+          title="How to plan tomorrow’s tennis viewing"
+          intro="Tomorrow’s tennis schedule is most useful when it explains what fans should check before match day, not only when it lists fixtures from a live data feed."
+          paragraphs={[
+            "Tournament orders of play can be updated after the previous day finishes, especially when rain delays, late sessions or unfinished matches push the draw forward. That is why this page keeps the match list separate from the viewing checklist and gives users helpful context even before every court assignment is final.",
+            "Before setting a reminder, confirm the tournament, round, surface and local start window. Broadcasters often prioritize main-court ATP, WTA and Grand Slam matches, while smaller-court matches may move between platforms or appear only in official tournament coverage.",
+            "If tomorrow’s list is empty, it does not necessarily mean no tennis will be played. It may mean the order of play has not been released yet, so the best next step is to check today’s schedule, live tennis, tournament pages and official broadcaster schedules.",
+          ]}
+          checklist={[
+            "Check the order of play after today’s matches finish.",
+            "Compare start time with your local timezone.",
+            "Use legal broadcaster pages for final availability.",
+            "Recheck in the morning for late court changes.",
+          ]}
+          links={[
+            { href: "/today", label: "Today schedule" },
+            { href: "/matches/live-now", label: "Live now" },
+            { href: "/official-tennis-broadcasters-guide", label: "Broadcaster guide" },
+          ]}
+        />
 
         {featuredMatch ? (
           <section className="mb-12 rounded-[2.5rem] border border-blue-500/60 bg-gradient-to-br from-blue-950/40 to-black p-8">

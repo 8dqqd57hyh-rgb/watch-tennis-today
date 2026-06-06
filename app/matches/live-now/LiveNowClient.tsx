@@ -5,6 +5,7 @@ import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import AdSlot from "@/app/components/AdSlot";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
 type Match = {
@@ -108,6 +109,27 @@ export default function LiveMatchesNowPage() {
             happening right now with live scores, schedules and streaming coverage.
           </p>
         </section>
+
+        <AdSenseEditorialBlock
+          title="What counts as live tennis here"
+          intro="Live tennis pages can become thin when no match is currently active, so this page explains how live status, schedules and official viewing checks work."
+          paragraphs={[
+            "A tennis match is treated as live only when the feed marks it as in progress. Warmups, delayed matches, suspended matches and matches waiting for a previous court to finish may not appear as live even when the tournament day is active.",
+            "Use this page to spot active matches, then open the match page for tournament context and legal viewing information. Watch Tennis Today does not host streams, embed broadcasts or send users to unofficial restreams.",
+            "When no live match is visible, the most useful checks are today’s schedule, tomorrow’s schedule and the TV guide. Tennis coverage is session-based, so a quiet period can happen between day and night sessions or between tournaments.",
+          ]}
+          checklist={[
+            "Look for LIVE status before treating a match as active.",
+            "Check suspended or delayed matches separately.",
+            "Use official broadcasters for video access.",
+            "Open player pages for match context.",
+          ]}
+          links={[
+            { href: "/today", label: "Today schedule" },
+            { href: "/tv-schedule", label: "TV guide" },
+            { href: "/how-we-source-data", label: "Data sourcing" },
+          ]}
+        />
 
         <AdSlot label="Advertisement" />
 

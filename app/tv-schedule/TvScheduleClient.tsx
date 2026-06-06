@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 
 type TvChannel = {
   name: string;
@@ -65,6 +66,27 @@ export default function TvSchedulePage() {
     tournament and subscription platform.
   </p>
 </section>
+
+<AdSenseEditorialBlock
+  title="How to verify tennis TV coverage"
+  intro="Tennis broadcast rights are regional and tournament-specific, so the safest TV schedule is one that points users toward official sources and explains how rights differ by event."
+  paragraphs={[
+    "ATP Tour, WTA Tour and Grand Slam events can have different broadcast partners in the same country. A subscription that shows one weekly tour event may not include Roland Garros, Wimbledon, the US Open or the Australian Open.",
+    "Use this guide to identify likely official channels, then confirm the exact match on the broadcaster’s own schedule before paying for a subscription or planning your evening. Match times can move when previous matches run long.",
+    "We avoid listing unofficial stream mirrors. If a match is not listed by an official broadcaster, it is better to check tournament pages, national TV listings or the official tour schedule instead of using unsafe stream sites.",
+  ]}
+  checklist={[
+    "Confirm country and tournament rights.",
+    "Check the broadcaster schedule before match time.",
+    "Do not rely on unofficial stream mirrors.",
+    "Use tournament pages for late court changes.",
+  ]}
+  links={[
+    { href: "/official-tennis-broadcasters-guide", label: "Official broadcasters" },
+    { href: "/how-to-watch-tennis-legally", label: "Legal guide" },
+    { href: "/tennis-streaming-rights-explained", label: "Rights explained" },
+  ]}
+/>
 
 <section className="mb-10">
   <h2 className="text-3xl font-black mb-6">
