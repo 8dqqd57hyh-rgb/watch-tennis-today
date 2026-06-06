@@ -65,6 +65,25 @@ function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+
+function isDateInRecentArchiveWindow(value?: string | null) {
+  if (!value) return false;
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return false;
+
+  const today = new Date();
+  const windowStart = new Date(today);
+  windowStart.setHours(0, 0, 0, 0);
+  windowStart.setDate(windowStart.getDate() - 1);
+
+  const windowStop = new Date(today);
+  windowStop.setHours(23, 59, 59, 999);
+  windowStop.setDate(windowStop.getDate() + 1);
+
+  return parsed >= windowStart && parsed <= windowStop;
+}
+
 function buildDateWindows(dateStartDate: Date, dateStopDate: Date, chunkDays = 28) {
   const windows: { start: string; stop: string }[] = [];
   const cursor = new Date(dateStartDate);
@@ -1154,26 +1173,38 @@ const dateStop = formatDate(dateStopDate);
     }
 
     if (mappedMatches.length > 0 && !matchId) {
-      const { error: archiveUpsertError } = await supabase.from("match_archive").upsert(
-        mappedMatches.map((match) => ({
-          id: String(match.id),
-          player1: match.player1,
-          player2: match.player2,
-          tournament: match.tournament,
-          category: match.category,
-          status: match.status,
-          score: match.score || null,
-          start_time: match.startTime || null,
-          watch_providers: match.watchProviders || [],
-          updated_at: new Date().toISOString(),
-        })),
-        {
-          onConflict: "id",
-        }
-      );
+      if (safeDaysBack > 7) {
+        console.warn(
+          `match_archive upsert skipped: daysBack=${safeDaysBack} is too large for normal /api/matches requests`
+        );
+      } else {
+        const recentArchiveMatches = mappedMatches.filter((match) =>
+          isDateInRecentArchiveWindow(match.startTime)
+        );
 
-      if (archiveUpsertError) {
-        console.warn("match_archive upsert skipped:", archiveUpsertError.message);
+        if (recentArchiveMatches.length > 0) {
+          const { error: archiveUpsertError } = await supabase.from("match_archive").upsert(
+            recentArchiveMatches.map((match) => ({
+              id: String(match.id),
+              player1: match.player1,
+              player2: match.player2,
+              tournament: match.tournament,
+              category: match.category,
+              status: match.status,
+              score: match.score || null,
+              start_time: match.startTime || null,
+              watch_providers: match.watchProviders || [],
+              updated_at: new Date().toISOString(),
+            })),
+            {
+              onConflict: "id",
+            }
+          );
+
+          if (archiveUpsertError) {
+            console.warn("match_archive upsert skipped:", archiveUpsertError.message);
+          }
+        }
       }
     }
 
