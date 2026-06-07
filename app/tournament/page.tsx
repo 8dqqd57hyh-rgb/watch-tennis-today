@@ -1,5 +1,6 @@
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
+import { getTournamentCalendarEntries } from "@/app/lib/tournamentCalendar";
 
 export const revalidate = 60;
 
@@ -11,7 +12,7 @@ type Match = {
   category: string;
   status: string;
   score: string;
-  startTime: string;
+  startTime: string | null;
 };
 
 async function getMatches(): Promise<Match[]> {
@@ -27,6 +28,46 @@ function slugify(text: string) {
     .replace(/^-|-$/g, "");
 }
 
+
+function formatDateRange(startDate: string | null, endDate: string | null) {
+  if (!startDate || !endDate) return null;
+
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+
+  const formattedStart = formatter.format(start);
+  const formattedEnd = formatter.format(end);
+
+  return formattedStart === formattedEnd ? formattedStart : `${formattedStart} – ${formattedEnd}`;
+}
+
+function getTournamentDateRange(matches: Match[]) {
+  const dates = matches
+    .map((match) => match.startTime ? new Date(match.startTime) : null)
+    .filter((date): date is Date => Boolean(date) && !Number.isNaN(date.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  if (dates.length === 0) return null;
+
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const start = formatter.format(dates[0]);
+  const end = formatter.format(dates[dates.length - 1]);
+
+  return start === end ? start : `${start} – ${end}`;
+}
+
 export const metadata = {
   title: "Tennis Tournaments & Live Streams | Watch Tennis Today",
   description:
@@ -34,20 +75,46 @@ export const metadata = {
 };
 
 export default async function TournamentsPage() {
-  const matches = await getMatches();
+  const [matches, calendarEntries] = await Promise.all([
+    getMatches(),
+    getTournamentCalendarEntries(),
+  ]);
 
-  const tournaments = [
-    ...new Map(
-      matches.map((match) => [
-        slugify(match.tournament),
-        {
-          name: match.tournament,
-          slug: slugify(match.tournament),
-          category: match.category,
-        },
-      ])
-    ).values(),
-  ];
+  const tournamentGroups = new Map<string, Match[]>();
+
+  matches.forEach((match) => {
+    const slug = slugify(match.tournament);
+    if (!slug) return;
+
+    tournamentGroups.set(slug, [...(tournamentGroups.get(slug) || []), match]);
+  });
+
+  const tournamentsFromMatches = Array.from(tournamentGroups.entries()).map(([slug, tournamentMatches]) => {
+    const firstMatch = tournamentMatches[0];
+
+    return {
+      name: firstMatch.tournament,
+      slug,
+      category: firstMatch.category,
+      dateRange: getTournamentDateRange(tournamentMatches),
+      dateSource: "match feed",
+    };
+  });
+
+  const tournamentSlugs = new Set(tournamentsFromMatches.map((tournament) => tournament.slug));
+  const calendarTournaments = calendarEntries
+    .filter((entry) => !tournamentSlugs.has(entry.slug))
+    .map((entry) => ({
+      name: entry.name,
+      slug: entry.slug,
+      category: "Grand Slam",
+      dateRange: formatDateRange(entry.startDate, entry.endDate),
+      dateSource: entry.sourceName || "tournament calendar",
+    }));
+
+  const tournaments = [...tournamentsFromMatches, ...calendarTournaments].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -102,9 +169,25 @@ export default async function TournamentsPage() {
                 </span>
               </div>
 
+              {tournament.dateRange ? (
+                <p className="mb-3 text-sm font-bold text-green-400">
+                  Dates: {tournament.dateRange}
+                </p>
+              ) : (
+                <p className="mb-3 text-sm font-bold text-zinc-500">
+                  Dates: TBA from match feed
+                </p>
+              )}
+
               <p className="text-zinc-400">
                 View live matches, streaming information and TV schedule.
               </p>
+
+              {tournament.dateRange && (
+                <p className="mt-3 text-xs text-zinc-500">
+                  Source: {tournament.dateSource}
+                </p>
+              )}
             </a>
           ))}
         </div>

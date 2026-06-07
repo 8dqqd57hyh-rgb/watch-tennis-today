@@ -9,6 +9,7 @@ import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
+import { supabase } from "@/app/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -453,8 +454,8 @@ async function getMatches(
     const baseUrl = await getBaseUrl();
     const params = new URLSearchParams({
       includeFinished: "1",
-      daysBack: String(options.daysBack ?? 120),
-      daysForward: String(options.daysForward ?? 45),
+      daysBack: String(Math.min(options.daysBack ?? 60, 60)),
+      daysForward: String(Math.min(options.daysForward ?? 30, 30)),
     });
 
     if (options.formHistory) {
@@ -503,9 +504,50 @@ function mergeMatchesById(matches: Match[]) {
   return Array.from(new Map(matches.map((match) => [String(match.id), match])).values());
 }
 
+function getArchiveDateStart(daysBack = 365) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysBack);
+  date.setUTCHours(0, 0, 0, 0);
+  return date.toISOString();
+}
+
+async function getArchivedMatchesForPlayerPage(playerName: string): Promise<Match[]> {
+  try {
+    const { data, error } = await supabase
+      .from("match_archive")
+      .select("id, player1, player2, tournament, category, status, score, start_time")
+      .gte("start_time", getArchiveDateStart(365))
+      .order("start_time", { ascending: false })
+      .limit(500);
+
+    if (error || !Array.isArray(data)) {
+      if (error) console.warn("player page archive fallback unavailable:", error.message);
+      return [];
+    }
+
+    return data
+      .filter((match) =>
+        [match.player1, match.player2].some((name) => doPlayerNamesMatch(String(name || ""), playerName))
+      )
+      .map((match) => ({
+        id: String(match.id),
+        player1: match.player1 || "Unknown player",
+        player2: match.player2 || "Unknown player",
+        tournament: match.tournament || "Unknown tournament",
+        category: match.category || "UNKNOWN",
+        status: match.status || "FINISHED",
+        score: match.score || "",
+        startTime: match.start_time || "",
+      }));
+  } catch (error) {
+    console.warn("player page archive fallback skipped:", error);
+    return [];
+  }
+}
+
 async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
   try {
-    const playerScopedMatches = await getMatches(playerName, { daysBack: 365, daysForward: 45, formHistory: true });
+    const playerScopedMatches = await getMatches(playerName, { daysBack: 60, daysForward: 30 });
 
     const scopedPlayerMatches = playerScopedMatches.filter((match) =>
       [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
@@ -515,21 +557,16 @@ async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
       .filter(isSinglesMatchForPlayerForm)
       .filter((match) => isFinishedMatch(match));
 
-    // Player pages must not depend on the form-history feed. If the scoped
-    // player lookup is thin, try a broad archive scan; if that fails, render the
-    // player page with the data already available instead of returning 404.
-    const globalMatches = scopedCompletedSingles.length >= 5
+    // Use Supabase archive for older finished rows instead of forcing normal
+    // player pages through expensive /api/matches?daysBack=365&formHistory=1 calls.
+    const archivedMatches = scopedCompletedSingles.length >= 10
       ? []
-      : await getMatches(undefined, { daysBack: 365, daysForward: 0, formHistory: true });
+      : await getArchivedMatchesForPlayerPage(playerName);
 
-    const localMatches = globalMatches.filter((match) =>
-      [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
-    );
-
-    return mergeMatchesById([...playerScopedMatches, ...localMatches]);
+    return mergeMatchesById([...playerScopedMatches, ...archivedMatches]);
   } catch (error) {
-    console.error("Player form history lookup failed:", error);
-    return [];
+    console.error("Player match lookup failed:", error);
+    return getArchivedMatchesForPlayerPage(playerName);
   }
 }
 

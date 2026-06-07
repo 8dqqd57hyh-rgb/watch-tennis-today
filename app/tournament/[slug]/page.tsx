@@ -3,6 +3,7 @@ import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
+import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ type Match = {
   category: string;
   status: string;
   score: string;
-  startTime: string;
+  startTime: string | null;
 };
 
 type PageProps = {
@@ -105,6 +106,57 @@ function matchSlug(match: Match) {
   return `${readablePart}-${numericId}`;
 }
 
+
+function getTournamentDateWindow(matches: Match[]) {
+  const dates = matches
+    .map((match) => match.startTime ? new Date(match.startTime) : null)
+    .filter((date): date is Date => Boolean(date) && !Number.isNaN(date.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  if (dates.length === 0) return null;
+
+  return {
+    start: dates[0],
+    end: dates[dates.length - 1],
+  };
+}
+
+function formatTournamentDate(date: Date | string) {
+  const parsedDate = typeof date === "string" ? new Date(`${date}T00:00:00Z`) : date;
+
+  if (Number.isNaN(parsedDate.getTime())) return null;
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsedDate);
+}
+
+function formatTournamentDateRange(dateWindow: ReturnType<typeof getTournamentDateWindow>) {
+  if (!dateWindow) return null;
+
+  const start = formatTournamentDate(dateWindow.start);
+  const end = formatTournamentDate(dateWindow.end);
+
+  if (!start || !end) return null;
+  if (start === end) return start;
+
+  return `${start} – ${end}`;
+}
+
+function formatCalendarDateRange(calendarEntry: TournamentCalendarEntry | null) {
+  if (!calendarEntry?.startDate || !calendarEntry.endDate) return null;
+
+  const start = formatTournamentDate(calendarEntry.startDate);
+  const end = formatTournamentDate(calendarEntry.endDate);
+
+  if (!start || !end) return null;
+  if (start === end) return start;
+
+  return `${start} – ${end}`;
+}
+
 function statusPriority(status: string) {
   if (status === "LIVE") return 1;
   if (status === "SUSPENDED") return 2;
@@ -159,6 +211,14 @@ export default async function Page({ params }: PageProps) {
   ).length;
 
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
+  const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
+  const calendarEntry = await getTournamentCalendarEntry(slug);
+  const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);
+  const calendarDateRange = formatCalendarDateRange(calendarEntry);
+  const tournamentDateRange = matchFeedDateRange || calendarDateRange;
+  const tournamentDateSource = matchFeedDateRange
+    ? "match feed"
+    : calendarEntry?.sourceName || "tournament calendar";
 
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
@@ -188,6 +248,21 @@ export default async function Page({ params }: PageProps) {
           TV channels, streaming information, live scores and tournament updates.
         </p>
 
+        {tournamentDateRange ? (
+          <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-300">
+            <span className="font-black text-white">Known tournament dates:</span>{" "}
+            {tournamentDateRange}. Source: {tournamentDateSource}. Match-feed
+            dates stay first priority; the stored tournament calendar is used
+            only when the API has not published fixtures yet.
+          </p>
+        ) : (
+          <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-400">
+            Tournament dates are not available from the current match feed or
+            tournament calendar yet. This page will show dates automatically
+            once scheduled matches or verified calendar data are available.
+          </p>
+        )}
+
         <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Tournament guide</p>
           <h2 className="mb-4 text-3xl font-black">{tournamentName} tournament context</h2>
@@ -199,6 +274,10 @@ export default async function Page({ params }: PageProps) {
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-black p-5">
               <div className="grid gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Dates</p>
+                  <p className="mt-1 font-black text-white">{tournamentDateRange || "Not published yet"}</p>
+                </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Level</p>
                   <p className="mt-1 font-black text-white">{tournamentProfile.level}</p>
@@ -282,7 +361,12 @@ export default async function Page({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+            <p className="text-zinc-500 text-sm mb-2">Tournament dates</p>
+            <p className="text-2xl font-black">{tournamentDateRange || "TBA"}</p>
+          </div>
+
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <p className="text-zinc-500 text-sm mb-2">Tournament matches</p>
             <p className="text-4xl font-black">{tournamentMatches.length}</p>

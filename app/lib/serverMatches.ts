@@ -96,7 +96,7 @@ export async function getServerMatchesForPlayer(
   if (!normalizedPlayerName) return [];
 
   const matches = await fetchServerMatches(
-    `/api/matches?player=${encodeURIComponent(playerName)}&daysBack=180&daysForward=30`,
+    `/api/matches?playerName=${encodeURIComponent(playerName)}&includeFinished=1&daysBack=60&daysForward=30`,
     revalidateSeconds
   );
 
