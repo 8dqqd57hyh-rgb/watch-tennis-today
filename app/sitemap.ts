@@ -206,7 +206,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/french-open",
     "/today",
     "/tomorrow",
-    "/tennis-schedule-tomorrow",
     "/tennis-spoiler-free-scores",
     "/live-tennis",
     "/watch",
@@ -226,7 +225,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-live-alerts",
     "/watch-tennis-abroad",
     "/wimbledon-live",
-    "/wimbledon-live-stream",
     "/wimbledon-schedule",
     "/wimbledon-results",
     "/wimbledon-tv-schedule",
@@ -274,9 +272,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/how-to-watch-french-open-in-usa",
     "/tournament",
     "/best-ways-to-watch-tennis-online",
-    "/watch-alcaraz-live",
-    "/watch-djokovic-live",
-    "/watch-sinner-live",
   ].map((path) => {
   const livePages = [
     "",

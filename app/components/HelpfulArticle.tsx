@@ -49,6 +49,21 @@ export default function HelpfulArticle({
           ))}
         </div>
 
+        <aside className="mt-8 rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 className="mb-4 text-2xl font-black text-zinc-950">Editorial note</h2>
+          <div className="space-y-4 text-base leading-8 text-zinc-700">
+            <p>
+              This article is written as evergreen guidance for tennis fans, not as a live rights guarantee. Tennis schedules, courts, broadcasters and app listings can change close to match time because of weather, withdrawals, long previous matches or local media-rights decisions.
+            </p>
+            <p>
+              Watch Tennis Today does not host live streams, embed copyrighted match video or sell access to broadcasts. We use explanatory articles, schedule context and legal-viewing reminders to help readers make safer decisions before they leave the site for a broadcaster, tournament page or score source.
+            </p>
+            <p>
+              For the final decision before subscribing, travelling or setting a reminder, check the current tournament order of play and the licensed broadcaster in your country. Our <Link href="/editorial-policy" className="font-bold text-emerald-700 hover:text-emerald-900">editorial policy</Link>, <Link href="/how-we-source-data" className="font-bold text-emerald-700 hover:text-emerald-900">data sourcing notes</Link> and <Link href="/how-we-verify-streams" className="font-bold text-emerald-700 hover:text-emerald-900">stream verification process</Link> explain how we keep these pages useful.
+            </p>
+          </div>
+        </aside>
+
         {related.length > 0 && (
           <aside className="mt-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-7">
             <h2 className="mb-4 text-2xl font-black text-zinc-950">Useful next reads</h2>

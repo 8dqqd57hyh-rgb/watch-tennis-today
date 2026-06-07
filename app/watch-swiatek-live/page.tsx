@@ -5,6 +5,7 @@ export const metadata = {
   title: "Watch Iga Swiatek Live | Watch Tennis Today",
   description:
     "Find Iga Swiatek live matches, schedules and legal tennis streaming information.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/watch-player-live/iga-swiatek",
   },
