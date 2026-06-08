@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/guides/how-to-watch-tennis-online-legally",
+        destination: "/best-ways-to-watch-tennis-online",
+        permanent: true,
+      },
+      {
+        source: "/guides/watch-tennis-online-legally",
+        destination: "/best-ways-to-watch-tennis-online",
+        permanent: true,
+      },
+      {
         source: "/french-open-live-stream",
         destination: "/french-open",
         permanent: true,

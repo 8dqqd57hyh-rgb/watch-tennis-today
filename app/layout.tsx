@@ -193,7 +193,7 @@ export default function RootLayout({
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Guides</p>
         <div className="space-y-2">
           <a href="/guides" className="block hover:text-white">All Tennis Guides</a>
-          <a href="/guides/how-to-watch-tennis-online-legally" className="block hover:text-white">Watch Tennis Legally</a>
+          <a href="/best-ways-to-watch-tennis-online" className="block hover:text-white">Watch Tennis Legally</a>
           <a href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</a>
           <a href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</a>
           <a href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</a>

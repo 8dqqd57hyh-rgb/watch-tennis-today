@@ -110,7 +110,7 @@ export default function RevenueConversionPanel({
         </a>
 
         <a
-          href="/guides/how-to-watch-tennis-online-legally"
+          href="/best-ways-to-watch-tennis-online"
           data-track-category="internal_guide"
           data-track-id="revenue_panel_legal_streaming"
           data-track-position="tertiary"
