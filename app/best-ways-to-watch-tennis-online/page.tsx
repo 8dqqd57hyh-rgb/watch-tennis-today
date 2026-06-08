@@ -4,9 +4,9 @@ export const metadata = {
     "Best legal ways to watch tennis online, including ATP, WTA, Grand Slam broadcasters, tennis streaming services and country-based TV coverage.",
 };
 
-import AdSlot from "@/app/components/AdSlot";
 import EmailSignup from "@/app/components/EmailSignup";
 import VpnPromo from "@/app/components/VpnPromo";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 const countries = [
@@ -26,9 +26,9 @@ export default function BestWaysPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           🎾 Best Ways to Watch Tennis Online
@@ -45,7 +45,7 @@ export default function BestWaysPage() {
         <section className="mb-12 rounded-3xl border border-green-500/40 bg-green-500/10 p-8">
           <h2 className="text-2xl font-black mb-4">Why tennis broadcasting is complicated</h2>
           <p className="text-zinc-300 leading-8 mb-4">
-            Tennis broadcasting is fragmented across multiple territories, tournaments and platforms because media rights are sold regionally and by tournament type. A match that airs on ESPN in the USA might be on Eurosport in Europe, beIN SPORTS in the Middle East and Nine Network in Australia. Sometimes a single broadcaster has ATP rights but not WTA rights, or has Grand Slams but not regular tour events. This means you cannot rely on one subscription to watch all tennis—the best option depends on which players or tournaments you follow most.
+            Tennis broadcasting is fragmented across multiple territories, tournaments and platforms because media rights are sold regionally and by tournament type. A match that airs on ESPN in the USA might be on Eurosport in Europe, beIN SPORTS in the Middle East and Nine Network in Australia. Sometimes a single broadcaster has ATP rights but not WTA rights, or has Grand Slams but not regular tour events. This means you cannot rely on one subscription to watch all tennis&mdash;the best option depends on which players or tournaments you follow most.
           </p>
           <p className="text-zinc-300 leading-8">
             Before the internet, fans had no choice but to watch whatever was broadcast locally. Now, legal streaming platforms, broadcaster apps and VPN services give international fans more options, though availability is still limited by licensing agreements and geographic restrictions. Understanding these limitations helps you find the most reliable, legal and affordable way to follow tennis in your region.
@@ -149,12 +149,12 @@ export default function BestWaysPage() {
     for ATP, WTA and Grand Slam coverage.
   </p>
 
-  <a
+  <Link
     href="/compare"
     className="inline-block rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400"
   >
     Compare Streaming Services →
-  </a>
+  </Link>
 </div>
             <p className="text-zinc-400 leading-relaxed">
               Grand Slam tournaments usually have the widest TV and streaming
