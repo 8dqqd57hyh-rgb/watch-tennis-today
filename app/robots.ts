@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
           "/api/",
           "/_next/data/",
           "/newsletter-confirmation",
-          "/vs/",
+          "/vs/", // vs comparison pages without substantive content
         ],
       },
       {
@@ -20,9 +20,10 @@ export default function robots(): MetadataRoute.Robots {
           "/api/",
           "/_next/data/",
           "/newsletter-confirmation",
-          "/vs/",
-          "/watch/",
+          "/vs/", // vs comparison pages without substantive content
         ],
+        // Note: /watch/ pages are now fully indexed as they contain editorial content
+        // This change ensures AdSense crawlers can access match pages with commentary
       },
     ],
     sitemap: "https://watchtennistoday.com/sitemap.xml",

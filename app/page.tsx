@@ -581,6 +581,66 @@ tennis viewing information.
   </Link>
 </div>
 
+<section className="mb-16 space-y-8 text-zinc-300 leading-8">
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Why professional tennis is hard to follow</h2>
+    <p>Tennis is one of the world&apos;s most watched sports, but it remains unusually fragmented for fans. Unlike soccer or basketball, where one league handles scheduling and broadcasting, tennis is split between multiple tours, hundreds of tournaments, dozens of broadcasting partners and a complex point-based ranking system. A fan interested in following top players like Jannik Sinner, Carlos Alcaraz, Iga Swiatek or Coco Gauff must navigate ATP, WTA, Grand Slams, Masters events, Challengers and international broadcasts—often in different countries with different broadcasters and regional restrictions.</p>
+    <p className="mt-4">This is why even dedicated fans find themselves jumping between official tournament websites, live score applications, broadcaster schedules and streaming platform menus just to watch one match. Start times shift because matches depend on previous results. Rankings change constantly because points expire on a rolling calendar. Broadcast coverage differs completely by location. A match available on one service in the United States might be on a different platform in the United Kingdom, Australia or across Europe.</p>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">What Watch Tennis Today does</h2>
+    <p>This site is built to solve that fragmentation. We combine live match data, official tournament information, player context and practical broadcaster guidance into one place so fans can understand what matches are happening today, why they matter, and where to watch them legally. We do not host streams or violate broadcast rights. Instead, we provide the research and context that helps you make faster, smarter decisions before you leave for an official broadcaster or tournament page.</p>
+    <p className="mt-4">Every page on Watch Tennis Today is designed around a core principle: it should be useful for fans who care about professional tennis and want to understand the sport more deeply. That means we avoid filler text, explain why things matter, separate editorial guidance from live-data feeds, and always be honest when information is incomplete or when official confirmation is needed.</p>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Understanding ATP and WTA</h2>
+    <p>ATP (Association of Tennis Professionals) and WTA (Women&apos;s Tennis Association) are the two governing bodies for professional tennis. ATP manages the men&apos;s tour, and WTA manages the women&apos;s tour. Both organizations run regular tour events throughout the year, award ranking points to players, and set the schedule for most tournaments except the four Grand Slams, which are independent events held in Australia, France, England and the United States.</p>
+    <p className="mt-4">ATP and WTA tours are structured in levels. Grand Slams are the most prestigious and award the most ranking points. Below them are Masters events for men (1000-point tournaments) and WTA 1000 events for women. Then 500-point and 250-point tournaments, followed by Challengers (lower-level events for developing players) and ITF tournaments. This hierarchy matters because it determines how important a result is for a player&apos;s ranking, seeding and career trajectory.</p>
+    <p className="mt-4">On this site, you will find live scores, schedules, player pages and tournament guides for ATP and WTA events. Each page is written to help you understand the match context, the players involved and where to watch legally.</p>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">What live tennis scores and match data mean</h2>
+    <p>Live tennis scores show real-time match results, but they are not the same as live video. A match can have a live score update available through an official app or website without video being broadcast in your region. Some tournaments or countries have video coverage by one broadcaster but only live text scores by another. Some matches have live scores but no point-by-point breakdown. These limitations exist because broadcasting rights are sold separately from scoring rights, and different platforms have different permissions.</p>
+    <p className="mt-4">When you visit a match page on this site, we show the live score when available, but we also explain what official broadcasters cover that event in your region, when the match is scheduled to start, and what tournament round or context matters for understanding the matchup. Live data refreshes during play, but we always encourage fans to confirm final match times and availability directly with official tournaments or broadcasters because scheduling can change, especially in tennis where weather delays and long matches frequently shift the order of play.</p>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">How broadcasting rights work for tennis</h2>
+    <p>Tennis broadcasting is complicated because rights are sold by region, by tournament, by tour and sometimes by court. A match at Wimbledon might be shown by BBC in the United Kingdom, ESPN in the United States, Eurosport in Europe, Nine Network in Australia and a different broadcaster in each other country. That same broadcaster might have rights to some matches but not others. A platform might show ATP tournaments but not WTA, or have Grand Slams but not regular tour events.</p>
+    <p className="mt-4">This is why we provide broadcaster guidance on every match page and tournament page. We help you find which services are licensed to show the match in your region or country, and we direct you to official broadcaster pages when you need to confirm availability. We never recommend unofficial or unauthorized streaming sources. We do not help users bypass restrictions. We simply provide information about legal options so fans can make confident choices.</p>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Features and pages you can use every day</h2>
+    <ul className="list-disc pl-6 space-y-2 mt-3">
+      <li><strong>Today&apos;s Schedule:</strong> Real-time list of all live and upcoming tennis matches, organized by tournament and time.</li>
+      <li><strong>Live Tennis:</strong> Matches currently being played right now, with live score updates and broadcaster information.</li>
+      <li><strong>Tomorrow&apos;s Schedule:</strong> Upcoming matches for the next day, so you can plan your viewing in advance.</li>
+      <li><strong>Player Pages:</strong> Follow individual ATP and WTA players, see their upcoming matches, recent results and biographical context about their playing style.</li>
+      <li><strong>Tournament Guides:</strong> Learn about Grand Slams, Masters events and major tournaments, including history, format and how to watch.</li>
+      <li><strong>Broadcaster Finder:</strong> Search by country to find which streaming services and TV channels show tennis in your location.</li>
+      <li><strong>Match Pages:</strong> Detailed context for individual matches, including player head-to-head history, broadcaster information and tournament significance.</li>
+      <li><strong>Educational Guides:</strong> Learn how rankings work, what tournament levels mean, why broadcast rights differ and how to spot legal streams.</li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">How to follow tennis safely and legally</h2>
+    <p>Professional tennis is protected by copyright and broadcasting licenses. Watching tennis safely means using official broadcasters, licensed streaming services, or authorized apps provided by tournaments or tour operators. Here are the safest options:</p>
+    <ul className="list-disc pl-6 space-y-2 mt-3">
+      <li>Official tournament websites for live scores, draws and schedules.</li>
+      <li>ATP and WTA official websites and mobile apps for tour events and player information.</li>
+      <li>Licensed streaming platforms in your country (Tennis TV, Eurosport, ESPN+, beIN SPORTS, and others depending on your location).</li>
+      <li>Local broadcaster apps and websites that have official rights to show tennis.</li>
+      <li>Cable or satellite provider apps if you have a sports subscription package.</li>
+    </ul>
+    <p className="mt-4">Avoid websites that promise free HD streams, access to every match without a subscription, or suspicious pop-ups. These sources are often unreliable, violate broadcasting rights, and can expose your device to malware or unwanted advertising.</p>
+  </div>
+</section>
+
 <section className="mb-12 overflow-hidden rounded-[2.5rem] border border-emerald-400/50 bg-gradient-to-br from-emerald-950/60 via-zinc-950 to-black p-6 md:p-8 shadow-sm">
   <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
     <div>

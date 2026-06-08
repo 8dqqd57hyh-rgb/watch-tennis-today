@@ -42,18 +42,32 @@ export default function BestWaysPage() {
           and live tennis schedules.
         </p>
 
+        <section className="mb-12 rounded-3xl border border-green-500/40 bg-green-500/10 p-8">
+          <h2 className="text-2xl font-black mb-4">Why tennis broadcasting is complicated</h2>
+          <p className="text-zinc-300 leading-8 mb-4">
+            Tennis broadcasting is fragmented across multiple territories, tournaments and platforms because media rights are sold regionally and by tournament type. A match that airs on ESPN in the USA might be on Eurosport in Europe, beIN SPORTS in the Middle East and Nine Network in Australia. Sometimes a single broadcaster has ATP rights but not WTA rights, or has Grand Slams but not regular tour events. This means you cannot rely on one subscription to watch all tennis—the best option depends on which players or tournaments you follow most.
+          </p>
+          <p className="text-zinc-300 leading-8">
+            Before the internet, fans had no choice but to watch whatever was broadcast locally. Now, legal streaming platforms, broadcaster apps and VPN services give international fans more options, though availability is still limited by licensing agreements and geographic restrictions. Understanding these limitations helps you find the most reliable, legal and affordable way to follow tennis in your region.
+          </p>
+        </section>
+
         <section className="space-y-6">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h2 className="text-3xl font-black mb-3">
               1. Official Tennis Broadcasters
             </h2>
 
-            <p className="text-zinc-400 leading-relaxed">
+            <p className="text-zinc-400 leading-relaxed mb-4">
               Many tennis matches are available through official TV broadcasters
               such as Eurosport, Tennis Channel, Sky Sports, ESPN, BBC and
               regional sports networks. Broadcast rights vary by country, so the
               same tournament may appear on different platforms depending on
               where you live.
+            </p>
+
+            <p className="text-zinc-400 leading-relaxed">
+              The most reliable way to find an official broadcaster is to visit the official tournament website or your country's major sports network. For Grand Slams, each tournament publishes a complete list of broadcasters by country. For ATP and WTA events, check the official ATP and WTA websites for broadcast information. Official broadcasters are always the safest option because they provide stable, high-quality streams with no risk of malware or service interruptions.
             </p>
           </div>
 
@@ -62,11 +76,26 @@ export default function BestWaysPage() {
               2. Tennis Streaming Platforms
             </h2>
 
-            <p className="text-zinc-400 leading-relaxed">
+            <p className="text-zinc-400 leading-relaxed mb-4">
               Some ATP and WTA matches are available through dedicated tennis
               streaming services, sports subscriptions or official tournament
               platforms. Before subscribing, check whether the service includes
               ATP Tour, WTA Tour, Grand Slam tournaments or only selected events.
+            </p>
+
+            <p className="text-zinc-400 leading-relaxed mb-4">
+              Common legal tennis streaming options include:
+            </p>
+            <ul className="text-zinc-400 leading-relaxed space-y-2 ml-4">
+              <li><strong>Tennis TV:</strong> Official ATP streaming service with most ATP tournaments (not available in all countries)</li>
+              <li><strong>Eurosport / Discovery+:</strong> Strong coverage in Europe, Australia and other regions for ATP, WTA and Grand Slams</li>
+              <li><strong>ESPN+:</strong> Available in the USA for selected ATP/WTA events</li>
+              <li><strong>Official tournament apps:</strong> Grand Slams and major tournaments often have their own apps with streaming</li>
+              <li><strong>Sports subscription packages:</strong> Many cable and streaming bundles include tennis coverage</li>
+            </ul>
+
+            <p className="text-zinc-400 leading-relaxed mt-4">
+              Most services offer free trials, so you can test them during major tournaments before committing to a subscription.
             </p>
           </div>
 <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
