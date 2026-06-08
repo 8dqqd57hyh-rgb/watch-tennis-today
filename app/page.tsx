@@ -10,8 +10,6 @@ import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
 import BroadcastFinder from "@/app/components/BroadcastFinder";
 import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
 import EmailSignup from "@/app/components/EmailSignup";
-import DailyTennisLoop from "@/app/components/DailyTennisLoop";
-import FrenchOpenConversionCluster from "@/app/components/FrenchOpenConversionCluster";
 import TennisWatchlistHub from "@/app/components/TennisWatchlistHub";
 import MatchImportanceHub from "@/app/components/MatchImportanceHub";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
@@ -204,7 +202,16 @@ function hasRenderablePlayers(match: Match) {
 }
 
 function getHomepageMatches(matches: Match[]) {
-  return matches.filter(hasRenderablePlayers);
+  const filtered = matches.filter(hasRenderablePlayers);
+  if (filtered.length > 0) {
+    return filtered;
+  }
+
+  return matches.filter(
+    (match) =>
+      String(match.player1 || "").trim().length > 0 &&
+      String(match.player2 || "").trim().length > 0
+  );
 }
 
 function hasPriorityPlayer(match: Match) {
@@ -296,24 +303,41 @@ async function subscribeToFinals(
 
   useEffect(() => {
     async function loadMatches() {
-      const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), 4500);
+      // Try up to 2 times for transient API slowness
+      const attempts = 2;
+      let lastError: unknown = null;
 
-      try {
-        const safeMatches = await fetchClientMatches("/api/matches", {
-          signal: controller.signal,
-          ttlMs: 25_000,
-          timeoutMs: 4500,
-        });
+      for (let attempt = 1; attempt <= attempts; attempt++) {
+        const controller = new AbortController();
+        const timeoutMs = 8000;
+        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
-        setMatches(capHomepageMatches(safeMatches as Match[]));
-      } catch {
-        console.error("Failed to load matches");
-        setMatches([]);
-      } finally {
-        window.clearTimeout(timeoutId);
-        setLoading(false);
+        try {
+          const safeMatches = await fetchClientMatches("/api/matches", {
+            signal: controller.signal,
+            ttlMs: 25_000,
+            timeoutMs,
+          });
+
+          setMatches(capHomepageMatches(safeMatches as Match[]));
+          lastError = null;
+          break;
+        } catch (err) {
+          lastError = err;
+          console.warn(`loadMatches attempt ${attempt} failed:`, err);
+          // small backoff before retry
+          if (attempt < attempts) await new Promise((r) => setTimeout(r, 350));
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
       }
+
+      if (lastError) {
+        console.warn("Failed to load matches after retries:", lastError);
+        setMatches([]);
+      }
+
+      setLoading(false);
     }
 
     loadMatches();
@@ -512,52 +536,9 @@ async function subscribeToFinals(
   </section>
 ) : null}
 
-<section className="mb-12 rounded-[2.5rem] border border-orange-500 bg-gradient-to-br from-orange-950/40 to-black p-8">
-  <div className="flex flex-wrap items-center gap-3 mb-5">
-    <span className="bg-orange-500 text-black text-sm font-black px-4 py-2 rounded-full">
-      🎾 GRAND SLAM
-    </span>
-
-    <span className="text-zinc-400">
-      Roland Garros / French Open 2026
-    </span>
-  </div>
-
-  <h2 className="text-5xl md:text-6xl font-black leading-tight mb-6">
-    French Open Live:
-    <br />
-    Matches, Schedule,
-    <br />
-    TV & Streaming
-  </h2>
-
-  <p className="text-zinc-300 text-lg leading-8 max-w-3xl mb-8">
-    Follow French Open live matches, today’s schedule, TV channels,
-    official broadcasters, player schedules, scores and Grand Slam updates
-  </p>
-
-  <div className="flex flex-wrap gap-4">
-    <a
-      href="/french-open"
-      className="inline-flex items-center rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
-    >
-      French Open Hub →
-    </a>
-
-    <a
-      href="/french-open-tv-schedule"
-      className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
-    >
-      TV Channels
-    </a>
-  </div>
-</section>
-
 {showHeavyHomeSections ? (
   <>
-    <DailyTennisLoop tournamentName="French Open" />
     <MatchImportanceHub matches={homepageMatches} compact />
-    <FrenchOpenConversionCluster compact title="French Open daily hub" />
     <TennisWatchlistHub matches={homepageMatches} />
   </>
 ) : null}
@@ -941,9 +922,6 @@ tennis viewing information.
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 <a href="/best-vpn-for-tennis-streaming" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
                   Best VPN for tennis streaming
-                </a>
-                <a href="/best-vpn-for-roland-garros" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
-                  VPN for Roland Garros
                 </a>
                 <a href="/best-vpn-for-wimbledon" className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 font-bold hover:border-emerald-400">
                   VPN for Wimbledon
@@ -1376,6 +1354,11 @@ tennis viewing information.
 
         {loading ? (
           <div className="text-zinc-400 text-xl">Loading matches...</div>
+        ) : visibleFilteredMatches.length === 0 ? (
+          <div className="text-zinc-400 text-xl">
+            No matches are available right now. Please check back soon or try
+            refreshing the page.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {visibleFilteredMatches.map((match) => (

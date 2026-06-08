@@ -18,13 +18,6 @@ type HomepageGrowthEngineProps = {
 
 const grandSlamLinks = [
   {
-    name: "French Open / Roland Garros",
-    href: "/french-open-live",
-    scheduleHref: "/french-open-schedule",
-    tvHref: "/french-open-tv-schedule",
-    terms: ["french open", "roland"],
-  },
-  {
     name: "Wimbledon",
     href: "/wimbledon-live",
     scheduleHref: "/tennis-schedule-today",
@@ -98,12 +91,14 @@ function formatTime(value?: string) {
 
 function scoreMatch(match: Match) {
   const text = `${match.player1} ${match.player2} ${match.tournament} ${match.round || ""}`.toLowerCase();
+  const status = (match.status || "").toUpperCase();
+  const category = (match.category || "").toUpperCase();
   let score = 0;
 
-  if (match.status === "LIVE") score += 100;
-  if (match.category === "ATP") score += 25;
-  if (match.category === "WTA") score += 25;
-  if (match.category === "CHALLENGER") score += 8;
+  if (status === "LIVE") score += 100;
+  if (category === "ATP") score += 25;
+  if (category === "WTA") score += 25;
+  if (category === "CHALLENGER") score += 8;
   if (priorityTerms.some((term) => text.includes(term))) score += 45;
   if (grandSlamLinks.some((slam) => slam.terms.some((term) => text.includes(term)))) score += 35;
   if ((match.round || "").toLowerCase().includes("final")) score += 35;
@@ -126,7 +121,13 @@ function getFeaturedSlam(matches: Match[]) {
     )
   );
 
-  return activeSlam || grandSlamLinks[0];
+  return activeSlam || {
+    name: "Grand Slam spotlight",
+    href: "/grand-slam-live",
+    scheduleHref: "/tennis-schedule-today",
+    tvHref: "/tennis-streaming-services",
+    terms: [],
+  };
 }
 
 function getTopTournaments(matches: Match[]) {
@@ -144,17 +145,25 @@ function getTopTournaments(matches: Match[]) {
 }
 
 export default function HomepageGrowthEngine({ matches }: HomepageGrowthEngineProps) {
-  const bestMatches = [...matches]
-    .filter((match) => match.status !== "FINISHED" && match.status !== "CANCELLED")
+  const filteredMatches = [...matches].filter((match) => {
+    const status = (match.status || "").toUpperCase();
+    return status !== "FINISHED" && status !== "CANCELLED";
+  });
+
+  const bestMatches = filteredMatches
     .sort((a, b) => scoreMatch(b) - scoreMatch(a))
     .slice(0, 6);
 
+  const fallbackMatches = filteredMatches.slice(0, 6);
+  const displayMatches = bestMatches.length > 0 ? bestMatches : fallbackMatches;
+
   const featuredSlam = getFeaturedSlam(matches);
   const topTournaments = getTopTournaments(matches);
-  const liveCount = matches.filter((match) => match.status === "LIVE").length;
-  const upcomingCount = matches.filter(
-    (match) => match.status !== "LIVE" && match.status !== "FINISHED" && match.status !== "CANCELLED"
-  ).length;
+  const liveCount = matches.filter((match) => (match.status || "").toUpperCase() === "LIVE").length;
+  const upcomingCount = matches.filter((match) => {
+    const status = (match.status || "").toUpperCase();
+    return status !== "LIVE" && status !== "FINISHED" && status !== "CANCELLED";
+  }).length;
 
   return (
     <section className="mb-12 space-y-6">
@@ -178,9 +187,9 @@ export default function HomepageGrowthEngine({ matches }: HomepageGrowthEnginePr
             tournament guides and legal viewing routes instead of leaving after one result.
           </p>
 
-          {bestMatches.length > 0 ? (
+          {displayMatches.length > 0 ? (
             <div className="grid gap-3 md:grid-cols-2">
-              {bestMatches.map((match, index) => (
+              {displayMatches.map((match, index) => (
                 <a
                   key={match.id}
                   href={`/watch/${matchSlug(match)}`}
