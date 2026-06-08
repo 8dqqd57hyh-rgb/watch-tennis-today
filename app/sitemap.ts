@@ -206,7 +206,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/french-open",
     "/today",
     "/tomorrow",
-    "/tennis-spoiler-free-scores",
     "/live-tennis",
     "/watch",
     "/next-match",
@@ -222,10 +221,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-streaming-services",
     "/tennis-live-alerts",
     "/watch-tennis-abroad",
-    "/wimbledon-live",
     "/wimbledon-schedule",
     "/wimbledon-results",
-    "/wimbledon-tv-schedule",
     "/where-to-watch-wimbledon",
     "/tennis-on-tv-today",
     "/who-plays-tennis-today",
@@ -345,11 +342,7 @@ const uniquePlayers = [
 
 // Add French Open / Roland Garros related pages
 const frenchOpenPages = [
-  "/french-open-live",
   "/watch-french-open-online",
-  "/french-open-tv-schedule",
-  "/french-open-today",
-  "/french-open-order-of-play",
   "/french-open-results",
   "/roland-garros-recap",
   "/where-to-watch-french-open",

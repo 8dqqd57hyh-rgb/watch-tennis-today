@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/french-open-live-stream",
-        destination: "/french-open-live",
+        destination: "/french-open",
         permanent: true,
       },
       {
@@ -25,12 +25,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/roland-garros-live",
-        destination: "/french-open-live",
+        destination: "/french-open",
         permanent: true,
       },
       {
         source: "/roland-garros-live-stream",
-        destination: "/french-open-live",
+        destination: "/french-open",
         permanent: true,
       },
       {
@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/roland-garros-tv-schedule",
-        destination: "/french-open-tv-schedule",
+        destination: "/where-to-watch-french-open",
         permanent: true,
       },
       {
@@ -50,7 +50,32 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/roland-garros-draw",
-        destination: "/french-open-draw",
+        destination: "/french-open-order-of-play",
+        permanent: true,
+      },
+      {
+        source: "/watch/tennis-spoiler-free-scores",
+        destination: "/tennis-spoiler-free-scores",
+        permanent: true,
+      },
+      {
+        source: "/wimbledon-tv-schedule",
+        destination: "/where-to-watch-wimbledon",
+        permanent: true,
+      },
+      {
+        source: "/french-open-tv-schedule",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
+        source: "/french-open-live",
+        destination: "/french-open",
+        permanent: true,
+      },
+      {
+        source: "/french-open-today",
+        destination: "/french-open",
         permanent: true,
       },
     ];

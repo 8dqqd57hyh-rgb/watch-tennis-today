@@ -11,6 +11,16 @@ export default function robots(): MetadataRoute.Robots {
           "/_next/data/",
           "/newsletter-confirmation",
           "/vs/", // vs comparison pages without substantive content
+          "/watch/tennis-spoiler-free-scores",
+          "/french-open-draw",
+          "/french-open-survivors",
+          "/french-open-upsets",
+          "/roland-garros-pulse",
+          "/roland-garros-predictions",
+          "/tennis-schedule-tomorrow",
+          "/wimbledon-live-stream",
+          "/watch-sabalenka-live",
+          "/watch-swiatek-live",
         ],
       },
       {
@@ -21,6 +31,16 @@ export default function robots(): MetadataRoute.Robots {
           "/_next/data/",
           "/newsletter-confirmation",
           "/vs/", // vs comparison pages without substantive content
+          "/watch/tennis-spoiler-free-scores",
+          "/french-open-draw",
+          "/french-open-survivors",
+          "/french-open-upsets",
+          "/roland-garros-pulse",
+          "/roland-garros-predictions",
+          "/tennis-schedule-tomorrow",
+          "/wimbledon-live-stream",
+          "/watch-sabalenka-live",
+          "/watch-swiatek-live",
         ],
         // Note: /watch/ pages are now fully indexed as they contain editorial content
         // This change ensures AdSense crawlers can access match pages with commentary
