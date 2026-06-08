@@ -2,8 +2,8 @@ import Link from "next/link";
 import { guideArticles } from "./articles";
 
 export const metadata = {
-  title: "Tennis Watching Guides | Watch Tennis Today",
-  description: "Original tennis watching guides covering legal streams, schedules, live scores, Grand Slam broadcasters and safe tennis viewing.",
+  title: "Tennis Knowledge Guides | Watch Tennis Today",
+  description: "Original tennis knowledge guides covering scoring, rules, rankings, tournaments, surfaces, schedules and legal viewing context.",
   alternates: { canonical: "https://watchtennistoday.com/guides" },
 };
 
@@ -14,15 +14,15 @@ export default function GuidesPage() {
         <Link href="/" className="text-zinc-400 hover:text-white">← Back</Link>
         <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
           <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-emerald-300">Original guides</p>
-          <h1 className="text-4xl font-black md:text-6xl">Tennis Watching Guides</h1>
+          <h1 className="text-4xl font-black md:text-6xl">Tennis Knowledge Guides</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
-            Practical, original guides for tennis fans who want to follow live matches, understand schedules and find legal viewing options without unsafe streaming links.
+            Practical, original guides for tennis fans who want to understand scoring, rules, rankings, tournaments, surfaces, scheduling and legal viewing context without thin SEO filler.
           </p>
         </section>
         <section className="mt-8 rounded-3xl border border-emerald-900 bg-emerald-950/30 p-6">
-          <h2 className="text-2xl font-black text-white">Start with our strongest evergreen guides</h2>
+          <h2 className="text-2xl font-black text-white">Start with core tennis concepts</h2>
           <p className="mt-3 max-w-3xl leading-8 text-zinc-300">
-            New to the site? These guides explain scoring, live-score reliability, schedule terms, tournament levels, rankings and legal broadcaster checks before you use the daily match pages.
+            New to the site? These guides explain scoring, live-score reliability, schedule terms, tournament levels, rankings and official broadcaster checks before you use the daily match pages.
           </p>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {[
