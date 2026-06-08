@@ -1,25 +1,35 @@
-# Guide content rewrite plan
+# Tennis Guides Quality Reset
 
-Replaced the old 39 template-like guide entries with 50 higher-value tennis concepts grouped around scoring, statistics, rankings, tournaments, tours, scheduling, surfaces and legal broadcasts. Weak fan-utility topics and duplicate streaming/travel topics were removed from the guide index so they do not inflate the sitemap with low-value content.
+## What changed
 
-Top retained categories:
+The guide library was reduced from the generated 50-article set to five flagship evergreen articles:
 
-- Scoring: scoring, break points, tiebreaks, deuce, advantage, love
-- Statistics: break-point conversion, first serve percentage, winners/errors, hold/break percentage, return points won
-- Rankings: ATP, WTA, ranking points, protected ranking, seeds
-- Tournaments: draws, qualifying, Grand Slams, team cups, lucky losers, wild cards
-- Scheduling: order of play, not-before times, rain delays, late starts
-- Surfaces: clay, grass, hard, court surface behavior
-- Broadcasts: legal watching, streaming-service comparison, official broadcasters
+1. Break Points Explained
+2. Tennis Tiebreak Rules Explained
+3. ATP Rankings Explained
+4. Walkover vs Retirement in Tennis
+5. Tennis Surfaces Explained
 
-Removed from guide index for now because they are better as utility pages or future carefully written articles, not thin evergreen guides:
+This is intentional. The previous library had more pages, but the pages repeated the same structure and phrases across every article. That created a stronger AdSense originality risk than having fewer, better pages.
 
-- watch-tennis-while-traveling
-- tennis-tv-rights-by-country
-- tennis-tv-vs-grand-slam-broadcasters
-- how-to-follow-a-player-live
-- player-form-guide
-- how-to-follow-tennis-without-spoilers
-- tennis-time-zone-planning
+## Removed / held back
 
-Next manual editorial pass should improve the examples further with exact match scorelines and screenshots/diagrams where legally usable.
+Duplicative and weak guide topics were removed from the exported article list for now, including repeated draw, qualifying, order-of-play and surface variants. They should not be re-added until each one has a different search intent, article structure, examples and FAQ.
+
+## Reintroduction rule
+
+Add new guides in small batches of 3–5. Before adding them to `guideArticles`, check:
+
+- The article answers the exact topic in the first two paragraphs.
+- The section headings are specific to the topic, not reusable across all guides.
+- Real ATP/WTA examples are relevant to that exact concept.
+- There is no generic streaming/legal/planning boilerplate unless the article is actually about watching coverage.
+- The article can stand alone without reading like a keyword rewrite.
+
+## Suggested next batch
+
+- Tennis Scoring for Beginners
+- Deuce in Tennis Explained
+- Advantage in Tennis Explained
+- Winners and Unforced Errors Explained
+- Lucky Loser in Tennis Explained
