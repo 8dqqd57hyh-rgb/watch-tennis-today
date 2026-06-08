@@ -215,15 +215,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This guide is for planning and verification only. Watch Tennis Today does not carry the video feed for this topic, so use it to find the right official route rather than as a stream player."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Coverage can change sharply by country because each tournament sells media rights in separate territories and sometimes by platform type."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If video is unavailable, follow the official scoreboard, tournament live blog, verified highlights or replay listings instead of clicking unknown stream sites."
       }
     ]
   },
@@ -274,15 +274,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "No live broadcast is hosted here. The page is meant to explain the tennis context and point readers toward licensed sources when coverage exists in their region."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "A match available on one service in the United States may sit with a different broadcaster in Europe or Australia because rights are regional."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "When a match is not carried locally, the safer choice is official live scoring, radio-style updates, highlights or a later replay from a rights holder."
       }
     ]
   },
@@ -333,15 +333,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today is an information guide, not a streaming platform. For this topic, use the advice here alongside the tournament site and your local rights holder."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Tennis does not have one universal global channel. Rights are split by event, tour, country and sometimes by court or session."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Do not chase unofficial links when coverage is missing. Use tournament updates, official scoreboards and licensed replay options."
       }
     ]
   },
@@ -392,15 +392,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This site does not embed or restream matches. It helps fans understand the schedule, then continue to the official broadcaster or tournament resource for their country."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Availability depends on the local rights package, so the same match may be on TV in one market, streaming-only in another and unavailable in a third."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If there is no legal live option, keep the match on a trusted score source and check whether the broadcaster posts highlights afterward."
       }
     ]
   },
@@ -451,15 +451,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "There is no hidden video player on this guide. The goal is to make the tennis decision clearer before you check a legal provider."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Broadcaster lists vary because tournaments negotiate territory-specific deals. Always check the provider assigned to your country."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "A missing stream is frustrating, but unsafe mirrors can expose users to malware and misleading ads. Stick with official scores and recaps."
       }
     ]
   },
@@ -510,15 +510,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Use this page as a viewing-planning note, not as a broadcast source. Match video availability must come from a licensed TV or streaming partner."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Country differences are normal in tennis coverage. A Grand Slam, ATP event and WTA event can each have a different local home."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "When coverage is limited, use the tournament's scoreboard and verified social updates, then look for highlights from the rights holder."
       }
     ]
   },
@@ -569,15 +569,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The guide organizes tennis information and safe next steps. It does not provide unauthorized streams or bypass any broadcaster rights."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Your location matters because streaming services usually license tennis by region, not as one worldwide feed."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If your provider does not show the match, confirm whether another licensed provider has it before relying on a random link."
       }
     ]
   },
@@ -628,15 +628,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today stays on the discovery side: schedules, context and official checks. Any live video should come from a legal service available where you are."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "A schedule line can be global, but broadcast access is local. That is why final verification with the local rights holder matters."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "The fallback should be official information: scoreboards, order-of-play updates, draw pages, highlights and legal replays."
       }
     ]
   },
@@ -687,15 +687,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This page will not show the match video itself. It is written to help you understand what to verify before opening a licensed viewing option."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Rights can be divided between TV channels, streaming apps and tournament platforms, so one answer rarely fits every country."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Avoid sites that promise every match without naming rights holders. Official scores and legitimate highlights are safer and more reliable."
       }
     ]
   },
@@ -746,15 +746,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The site is not a rights holder. Treat the article as a practical guide to the match context and then confirm coverage with official providers."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "The event owner controls which companies may show the match in each market. That is why a friend abroad may see different options."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If live video is not listed, use trusted match updates and wait for authorized highlights instead of using unlicensed streams."
       }
     ]
   },
@@ -805,15 +805,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "No stream is hosted on this page. It keeps the focus on reliable tennis information and safe, legal viewing decisions."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Some providers carry only selected courts or sessions, while others show broader coverage. The exact package depends on territory."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "When a court has no broadcast, an official scoreboard may be the only legal live source. That is still better than a risky stream page."
       }
     ]
   },
@@ -864,15 +864,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today cannot replace a broadcaster subscription. It can help you avoid confusing pages by showing what to check before choosing a provider."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Even when two countries use the same brand, their tennis catalogues can differ because the rights contracts are not identical."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Check whether the tournament offers stats, point-by-point scores or press clips. Those options are safer than unknown streaming mirrors."
       }
     ]
   },
@@ -923,15 +923,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This article is not a broadcast feed. It explains the topic and sends readers toward legitimate tournament or broadcaster information when viewing is possible."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Local blackout rules, exclusive deals and court-level coverage can all affect whether a match appears where you live."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If a match disappears from a schedule, refresh official sources before assuming another site has a legitimate feed."
       }
     ]
   },
@@ -982,15 +982,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Use the guide to prepare, not to watch inside the page. Licensed platforms control whether a match is shown in each country."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Tennis rights are fragmented across tours and tournaments. Check the country-specific page rather than assuming one app has everything."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "No legal stream sometimes means following the score and reading the recap later. That is normal for smaller courts and lower-tier events."
       }
     ]
   },
@@ -1041,15 +1041,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "There is no unofficial replay or live feed here. The page is designed to support legal discovery and reduce bad clicks."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "A provider may advertise a tournament but still not show every match. Territory and court coverage need separate confirmation."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Use trusted tennis apps, tournament pages and broadcaster replay libraries when live access is not available in your area."
       }
     ]
   },
@@ -1100,15 +1100,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today keeps match coverage informational. For actual video, use the official service that owns rights in your location."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Viewing availability follows licensing agreements, so travel can change what you are allowed to access on the same account."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Do not enter payment details on unfamiliar sites claiming exclusive coverage. Verify through the tournament or recognized broadcaster first."
       }
     ]
   },
@@ -1159,15 +1159,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The page does not restream tennis. It helps fans understand the schedule, format and coverage checks before they leave for a legal source."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Broadcast rights are not attached only to the players. They are usually attached to the tournament and sold market by market."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If the match is not shown, choose official data and licensed highlights over stream links shared in comment sections or pop-up pages."
       }
     ]
   },
@@ -1218,15 +1218,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This guide does not unlock paid or restricted broadcasts. It explains the topic and encourages a final check with recognized tennis sources."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "The safest assumption is that coverage is local until proven otherwise by the tournament or broadcaster schedule."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "For limited coverage events, the best route may be live scoring plus post-match video from the tour or rights holder."
       }
     ]
   },
@@ -1277,15 +1277,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "No match footage is hosted here. The article is a reference point for fans comparing timing, status and official coverage options."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Rights holders rotate over time and differ by event, which makes official local listings more reliable than generic stream claims."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "When a provider skips a match, check if court coverage is restricted. If it is, rely on official score and news updates."
       }
     ]
   },
@@ -1336,15 +1336,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today provides context rather than video. Confirm the actual broadcast on the tournament page or with a licensed provider before match time."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "A legal option in one region may not be licensed elsewhere. Use the page as a starting point, then verify your own territory."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Avoid unsafe shortcuts; they often mislabel matches and can lead to deceptive ads. Official updates are slower but safer."
       }
     ]
   },
@@ -1395,15 +1395,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The article is intentionally informational. It avoids unsafe stream shortcuts and keeps the next step with official tennis or broadcaster pages."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Different providers may split live matches, highlights and replays. That split is usually decided by rights agreements in each country."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If you cannot watch live, set a spoiler-free plan around official replays, highlights or match reports rather than chasing pirate feeds."
       }
     ]
   },
@@ -1454,15 +1454,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This is not a streaming mirror. Use the page to make sense of tennis details and then choose a legal viewing route if one is available."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Tennis calendars are international, but TV contracts are local. That mismatch is the reason coverage checks can feel inconsistent."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Use verified score sources first. If legal video appears later, it should be listed by the tournament, tour or known broadcaster."
       }
     ]
   },
@@ -1513,15 +1513,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The site does not carry live rights. It helps you understand what matters before using a legitimate TV, streaming or tournament service."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Some tournaments use their own streaming partners, while others rely on national sports networks. The correct route depends on location."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "When there is no local stream, a good backup is the official scoreboard with alerts turned on and a replay check after the session."
       }
     ]
   },
@@ -1572,15 +1572,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "No live player is embedded in the guide. It supports planning around the match while leaving broadcast access to licensed providers."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Country rules are part of the viewing decision. Confirm them before paying, especially for short events or one-match plans."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "Treat unknown stream links as a red flag, especially if they promise every court for free. Use official tennis sources instead."
       }
     ]
   },
@@ -1631,15 +1631,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Watch Tennis Today is built for discovery and explanation. It should not be treated as a place to watch unauthorized tennis video."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Broadcasters buy packages for specific markets, so there is no single reliable answer that covers every reader."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If coverage is unavailable, follow the match through lawful alternatives and avoid links that bypass broadcaster rights."
       }
     ]
   },
@@ -1690,15 +1690,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "The guide can help you decide what to check next, but the match itself must be watched through an authorized broadcaster or platform."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "Coverage differs because rights ownership, language packages and platform availability are negotiated separately around the world."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "A legal absence is still an answer. Use scores, highlights and recaps rather than forcing an unsafe viewing route."
       }
     ]
   },
@@ -1749,15 +1749,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "This page does not provide streams, downloads or restreams. It keeps users oriented toward official schedules and legal coverage."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "A match may be legally visible on cable, streaming, highlights only or not at all depending on where you are watching from."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "For untelevised matches, the official draw, scoreboard and post-match media are the most reliable substitutes."
       }
     ]
   },
@@ -1808,15 +1808,15 @@ export const guideArticles: GuideArticle[] = [
     "faq": [
       {
         "question": "Is this page a streaming service?",
-        "answer": "No. Watch Tennis Today provides information and links to official or external sources; it does not host broadcasts."
+        "answer": "Use it as a tennis reference. Viewing rights, feeds and replays remain with the official tournament and broadcaster partners."
       },
       {
         "question": "Why can coverage differ by country?",
-        "answer": "Tennis rights are sold by territory, so availability changes by location and provider."
+        "answer": "For tennis fans, the important check is not just who is playing but which company owns the live rights in your country."
       },
       {
         "question": "What should I do if a match is not shown?",
-        "answer": "Use official live scores, tournament updates, highlights or replay information rather than unsafe unofficial streams."
+        "answer": "If the live feed is missing, check official apps, tournament social channels and replay windows before giving up or clicking risky pages."
       }
     ]
   },

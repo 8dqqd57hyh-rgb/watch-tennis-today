@@ -5,6 +5,11 @@ type LinkItem = {
   label: string;
 };
 
+type EditorialSection = {
+  heading: string;
+  body: string;
+};
+
 type DailyTennisGuideProps = {
   eyebrow: string;
   title: string;
@@ -12,6 +17,8 @@ type DailyTennisGuideProps = {
   intent: string;
   mode?: "schedule" | "order-of-play" | "results";
   links?: LinkItem[];
+  editorialSections?: EditorialSection[];
+  faqItems?: { question: string; answer: string }[];
 };
 
 type Match = {
@@ -151,6 +158,8 @@ export default async function DailyTennisGuide({
   intent,
   mode = "schedule",
   links = [],
+  editorialSections = [],
+  faqItems = [],
 }: DailyTennisGuideProps) {
   const matches = await getMatches();
   const usefulMatches = getUsefulMatches(matches, mode);
@@ -166,7 +175,7 @@ export default async function DailyTennisGuide({
   const upcomingCount = matches.filter((match) => normalizeStatus(match.status) === "UPCOMING").length;
   const suspendedCount = matches.filter((match) => normalizeStatus(match.status) === "SUSPENDED").length;
 
-  const faq = [
+  const defaultFaq = [
     {
       question: "Where can I check tennis matches today?",
       answer:
@@ -183,6 +192,8 @@ export default async function DailyTennisGuide({
         "Tennis schedules can move because of long previous matches, weather delays, court changes, withdrawals and tournament decisions.",
     },
   ];
+
+  const faq = faqItems.length > 0 ? faqItems : defaultFaq;
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -238,6 +249,21 @@ export default async function DailyTennisGuide({
           </div>
         </div>
       </section>
+
+
+      {editorialSections.length > 0 ? (
+        <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+          <p className="mb-3 text-sm font-black uppercase tracking-wide text-sky-700">Editorial guide</p>
+          <div className="grid gap-5 md:grid-cols-2">
+            {editorialSections.map((section) => (
+              <article key={section.heading}>
+                <h2 className="mb-2 text-xl font-black text-neutral-950">{section.heading}</h2>
+                <p className="text-base leading-7 text-neutral-700">{section.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mb-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
