@@ -291,6 +291,229 @@ export const guideArticles: GuideArticle[] = [
       }
     ]
   }
+
+  ,
+  {
+    "slug": "tennis-scoring-system-explained",
+    "title": "Tennis Scoring System Explained",
+    "description": "A beginner-friendly guide to love, 15, 30, 40, deuce, advantage, games, sets and matches.",
+    "category": "Scoring",
+    "intro": "Tennis scoring looks strange because it uses several layers at once. A player wins points to win a game, games to win a set, and sets to win the match. The words love, 15, 30 and 40 can make the sport feel harder than it is, but the structure is logical once you separate the scoreboard into those layers.\n\nThis guide explains the scoring system in match language, so a new fan can follow a live score without needing a rulebook beside the screen.",
+    "sections": [
+      {"heading":"Points inside a game","body":"A standard game starts at love-love. The first point is called 15, the second is 30 and the third is 40. If a player wins the next point from 40 while the opponent has 30 or less, the game is over. If both players reach 40, the score is deuce and the game must be won by two consecutive points.\n\nThe unusual numbers are historical, but fans do not need the history to follow the action. Treat 15, 30 and 40 as steps on a ladder. Once both players reach the top together, deuce begins."},
+      {"heading":"Deuce and advantage","body":"At deuce, one point is not enough to win the game. The player who wins the next point gets advantage. If the same player wins again, they win the game. If the other player wins the point, the score returns to deuce.\n\nThis is why some games last much longer than others. A server can be one point from winning several times and still lose the game if the receiver keeps dragging the score back to deuce."},
+      {"heading":"Games and sets","body":"Most sets are first to six games, but the winner usually needs a two-game lead. A 6-4 set is complete. At 5-5, a player normally needs to win 7-5 or reach a tiebreak at 6-6 depending on tournament rules.\n\nFor fans, the set score tells the larger story. A player leading 4-1 is close to controlling the set, while 4-4 means the pressure is concentrated into a few service games."},
+      {"heading":"Best of three and best of five","body":"Most ATP and WTA matches are best of three sets. Grand Slam men’s singles matches are usually best of five, while women’s singles are best of three. A best-of-three match ends when a player wins two sets; a best-of-five match ends when a player wins three.\n\nThis format changes tactics. In best of five, momentum can swing over several hours, and physical endurance becomes part of the scoreboard."},
+      {"heading":"How to read a live score","body":"Read the score from biggest to smallest: match sets, current set games, then current game points. For example, if a player leads one set to zero, trails 3-4 in the second set and the game is 30-40, they are ahead in the match but under pressure in the current return game.\n\nOnce you read scores this way, tennis becomes easier to follow because each point has a visible place in the match structure."}
+    ],
+    "faq": [
+      {"question":"What does love mean in tennis?","answer":"Love means zero. A score of love-15 means the server has zero points and the receiver has one point in the current game."},
+      {"question":"Why is tennis scored 15, 30 and 40?","answer":"The exact origin is debated, but modern fans can treat 15, 30 and 40 as the first three scoring steps before a game is won."},
+      {"question":"What happens at deuce?","answer":"At deuce, a player must win two points in a row to win the game: one to earn advantage and one to finish the game."},
+      {"question":"How many sets do you need to win?","answer":"In best of three, two sets win the match. In best of five, three sets win the match."}
+    ]
+  },
+  {
+    "slug": "tennis-seeds-explained",
+    "title": "What Is a Seed in Tennis?",
+    "description": "What seeded players are, how seeding affects tournament draws, and why seeds matter for fans reading a bracket.",
+    "category": "Tournaments",
+    "intro": "A seed is a player placed in the draw so the strongest entrants are less likely to meet in the earliest rounds. Seeding does not guarantee results, but it gives a tournament structure and helps fans understand why certain matchups cannot happen immediately.\n\nThis guide explains seeds without pretending they are predictions. A seed is a draw position based on ranking or tournament criteria, not a promise that the player will reach a specific round.",
+    "sections": [
+      {"heading":"The basic idea","body":"Seeded players are separated in the draw. In a Grand Slam singles draw, the top seeds are placed so they cannot all land in the same small section. This protects the tournament from having the highest-ranked players eliminate each other immediately.\n\nUnseeded players can still beat seeds. Tennis draws create structure, not safety."},
+      {"heading":"Why the top seed matters","body":"The number one seed is usually the highest-ranked entered player, but rankings can shift and withdrawals can change the field. Being the top seed means the draw is built around that player’s position, but the player still has to win every match.\n\nFans often overreact to seeding. A top seed on an uncomfortable surface or returning from injury may have a harder path than the number suggests."},
+      {"heading":"How seeds shape the draw","body":"Seeds are distributed through sections of the bracket. The goal is to avoid early meetings between the highest seeds. For example, the top two seeds are placed on opposite halves, meaning they can meet only in the final if both keep winning.\n\nThis is why draw releases are major tennis news. Fans immediately check which dangerous unseeded players landed near top names."},
+      {"heading":"Seeded does not mean favorite","body":"A seed reflects entry position, not current form. A lower seed who has been playing excellent tennis may be more dangerous than a higher seed who has struggled for weeks. Surface, fitness, matchup history and confidence still matter.\n\nWhen reading previews, separate ranking-based seeding from match-specific analysis."},
+      {"heading":"What fans should check","body":"Look at the seed, then check the draw section. Who could the player face in round three or four? Are there big servers on grass, clay specialists in Paris, or returning champions with low rankings?\n\nThe seed number is only the first clue. The surrounding draw tells the real story."}
+    ],
+    "faq": [
+      {"question":"Does a seeded player automatically get an easier draw?","answer":"Not automatically. Seeds are separated from each other, but dangerous unseeded players can still appear in any section."},
+      {"question":"Can an unseeded player win a tournament?","answer":"Yes. Seeding helps organize the draw, but unseeded players can beat seeded players and win titles."},
+      {"question":"Are seeds based only on rankings?","answer":"Usually they closely follow rankings, though tournament rules and withdrawals can affect the final seed list."},
+      {"question":"Why do commentators mention seed numbers?","answer":"Seed numbers help explain expectations, draw structure and possible later-round matchups."}
+    ]
+  },
+  {
+    "slug": "lucky-loser-explained",
+    "title": "Lucky Loser in Tennis Explained",
+    "description": "How a player can lose in qualifying but still enter the main draw as a lucky loser.",
+    "category": "Tournaments",
+    "intro": "A lucky loser is a player who loses in qualifying but still gets into the main draw because another player withdraws before starting. The phrase sounds strange, but the system exists so tournaments can keep a full draw when late withdrawals happen.\n\nLucky losers are not random fans pulled from nowhere. They are professional players who were already close to qualifying and stayed available for a main-draw opening.",
+    "sections": [
+      {"heading":"How lucky loser entry works","body":"When a main-draw player withdraws before playing, the tournament may replace them with an eligible player from qualifying. That replacement is called a lucky loser because they lost in qualifying but still received a main-draw place.\n\nExact procedures can vary by tour and tournament, but the principle is consistent: the draw needs a replacement, and qualifying provides the pool."},
+      {"heading":"Why the rule exists","body":"Tennis tournaments have fixed draws, broadcast schedules and ticketed sessions. If a player withdraws late, leaving an empty spot damages the event and the opponent’s schedule. A lucky loser keeps the bracket complete.\n\nThe rule is also fairer than inviting an unrelated player at the last second because qualifying players already competed for entry."},
+      {"heading":"Can a lucky loser go far?","body":"Yes. A lucky loser can win rounds or even produce a major storyline. Once they enter the main draw, the previous qualifying loss no longer matters. They face the same match requirements as everyone else.\n\nThe mental situation can be unusual: some players compete freely because they feel they have received a second chance."},
+      {"heading":"How it differs from a wildcard","body":"A wildcard is a direct entry granted by the tournament before or around draw construction. A lucky loser enters because of a withdrawal after losing in qualifying.\n\nBoth can appear in the main draw without ranking-based direct entry, but the route is completely different."},
+      {"heading":"What fans should watch","body":"When a lucky loser appears, check who withdrew and where the replacement lands in the draw. Sometimes the lucky loser inherits a difficult matchup; sometimes they land in a section that suddenly becomes more open.\n\nThat context explains whether the replacement is just administrative or a real tournament storyline."}
+    ],
+    "faq": [
+      {"question":"Does lucky loser mean the player is bad?","answer":"No. It means the player lost in qualifying but was eligible to replace a withdrawn main-draw player."},
+      {"question":"Can a lucky loser win the tournament?","answer":"Yes, once in the main draw, a lucky loser can keep winning like any other player."},
+      {"question":"Is a lucky loser the same as a wildcard?","answer":"No. A wildcard is invited into the draw; a lucky loser enters after losing in qualifying because another player withdraws."},
+      {"question":"Why do lucky losers need to stay on site?","answer":"They often need to be available quickly if a withdrawal creates an opening before the affected match starts."}
+    ]
+  },
+  {
+    "slug": "wild-card-in-tennis-explained",
+    "title": "Wild Card in Tennis Explained",
+    "description": "What wild cards are, why tournaments give them, and how they affect tennis draws.",
+    "category": "Tournaments",
+    "intro": "A wild card is a place in a tournament draw given to a player who did not enter through ranking, qualifying or another standard route. Tournaments use wild cards to support promising young players, returning stars, local players or commercially important names.\n\nWild cards can be controversial because they involve discretion. Used well, they help tournaments tell better stories and give opportunities to players who might not otherwise enter.",
+    "sections": [
+      {"heading":"The basic definition","body":"A wild card is direct entry granted by tournament organizers. The player still has to compete normally once the tournament begins, but they skip the usual requirement of ranking-based entry or qualifying.\n\nWild cards are common at tour events and Grand Slams, especially for home players or players returning from injury."},
+      {"heading":"Why tournaments award wild cards","body":"Tournaments may award wild cards to national players, juniors, former champions, popular players or athletes coming back from injury. The decision can balance sporting development with fan interest and event identity.\n\nFor example, a Grand Slam may use wild cards to support domestic players who would not make the draw by ranking alone."},
+      {"heading":"Why wild cards are debated","body":"Some fans see wild cards as valuable opportunities; others argue they can reward reputation over current level. The debate becomes louder when a wild card goes to a famous player instead of a younger or higher-ranked local candidate.\n\nThe fairest analysis asks whether the invitation serves the tournament’s stated goals and whether the player is competitive enough for the level."},
+      {"heading":"Wild card versus qualifier","body":"A qualifier earns a main-draw place by winning qualifying matches. A wild card receives entry directly. Both may be lower ranked than direct entrants, but their paths are different.\n\nThis difference matters when assessing form. A qualifier may arrive with match rhythm, while a wild card may arrive fresher but less tested."},
+      {"heading":"What fans should check","body":"When you see WC beside a player’s name, check why the player received entry. Are they a local prospect, former champion, returning from injury or a major audience draw? That context helps explain the tournament’s decision.\n\nThen judge the match on actual tennis factors: surface, fitness, matchup and recent results."}
+    ],
+    "faq": [
+      {"question":"What does WC mean in a tennis draw?","answer":"WC means wild card, a player given direct entry by tournament organizers."},
+      {"question":"Can a wild card win a tournament?","answer":"Yes. A wild card has the same chance to keep advancing once the matches begin."},
+      {"question":"Is a wild card unfair?","answer":"Not automatically. Wild cards are part of tournament rules, but fans may disagree with individual choices."},
+      {"question":"Do wild cards get ranking points?","answer":"They can earn ranking points by winning matches, subject to the normal event and tour rules."}
+    ]
+  },
+  {
+    "slug": "protected-ranking-in-tennis",
+    "title": "Protected Ranking in Tennis Explained",
+    "description": "How protected rankings help players return after long injury or absence, and what the rule does not do.",
+    "category": "Rankings",
+    "intro": "Protected ranking is one of the most misunderstood tennis rules. It can help a player enter tournaments after a long absence, but it does not restore their current ranking and it does not seed them as if nothing happened.\n\nThe rule exists because injuries, pregnancy and long absences can push a player down the rankings even when their previous level was much higher. Protected ranking gives a limited pathway back into events.",
+    "sections": [
+      {"heading":"What protected ranking means","body":"A protected ranking is a ranking position a player may use for entry into certain tournaments after being out for an extended period. It is not the same as the player’s live ranking. It is an entry tool, not a performance guarantee.\n\nThe player still needs to win matches to rebuild ranking points."},
+      {"heading":"What it does not do","body":"Protected ranking usually does not make a player seeded. That distinction matters. A returning player may enter the draw using protected ranking but still be unseeded, which can create difficult early-round matchups.\n\nFans sometimes mistake protected entry for preferential seeding. They are different concepts."},
+      {"heading":"Why the rule exists","body":"Without a protected ranking rule, players returning from serious injury or long absence could be forced to start far below their proven level. That would make comebacks harder and could distort lower-level draws.\n\nThe rule creates a bridge back, while still requiring the player to earn new results."},
+      {"heading":"How it affects draws","body":"A strong returning player using protected ranking can become a dangerous unseeded opponent. This is why draw analysis often mentions protected ranking: it signals that the player’s current ranking may not reflect their ability.\n\nThat can make early rounds much tougher for seeded players."},
+      {"heading":"What fans should watch","body":"Check three things: how long the player was away, whether they are match fit, and whether the surface suits their game. Protected ranking explains entry, but form explains results.\n\nA famous name returning on protected ranking still has to handle timing, movement and pressure after months away."}
+    ],
+    "faq": [
+      {"question":"Is protected ranking the same as current ranking?","answer":"No. It is a special entry mechanism for eligible returning players, not their live ranking position."},
+      {"question":"Does protected ranking give a seed?","answer":"Usually no. It may help with entry but does not normally determine seeding."},
+      {"question":"Why do players use protected ranking?","answer":"They use it to enter tournaments after a long absence caused by injury, pregnancy or other eligible reasons."},
+      {"question":"Can protected ranking last forever?","answer":"No. It is limited by tour rules and can be used only for a defined period or number of events."}
+    ]
+  },
+  {
+    "slug": "tennis-draws-explained",
+    "title": "Tennis Draws Explained",
+    "description": "How tennis brackets work, including halves, quarters, seeds, qualifiers and paths to the final.",
+    "category": "Tournaments",
+    "intro": "A tennis draw is the bracket that decides who plays whom and when players can meet. It is more than a list of matches: it shapes the route to the title, separates seeds, places qualifiers and creates the storylines fans discuss before the first ball is hit.\n\nUnderstanding the draw helps you read a tournament like a map rather than a random list of names.",
+    "sections": [
+      {"heading":"The basic bracket","body":"Most tennis draws are knockout brackets. Win and you advance; lose and you are out, except in round-robin formats such as some finals events. A player’s path is determined by their position in the bracket.\n\nIn a 128-player Grand Slam draw, a champion must usually win seven matches. In smaller events, the number of rounds is lower."},
+      {"heading":"Halves and quarters","body":"A draw is commonly divided into halves and quarters. The top half and bottom half produce the two finalists. Quarters help fans identify likely quarterfinal matchups and difficult sections.\n\nWhen analysts say a player has a tough quarter, they mean several dangerous opponents are grouped in that section."},
+      {"heading":"Seeds in the draw","body":"Seeds are distributed to prevent the highest-ranked players from meeting too early. The top two seeds go into opposite halves, while other seeds are placed according to draw rules.\n\nThis creates projected matchups, but those projections collapse quickly if seeded players lose."},
+      {"heading":"Qualifiers and wild cards","body":"Qualifiers enter after winning qualifying matches. Wild cards receive direct entry from tournament organizers. Both can dramatically change the difficulty of a section.\n\nA qualifier may be dangerous because they already have match rhythm. A wild card may be dangerous because their ranking does not reflect their actual level."},
+      {"heading":"How to read a draw like a fan","body":"Start with the favorite’s section, then look two rounds ahead. Are there big servers, left-handers, clay specialists, former champions or awkward head-to-head matchups nearby?\n\nThe draw does not decide the tournament, but it tells you where pressure and danger may appear."}
+    ],
+    "faq": [
+      {"question":"What is a tennis draw?","answer":"It is the tournament bracket showing player positions and potential matchups."},
+      {"question":"Is the draw random?","answer":"Partly. Seeds are placed according to rules, while many other positions are drawn."},
+      {"question":"What does top half mean?","answer":"The top half is one side of the bracket. Its winner reaches the final to play the bottom-half winner."},
+      {"question":"Why do fans care about the draw?","answer":"The draw shapes possible opponents, difficult sections and the route a player must take to win the title."}
+    ]
+  },
+  {
+    "slug": "grand-slam-tournaments-explained",
+    "title": "Grand Slam Tournaments Explained",
+    "description": "A guide to the Australian Open, Roland Garros, Wimbledon and US Open, and why Grand Slams matter most.",
+    "category": "Tournaments",
+    "intro": "The four Grand Slam tournaments are the most important events in tennis: the Australian Open, Roland Garros, Wimbledon and the US Open. They offer the biggest historical prestige, largest draws and most attention from fans, media and players.\n\nThis guide explains what makes Grand Slams different and how to understand them across surfaces, formats and calendar timing.",
+    "sections": [
+      {"heading":"The four majors","body":"The Australian Open is played on hard court in Melbourne. Roland Garros is played on clay in Paris. Wimbledon is played on grass in London. The US Open is played on hard court in New York.\n\nEach Slam has its own identity, conditions and traditions, which is why winning across all four surfaces and environments is so highly valued."},
+      {"heading":"Why Grand Slams matter most","body":"Grand Slams carry the most prestige because of history, field strength, ranking value and best-of-five men’s singles format. Players build legacies around major titles.\n\nA player can have a brilliant career without a Slam, but Grand Slam results usually define all-time comparisons."},
+      {"heading":"Draw size and difficulty","body":"Singles Grand Slam draws usually contain 128 players. That means champions must navigate two weeks of matches, changing opponents, weather, pressure and recovery demands.\n\nThe long format rewards consistency as much as peak level."},
+      {"heading":"Surface differences","body":"Each Slam asks different questions. Roland Garros rewards clay movement and topspin. Wimbledon rewards grass timing, first-strike tennis and low-bounce adjustment. The Australian Open and US Open are both hard-court majors but can feel different because of heat, speed and scheduling.\n\nThis variety is a major reason tennis careers are difficult to compare."},
+      {"heading":"What fans should watch","body":"Watch whether a player’s game style matches the surface and whether they have the physical base for two weeks. Early rounds can look routine, but long matches can affect later performance.\n\nGrand Slams are not just bigger tournaments; they are endurance tests with historical weight."}
+    ],
+    "faq": [
+      {"question":"What are the four Grand Slam tournaments?","answer":"The Australian Open, Roland Garros, Wimbledon and the US Open."},
+      {"question":"Which Grand Slam is played on clay?","answer":"Roland Garros, also called the French Open, is played on clay."},
+      {"question":"Which Grand Slam is played on grass?","answer":"Wimbledon is played on grass."},
+      {"question":"Why are Grand Slams so important?","answer":"They have the most prestige, strongest fields, major ranking value and the greatest impact on tennis legacies."}
+    ]
+  },
+  {
+    "slug": "atp-vs-wta-explained",
+    "title": "ATP vs WTA Explained",
+    "description": "The difference between ATP and WTA tennis, how the tours are organized, and what fans should know.",
+    "category": "Tours",
+    "intro": "ATP and WTA are two main professional tennis tours. The ATP organizes the leading men’s tour, while the WTA organizes the leading women’s tour. Grand Slam tournaments are separate major events, but ATP and WTA rankings and tour structures shape most of the weekly tennis calendar.\n\nThis guide explains the difference in plain language so fans can read schedules, rankings and tournament names more confidently.",
+    "sections": [
+      {"heading":"What ATP means","body":"ATP stands for Association of Tennis Professionals. It organizes the men’s professional tour, including ATP 250, ATP 500, ATP Masters 1000 and ATP Finals events.\n\nATP rankings help determine entry, seeding and year-end qualification, though each tournament has its own details and draw rules."},
+      {"heading":"What WTA means","body":"WTA stands for Women’s Tennis Association. It organizes the women’s professional tour, including WTA 250, WTA 500, WTA 1000 and WTA Finals events.\n\nLike the ATP, the WTA has rankings, tournament levels and a season structure that guides entries and storylines."},
+      {"heading":"Where Grand Slams fit","body":"Grand Slams are not simply ATP or WTA events. They are major tournaments with men’s and women’s competitions, run by Grand Slam organizers. They award ranking points and include ATP/WTA players, but they sit above the normal tour calendar in prestige.\n\nThis is why tennis schedules often list Grand Slams separately from ATP and WTA events."},
+      {"heading":"Why fans should care","body":"Knowing ATP and WTA labels helps you understand tournament level, player fields and ranking impact. A WTA 1000 or ATP Masters 1000 usually carries more weight than a 250 event.\n\nIt also helps avoid confusion when several tournaments happen in the same week."},
+      {"heading":"How to use the labels on Watch Tennis Today","body":"When browsing schedules, use ATP and WTA categories to separate men’s and women’s tour matches. Then check tournament level and surface to understand the importance of the match.\n\nThe label is not the full story, but it gives the first layer of context."}
+    ],
+    "faq": [
+      {"question":"Is ATP men’s tennis?","answer":"Yes. ATP refers to the main men’s professional tennis tour."},
+      {"question":"Is WTA women’s tennis?","answer":"Yes. WTA refers to the main women’s professional tennis tour."},
+      {"question":"Are Grand Slams ATP events?","answer":"Grand Slams include ATP and WTA players but are separate major tournaments rather than normal tour events."},
+      {"question":"Why do ATP and WTA rankings matter?","answer":"They influence entries, seedings, qualification races and how fans understand player status."}
+    ]
+  },
+  {
+    "slug": "tennis-retirement-rules-explained",
+    "title": "Retirement in Tennis Explained",
+    "description": "What it means when a player retires from a match, how it differs from withdrawal and walkover, and how fans should read it.",
+    "category": "Rules",
+    "intro": "A retirement happens when a player starts a match but cannot finish it. It is different from a withdrawal before the match and different from a walkover. Retirements usually happen because of injury, illness or another physical problem, though the match record depends on tour and tournament rules.\n\nThis guide explains retirement as a match situation, not as gossip. Fans should be careful with assumptions because medical details are often incomplete.",
+    "sections": [
+      {"heading":"The basic definition","body":"If a player begins a match and then stops before completion, the result is commonly recorded as a retirement. The opponent advances because the retiring player cannot continue.\n\nThe key detail is that the match started. If it never started, the situation is usually called a walkover or withdrawal instead."},
+      {"heading":"Common reasons for retirement","body":"Players may retire because of muscle injuries, cramps, illness, dizziness, breathing issues or an aggravated existing problem. Sometimes the reason is visible; sometimes it is not.\n\nA player retiring is not automatically giving up casually. Professional players often continue through discomfort, so retirement usually means the problem is serious enough to stop competition."},
+      {"heading":"Retirement versus walkover","body":"A walkover happens before the match begins. A retirement happens after the match has started. This distinction matters for records, tickets, broadcast schedules and fan interpretation.\n\nIf you see RET on a scoreboard, the match began but did not reach normal completion."},
+      {"heading":"How fans should read the result","body":"Do not overstate a retirement result. The advancing player still moves on, but the match may not tell us much about form if the opponent was compromised.\n\nFor analysis, note the score at retirement, visible movement issues, recent workload and any official explanation from the tournament or player."},
+      {"heading":"Why retirements affect tournaments","body":"A retirement can change a draw because one player advances with less completed match time while the injured player may leave the event. It can also affect doubles, future tournaments and ranking races if the injury continues.\n\nThat is why retirement news often matters beyond a single match."}
+    ],
+    "faq": [
+      {"question":"What does RET mean in tennis?","answer":"RET usually means retirement: a player started the match but could not finish it."},
+      {"question":"Is retirement the same as withdrawal?","answer":"No. Withdrawal usually happens before a match or event participation; retirement happens after the match starts."},
+      {"question":"Does the opponent get the win?","answer":"Yes, the opponent advances when a player retires from a match."},
+      {"question":"Should fans assume the exact injury?","answer":"No. Unless official information is available, it is better to describe the retirement without guessing medical details."}
+    ]
+  },
+  {
+    "slug": "tennis-ranking-points-explained",
+    "title": "Tennis Ranking Points Explained",
+    "description": "How ranking points work in tennis and why tournament level, round reached and calendar timing matter.",
+    "category": "Rankings",
+    "intro": "Tennis rankings are built from points earned at tournaments. The deeper a player goes, the more points they usually earn, and higher-level tournaments offer more points. Rankings then influence entry lists, seedings and how fans understand a player’s position in the sport.\n\nThis guide explains ranking points as a practical fan tool, without getting lost in every technical exception.",
+    "sections": [
+      {"heading":"The basic idea","body":"Players earn ranking points by winning matches and reaching rounds at eligible tournaments. A title at a larger event is worth more than a title at a smaller event because the draw and event level are stronger.\n\nThat is why Grand Slam and 1000-level results can transform a ranking faster than smaller events."},
+      {"heading":"Why points drop off","body":"Ranking systems are based on a rolling calendar. Points from last year’s event can drop when the event returns, and a player may need to defend or replace them with new results.\n\nThis is why commentators talk about defending points. A player can play well and still lose ranking ground if they do not match a previous big result."},
+      {"heading":"Tournament level matters","body":"Grand Slams, ATP Masters 1000, WTA 1000, 500 and 250 events do not carry identical ranking impact. Higher-level events usually offer more points and attract stronger fields.\n\nFans should read rankings alongside tournament category. A player collecting points at smaller events may rise steadily, while a player peaking at majors can jump dramatically."},
+      {"heading":"Rankings versus form","body":"Ranking tells you accumulated results, not exactly who is playing best this week. A player returning from injury may be better than their ranking. A player defending a huge result may feel pressure despite a high ranking.\n\nGood tennis analysis combines ranking, recent form, surface and matchup."},
+      {"heading":"How rankings affect draws","body":"Rankings help determine entry and often influence seeding. Higher-ranked players are more likely to enter big tournaments directly and receive seeded positions.\n\nThat creates a feedback loop: strong rankings help with draw position, but players must keep winning to maintain them."}
+    ],
+    "faq": [
+      {"question":"How do tennis players earn ranking points?","answer":"They earn points by reaching rounds and winning matches at eligible tournaments, with larger events offering more points."},
+      {"question":"What does defending points mean?","answer":"It means a player has points from a previous event coming off their ranking and may need a similar result to keep them."},
+      {"question":"Do rankings show current form?","answer":"Not perfectly. Rankings reflect results over time, while form can change quickly."},
+      {"question":"Why do ranking points matter?","answer":"They influence tournament entry, seeding, status and qualification races."}
+    ]
+  },
+  {
+    "slug": "tennis-match-formats-explained",
+    "title": "Tennis Match Formats Explained",
+    "description": "Best of three, best of five, final-set tiebreaks and match tiebreaks explained for tennis fans.",
+    "category": "Rules",
+    "intro": "Not every tennis match uses the same format. Most tour singles matches are best of three sets, Grand Slam men’s singles is usually best of five, and doubles or smaller events may use match tiebreaks or special scoring.\n\nKnowing the format helps fans understand urgency. A player down one set in best of three is in immediate danger; down one set in best of five, they still have more time to solve the match.",
+    "sections": [
+      {"heading":"Best of three","body":"In best of three, the first player to win two sets wins the match. This is the standard format for most ATP and WTA tour singles matches and women’s singles at Grand Slams.\n\nBecause the match can end in two sets, early breaks and first-set momentum carry major weight."},
+      {"heading":"Best of five","body":"In best of five, the first player to win three sets wins. Men’s singles at Grand Slams is the most familiar example. This format allows more comebacks but also demands more physical endurance.\n\nA best-of-five match can become a tactical and fitness contest rather than only a shot-making contest."},
+      {"heading":"Final-set tiebreaks","body":"Many tournaments use final-set tiebreaks to avoid endless matches. The exact target can vary by competition, so fans should check the event rules.\n\nThe key idea is that a tied final set no longer always continues until a player wins by two games."},
+      {"heading":"Match tiebreaks","body":"Some doubles and lower-level formats use a match tiebreak instead of a full deciding set. This is often first to 10 points with a two-point margin.\n\nMatch tiebreaks create sudden momentum swings because every point directly changes the finish line."},
+      {"heading":"Why format changes analysis","body":"Format affects risk. In a short format, players may attack sooner because recovery time is limited. In best of five, players may spend longer testing patterns, conserving energy or waiting for physical pressure to build.\n\nBefore judging a match, always check the format."}
+    ],
+    "faq": [
+      {"question":"What does best of three mean?","answer":"The first player to win two sets wins the match."},
+      {"question":"What does best of five mean?","answer":"The first player to win three sets wins the match."},
+      {"question":"What is a match tiebreak?","answer":"It is a deciding tiebreak, often to 10 points with a two-point lead, used instead of a full final set in some formats."},
+      {"question":"Do all tournaments use the same final-set rule?","answer":"No. Final-set tiebreak rules can vary by event and competition."}
+    ]
+  }
+
 ];
 
 export function getGuideArticle(slug: string): GuideArticle | undefined {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
@@ -661,8 +661,8 @@ export default async function MatchPage({
 
   // Crawlers frequently request stale /watch/* URLs. Do not spend server time
   // loading the live match feed for pages that are likely gone from the current
-  // schedule. Return a lightweight archived-style page instead of a temporary
-  // redirect so Googlebot does not keep creating 307 runtime-log noise.
+  // schedule. If no safe archived fallback can be built, return 404 instead of
+  // redirecting stale watch URLs into indexable schedule pages.
   if (isCrawlerUserAgent(userAgent)) {
     const fallbackMatch = getFallbackMatchFromSlug(decodedSlug, matchId);
 
@@ -670,7 +670,7 @@ export default async function MatchPage({
       return <ArchivedMatchPage archivedMatch={fallbackMatch} />;
     }
 
-    redirect("/tennis-live-today");
+    notFound();
   }
 
   const matches = await getServerMatches(60);
@@ -678,7 +678,7 @@ export default async function MatchPage({
 
   if (!liveMatch) {
     if (decodedSlug.includes("-vs-") && decodedSlug.match(/\d+$/)) {
-      redirect("/tennis-live-today");
+      notFound();
     }
 
     notFound();
