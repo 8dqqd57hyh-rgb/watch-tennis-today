@@ -145,6 +145,9 @@ export default function RootLayout({
             <Link href="/tennis-tournaments">Tournament Levels</Link>
             <Link href="/best-tennis-players">Best Players</Link>
             <Link href="/analysis">Tennis Analysis</Link>
+            <Link href="/tennis-resources">Tennis Resources</Link>
+            <Link href="/newsletter">Newsletter</Link>
+            <Link href="/advertise">Advertise</Link>
             <Link href="/how-to-watch-tennis-legally">Legal Streaming Guide</Link>
             <Link href="/tournament">Grand Slams</Link>
             <Link href="/tennis-tv-broadcast-finder">Where to Watch</Link>
@@ -193,6 +196,8 @@ export default function RootLayout({
           <Link href="/tennis-tournaments" className="block hover:text-white">Tournament Levels</Link>
           <Link href="/tennis-guides" className="block hover:text-white">Tennis Guides Hub</Link>
           <Link href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</Link>
+          <Link href="/tennis-resources" className="block hover:text-white">Tennis Resources</Link>
+          <Link href="/newsletter" className="block hover:text-white">Newsletter</Link>
           <Link href="/french-open-live" className="block hover:text-white">French Open</Link>
           <Link href="/wimbledon-live" className="block hover:text-white">Wimbledon</Link>
           <Link href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</Link>
@@ -214,6 +219,7 @@ export default function RootLayout({
           <Link href="/tennis-scoring-explained" className="block hover:text-white">Tennis Scoring</Link>
           <Link href="/atp-wta-rankings-explained" className="block hover:text-white">Rankings Guide</Link>
           <Link href="/official-tennis-broadcasters-guide" className="block hover:text-white">Official Broadcasters</Link>
+          <Link href="/advertise" className="block hover:text-white">Advertise</Link>
         </div>
       </div>
     </div>
@@ -225,6 +231,7 @@ export default function RootLayout({
       <Link href="/terms" className="hover:text-white">Terms</Link>
       <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
       <Link href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</Link>
+      <Link href="/advertise" className="hover:text-white">Advertise</Link>
       <Link href="/editorial-policy" className="hover:text-white">Editorial Policy</Link>
       <Link href="/how-we-source-data" className="hover:text-white">How We Source Data</Link>
       <Link href="/how-we-verify-streams" className="hover:text-white">How We Verify Streams</Link>

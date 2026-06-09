@@ -1,6 +1,8 @@
+import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import JsonLd from "@/app/components/JsonLd";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -13,12 +15,30 @@ export const metadata = {
 };
 
 export default function NewsletterPage() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: "Tennis Newsletter",
+        url: "https://watchtennistoday.com/newsletter",
+        description: metadata.description,
+      },
+      {
+        "@type": "SubscribeAction",
+        name: "Subscribe to Watch Tennis Today tennis alerts",
+        target: "https://watchtennistoday.com/newsletter",
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
+      <JsonLd data={schema} />
       <div className="max-w-4xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <article className="mt-8 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
           <p className="text-green-400 font-black mb-4">
@@ -29,9 +49,16 @@ export default function NewsletterPage() {
             Tennis Newsletter
           </h1>
 
-          <p className="text-zinc-300 text-lg leading-8 mb-8">
+          <p className="text-zinc-300 text-lg leading-8 mb-5">
             Get live tennis match alerts, ATP and WTA schedule updates, Grand
             Slam reminders and streaming tips from Watch Tennis Today.
+          </p>
+
+          <p className="text-zinc-400 leading-8 mb-8">
+            The newsletter is designed as a retention engine for the site: useful match-day
+            reminders, legal viewing context and links back to strong editorial hubs instead of
+            generic spam. That gives returning readers a reason to come back even when there is
+            no Grand Slam final on the schedule.
           </p>
 
           <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
@@ -98,33 +125,47 @@ export default function NewsletterPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <a
+              <Link
                 href="/live-tennis"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Live Tennis Today
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/tennis-trending-now"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Tennis Trending Now
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/grand-slam-live"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Grand Slam Live
-              </a>
+              </Link>
 
-              <a
+              <Link
+                href="/tennis-calendar"
+                className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+              >
+                Tennis Calendar
+              </Link>
+
+              <Link
+                href="/tennis-resources"
+                className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+              >
+                Tennis Resources
+              </Link>
+
+              <Link
                 href="/best-ways-to-watch-tennis-online"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Best Ways to Watch Tennis Online
-              </a>
+              </Link>
             </div>
           </section>
 
