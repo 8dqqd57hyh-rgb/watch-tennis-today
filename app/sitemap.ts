@@ -290,6 +290,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/disclaimer",
     "/how-to-watch-french-open-in-usa",
     "/tournament",
+    "/wimbledon",
+    "/us-open",
+    "/australian-open",
+    "/watch-tennis-online",
+    "/watch-tennis-in-usa",
+    "/watch-tennis-in-uk",
+    "/watch-tennis-in-australia",
+    "/watch-tennis-in-canada",
     "/best-ways-to-watch-tennis-online",
   ].map((path) => {
   const livePages = [

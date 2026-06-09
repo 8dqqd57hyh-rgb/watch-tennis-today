@@ -161,6 +161,13 @@ export default function TennisGuidesHubPage() {
           </div>
         </section>
       </div>
-    </main>
+    
+      <section className="mt-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Legal streaming</p>
+        <h2 className="text-2xl font-black text-zinc-950">Need to choose a tennis streaming service?</h2>
+        <p className="mt-3 text-sm leading-7 text-zinc-700">Use the legal streaming guide before paying for a service or clicking a match link.</p>
+        <Link href="/watch-tennis-online" className="mt-4 inline-flex rounded-2xl bg-green-600 px-5 py-3 font-black text-white hover:bg-green-700">Read the legal streaming guide</Link>
+      </section>
+</main>
   );
 }

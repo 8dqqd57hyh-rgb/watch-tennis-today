@@ -711,6 +711,18 @@ tennis viewing information.
 {showHeavyHomeSections ? (
   <>
     <HomepageGrowthEngine matches={homepageMatches} />
+    <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm text-zinc-900">
+      <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Grand Slam hubs</p>
+      <h2 className="text-2xl font-black">Plan legal tennis viewing by tournament</h2>
+      <p className="mt-3 text-sm leading-7 text-zinc-600">Start with the tournament hub, then confirm country-specific coverage before paying for any streaming service.</p>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link href="/wimbledon" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">Wimbledon hub</Link>
+        <Link href="/us-open" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">US Open hub</Link>
+        <Link href="/australian-open" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">Australian Open hub</Link>
+        <Link href="/watch-tennis-online" className="rounded-2xl bg-green-600 px-4 py-3 font-bold text-white hover:bg-green-700">Legal streaming guide</Link>
+      </div>
+    </section>
+
     <TodaysTennisHub matches={homepageMatches} />
     <BestMatchesTodayEngine matches={homepageMatches} />
     <BroadcastFinder />

@@ -7,6 +7,7 @@ import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug } from "@/data/playerSlugs";
 import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
+import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { supabase } from "@/app/lib/supabase";
@@ -1212,6 +1213,14 @@ const playerMatches = allMatches
           playerSlug={pageSlug}
         />
       </div>
+      <div className="mb-8">
+        <PlayerFollowCTA
+          playerName={playerName}
+          playerSlug={pageSlug}
+          source="player-page-revenue-cta"
+        />
+      </div>
+
 
       {playerMatches.some(isLiveMatch) ? (
   <section className="mb-8 rounded-2xl border border-red-500 bg-red-500/10 p-6">

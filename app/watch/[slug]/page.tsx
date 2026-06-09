@@ -14,6 +14,8 @@ import EmailSignup from "@/app/components/EmailSignup";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
+import PlayerFollowCTA from "@/components/PlayerFollowCTA";
+import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
 
@@ -875,6 +877,17 @@ export default async function MatchPage({
               startTime={match.startTime}
               matchUrl={currentUrl}
             />
+
+            <div className="mb-8 text-zinc-950">
+              <PlayerFollowCTA
+                playerName={match.player1}
+                source="match-page-player-follow-cta"
+              />
+            </div>
+
+            <div className="mb-8 text-zinc-950">
+              <LegalStreamingOptions title={`Legal streaming options for ${matchTitle}`} />
+            </div>
 
             <MatchEdgePredictor match={match} matches={matches} />
 
