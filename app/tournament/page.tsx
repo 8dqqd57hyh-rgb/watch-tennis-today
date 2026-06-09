@@ -51,7 +51,7 @@ function formatDateRange(startDate: string | null, endDate: string | null) {
 function getTournamentDateRange(matches: Match[]) {
   const dates = matches
     .map((match) => match.startTime ? new Date(match.startTime) : null)
-    .filter((date): date is Date => Boolean(date) && !Number.isNaN(date.getTime()))
+    .filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()))
     .sort((a, b) => a.getTime() - b.getTime());
 
   if (dates.length === 0) return null;

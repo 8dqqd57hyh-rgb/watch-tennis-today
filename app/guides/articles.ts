@@ -1,6 +1,17 @@
 export type GuideSection = { heading: string; body: string };
 export type GuideFaq = { question: string; answer: string };
-export type GuideArticle = { slug: string; title: string; description: string; category: string; intro: string; sections: GuideSection[]; faq: GuideFaq[] };
+export type GuideArticle = {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  intro: string;
+  sections: GuideSection[];
+  faq: GuideFaq[];
+  publishedDate?: string;
+  updatedDate?: string;
+  sourceReferences?: string[];
+};
 
 // AdSense quality pilot: the previous generated guide library has been reduced to five fully rewritten evergreen articles.
 // Duplicative or thin topics should be reintroduced only after they receive human-quality drafts with distinct structure and examples.
@@ -284,4 +295,48 @@ export const guideArticles: GuideArticle[] = [
 
 export function getGuideArticle(slug: string): GuideArticle | undefined {
   return guideArticles.find((article) => article.slug === slug);
+}
+
+
+export function getGuideArticleDates(article: GuideArticle) {
+  return {
+    publishedDate: article.publishedDate || "2026-06-09",
+    updatedDate: article.updatedDate || "2026-06-09",
+  };
+}
+
+export function getGuideReadingTime(article: GuideArticle) {
+  const words = [
+    article.title,
+    article.description,
+    article.intro,
+    ...article.sections.map((section) => `${section.heading} ${section.body}`),
+    ...article.faq.map((item) => `${item.question} ${item.answer}`),
+  ]
+    .join(" ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+
+  return Math.max(4, Math.ceil(words / 220));
+}
+
+export function getGuideSourceReferences(article: GuideArticle) {
+  return article.sourceReferences || [
+    "ITF Rules of Tennis",
+    "ATP Tour official tournament and ranking information",
+    "WTA official tournament and ranking information",
+    "Official Grand Slam and tournament websites where relevant",
+  ];
+}
+
+export function getRelatedGuides(article: GuideArticle, limit = 4) {
+  const sameCategory = guideArticles.filter(
+    (item) => item.slug !== article.slug && item.category === article.category
+  );
+  const fallback = guideArticles.filter(
+    (item) => item.slug !== article.slug && item.category !== article.category
+  );
+
+  return [...sameCategory, ...fallback].slice(0, limit);
 }

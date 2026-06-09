@@ -126,7 +126,7 @@ export default function RootLayout({
         <a href="/players" className="site-nav-link">
           Players
         </a>
-        <a href="/guides" className="site-nav-link site-nav-link-highlight">
+        <a href="/tennis-guides" className="site-nav-link site-nav-link-highlight">
           Guides
         </a>
 
@@ -136,7 +136,7 @@ export default function RootLayout({
           </summary>
           <div className="site-more-panel">
             <a href="/tv-schedule">TV Schedule</a>
-            <a href="/guides">Guides</a>
+            <a href="/tennis-guides">Guides Hub</a>
             <a href="/how-to-watch-tennis-legally">Legal Streaming Guide</a>
             <a href="/tournament">Grand Slams</a>
             <a href="/tennis-tv-broadcast-finder">Where to Watch</a>
@@ -181,7 +181,7 @@ export default function RootLayout({
           <a href="/players" className="block hover:text-white">Players</a>
           <a href="/players/atp" className="block hover:text-white">ATP Players</a>
           <a href="/players/wta" className="block hover:text-white">WTA Players</a>
-          <a href="/guides" className="block hover:text-white">Tennis Guides</a>
+          <a href="/tennis-guides" className="block hover:text-white">Tennis Guides Hub</a>
           <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
           <a href="/french-open-live" className="block hover:text-white">French Open</a>
           <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>
@@ -192,7 +192,7 @@ export default function RootLayout({
       <div>
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Guides</p>
         <div className="space-y-2">
-          <a href="/guides" className="block hover:text-white">All Tennis Guides</a>
+          <a href="/tennis-guides" className="block hover:text-white">All Tennis Guides</a>
           <a href="/best-ways-to-watch-tennis-online" className="block hover:text-white">Watch Tennis Legally</a>
           <a href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</a>
           <a href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</a>
@@ -215,6 +215,7 @@ export default function RootLayout({
       <a href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</a>
       <a href="/editorial-policy" className="hover:text-white">Editorial Policy</a>
       <a href="/how-we-source-data" className="hover:text-white">How We Source Data</a>
+      <a href="/how-we-verify-streams" className="hover:text-white">How We Verify Streams</a>
       <a href="/authors/watch-tennis-today" className="hover:text-white">Author</a>
     </div>
   </footer>

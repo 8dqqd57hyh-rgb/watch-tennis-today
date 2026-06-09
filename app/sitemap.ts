@@ -242,6 +242,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/affiliate-disclosure",
     "/authors/watch-tennis-today",
     "/guides",
+    "/tennis-guides",
     "/best-tennis-matches-today",
     "/tennis-tv-broadcast-finder",
     "/tennis-tv-not-working",

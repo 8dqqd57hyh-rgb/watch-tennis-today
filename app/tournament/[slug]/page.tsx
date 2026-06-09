@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
@@ -129,7 +130,7 @@ function matchSlug(match: Match) {
 function getTournamentDateWindow(matches: Match[]) {
   const dates = matches
     .map((match) => match.startTime ? new Date(match.startTime) : null)
-    .filter((date): date is Date => Boolean(date) && !Number.isNaN(date.getTime()))
+    .filter((date): date is Date => date instanceof Date && !Number.isNaN(date.getTime()))
     .sort((a, b) => a.getTime() - b.getTime());
 
   if (dates.length === 0) return null;
@@ -252,6 +253,20 @@ export default async function Page({ params }: PageProps) {
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
   ).length;
+
+  const sportsEventSchema = tournamentDateRange
+    ? {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        name: tournamentName,
+        sport: "Tennis",
+        startDate: calendarEntry?.startDate || tournamentDateWindow?.start.toISOString(),
+        endDate: calendarEntry?.endDate || tournamentDateWindow?.end.toISOString(),
+        url: `https://watchtennistoday.com/tournament/${slug}`,
+        description: buildTournamentSeoDescription(tournamentName),
+        organizer: { "@type": "Organization", name: "Official tournament organizer" },
+      }
+    : null;
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -510,7 +525,7 @@ export default async function Page({ params }: PageProps) {
                   >
                     <h3 className="text-xl font-black">Order of Play</h3>
                     <p className="mt-3 text-sm leading-6 text-zinc-400">
-                      Today's Roland Garros schedule and court assignments.
+                      Today&apos;s Roland Garros schedule and court assignments.
                     </p>
                   </a>
 
@@ -582,9 +597,34 @@ export default async function Page({ params }: PageProps) {
             How to Watch Tennis Safely Abroad
           </a>
         </section>
+
+        <section className="mt-12 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <h2 className="mb-4 text-3xl font-black">Sources for {tournamentName}</h2>
+          <p className="leading-8 text-zinc-300">
+            Tournament pages combine available match-feed data, stored calendar entries and editorial context. Match times, court assignments, withdrawals and broadcaster rights can change, so fans should confirm final details with official tournament and broadcaster sources.
+          </p>
+          <ul className="mt-5 grid gap-3 text-sm text-zinc-300 md:grid-cols-2">
+            <li className="rounded-2xl border border-zinc-800 bg-black p-4">Official tournament website and order of play</li>
+            <li className="rounded-2xl border border-zinc-800 bg-black p-4">ATP Tour and WTA official tournament information</li>
+            <li className="rounded-2xl border border-zinc-800 bg-black p-4">ITF rules and event-format references where relevant</li>
+            <li className="rounded-2xl border border-zinc-800 bg-black p-4">Licensed broadcaster and streaming provider pages</li>
+          </ul>
+          <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+            <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we source data</Link>
+            <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we verify streams</Link>
+            <Link href="/tennis-guides" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Tennis guides hub</Link>
+          </div>
+        </section>
+
         <AuthorBox />
         
       </div>
+      {sportsEventSchema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEventSchema) }}
+        />
+      ) : null}
       <BreadcrumbSchema
   items={[
     {

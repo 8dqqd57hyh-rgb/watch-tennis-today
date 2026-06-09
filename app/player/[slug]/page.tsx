@@ -1009,13 +1009,22 @@ const playerMatches = allMatches
     });
   }
 
-  const personSchema = {
+  const profilePageSchema = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    name: playerName,
+    "@type": "ProfilePage",
+    name: `${playerName} tennis profile`,
     url: `https://watchtennistoday.com/player/${pageSlug}`,
-    sameAs: [],
-    description: `${playerName} tennis match schedule, official viewing information and related player coverage on Watch Tennis Today.`,
+    about: {
+      "@type": "Person",
+      name: playerName,
+      nationality: editorialProfile.nationality,
+      description: `${playerName} tennis match schedule, player context and legal viewing information on Watch Tennis Today.`,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Watch Tennis Today",
+      url: "https://watchtennistoday.com",
+    },
   };
 
   const faqSchema = {
@@ -1641,6 +1650,25 @@ const playerMatches = allMatches
   </p>
 </section>
      
+
+      <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6 text-zinc-700">
+        <h2 className="text-2xl font-black text-zinc-950">Sources for this player page</h2>
+        <p className="mt-3 text-sm leading-7">
+          Player pages combine editorial context with available match and schedule data. Broadcast availability should always be verified with official tournament and broadcaster sources because tennis rights vary by country and event.
+        </p>
+        <ul className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+          <li className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">ATP Tour official player and tournament information</li>
+          <li className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">WTA official player and tournament information</li>
+          <li className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">ITF rules and tournament context where relevant</li>
+          <li className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">Official tournament websites and order-of-play pages</li>
+        </ul>
+        <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+          <Link href="/how-we-source-data" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">How we source data</Link>
+          <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">How we verify streams</Link>
+          <Link href="/tennis-guides" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">Tennis guides hub</Link>
+        </div>
+      </section>
+
       <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6">
         <h2 className="mb-5 text-2xl font-black text-zinc-950">
           {playerName} live stream and schedule FAQ
@@ -1672,7 +1700,7 @@ const playerMatches = allMatches
 
       <script
   type="application/ld+json"
-  dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageSchema) }}
 />
 
       <script
