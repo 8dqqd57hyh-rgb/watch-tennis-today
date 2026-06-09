@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -106,45 +107,52 @@ export default function RootLayout({
 />
   <header className="site-header sticky top-0 z-50 border-b border-zinc-800 bg-black backdrop-blur" style={{ backgroundColor: "#050505", color: "#ffffff" }}>
     <div className="site-header-inner mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3">
-      <a
+      <Link
         href="/"
         className="site-brand text-xl font-black tracking-tight text-white" style={{ color: "#ffffff" }}
       >
         🎾 Watch Tennis Today
-      </a>
+      </Link>
 
       <nav
         aria-label="Primary navigation"
         className="site-nav text-sm font-semibold"
       >
-        <a href="/live-tennis" className="site-nav-link">
+        <Link href="/live-tennis" className="site-nav-link">
           Live Tennis
-        </a>
-        <a href="/best-tennis-matches-today" className="site-nav-link">
+        </Link>
+        <Link href="/best-tennis-matches-today" className="site-nav-link">
           Matches Today
-        </a>
-        <a href="/players" className="site-nav-link">
+        </Link>
+        <Link href="/players" className="site-nav-link">
           Players
-        </a>
-        <a href="/tennis-guides" className="site-nav-link site-nav-link-highlight">
+        </Link>
+        <Link href="/tennis-calendar" className="site-nav-link">
+          Calendar
+        </Link>
+        <Link href="/tennis-guides" className="site-nav-link site-nav-link-highlight">
           Guides
-        </a>
+        </Link>
 
         <details className="site-more-menu">
           <summary className="site-more-summary" aria-label="Open more navigation links">
             More
           </summary>
           <div className="site-more-panel">
-            <a href="/tv-schedule">TV Schedule</a>
-            <a href="/tennis-guides">Guides Hub</a>
-            <a href="/how-to-watch-tennis-legally">Legal Streaming Guide</a>
-            <a href="/tournament">Grand Slams</a>
-            <a href="/tennis-tv-broadcast-finder">Where to Watch</a>
-            <a href="/tennis-on-tv-today">Tennis on TV Today</a>
-            <a href="/tennis-time-zone-converter">Time Zone Converter</a>
-            <a href="/tennis-watchlist-today">Tennis Watchlist</a>
-            <a href="/french-open-live">French Open</a>
-            <a href="/wimbledon-live">Wimbledon</a>
+            <Link href="/tv-schedule">TV Schedule</Link>
+            <Link href="/tennis-guides">Guides Hub</Link>
+            <Link href="/tennis-calendar">Tennis Calendar</Link>
+            <Link href="/tennis-tournaments">Tournament Levels</Link>
+            <Link href="/best-tennis-players">Best Players</Link>
+            <Link href="/analysis">Tennis Analysis</Link>
+            <Link href="/how-to-watch-tennis-legally">Legal Streaming Guide</Link>
+            <Link href="/tournament">Grand Slams</Link>
+            <Link href="/tennis-tv-broadcast-finder">Where to Watch</Link>
+            <Link href="/tennis-on-tv-today">Tennis on TV Today</Link>
+            <Link href="/tennis-time-zone-converter">Time Zone Converter</Link>
+            <Link href="/tennis-watchlist-today">Tennis Watchlist</Link>
+            <Link href="/french-open-live">French Open</Link>
+            <Link href="/wimbledon-live">Wimbledon</Link>
           </div>
         </details>
       </nav>
@@ -167,56 +175,60 @@ export default function RootLayout({
       <div>
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Watch</p>
         <div className="space-y-2">
-          <a href="/live-tennis" className="block hover:text-white">Live Tennis</a>
-          <a href="/best-tennis-matches-today" className="block hover:text-white">Matches Today</a>
-          <a href="/tv-schedule" className="block hover:text-white">TV Schedule</a>
-          <a href="/tennis-on-tv-today" className="block hover:text-white">Tennis on TV Today</a>
-          <a href="/tennis-time-zone-converter" className="block hover:text-white">Time Zone Converter</a>
+          <Link href="/live-tennis" className="block hover:text-white">Live Tennis</Link>
+          <Link href="/best-tennis-matches-today" className="block hover:text-white">Matches Today</Link>
+          <Link href="/tv-schedule" className="block hover:text-white">TV Schedule</Link>
+          <Link href="/tennis-on-tv-today" className="block hover:text-white">Tennis on TV Today</Link>
+          <Link href="/tennis-time-zone-converter" className="block hover:text-white">Time Zone Converter</Link>
         </div>
       </div>
 
       <div>
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Players & Slams</p>
         <div className="space-y-2">
-          <a href="/players" className="block hover:text-white">Players</a>
-          <a href="/players/atp" className="block hover:text-white">ATP Players</a>
-          <a href="/players/wta" className="block hover:text-white">WTA Players</a>
-          <a href="/tennis-guides" className="block hover:text-white">Tennis Guides Hub</a>
-          <a href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</a>
-          <a href="/french-open-live" className="block hover:text-white">French Open</a>
-          <a href="/wimbledon-live" className="block hover:text-white">Wimbledon</a>
-          <a href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</a>
+          <Link href="/players" className="block hover:text-white">Players</Link>
+          <Link href="/players/atp" className="block hover:text-white">ATP Players</Link>
+          <Link href="/players/wta" className="block hover:text-white">WTA Players</Link>
+          <Link href="/best-tennis-players" className="block hover:text-white">Best Players Guide</Link>
+          <Link href="/tennis-tournaments" className="block hover:text-white">Tournament Levels</Link>
+          <Link href="/tennis-guides" className="block hover:text-white">Tennis Guides Hub</Link>
+          <Link href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</Link>
+          <Link href="/french-open-live" className="block hover:text-white">French Open</Link>
+          <Link href="/wimbledon-live" className="block hover:text-white">Wimbledon</Link>
+          <Link href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</Link>
         </div>
       </div>
 
       <div>
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Guides</p>
         <div className="space-y-2">
-          <a href="/tennis-guides" className="block hover:text-white">All Tennis Guides</a>
-          <a href="/best-ways-to-watch-tennis-online" className="block hover:text-white">Watch Tennis Legally</a>
-          <a href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</a>
-          <a href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</a>
-          <a href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</a>
-          <a href="/how-to-watch-tennis-legally" className="block hover:text-white">Legal Guide</a>
-          <a href="/tennis-live-alerts" className="block hover:text-white">Tennis Alerts</a>
-          <a href="/tennis-scoring-explained" className="block hover:text-white">Tennis Scoring</a>
-          <a href="/atp-wta-rankings-explained" className="block hover:text-white">Rankings Guide</a>
-          <a href="/official-tennis-broadcasters-guide" className="block hover:text-white">Official Broadcasters</a>
+          <Link href="/tennis-guides" className="block hover:text-white">All Tennis Guides</Link>
+          <Link href="/tennis-calendar" className="block hover:text-white">Tennis Calendar</Link>
+          <Link href="/analysis" className="block hover:text-white">Tennis Analysis</Link>
+          <Link href="/best-ways-to-watch-tennis-online" className="block hover:text-white">Watch Tennis Legally</Link>
+          <Link href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</Link>
+          <Link href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</Link>
+          <Link href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</Link>
+          <Link href="/how-to-watch-tennis-legally" className="block hover:text-white">Legal Guide</Link>
+          <Link href="/tennis-live-alerts" className="block hover:text-white">Tennis Alerts</Link>
+          <Link href="/tennis-scoring-explained" className="block hover:text-white">Tennis Scoring</Link>
+          <Link href="/atp-wta-rankings-explained" className="block hover:text-white">Rankings Guide</Link>
+          <Link href="/official-tennis-broadcasters-guide" className="block hover:text-white">Official Broadcasters</Link>
         </div>
       </div>
     </div>
 
     <div className="mx-auto flex max-w-7xl flex-wrap gap-4 border-t border-zinc-900 px-6 py-6 text-xs text-zinc-500">
-      <a href="/about" className="hover:text-white">About</a>
-      <a href="/contact" className="hover:text-white">Contact</a>
-      <a href="/privacy" className="hover:text-white">Privacy Policy</a>
-      <a href="/terms" className="hover:text-white">Terms</a>
-      <a href="/disclaimer" className="hover:text-white">Disclaimer</a>
-      <a href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</a>
-      <a href="/editorial-policy" className="hover:text-white">Editorial Policy</a>
-      <a href="/how-we-source-data" className="hover:text-white">How We Source Data</a>
-      <a href="/how-we-verify-streams" className="hover:text-white">How We Verify Streams</a>
-      <a href="/authors/watch-tennis-today" className="hover:text-white">Author</a>
+      <Link href="/about" className="hover:text-white">About</Link>
+      <Link href="/contact" className="hover:text-white">Contact</Link>
+      <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+      <Link href="/terms" className="hover:text-white">Terms</Link>
+      <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
+      <Link href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</Link>
+      <Link href="/editorial-policy" className="hover:text-white">Editorial Policy</Link>
+      <Link href="/how-we-source-data" className="hover:text-white">How We Source Data</Link>
+      <Link href="/how-we-verify-streams" className="hover:text-white">How We Verify Streams</Link>
+      <Link href="/authors/watch-tennis-today" className="hover:text-white">Author</Link>
     </div>
   </footer>
   <ClickAnalytics />

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
@@ -32,12 +33,12 @@ export default function PlayersPage() {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
 
-        <a
+        <Link
           href="/"
           className="text-zinc-400 hover:text-white"
         >
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
@@ -46,8 +47,12 @@ export default function PlayersPage() {
 
           <p className="text-zinc-400 text-lg leading-8 max-w-3xl">
             Follow ATP and WTA tennis players, live matches, streaming
-            schedules, tournament coverage and player match pages.
+            schedules, tournament coverage and player match pages. Use this directory as a practical entry point, then open the player authority guide when you want playing-style context rather than only a live schedule.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="/best-tennis-players" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400">Best players guide</a>
+            <a href="/analysis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500">Tennis analysis</a>
+          </div>
         </section>
         <section className="mb-14 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
   <h2 className="text-3xl font-black mb-5">
@@ -67,6 +72,16 @@ export default function PlayersPage() {
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-purple-500 transition-all"
     >
       WTA Tennis Players
+    </a>
+
+    <a
+      href="/best-tennis-players"
+      className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-green-500 transition-all md:col-span-2"
+    >
+      Best Tennis Players to Follow
+      <span className="mt-2 block text-sm font-normal leading-6 text-zinc-400">
+        Editorial player-style guide with internal links to stronger profile pages.
+      </span>
     </a>
   </div>
 </section>
