@@ -7,6 +7,10 @@ export const metadata = {
   title: "Compare Tennis Streaming Options | Watch Tennis Today",
   description:
     "Compare legal tennis streaming options, TV broadcasters, tournament coverage and country-specific viewing choices.",
+  // AdSense quality: the comparison hub links to templated affiliate/comparison
+  // helpers. Keep it crawlable for users/internal links, but noindex it for
+  // approval review so it cannot be treated as low-originality generated SEO.
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/compare",
   },

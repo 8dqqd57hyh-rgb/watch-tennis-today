@@ -1,3 +1,4 @@
+import Link from "next/link";
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 
@@ -6,18 +7,21 @@ export const metadata = {
   title: "Tennis TV vs ESPN+ | Which Is Better for Tennis?",
   description:
     "Compare Tennis TV vs ESPN+ for ATP, WTA and Grand Slam streaming, pricing, coverage and supported devices.",
+  // AdSense quality: static comparison pages are useful for users, but they are
+  // still comparison/affiliate-style helpers, so keep them out of the index.
+  robots: { index: false, follow: true },
 };
 
 export default function TennisTvVsEspnPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a
+        <Link
           href="/"
           className="text-zinc-400 hover:text-white"
         >
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           🎾 Tennis TV vs ESPN+
