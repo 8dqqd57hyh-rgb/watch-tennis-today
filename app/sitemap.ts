@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
-import { guideArticles } from "@/app/guides/articles";
+import { publishedGuideArticles } from "@/app/guides/articles";
 import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 export const revalidate = 3600;
 
@@ -397,7 +397,7 @@ const frenchOpenPages = [
   // AdSense quality: comparison detail pages are intentionally excluded because
   // they are templated affiliate/comparison pages and are marked noindex.
 
-  const guidePages: MetadataRoute.Sitemap = guideArticles.map((article) => ({
+  const guidePages: MetadataRoute.Sitemap = publishedGuideArticles.map((article) => ({
     url: `${BASE_URL}/guides/${article.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

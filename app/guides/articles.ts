@@ -537,8 +537,6 @@ export const guideArticles: GuideArticle[] = [
   },
 
 
-
-  ,
   {
     "slug": "tennis-bye-explained",
     "title": "Bye in Tennis Explained",
@@ -583,8 +581,12 @@ export const guideArticles: GuideArticle[] = [
 
 ];
 
+export const publishedGuideArticles = guideArticles.filter(
+  (article): article is GuideArticle => Boolean(article?.slug)
+);
+
 export function getGuideArticle(slug: string): GuideArticle | undefined {
-  return guideArticles.find((article) => article.slug === slug);
+  return publishedGuideArticles.find((article) => article.slug === slug);
 }
 
 
@@ -621,10 +623,10 @@ export function getGuideSourceReferences(article: GuideArticle) {
 }
 
 export function getRelatedGuides(article: GuideArticle, limit = 4) {
-  const sameCategory = guideArticles.filter(
+  const sameCategory = publishedGuideArticles.filter(
     (item) => item.slug !== article.slug && item.category === article.category
   );
-  const fallback = guideArticles.filter(
+  const fallback = publishedGuideArticles.filter(
     (item) => item.slug !== article.slug && item.category !== article.category
   );
 

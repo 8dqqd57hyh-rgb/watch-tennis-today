@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { guideArticles } from "@/app/guides/articles";
+import { publishedGuideArticles } from "@/app/guides/articles";
 
 export const metadata = {
   title: "Tennis Guides Hub | Rules, Rankings, Tournaments & Watching Tennis",
@@ -99,7 +99,7 @@ export default function TennisGuidesHubPage() {
             Use these guides to understand how points, games, sets and unusual match endings work before reading a live scoreboard.
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {guideArticles.map((article) => (
+            {publishedGuideArticles.map((article) => (
               <Link key={article.slug} href={`/guides/${article.slug}`} className="rounded-2xl border border-zinc-800 bg-black/40 p-5 hover:border-emerald-300">
                 <p className="text-xl font-black">{article.title}</p>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">{article.description}</p>

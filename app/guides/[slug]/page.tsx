@@ -6,7 +6,7 @@ import {
   getGuideReadingTime,
   getGuideSourceReferences,
   getRelatedGuides,
-  guideArticles,
+  publishedGuideArticles,
 } from "../articles";
 
 type GuidePageProps = {
@@ -14,9 +14,7 @@ type GuidePageProps = {
 };
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
-  return guideArticles
-    .filter((article) => Boolean(article?.slug))
-    .map((article) => ({ slug: article.slug }));
+  return publishedGuideArticles.map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({ params }: GuidePageProps) {

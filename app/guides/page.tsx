@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { guideArticles } from "./articles";
+import { publishedGuideArticles } from "./articles";
 
 export const metadata = {
   title: "Tennis Knowledge Guides | Watch Tennis Today",
@@ -11,7 +11,7 @@ export const metadata = {
 const categoryOrder = ["Scoring", "Rules", "Draws", "Rankings", "Tournaments", "Surfaces", "Tours", "Streaming"];
 
 function getCategoryGroups() {
-  const categories = Array.from(new Set(guideArticles.map((article) => article.category))).sort(
+  const categories = Array.from(new Set(publishedGuideArticles.map((article) => article.category))).sort(
     (a, b) => {
       const aIndex = categoryOrder.indexOf(a);
       const bIndex = categoryOrder.indexOf(b);
@@ -24,7 +24,7 @@ function getCategoryGroups() {
 
   return categories.map((category) => ({
     category,
-    articles: guideArticles.filter((article) => article.category === category),
+    articles: publishedGuideArticles.filter((article) => article.category === category),
   }));
 }
 
@@ -43,7 +43,7 @@ export default function GuidesPage() {
           </p>
           <div className="mt-6 grid gap-3 text-sm sm:grid-cols-3">
             <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
-              <p className="font-black text-white">{guideArticles.length} guides</p>
+              <p className="font-black text-white">{publishedGuideArticles.length} guides</p>
               <p className="mt-1 text-zinc-500">Evergreen tennis explanations</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
