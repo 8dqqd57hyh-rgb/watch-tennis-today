@@ -1,6 +1,53 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+type SupabaseMockResult = Promise<{ data: null | never[]; error: null }>;
+
+type SupabaseMockBuilder = {
+  select: () => SupabaseMockBuilder;
+  insert: () => SupabaseMockResult;
+  upsert: () => SupabaseMockResult;
+  eq: () => SupabaseMockBuilder;
+  gte: () => SupabaseMockBuilder;
+  in: () => SupabaseMockBuilder;
+  not: () => SupabaseMockBuilder;
+  order: () => SupabaseMockBuilder;
+  limit: () => SupabaseMockBuilder;
+  maybeSingle: <T>() => Promise<{ data: T | null; error: null }>;
+  then: SupabaseMockResult["then"];
+};
+
+function createBuildTimeSupabaseMock() {
+  const emptyResult = Promise.resolve({ data: null, error: null });
+  const emptyArrayResult = Promise.resolve({ data: [], error: null });
+
+  const builder = {} as SupabaseMockBuilder;
+  builder.select = () => builder;
+  builder.insert = () => emptyResult;
+  builder.upsert = () => emptyResult;
+  builder.eq = () => builder;
+  builder.gte = () => builder;
+  builder.in = () => builder;
+  builder.not = () => builder;
+  builder.order = () => builder;
+  builder.limit = () => builder;
+  builder.maybeSingle = async <T>() => ({ data: null as T | null, error: null });
+  builder.then = emptyArrayResult.then.bind(emptyArrayResult);
+
+  return {
+    from: () => builder,
+  };
+}
+
+const hasSupabaseEnv = Boolean(
+  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+if (!hasSupabaseEnv) {
+  console.warn(
+    "Supabase environment variables are missing; using a build-time no-op client. Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in production."
+  );
+}
+
+export const supabase = hasSupabaseEnv
+  ? createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  : createBuildTimeSupabaseMock();

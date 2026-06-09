@@ -4,10 +4,29 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
+import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 
 export const dynamic = "force-dynamic";
 
 const CURRENT_SEASON = new Date().getFullYear();
+
+const INDEXABLE_TOURNAMENT_SLUGS = new Set([
+  "australian-open",
+  "roland-garros",
+  "french-open",
+  "wimbledon",
+  "us-open",
+  "indian-wells",
+  "miami",
+  "madrid",
+  "rome",
+  "monte-carlo",
+  "cincinnati",
+  "canada",
+  "paris",
+  "atp-finals",
+  "wta-finals",
+]);
 
 function buildTournamentSeoTitle(tournamentName: string) {
   return `${tournamentName} ${CURRENT_SEASON}: Schedule, Results, Draw & Live Coverage`;
@@ -167,10 +186,20 @@ function statusPriority(status: string) {
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const tournamentName = unslugify(slug);
+  const calendarEntry = await getTournamentCalendarEntry(slug);
+  const indexable = shouldIndexTournamentPage({
+    slug,
+    name: tournamentName,
+    hasCalendarEntry: Boolean(calendarEntry),
+    hasEditorialProfile: INDEXABLE_TOURNAMENT_SLUGS.has(slug),
+  });
 
   return {
     title: buildTournamentSeoTitle(tournamentName),
     description: buildTournamentSeoDescription(tournamentName),
+    // AdSense quality: unknown tournament pages can be empty when the live API has
+    // no matches, so only stable editorial/calendar-backed tournaments can index.
+    robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://watchtennistoday.com/tournament/${slug}`,
     },

@@ -84,12 +84,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!rivalry) {
     return {
       title: "Tennis Rivalry Not Found | Watch Tennis Today",
+      robots: { index: false, follow: true },
     };
   }
+
+  const indexable = shouldIndexGeneratedPage({
+    title: rivalry.title,
+    description: rivalry.description,
+    editorialText: [
+      rivalry.description,
+      rivalry.angle,
+      rivalry.surfaceNote,
+      rivalry.watchIntent,
+      ...rivalry.storylines,
+    ].join(" "),
+    meaningfulItems: rivalry.storylines.length,
+  });
 
   return {
     title: `${rivalry.title} H2H, Live Stream & TV Schedule | Watch Tennis Today`,
     description: rivalry.description,
+    // AdSense quality: rivalry pages index only when they include real storylines
+    // and matchup context, not just generated H2H/table data.
+    robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://watchtennistoday.com/rivalries/${rivalry.slug}`,
     },

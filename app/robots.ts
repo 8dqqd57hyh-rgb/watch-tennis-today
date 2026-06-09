@@ -1,49 +1,26 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
+  const privateOrTechnicalPaths = [
+    "/api/",
+    "/_next/data/",
+    "/newsletter-confirmation",
+  ];
+
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/api/",
-          "/_next/data/",
-          "/newsletter-confirmation",
-          "/vs/", // vs comparison pages without substantive content
-          "/watch/tennis-spoiler-free-scores",
-          "/french-open-draw",
-          "/french-open-survivors",
-          "/french-open-upsets",
-          "/roland-garros-pulse",
-          "/roland-garros-predictions",
-          "/tennis-schedule-tomorrow",
-          "/wimbledon-live-stream",
-          "/watch-sabalenka-live",
-          "/watch-swiatek-live",
-        ],
+        // AdSense quality: keep technical/private URLs out of crawlers, but do not
+        // block thin public pages here. Public generated pages use meta noindex so
+        // Google can crawl them, see follow links, and confirm the noindex signal.
+        disallow: privateOrTechnicalPaths,
       },
       {
         userAgent: ["AhrefsBot", "DotBot", "SemrushBot", "MJ12bot"],
         allow: "/",
-        disallow: [
-          "/api/",
-          "/_next/data/",
-          "/newsletter-confirmation",
-          "/vs/", // vs comparison pages without substantive content
-          "/watch/tennis-spoiler-free-scores",
-          "/french-open-draw",
-          "/french-open-survivors",
-          "/french-open-upsets",
-          "/roland-garros-pulse",
-          "/roland-garros-predictions",
-          "/tennis-schedule-tomorrow",
-          "/wimbledon-live-stream",
-          "/watch-sabalenka-live",
-          "/watch-swiatek-live",
-        ],
-        // Note: /watch/ pages are now fully indexed as they contain editorial content
-        // This change ensures AdSense crawlers can access match pages with commentary
+        disallow: privateOrTechnicalPaths,
       },
     ],
     sitemap: "https://watchtennistoday.com/sitemap.xml",

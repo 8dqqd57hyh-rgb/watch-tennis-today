@@ -528,10 +528,15 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
+  const matchId = getMatchIdFromSlug(decodedSlug);
+  const archivedMatch = matchId ? getArchivedMatch(matchId) : null;
   const readableTitle = titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
   return {
     title: buildWatchSeoTitle(readableTitle, false),
     description: buildWatchSeoDescription(readableTitle, false),
+    // AdSense quality: /watch/* depends on changing match data. Only archived
+    // matches with stable local content can be indexed; live/missing URLs stay noindex.
+    robots: archivedMatch ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },

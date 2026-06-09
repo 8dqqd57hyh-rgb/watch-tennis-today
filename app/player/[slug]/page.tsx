@@ -10,6 +10,7 @@ import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { supabase } from "@/app/lib/supabase";
+import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 
 export const dynamic = "force-dynamic";
 
@@ -364,7 +365,16 @@ function formatPlayerName(slug?: string) {
 }
 
 function isIndexablePlayerSlug(slug: string) {
-  return Boolean(getCanonicalPlayerSlug(slug));
+  const canonicalSlug = getCanonicalPlayerSlug(slug);
+  const profile = canonicalSlug ? PLAYER_EDITORIAL_PROFILES[canonicalSlug] : null;
+
+  return shouldIndexPlayerPage({
+    canonicalSlug,
+    biography: profile?.biography,
+    playingStyle: profile?.playingStyle,
+    careerContext: profile?.careerContext,
+    strengths: profile?.strengths,
+  });
 }
 
 function getPlayerDisplay(slug: string) {
@@ -407,6 +417,8 @@ export async function generateMetadata({
   const indexable = isIndexablePlayerSlug(slug);
 
   return {
+    // AdSense quality: verified player pages with substantial editorial profiles can index;
+    // unknown/API-only player pages stay noindex to avoid thin generated pages.
     robots: indexable
       ? { index: true, follow: true }
       : { index: false, follow: true },

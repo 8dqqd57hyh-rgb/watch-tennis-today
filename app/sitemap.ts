@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
-import { comparisons } from "@/data/comparisons";
 import { guideArticles } from "@/app/guides/articles";
 export const revalidate = 3600;
 
@@ -16,6 +15,34 @@ type Match = {
 };
 
 const BASE_URL = "https://watchtennistoday.com";
+
+
+const ADSENSE_INDEXABLE_PLAYERS = new Set([
+  "jannik-sinner",
+  "carlos-alcaraz",
+  "novak-djokovic",
+  "daniil-medvedev",
+  "alexander-zverev",
+  "taylor-fritz",
+  "holger-rune",
+  "andrey-rublev",
+  "casper-ruud",
+  "stefanos-tsitsipas",
+  "alex-de-minaur",
+  "lorenzo-musetti",
+  "tommy-paul",
+  "ben-shelton",
+  "iga-swiatek",
+  "aryna-sabalenka",
+  "coco-gauff",
+  "elena-rybakina",
+  "jessica-pegula",
+  "madison-keys",
+  "naomi-osaka",
+  "mirra-andreeva",
+  "jasmine-paolini",
+  "emma-navarro",
+]);
 
 const TOP_PLAYERS = new Set([
   "jannik-sinner",
@@ -255,7 +282,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
      "/privacy",
     "/terms",
-    "/compare",
     "/cookie-policy",
 "/editorial-policy",
 "/how-we-source-data",
@@ -303,7 +329,11 @@ const uniquePlayers = [
     ...canonicalTopPlayers,
     ...dynamicPlayers,
   ]),
-].slice(0, 120);
+]
+  // AdSense quality: player URLs enter the sitemap only when the page has a
+  // substantial editorial profile and is eligible for indexing.
+  .filter((player) => ADSENSE_INDEXABLE_PLAYERS.has(player))
+  .slice(0, 120);
 
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
     url: `${BASE_URL}/player/${player}`,
@@ -348,12 +378,8 @@ const frenchOpenPages = [
   "/where-to-watch-french-open",
 ];
 
-  const comparisonPages: MetadataRoute.Sitemap = comparisons.map((comparison) => ({
-    url: `${BASE_URL}/compare/${comparison.slug}`,
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.82,
-  }));
+  // AdSense quality: comparison detail pages are intentionally excluded because
+  // they are templated affiliate/comparison pages and are marked noindex.
 
   const guidePages: MetadataRoute.Sitemap = guideArticles.map((article) => ({
     url: `${BASE_URL}/guides/${article.slug}`,
@@ -364,7 +390,6 @@ const frenchOpenPages = [
 
  return [
   ...staticPages,
-  ...comparisonPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,

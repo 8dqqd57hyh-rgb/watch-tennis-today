@@ -5,6 +5,7 @@ import { comparisons } from "@/data/comparisons";
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import AdSlot from "@/app/components/AdSlot";
+import { shouldIndexGeneratedPage } from "@/app/lib/adsenseIndexing";
 
 export const dynamic = "force-dynamic";
 type Props = {
@@ -25,12 +26,23 @@ export async function generateMetadata({
   if (!comparison) {
     return {
       title: "Comparison Not Found | Watch Tennis Today",
+      robots: { index: false, follow: true },
     };
   }
+
+  const indexable = shouldIndexGeneratedPage({
+    title: comparison.title,
+    description: comparison.description,
+    editorialText: [comparison.description, comparison.bestForLeft, comparison.bestForRight, comparison.verdict, comparison.audience].join(" "),
+    meaningfulItems: 2,
+  });
 
   return {
     title: `${comparison.title} | Best Tennis Streaming Comparison`,
     description: comparison.description,
+    // AdSense quality: comparison detail pages are affiliate/templated helpers, so
+    // they stay crawlable but noindexed unless expanded into substantial editorial pages.
+    robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://watchtennistoday.com/compare/${slug}`,
     },
