@@ -514,6 +514,73 @@ export const guideArticles: GuideArticle[] = [
     ]
   }
 
+  ,
+  {
+    "slug": "tennis-walkover-explained",
+    "title": "Walkover in Tennis Explained",
+    "description": "What a walkover means in tennis, how it differs from retirement and withdrawal, and why it affects schedules and draws.",
+    "category": "Rules",
+    "intro": "A walkover happens when a scheduled tennis match does not take place because one player cannot play. The opponent advances without contesting the match. It is one of the most common terms fans see during busy tournaments, especially when injuries, illness or late withdrawals affect the draw.\n\nThe word can sound simple, but it matters for understanding results pages, order-of-play changes and tournament narratives. A walkover is not the same as a retirement after a match has started, and it should not be treated as proof that the advancing player played better that day.",
+    "sections": [
+      {"heading":"The basic definition","body":"A walkover means a player advances because the opponent did not start the scheduled match. The match is not played as a normal contest, so there is no completed scoreline to analyze.\n\nOn draws or live scoreboards, a walkover is often shortened to WO. Fans usually see it when a player withdraws too late for the tournament to replace them with another player."},
+      {"heading":"Walkover versus retirement","body":"The cleanest distinction is timing. A walkover happens before the match begins. A retirement happens after the match begins and one player cannot continue.\n\nThis matters because a retirement can still include useful match evidence: movement, serve speed, rally patterns or score at the time of retirement. A walkover gives almost no on-court evidence because the match never started."},
+      {"heading":"Why walkovers happen","body":"Walkovers can happen because of injury, illness, fatigue, scheduling problems or a player choosing not to risk a worse physical issue. In team competitions, administrative or eligibility issues can also create non-played matches.\n\nFans should avoid guessing the exact reason unless the tournament or player provides official information. A short scoreboard label rarely explains the whole situation."},
+      {"heading":"How a walkover affects the draw","body":"The opponent moves to the next round, often with less physical load than players who had to complete a full match. That can matter later in the tournament, especially at Grand Slams where recovery time becomes part of the story.\n\nIt can also affect ticket holders and TV schedules because a court slot may suddenly need a replacement match or a delayed start."},
+      {"heading":"How fans should read a walkover result","body":"Do not treat a walkover like a normal win. The advancing player benefits from moving on, but they did not beat the opponent on court in that round.\n\nFor analysis, record the result carefully: who advanced, who did not play, whether official medical or scheduling information was announced, and what the extra rest might mean for the next match."}
+    ],
+    "faq": [
+      {"question":"What does WO mean in tennis?","answer":"WO usually means walkover: a player advanced because the opponent did not start the scheduled match."},
+      {"question":"Is a walkover the same as retirement?","answer":"No. A walkover happens before a match starts. A retirement happens after a match has begun."},
+      {"question":"Does the opponent get the win after a walkover?","answer":"The opponent advances in the draw, but fans should not analyze it like a normal on-court win."},
+      {"question":"Can a walkover change the schedule?","answer":"Yes. It can leave a gap on a court schedule or cause tournaments and broadcasters to adjust the order of play."}
+    ]
+  },
+
+
+
+  ,
+  {
+    "slug": "tennis-bye-explained",
+    "title": "Bye in Tennis Explained",
+    "description": "What a bye means in a tennis draw, why seeded players receive byes, and how it affects tournament schedules.",
+    "category": "Draws",
+    "intro": "A bye means a player advances to the next round without playing a match in the current round. It usually appears when the draw size is not a perfect fit or when top seeds receive first-round protection at certain events.\n\nByes can look strange to new fans because the player is listed in the bracket but has no opponent. Understanding byes helps explain why some players start later than others and why early tournament schedules do not always include every top name.",
+    "sections": [
+      {"heading":"The basic definition","body":"A bye is a free passage into the next round of a tournament draw. The player does not win a match on court; they simply do not need to play that round.\n\nOn a draw sheet, a bye often appears next to a seeded player’s name or in an empty bracket position."},
+      {"heading":"Why byes exist","body":"Byes are used to balance draw sizes and manage tournament structure. If an event has a 96-player draw, not everyone can start in the same round cleanly, so some players receive byes.\n\nThey are also used as an incentive or protection for high-ranked players at certain tour events, giving them a later start."},
+      {"heading":"Does a bye count as a win?","body":"A bye moves the player forward, but it is not the same as winning a completed match. It usually does not provide the same sporting evidence as a real victory.\n\nFor fan analysis, note that the player may be fresher but may also have less match rhythm than opponents who already played."},
+      {"heading":"How byes affect schedules","body":"A player with a bye may not appear on the order of play until the second round. That can confuse fans searching for a top player on day one or day two.\n\nBefore assuming a player withdrew, check the draw. They may simply have a bye and start later in the event."},
+      {"heading":"What fans should watch after a bye","body":"The first match after a bye can be tricky. The seeded player is rested, but the opponent may already be adjusted to the court speed, balls and conditions.\n\nThat is why early matches after byes sometimes feel tighter than ranking expectations suggest."}
+    ],
+    "faq": [
+      {"question":"What does bye mean in tennis?","answer":"It means a player advances to the next round without playing a match in that round."},
+      {"question":"Why do seeded players get byes?","answer":"Some tournaments give byes to top seeds because of draw size and event structure."},
+      {"question":"Is a bye the same as a walkover?","answer":"No. A bye is built into the draw. A walkover happens when a scheduled opponent does not play."},
+      {"question":"Can a bye hurt a player?","answer":"It can. A rested player may also lack match rhythm compared with an opponent who already played."}
+    ]
+  },
+  {
+    "slug": "tennis-qualifying-explained",
+    "title": "Tennis Qualifying Explained",
+    "description": "How qualifying rounds work, why qualifiers matter, and what fans should know before reading a main draw.",
+    "category": "Draws",
+    "intro": "Qualifying is the tournament before the tournament. Players who do not enter the main draw directly can earn a place by winning qualifying matches. Those who succeed are called qualifiers, and they often arrive in the main draw with confidence and match rhythm.\n\nFor fans, qualifiers are important because they are not just filler names. Many are rising players, returning players or specialists whose ranking does not fully show their danger in that specific week.",
+    "sections": [
+      {"heading":"How qualifying works","body":"Before the main draw begins, tournaments hold qualifying rounds for players outside the direct-entry cutoff. A player usually needs to win multiple matches to qualify, depending on draw size and event level.\n\nOnce they qualify, they receive a main-draw position and compete under the same match rules as other players."},
+      {"heading":"Why players enter qualifying","body":"Qualifying gives players a route into bigger events when their ranking is not high enough for direct entry. It can provide prize money, ranking opportunities and valuable experience against stronger fields.\n\nFor young players or players returning from injury, qualifying can be an important step back toward tour stability."},
+      {"heading":"Why qualifiers can be dangerous","body":"A qualifier has already played competitive matches at the event. They may understand the court speed, balls, weather and bounce better than a seeded player starting cold.\n\nThat match rhythm can make qualifiers especially dangerous in first-round main-draw matches."},
+      {"heading":"Qualifier versus lucky loser","body":"A qualifier wins enough qualifying matches to earn entry. A lucky loser loses in qualifying but enters later because someone withdraws from the main draw.\n\nBoth labels come from qualifying, but one is earned through wins and the other comes through replacement rules."},
+      {"heading":"How fans should use qualifying context","body":"When previewing a main-draw match, check whether a player is a qualifier. Then look at who they beat, how many matches they played and whether the surface suits them.\n\nA qualifier with three confident wins may be more prepared than their ranking suggests."}
+    ],
+    "faq": [
+      {"question":"What is qualifying in tennis?","answer":"It is a pre-main-draw competition where players try to earn a place in the tournament."},
+      {"question":"What does qualifier mean?","answer":"A qualifier is a player who won enough qualifying matches to enter the main draw."},
+      {"question":"Are qualifiers weaker players?","answer":"Not always. They may be rising players, returning players or strong specialists with lower rankings."},
+      {"question":"Can a qualifier win the main tournament?","answer":"Yes. It is uncommon but possible once the player enters the main draw."}
+    ]
+  }
+
+
 ];
 
 export function getGuideArticle(slug: string): GuideArticle | undefined {
