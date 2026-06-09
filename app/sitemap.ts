@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { guideArticles } from "@/app/guides/articles";
+import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 export const revalidate = 3600;
 
 type Match = {
@@ -229,7 +230,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/players/atp",
     "/players/wta",
     "/watch-tennis-in",
-    "/watch-tennis-in/poland",
     "/french-open",
     "/today",
     "/tomorrow",
@@ -265,15 +265,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-live-scores-explained",
     "/grand-slam-tv-rights-explained",
     "/content-guidelines",
-    "/watch-tennis-in/uk",
-    "/watch-tennis-in/usa",
-    "/watch-tennis-in/germany",
-    "/watch-tennis-in/france",
-    "/watch-tennis-in/spain",
-    "/watch-tennis-in/italy",
-    "/watch-tennis-in/canada",
-    "/watch-tennis-in/australia",
-    "/watch-tennis-in/india",
     "/watch-tennis-live-today",
     "/tennis-results-today",
     "/tennis-order-of-play-today",
@@ -305,6 +296,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "" ? 1 : 0.9,
   };
 });
+
+
+  // AdSense quality: include only manually reviewed country guides.
+  const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
+    url: `${BASE_URL}/watch-tennis-in/${country}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
 
   const importantMatches = matches.filter(isImportantMatch);
 
@@ -390,6 +390,7 @@ const frenchOpenPages = [
 
  return [
   ...staticPages,
+  ...countryPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,

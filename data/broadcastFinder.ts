@@ -167,6 +167,25 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
 ];
 
+// AdSense quality: only these manually reviewed country guides are allowed to be indexable.
+// If more countries are added later, keep them noindex until they have enough unique local editorial text.
+export const ADSENSE_INDEXABLE_BROADCAST_COUNTRIES = new Set([
+  "poland",
+  "usa",
+  "uk",
+  "germany",
+  "france",
+  "spain",
+  "italy",
+  "canada",
+  "australia",
+  "india",
+]);
+
+export function shouldIndexBroadcastCountry(slug: string) {
+  return ADSENSE_INDEXABLE_BROADCAST_COUNTRIES.has(slug);
+}
+
 export function getBroadcastCountry(slug: string) {
   return broadcastCountries.find((country) => country.slug === slug);
 }

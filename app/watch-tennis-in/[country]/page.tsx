@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import EmailSignup from "@/app/components/EmailSignup";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
-import { broadcastCountries, getBroadcastCountry } from "@/data/broadcastFinder";
+import { broadcastCountries, getBroadcastCountry, shouldIndexBroadcastCountry } from "@/data/broadcastFinder";
 
 const BASE_URL = "https://watchtennistoday.com";
 
@@ -27,9 +27,14 @@ export async function generateMetadata({
     };
   }
 
+  const indexable = shouldIndexBroadcastCountry(broadcastCountry.slug);
+
   return {
     title: `Where to Watch Tennis in ${broadcastCountry.country} | TV Channels, ATP, WTA & Grand Slams`,
     description: `Find official tennis broadcasters, TV channels and legal streaming routes for ATP, WTA and Grand Slam matches in ${broadcastCountry.country}.`,
+    // AdSense quality: country pages are only indexable after manual review for
+    // unique local broadcaster context. New countries default to noindex.
+    robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `${BASE_URL}/watch-tennis-in/${broadcastCountry.slug}`,
     },

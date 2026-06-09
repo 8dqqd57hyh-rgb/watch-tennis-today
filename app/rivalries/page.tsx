@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Tennis Rivalries & H2H Matchup Guides | Watch Tennis Today",
   description:
     "Explore the biggest ATP and WTA rivalry pages with live match links, TV schedule context, player pages and matchup storylines.",
+  // AdSense quality: the hub mainly lists generated matchup pages, so keep it
+  // crawlable for discovery but out of Google's index during approval review.
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/rivalries",
   },
