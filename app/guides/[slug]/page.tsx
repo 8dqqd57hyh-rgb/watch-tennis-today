@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EmailCapture from "@/components/EmailCapture";
 import { notFound } from "next/navigation";
 import {
   getGuideArticle,
@@ -131,6 +132,18 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
             ))}
           </div>
         </section>
+
+        <div className="mt-10">
+          <EmailCapture
+            title="Get useful tennis guide updates"
+            description="Get low-noise updates when major schedule, rules or legal viewing guides are improved."
+            placeholder="Email for guide updates"
+            buttonText="Get updates"
+            contextType="guide"
+            contextValue={article.slug}
+            dark
+          />
+        </div>
 
         <section className="mt-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <h2 className="text-2xl font-black text-white">Sources and review notes</h2>

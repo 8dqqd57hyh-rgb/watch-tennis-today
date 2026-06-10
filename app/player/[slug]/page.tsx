@@ -5,9 +5,9 @@ import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug } from "@/data/playerSlugs";
-import PlayerSubscribeBox from "@/app/components/PlayerSubscribeBox";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import PlayerFollowCTA from "@/components/PlayerFollowCTA";
+import EmailCapture from "@/components/EmailCapture";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { supabase } from "@/app/lib/supabase";
@@ -1525,6 +1525,17 @@ const playerMatches = allMatches
         </section>
       ) : null}
 
+      <div className="mb-10">
+        <EmailCapture
+          title={`Get notified when ${playerName} appears in today’s tennis schedule`}
+          description="Get useful player alerts for next match windows, live status and official viewing checks. No spam and no unofficial stream links."
+          placeholder="Email for player alerts"
+          buttonText="Follow player"
+          contextType="player"
+          contextValue={playerName}
+        />
+      </div>
+
       <RevenueConversionPanel context="player" playerName={playerName} />
 
 
@@ -1572,6 +1583,20 @@ const playerMatches = allMatches
               </a>
             );
           })}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Related resources</p>
+        <h2 className="text-2xl font-black text-zinc-950">Player resources for rankings, tournaments and legal viewing</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
+          Continue from {playerName} to evergreen guides that explain rankings, tournament levels, scoring and legal streaming checks.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href="/atp-wta-rankings-explained" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Rankings explained →</Link>
+          <Link href="/tennis-tournament-levels-guide" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Tournament levels →</Link>
+          <Link href="/guides/tennis-scoring-explained" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Tennis scoring →</Link>
+          <Link href="/tennis-streaming" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Legal streaming hub →</Link>
         </div>
       </section>
 

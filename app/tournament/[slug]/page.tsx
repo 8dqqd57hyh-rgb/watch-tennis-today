@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
+import EmailCapture from "@/components/EmailCapture";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
 import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
@@ -617,6 +618,18 @@ export default async function Page({ params }: PageProps) {
             )
           )}
         </section>
+
+        <div className="mt-12">
+          <EmailCapture
+            title={`Get ${tournamentName} schedule and viewing updates`}
+            description="Get tournament schedule and viewing updates without relying on unsafe stream pages or noisy notifications."
+            placeholder="Email for tournament alerts"
+            buttonText="Get tournament updates"
+            contextType="tournament"
+            contextValue={tournamentName}
+            dark
+          />
+        </div>
 
         <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-4">

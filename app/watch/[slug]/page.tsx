@@ -10,7 +10,7 @@ import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch } from "@/app/lib/matchArchive";
 import LiveMatchScore from "./LiveMatchScore";
-import EmailSignup from "@/app/components/EmailSignup";
+import EmailCapture from "@/components/EmailCapture";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
@@ -1018,12 +1018,14 @@ export default async function MatchPage({
             </section>
 
             <div className="mb-12">
-              <EmailSignup
-                title="Get a quiet alert for this match"
+              <EmailCapture
+                title="Get tennis viewing updates without searching every day"
                 description={`Optional email updates for ${matchTitle}: schedule changes, match status and official viewing guidance only.`}
-                source="match-page"
-                context={matchTitle}
-                buttonLabel="Notify me"
+                placeholder="Email for match alerts"
+                buttonText="Notify me"
+                contextType="watch"
+                contextValue={matchTitle}
+                dark
               />
             </div>
 

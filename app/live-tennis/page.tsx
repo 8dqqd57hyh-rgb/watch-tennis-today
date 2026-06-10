@@ -1,5 +1,6 @@
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import EmailCapture from "@/components/EmailCapture";
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
 
@@ -142,6 +143,18 @@ const matchesToShow =
               </a>
             </div>
           ))}
+        </div>
+
+        <div className="my-8">
+          <EmailCapture
+            title="Get useful live tennis alerts"
+            description="Get quiet updates when important tennis windows, live schedules or official viewing guides need checking."
+            placeholder="Email for live tennis alerts"
+            buttonText="Get alerts"
+            contextType="daily"
+            contextValue="live-tennis-page"
+            dark
+          />
         </div>
 
         <VpnPromo />

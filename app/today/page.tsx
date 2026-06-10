@@ -1,4 +1,5 @@
 import TodayClient from "./TodayClient";
+import EmailCapture from "@/components/EmailCapture";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -60,6 +61,16 @@ export default function Page() {
           </div>
         </div>
       </section>
+      <div className="mb-8">
+        <EmailCapture
+          title="Get today's useful tennis alerts"
+          description="Get low-noise updates for important tennis schedule windows, live match context and official viewing checks."
+          placeholder="Email for daily tennis alerts"
+          buttonText="Get alerts"
+          contextType="daily"
+          contextValue="today-page"
+        />
+      </div>
       <TodayClient />
     </main>
   );

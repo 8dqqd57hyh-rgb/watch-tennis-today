@@ -15,7 +15,7 @@ const steps = [
   {
     title: "1. See what is happening today",
     text: "Start with live and upcoming matches. Tennis has many tours, time zones and court schedules, so a daily match page is usually easier than jumping directly into a tournament site.",
-    links: [["Live tennis", "/live-tennis"], ["Best matches today", "/best-tennis-matches-today"], ["Tennis on TV today", "/tennis-on-tv-today"]],
+    links: [["Today", "/today"], ["Live tennis", "/live-tennis"], ["Tennis on TV today", "/tennis-on-tv-today"]],
   },
   {
     title: "2. Learn the scoreboard language",
@@ -25,7 +25,7 @@ const steps = [
   {
     title: "3. Understand the season structure",
     text: "Grand Slams, Masters 1000s, WTA 1000s and smaller tour events all matter differently. Knowing the calendar helps you understand which matches are high-stakes.",
-    links: [["Tennis calendar", "/tennis-calendar"], ["Tournament levels", "/tennis-tournaments"], ["Court surfaces", "/tennis-court-surfaces"]],
+    links: [["Tennis calendar", "/tennis-calendar"], ["Tournament levels", "/tennis-tournaments"], ["Tournaments", "/tournament"], ["Court surfaces", "/tennis-court-surfaces"]],
   },
   {
     title: "4. Pick players to follow",
@@ -35,7 +35,7 @@ const steps = [
   {
     title: "5. Watch legally and avoid bad streams",
     text: "Broadcast rights vary by country and tournament. Check official broadcasters first, especially for Grand Slams, where rights are separate from regular ATP or WTA tour coverage.",
-    links: [["Legal streaming guide", "/how-to-watch-tennis-legally"], ["Broadcast finder", "/tennis-tv-broadcast-finder"], ["Official broadcasters", "/official-tennis-broadcasters-guide"]],
+    links: [["Tennis streaming hub", "/tennis-streaming"], ["Legal streaming guide", "/how-to-watch-tennis-legally"], ["Official broadcasters", "/official-tennis-broadcasters-guide"]],
   },
 ];
 
@@ -75,6 +75,18 @@ export default function StartHerePage() {
           </p>
         </section>
 
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">Choose your path</h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-5">
+            <Link href="/today" className="rounded-2xl border border-zinc-800 bg-black/40 p-4 text-sm font-black hover:border-emerald-300">I want to watch tennis today</Link>
+            <Link href="/players" className="rounded-2xl border border-zinc-800 bg-black/40 p-4 text-sm font-black hover:border-emerald-300">I want to follow a player</Link>
+            <Link href="/tennis-guides" className="rounded-2xl border border-zinc-800 bg-black/40 p-4 text-sm font-black hover:border-emerald-300">I want to understand tennis rules</Link>
+            <Link href="/tournament" className="rounded-2xl border border-zinc-800 bg-black/40 p-4 text-sm font-black hover:border-emerald-300">I want to follow tournaments</Link>
+            <Link href="/tennis-streaming" className="rounded-2xl border border-zinc-800 bg-black/40 p-4 text-sm font-black hover:border-emerald-300">I want legal streaming options</Link>
+          </div>
+        </section>
+
         <section className="mt-8 grid gap-5">
           {steps.map((step) => (
             <article key={step.title} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
@@ -94,7 +106,7 @@ export default function StartHerePage() {
         <section className="mt-8 rounded-3xl border border-emerald-900 bg-emerald-950/30 p-6">
           <h2 className="text-3xl font-black">Want the shortest path?</h2>
           <p className="mt-3 leading-8 text-zinc-300">
-            Use <Link href="/live-tennis" className="font-black text-emerald-300">Live Tennis</Link> on match days, use the <Link href="/tennis-glossary" className="font-black text-emerald-300">glossary</Link> when a term is unclear, and subscribe to the <Link href="/newsletter" className="font-black text-emerald-300">newsletter</Link> if you want low-noise reminders for important tennis windows.
+            Use <Link href="/today" className="font-black text-emerald-300">Today</Link> or <Link href="/live-tennis" className="font-black text-emerald-300">Live Tennis</Link> on match days, use the <Link href="/tennis-glossary" className="font-black text-emerald-300">glossary</Link> when a term is unclear, and subscribe to the <Link href="/newsletter" className="font-black text-emerald-300">newsletter</Link> if you want low-noise reminders for important tennis windows.
           </p>
         </section>
       </div>

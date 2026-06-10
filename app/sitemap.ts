@@ -299,6 +299,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-in-uk",
     "/watch-tennis-in-australia",
     "/watch-tennis-in-canada",
+    "/why-trust-watch-tennis-today",
+    "/tennis-streaming",
+    "/start-here",
     "/best-ways-to-watch-tennis-online",
   ].map((path) => {
   const livePages = [
