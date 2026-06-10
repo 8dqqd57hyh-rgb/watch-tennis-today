@@ -45,6 +45,7 @@ const guideCategories = [
       "break-points-explained",
       "tennis-tiebreak-rules",
       "tennis-match-formats-explained",
+      "tennis-retirement-walkover-withdrawal",
       "walkover-vs-retirement",
       "tennis-retirement-rules-explained",
       "tennis-walkover-explained",

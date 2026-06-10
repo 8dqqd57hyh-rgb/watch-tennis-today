@@ -36,6 +36,21 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
   if (!article) notFound();
 
   const related = getRelatedGuides(article, 6);
+  const supplementalLinks =
+    article.slug === "tennis-retirement-walkover-withdrawal"
+      ? [
+          {
+            href: "/tennis-glossary",
+            label: "Tennis glossary",
+            description: "Quick definitions for RET, walkover, withdrawal and other tennis terms.",
+          },
+          {
+            href: "/tennis-scoring-explained",
+            label: "Tennis scoring explained",
+            description: "A broader scoring guide for points, games, sets and match results.",
+          },
+        ]
+      : [];
   const { publishedDate, updatedDate } = getGuideArticleDates(article);
   const readingTime = getGuideReadingTime(article);
   const sourceReferences = getGuideSourceReferences(article);
@@ -164,6 +179,24 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
         </section>
 
         <RelatedGuides guides={related} className="mt-10" />
+
+        {supplementalLinks.length > 0 ? (
+          <section className="mt-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-black text-white">Useful tennis basics</h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {supplementalLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-2xl border border-zinc-800 p-4 text-sm text-zinc-300 transition hover:border-emerald-400 hover:text-white"
+                >
+                  <span className="font-black">{item.label}</span>
+                  <span className="mt-2 block leading-6 text-zinc-500">{item.description}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <aside className="mt-10 rounded-3xl border border-emerald-900 bg-emerald-950/30 p-6 text-zinc-300">
           <h2 className="text-2xl font-black text-white">Our legal-streaming rule</h2>

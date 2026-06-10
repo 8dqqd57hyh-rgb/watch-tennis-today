@@ -237,6 +237,85 @@ export const guideArticles: GuideArticle[] = [
     ]
   },
   {
+    "slug": "tennis-retirement-walkover-withdrawal",
+    "title": "Tennis Retirement, Walkover, Withdrawal and Default Explained",
+    "description": "A clear guide to tennis retirements, walkovers, withdrawals and defaults: what each term means for results, scores, schedules and neutral betting context.",
+    "category": "Rules",
+    "intro": "Retirement, walkover, withdrawal and default are four tennis terms that all describe a match or tournament entry ending outside the normal final point. They are related, but they do not mean the same thing. The key differences are timing, whether the match started, and why the player stopped or did not play.\n\nThis guide explains the terms in practical fan language. It is not medical speculation, legal advice or betting advice. It helps you read tennis results, live scores, draws and order-of-play changes without treating every non-standard result as the same kind of win.",
+    "sections": [
+      {
+        "heading": "The short version",
+        "body": "A retirement happens after a match has started and one player cannot continue. A walkover happens when a scheduled match does not start and the opponent advances. A withdrawal is broader: it means a player pulls out of an event or match before completing participation. A default is different because it usually involves a rules or conduct decision rather than an ordinary injury or illness situation.\n\nFor results, the timing matters. A retirement can have a partial score because points were played. A walkover usually has no played score. A withdrawal may change the draw before a match is even listed. A default records that a player was removed from the match or event under the applicable rules."
+      },
+      {
+        "heading": "What retirement means",
+        "body": "A retirement means the match began, then one player stopped before normal completion. The scoreboard may show a score such as 6-4, 2-1 RET, meaning the match had progressed to that point before it ended. The opponent advances because the retiring player could not continue.\n\nFans should avoid guessing the exact physical issue unless the tournament or player provides reliable information. A retirement tells you that the match ended early. It does not always tell you when the problem started, how serious it is, or how the match would have ended if both players had finished."
+      },
+      {
+        "heading": "What walkover means",
+        "body": "A walkover means a scheduled match does not start because one player cannot take the court. The opponent advances, but there is no on-court match to analyze. On a draw sheet or scoreboard, this may appear as WO or W/O.\n\nA walkover can happen after a late injury, illness or other accepted reason. It can also affect the order of play because a court slot suddenly opens. For fans, the important point is that a walkover is not the same evidence as a completed win. The player advanced, but did not beat that opponent in a played match."
+      },
+      {
+        "heading": "What withdrawal means",
+        "body": "Withdrawal is the broadest term. A player can withdraw before a tournament starts, after the draw is made, before a scheduled match, or between rounds. Depending on timing, the withdrawal may create a lucky-loser opening, a replacement, a bye-like draw change or a walkover for the next opponent.\n\nThis is why withdrawal language can be confusing. If the match was already scheduled and the opponent advances without play, fans may also see walkover language. If the player pulls out before the draw or before a replacement deadline, the tournament may simply update the entry list."
+      },
+      {
+        "heading": "What default means",
+        "body": "A default is not just another word for injury. It usually means a player is removed from a match or tournament because of a rules issue, conduct issue, eligibility issue or other official decision under the event rules. The exact consequences depend on the competition.\n\nFor fans, default should be read carefully and neutrally. Do not assume every default has the same cause. Check official tournament information before repeating details, and separate the result label from speculation about intent or discipline."
+      },
+      {
+        "heading": "What these terms mean for tennis results",
+        "body": "For a completed match, the final score tells the full result. For a retirement, the score tells only the portion that was played before the match stopped. For a walkover, there is usually no match score because the contest did not begin. For a withdrawal, the result depends on when the player pulled out. For a default, the official record shows that the match or participation ended by decision rather than normal play.\n\nThis matters when comparing form. A player who advances by walkover may be fresher, but the result gives no tactical evidence. A player who advances after an opponent retires may have played well, but the match is still incomplete. A default may affect the draw without saying much about tennis level."
+      },
+      {
+        "heading": "What these terms mean for scores and bets",
+        "body": "Scoreboards and betting operators can handle retirements, walkovers, withdrawals and defaults differently. Some score pages show the partial score. Some show only RET, WO or another status label. Betting settlement rules can vary by operator, market and jurisdiction, especially around whether a match started, whether one set was completed, or whether a market was already decided.\n\nThe safest neutral rule is simple: read the official result first, then check the specific rules of the scoreboard, tournament, fantasy game or betting operator you are using. Watch Tennis Today does not provide betting advice or settlement guarantees. The goal is to explain the tennis terminology so readers understand why a result may look unusual."
+      },
+      {
+        "heading": "Simple examples without real match claims",
+        "body": "If Player A wins the first set and Player B stops at 2-2 in the second set, that is a retirement because the match started and then ended early. If Player B cannot come out for the match at all, Player A may advance by walkover. If Player B pulls out of the tournament before the draw is finalized, the tournament may replace them and fans may never see a walkover on the match schedule.\n\nIf a player is removed because of a rule or conduct decision, that is closer to default language. These examples are simplified, but they show the timing difference: before the event, before the match, after the match starts, or because of an official decision."
+      },
+      {
+        "heading": "How fans should read a draw",
+        "body": "When you see RET, WO, withdrawal or default, pause before judging the players. Ask four questions: did the match start, is there a partial score, did the opponent advance, and did the tournament publish an official explanation? Those questions are more useful than guessing.\n\nThen follow the practical effects. A court schedule may change. A player may get extra rest. A lucky loser or alternate may enter. A future round may become less predictable because one section of the draw changed without a normal completed match."
+      }
+    ],
+    "faq": [
+      {
+        "question": "What is the difference between retirement and walkover in tennis?",
+        "answer": "A retirement happens after a match starts. A walkover happens when the scheduled match does not start and the opponent advances."
+      },
+      {
+        "question": "Is withdrawal the same as walkover?",
+        "answer": "Not always. Withdrawal is broader. A withdrawal before a scheduled match can lead to a walkover, but a withdrawal before the draw or before replacement deadlines may simply change the entry list."
+      },
+      {
+        "question": "What does default mean in tennis?",
+        "answer": "A default usually means a player is removed from a match or event under rules or conduct procedures. It should not be treated as the same thing as an injury retirement."
+      },
+      {
+        "question": "Does a retirement count as a completed score?",
+        "answer": "A retirement has a partial score from the points and games played, but the match did not finish normally."
+      },
+      {
+        "question": "Do betting rules treat retirements and walkovers the same way?",
+        "answer": "Not necessarily. Settlement rules vary by operator, market and jurisdiction, so readers should check the relevant operator rules rather than relying on a general tennis glossary."
+      },
+      {
+        "question": "Should fans guess why a player withdrew or retired?",
+        "answer": "No. Unless an official source gives details, it is better to describe the result label and avoid guessing about medical, personal or disciplinary reasons."
+      }
+    ],
+    "publishedDate": "2026-06-10",
+    "updatedDate": "2026-06-10",
+    "sourceReferences": [
+      "ITF Rules of Tennis",
+      "Official tournament result and draw labels where available",
+      "ATP and WTA official match status terminology where available",
+      "Betting settlement rules vary by operator and should be checked directly with the relevant provider"
+    ]
+  },
+  {
     "slug": "tennis-surfaces-explained",
     "title": "Tennis Surfaces Explained",
     "description": "How clay, grass and hard courts change tennis tactics, movement, scheduling and match expectations.",
@@ -773,10 +852,19 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
     "tennis-seeds-explained",
   ],
   "walkover-vs-retirement": [
+    "tennis-retirement-walkover-withdrawal",
     "tennis-walkover-explained",
     "tennis-retirement-rules-explained",
     "tennis-match-formats-explained",
     "tennis-draws-explained",
+  ],
+  "tennis-retirement-walkover-withdrawal": [
+    "walkover-vs-retirement",
+    "tennis-retirement-rules-explained",
+    "tennis-walkover-explained",
+    "tennis-scoring-system-explained",
+    "tennis-tiebreak-rules",
+    "tennis-match-formats-explained",
   ],
   "tennis-surfaces-explained": [
     "grand-slam-tournaments-explained",
@@ -788,6 +876,7 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
     "break-points-explained",
     "tennis-tiebreak-rules",
     "tennis-match-formats-explained",
+    "tennis-retirement-walkover-withdrawal",
     "walkover-vs-retirement",
   ],
   "tennis-seeds-explained": [
@@ -833,6 +922,7 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
     "tennis-tv-vs-grand-slam-broadcasters",
   ],
   "tennis-retirement-rules-explained": [
+    "tennis-retirement-walkover-withdrawal",
     "walkover-vs-retirement",
     "tennis-walkover-explained",
     "tennis-match-formats-explained",
@@ -847,10 +937,12 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
   "tennis-match-formats-explained": [
     "tennis-scoring-system-explained",
     "tennis-tiebreak-rules",
+    "tennis-retirement-walkover-withdrawal",
     "tennis-retirement-rules-explained",
     "walkover-vs-retirement",
   ],
   "tennis-walkover-explained": [
+    "tennis-retirement-walkover-withdrawal",
     "walkover-vs-retirement",
     "tennis-retirement-rules-explained",
     "tennis-draws-explained",

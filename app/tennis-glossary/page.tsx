@@ -49,6 +49,7 @@ const glossarySections = [
     ],
     links: [
       ["/guides/tennis-match-formats-explained", "Tennis match formats"],
+      ["/guides/tennis-retirement-walkover-withdrawal", "Retirement, walkover and withdrawal"],
       ["/guides/walkover-vs-retirement", "Walkover vs retirement"],
       ["/guides/tennis-retirement-rules-explained", "Retirement rules"],
     ],
