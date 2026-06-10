@@ -1,6 +1,19 @@
 type ApiTennisOptions = {
   timeoutMs?: number;
   cacheSeconds?: number;
+  logLabel?: string;
+  onMeta?: (meta: ApiTennisFetchMeta) => void;
+};
+
+export type ApiTennisFetchMeta = {
+  method: string;
+  label?: string;
+  payloadSizeBytes: number;
+  resultCount: number | null;
+  durationMs: number;
+  cacheMode: "next-revalidate" | "no-store";
+  cacheSeconds?: number;
+  cacheStatus: "eligible" | "near-limit" | "too-large";
 };
 
 function shouldLogApiTennis() {
@@ -11,9 +24,24 @@ function getPayloadSizeBytes(text: string) {
   return new TextEncoder().encode(text).length;
 }
 
-function logApiTennisRequest(method: string, payloadSize: number, duration: number) {
+function getCacheStatus(payloadSizeBytes: number): ApiTennisFetchMeta["cacheStatus"] {
+  if (payloadSizeBytes >= 1_900_000) return "too-large";
+  if (payloadSizeBytes >= 1_000_000) return "near-limit";
+  return "eligible";
+}
+
+function logApiTennisRequest(meta: ApiTennisFetchMeta) {
   if (!shouldLogApiTennis()) return;
-  console.log("[API-TENNIS]", method, payloadSize, duration);
+  console.log("[API-TENNIS]", {
+    method: meta.method,
+    label: meta.label,
+    payloadSizeBytes: meta.payloadSizeBytes,
+    resultCount: meta.resultCount,
+    durationMs: meta.durationMs,
+    cacheMode: meta.cacheMode,
+    cacheSeconds: meta.cacheSeconds,
+    cacheStatus: meta.cacheStatus,
+  });
 }
 
 export async function fetchApiTennisResult<T>(
@@ -48,7 +76,6 @@ export async function fetchApiTennisResult<T>(
 
     const text = await response.text().catch(() => "");
     const payloadSize = getPayloadSizeBytes(text);
-    logApiTennisRequest(method, payloadSize, Date.now() - startedAt);
 
     if (!response.ok) return null;
 
@@ -61,6 +88,22 @@ export async function fetchApiTennisResult<T>(
     }
 
     if (!payload || payload.success !== 1) return null;
+
+    const result = payload.result ?? null;
+    const resultCount = Array.isArray(result) ? result.length : null;
+    const meta: ApiTennisFetchMeta = {
+      method,
+      label: options.logLabel,
+      payloadSizeBytes: payloadSize,
+      resultCount,
+      durationMs: Date.now() - startedAt,
+      cacheMode: options.cacheSeconds ? "next-revalidate" : "no-store",
+      cacheSeconds: options.cacheSeconds,
+      cacheStatus: getCacheStatus(payloadSize),
+    };
+
+    logApiTennisRequest(meta);
+    options.onMeta?.(meta);
 
     return (payload.result ?? null) as T | null;
   } catch (error) {

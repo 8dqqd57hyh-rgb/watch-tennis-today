@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { fetchApiTennisArray } from "@/app/lib/apiTennisClient";
+import { fetchApiTennisArray, type ApiTennisFetchMeta } from "@/app/lib/apiTennisClient";
 
 export type TournamentDateRangeSource =
   | "supabase-calendar"
@@ -52,18 +52,46 @@ function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-function getTournamentLookupWindow() {
+type TournamentFixtureSegment = {
+  key: "recent-completed" | "current" | "upcoming";
+  label: string;
+  date_start: string;
+  date_stop: string;
+};
+
+const TOURNAMENT_FIXTURE_CACHE_SECONDS = 60 * 60 * 6;
+const RECENT_COMPLETED_DAYS = 7;
+const UPCOMING_DAYS = 7;
+
+function shiftDate(date: Date, days: number) {
+  const shifted = new Date(date);
+  shifted.setDate(date.getDate() + days);
+  return shifted;
+}
+
+function getTournamentLookupSegments(): TournamentFixtureSegment[] {
   const today = new Date();
-  const start = new Date(today);
-  start.setDate(today.getDate() - 30);
 
-  const stop = new Date(today);
-  stop.setDate(today.getDate() + 30);
-
-  return {
-    date_start: formatDate(start),
-    date_stop: formatDate(stop),
-  };
+  return [
+    {
+      key: "recent-completed",
+      label: `recent completed matches, ${RECENT_COMPLETED_DAYS}-day window`,
+      date_start: formatDate(shiftDate(today, -RECENT_COMPLETED_DAYS)),
+      date_stop: formatDate(shiftDate(today, -1)),
+    },
+    {
+      key: "current",
+      label: "current matches, 1-day window",
+      date_start: formatDate(today),
+      date_stop: formatDate(today),
+    },
+    {
+      key: "upcoming",
+      label: `upcoming matches, ${UPCOMING_DAYS}-day window`,
+      date_start: formatDate(shiftDate(today, 1)),
+      date_stop: formatDate(shiftDate(today, UPCOMING_DAYS)),
+    },
+  ];
 }
 
 function scoreTournamentCandidate(candidate: ApiTournament, slug: string, name?: string | null) {
@@ -183,24 +211,73 @@ function buildFixtureDateRange(
   };
 }
 
-function pickBestFixtureRange(ranges: TournamentDateRange[]) {
-  return ranges.sort((a, b) => {
-    const aSpan = new Date(`${a.endDate}T00:00:00Z`).getTime() - new Date(`${a.startDate}T00:00:00Z`).getTime();
-    const bSpan = new Date(`${b.endDate}T00:00:00Z`).getTime() - new Date(`${b.startDate}T00:00:00Z`).getTime();
+function combineFixtureRanges(ranges: TournamentDateRange[]) {
+  if (ranges.length === 0) return null;
 
-    if (bSpan !== aSpan) return bSpan - aSpan;
-    return (b.matchCount || 0) - (a.matchCount || 0);
-  })[0] || null;
+  const sortedByDate = [...ranges].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const startDate = sortedByDate[0].startDate;
+  const endDate = sortedByDate
+    .map((range) => range.endDate)
+    .sort()
+    .at(-1) || sortedByDate[0].endDate;
+  const totalMatches = ranges.reduce((sum, range) => sum + (range.matchCount || 0), 0);
+  const tournamentKey = ranges.find((range) => range.tournamentKey)?.tournamentKey;
+  const sourceNames = Array.from(new Set(ranges.map((range) => range.sourceName)));
+  const daySpan = Math.round(
+    (new Date(`${endDate}T00:00:00Z`).getTime() - new Date(`${startDate}T00:00:00Z`).getTime()) /
+      86_400_000
+  ) + 1;
+
+  return {
+    startDate,
+    endDate,
+    source: "api-tennis-fixtures" as const,
+    sourceName: sourceNames.join("; "),
+    confidence: daySpan >= 4 || totalMatches >= 4 ? ("fixture-range" as const) : ("partial" as const),
+    matchCount: totalMatches,
+    tournamentKey,
+  };
 }
 
-async function fetchFixturesWithParams(params: Record<string, string | number | null | undefined>) {
+function pickBestFixtureRange(ranges: TournamentDateRange[]) {
+  const combined = combineFixtureRanges(ranges);
+  if (combined) return combined;
+
+  return null;
+}
+
+function shouldLogTournamentFixtureMeta(meta: ApiTennisFetchMeta) {
+  return meta.cacheStatus !== "eligible" || process.env.LOG_TOURNAMENT_FIXTURES === "1";
+}
+
+function logTournamentFixtureMeta(meta: ApiTennisFetchMeta) {
+  if (!shouldLogTournamentFixtureMeta(meta)) return;
+
+  console.info("[TOURNAMENT-FIXTURE-CACHE]", {
+    label: meta.label,
+    payloadSizeBytes: meta.payloadSizeBytes,
+    payloadSizeKb: Math.round(meta.payloadSizeBytes / 1024),
+    matchCount: meta.resultCount,
+    cacheMode: meta.cacheMode,
+    cacheSeconds: meta.cacheSeconds,
+    cacheStatus: meta.cacheStatus,
+    durationMs: meta.durationMs,
+  });
+}
+
+async function fetchFixturesWithParams(params: Record<string, string | number | null | undefined>, label: string) {
   return fetchApiTennisArray<ApiFixture>(
     "get_fixtures",
     {
       ...params,
       timezone: "Europe/Warsaw",
     },
-    { cacheSeconds: 60 * 60 * 6, timeoutMs: 8000 }
+    {
+      cacheSeconds: TOURNAMENT_FIXTURE_CACHE_SECONDS,
+      timeoutMs: 8000,
+      logLabel: label,
+      onMeta: logTournamentFixtureMeta,
+    }
   );
 }
 
@@ -211,39 +288,61 @@ export const getApiTennisTournamentFixtureDateRange = cache(
 
     if (candidates.length === 0) return null;
 
-    const lookupWindow = getTournamentLookupWindow();
+    const lookupSegments = getTournamentLookupSegments();
     const ranges: TournamentDateRange[] = [];
 
     for (const candidate of candidates) {
-      const attempts = [
-        {
-          label: "API-Tennis fixtures by tournament_key, rolling 60-day window",
-          params: {
-            tournament_key: candidate.tournamentKey,
-            date_start: lookupWindow.date_start,
-            date_stop: lookupWindow.date_stop,
-          },
-        },
-        candidate.eventTypeKey
-          ? {
+      const baseAttempts = candidate.eventTypeKey
+        ? [
+            {
               label: "API-Tennis fixtures by event_type_key + tournament_key",
               params: {
                 event_type_key: candidate.eventTypeKey,
                 tournament_key: candidate.tournamentKey,
-                date_start: lookupWindow.date_start,
-                date_stop: lookupWindow.date_stop,
               },
-            }
-          : null,
-      ].filter((attempt): attempt is { label: string; params: Record<string, string | number | null | undefined> } =>
-        Boolean(attempt)
-      );
+            },
+          ]
+        : [
+            {
+              label: "API-Tennis fixtures by tournament_key",
+              params: {
+                tournament_key: candidate.tournamentKey,
+              },
+            },
+          ];
 
-      for (const attempt of attempts) {
-        const fixtures = await fetchFixturesWithParams(attempt.params);
-        const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, attempt.label);
+      for (const baseAttempt of baseAttempts) {
+        for (const segment of lookupSegments) {
+          const params = {
+            ...baseAttempt.params,
+            date_start: segment.date_start,
+            date_stop: segment.date_stop,
+          };
+          const label = `${baseAttempt.label}, ${segment.label}`;
+          const fixtures = await fetchFixturesWithParams(params, label);
+          const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, label);
 
-        if (range) ranges.push(range);
+          if (range) ranges.push(range);
+        }
+      }
+
+      if (ranges.length === 0 && candidate.eventTypeKey) {
+        for (const segment of lookupSegments) {
+          const params = {
+            tournament_key: candidate.tournamentKey,
+            date_start: segment.date_start,
+            date_stop: segment.date_stop,
+          };
+          const label = `API-Tennis fixtures by tournament_key fallback, ${segment.label}`;
+          const fixtures = await fetchFixturesWithParams(params, label);
+          const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, label);
+
+          if (range) ranges.push(range);
+        }
+      }
+
+      if (ranges.length > 0) {
+        break;
       }
     }
 

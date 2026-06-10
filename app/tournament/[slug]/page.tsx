@@ -264,12 +264,12 @@ export default async function Page({ params }: PageProps) {
     ? "official"
     : apiTournamentDateRange?.confidence || (matchFeedDateRange ? "partial" : "unknown");
   const hasAuthoritativeTournamentDates = tournamentDateConfidence === "official";
-  const hasApiFixtureTournamentDates = Boolean(apiFixtureDateRange);
-  const tournamentDateSource = calendarDateRange
-    ? calendarEntry?.sourceName || "verified tournament calendar"
-    : apiFixtureDateRange
-      ? apiTournamentDateRange?.sourceName || "API-Tennis fixtures"
-      : "available local match feed";
+  const tournamentDateLabel = hasAuthoritativeTournamentDates
+    ? "Tournament dates"
+    : "Published match dates";
+  const tournamentDateNote = hasAuthoritativeTournamentDates
+    ? "These dates come from a verified tournament calendar. Match times and court assignments can still change during the event."
+    : "These dates come from currently published matches and may not include the full event yet. Check the official tournament schedule for final dates.";
 
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
@@ -316,17 +316,9 @@ export default async function Page({ params }: PageProps) {
         {tournamentDateRange ? (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-300">
             <span className="font-black text-white">
-              {hasAuthoritativeTournamentDates
-                ? "Known tournament dates:"
-                : hasApiFixtureTournamentDates && tournamentDateConfidence === "fixture-range"
-                  ? "API fixture date range:"
-                  : "Available match-feed dates:"}
+              {tournamentDateLabel}:
             </span>{" "}
-            {tournamentDateRange}. Source: {tournamentDateSource}. {hasAuthoritativeTournamentDates
-              ? "Verified calendar dates are used for the event window; match-feed dates are used only for the listed matches below."
-              : hasApiFixtureTournamentDates && tournamentDateConfidence === "fixture-range"
-                ? "These dates are calculated from API-Tennis fixtures for this tournament key and season, so they update without code changes when the provider publishes more matches."
-                : "The API has only published listed match dates for this page, so these dates may not represent the full tournament week."}
+            {tournamentDateRange}. {tournamentDateNote}
           </p>
         ) : (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-400">
@@ -360,6 +352,11 @@ export default async function Page({ params }: PageProps) {
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Dates</p>
                   <p className="mt-1 font-black text-white">{tournamentDateRange || stableHub?.seasonWindow || "Not published yet"}</p>
+                  {!hasAuthoritativeTournamentDates && tournamentDateRange ? (
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                      Published match dates only
+                    </p>
+                  ) : null}
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Level</p>

@@ -31,14 +31,24 @@ const TOURNAMENT_ALIASES: Record<string, string[]> = {
   "w35-cuiabá": ["w35-cuiaba", "w35-cuiabá", "cuiaba-w35", "cuiabá-w35"],
 };
 
+const ADDITIONAL_TOURNAMENT_ALIASES: Record<string, string[]> = {
+  hertogenbosch: ["hertogenbosch", "s-hertogenbosch", "libema-open"],
+  "s-hertogenbosch": ["hertogenbosch", "s-hertogenbosch", "libema-open"],
+  "libema-open": ["hertogenbosch", "s-hertogenbosch", "libema-open"],
+};
+
 export function getTournamentCalendarSlugs(slug: string) {
   const normalizedSlug = slug.toLowerCase();
+  const aliases = {
+    ...TOURNAMENT_ALIASES,
+    ...ADDITIONAL_TOURNAMENT_ALIASES,
+  };
 
   return Array.from(
     new Set([
       normalizedSlug,
-      ...(TOURNAMENT_ALIASES[normalizedSlug] || []),
-      ...Object.entries(TOURNAMENT_ALIASES)
+      ...(aliases[normalizedSlug] || []),
+      ...Object.entries(aliases)
         .filter(([, aliases]) => aliases.includes(normalizedSlug))
         .map(([canonicalSlug]) => canonicalSlug),
     ])
