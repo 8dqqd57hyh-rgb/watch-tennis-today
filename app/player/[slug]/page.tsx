@@ -467,7 +467,7 @@ async function getMatches(
     const baseUrl = await getBaseUrl();
     const params = new URLSearchParams({
       includeFinished: "1",
-      daysBack: String(Math.min(options.daysBack ?? 60, 60)),
+      daysBack: String(Math.min(options.daysBack ?? 30, 30)),
       daysForward: String(Math.min(options.daysForward ?? 30, 30)),
     });
 
@@ -560,7 +560,7 @@ async function getArchivedMatchesForPlayerPage(playerName: string): Promise<Matc
 
 async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
   try {
-    const playerScopedMatches = await getMatches(playerName, { daysBack: 60, daysForward: 30 });
+    const playerScopedMatches = await getMatches(playerName, { daysBack: 30, daysForward: 30 });
 
     const scopedPlayerMatches = playerScopedMatches.filter((match) =>
       [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))

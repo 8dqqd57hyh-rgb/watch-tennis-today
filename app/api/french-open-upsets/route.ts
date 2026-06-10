@@ -551,7 +551,7 @@ async function fetchNormalizedMatchesFromOwnApi(origin: string, dateStart: strin
   try {
     const url = new URL("/api/matches", origin);
     url.searchParams.set("includeFinished", "1");
-    url.searchParams.set("daysBack", "45");
+    url.searchParams.set("daysBack", "30");
     url.searchParams.set("daysForward", "2");
 
     const controller = new AbortController();

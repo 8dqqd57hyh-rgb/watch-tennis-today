@@ -70,7 +70,7 @@ async function getBaseUrl() {
 async function getMatches(): Promise<Match[]> {
   const baseUrl = await getBaseUrl();
 
-  const response = await fetch(`${baseUrl}/api/matches`, {
+  const response = await fetch(`${baseUrl}/api/matches?daysBack=3&daysForward=3`, {
     cache: "no-store",
   });
 
@@ -252,10 +252,10 @@ export default async function Page({ params }: PageProps) {
 
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
   const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
-  const [calendarEntry, apiTournamentDateRange] = await Promise.all([
-    getTournamentCalendarEntry(slug),
-    getApiTennisTournamentFixtureDateRange(slug, tournamentName),
-  ]);
+  const calendarEntry = await getTournamentCalendarEntry(slug);
+  const apiTournamentDateRange = calendarEntry
+    ? null
+    : await getApiTennisTournamentFixtureDateRange(slug, tournamentName);
   const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);
   const calendarDateRange = formatCalendarDateRange(calendarEntry);
   const apiFixtureDateRange = formatApiTournamentDateRange(apiTournamentDateRange);

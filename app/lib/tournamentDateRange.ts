@@ -48,12 +48,21 @@ function getCurrentSeason() {
   return String(new Date().getFullYear());
 }
 
-function getSeasonWindow(season: string) {
-  const year = /^\d{4}$/.test(season) ? season : getCurrentSeason();
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function getTournamentLookupWindow() {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - 30);
+
+  const stop = new Date(today);
+  stop.setDate(today.getDate() + 30);
 
   return {
-    date_start: `${year}-01-01`,
-    date_stop: `${year}-12-31`,
+    date_start: formatDate(start),
+    date_stop: formatDate(stop),
   };
 }
 
@@ -197,30 +206,22 @@ async function fetchFixturesWithParams(params: Record<string, string | number | 
 
 export const getApiTennisTournamentFixtureDateRange = cache(
   async (slug: string, name?: string | null, season = getCurrentSeason()) => {
+    void season;
     const candidates = await resolveApiTennisTournamentCandidates(slug, name);
 
     if (candidates.length === 0) return null;
 
-    const seasonWindow = getSeasonWindow(season);
+    const lookupWindow = getTournamentLookupWindow();
     const ranges: TournamentDateRange[] = [];
 
     for (const candidate of candidates) {
       const attempts = [
         {
-          label: "API-Tennis fixtures by tournament_key + tournament_season",
+          label: "API-Tennis fixtures by tournament_key, rolling 60-day window",
           params: {
             tournament_key: candidate.tournamentKey,
-            tournament_season: season,
-            date_start: seasonWindow.date_start,
-            date_stop: seasonWindow.date_stop,
-          },
-        },
-        {
-          label: "API-Tennis fixtures by tournament_key, full season window",
-          params: {
-            tournament_key: candidate.tournamentKey,
-            date_start: seasonWindow.date_start,
-            date_stop: seasonWindow.date_stop,
+            date_start: lookupWindow.date_start,
+            date_stop: lookupWindow.date_stop,
           },
         },
         candidate.eventTypeKey
@@ -229,8 +230,8 @@ export const getApiTennisTournamentFixtureDateRange = cache(
               params: {
                 event_type_key: candidate.eventTypeKey,
                 tournament_key: candidate.tournamentKey,
-                date_start: seasonWindow.date_start,
-                date_stop: seasonWindow.date_stop,
+                date_start: lookupWindow.date_start,
+                date_stop: lookupWindow.date_stop,
               },
             }
           : null,

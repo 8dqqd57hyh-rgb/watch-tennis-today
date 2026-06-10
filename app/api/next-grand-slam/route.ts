@@ -98,7 +98,7 @@ export async function GET() {
     const today = new Date();
 
     const future = new Date();
-    future.setDate(today.getDate() + 365);
+    future.setDate(today.getDate() + 120);
 
     const fixtures = await fetchFixtures(
       apiKey,

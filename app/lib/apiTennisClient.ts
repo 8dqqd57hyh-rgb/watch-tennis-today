@@ -3,6 +3,19 @@ type ApiTennisOptions = {
   cacheSeconds?: number;
 };
 
+function shouldLogApiTennis() {
+  return process.env.LOG_API_TENNIS === "1" || process.env.DEBUG_API_TENNIS === "1";
+}
+
+function getPayloadSizeBytes(text: string) {
+  return new TextEncoder().encode(text).length;
+}
+
+function logApiTennisRequest(method: string, payloadSize: number, duration: number) {
+  if (!shouldLogApiTennis()) return;
+  console.log("[API-TENNIS]", method, payloadSize, duration);
+}
+
 export async function fetchApiTennisResult<T>(
   method: string,
   params: Record<string, string | number | null | undefined> = {},
@@ -24,6 +37,7 @@ export async function fetchApiTennisResult<T>(
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 6500);
+  const startedAt = Date.now();
 
   try {
     const response = await fetch(url, {
@@ -32,9 +46,19 @@ export async function fetchApiTennisResult<T>(
       cache: options.cacheSeconds ? undefined : "no-store",
     });
 
+    const text = await response.text().catch(() => "");
+    const payloadSize = getPayloadSizeBytes(text);
+    logApiTennisRequest(method, payloadSize, Date.now() - startedAt);
+
     if (!response.ok) return null;
 
-    const payload = await response.json().catch(() => null);
+    let payload: { success?: number; result?: unknown } | null = null;
+
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      return null;
+    }
 
     if (!payload || payload.success !== 1) return null;
 

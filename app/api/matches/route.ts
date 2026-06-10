@@ -65,6 +65,19 @@ function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+function shouldLogApiTennis() {
+  return process.env.LOG_API_TENNIS === "1" || process.env.DEBUG_API_TENNIS === "1";
+}
+
+function getPayloadSizeBytes(text: string) {
+  return new TextEncoder().encode(text).length;
+}
+
+function logApiTennisRequest(method: string, payloadSize: number, duration: number) {
+  if (!shouldLogApiTennis()) return;
+  console.log("[API-TENNIS]", method, payloadSize, duration);
+}
+
 
 function isDateInRecentArchiveWindow(value?: string | null) {
   if (!value) return false;
@@ -835,12 +848,17 @@ async function fetchApiTennisResult(method: string, apiKey: string, params = "",
   const url = `https://api.api-tennis.com/tennis/?method=${method}&APIkey=${apiKey}${params}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const startedAt = Date.now();
 
   try {
     const response = await fetch(url, {
       cache: "no-store",
       signal: controller.signal,
     });
+
+    const text = await response.text();
+    const payloadSize = getPayloadSizeBytes(text);
+    logApiTennisRequest(method, payloadSize, Date.now() - startedAt);
 
     if (!response.ok) {
       // API-Tennis intermittently returns 5xx for valid fixture queries. The
@@ -852,7 +870,6 @@ async function fetchApiTennisResult(method: string, apiKey: string, params = "",
       return null;
     }
 
-    const text = await response.text();
     let data;
 
     try {
@@ -1061,10 +1078,10 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
-const maxDaysBack = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 365 : 120;
+const maxDaysBack = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
+const maxDaysForward = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
 const defaultDaysBack = matchId ? 1 : 3;
-const defaultDaysForward = matchId ? 7 : 30;
-const maxDaysForward = formHistory ? 45 : 90;
+const defaultDaysForward = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
 const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : defaultDaysBack;
 const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), maxDaysForward) : defaultDaysForward;
 
@@ -1094,7 +1111,7 @@ const dateStop = formatDate(dateStopDate);
   // is too wide. Player Form needs a real history window, so split the requested
   // range into smaller chunks and merge them. This is especially important for
   // pages like Andrey Rublev where the latest Match Center row exists but earlier
-  // wins disappear from a single 120-day request.
+  // wins disappear from a single broad request.
   fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey, { formHistory, playerName }),
 ]);
 
