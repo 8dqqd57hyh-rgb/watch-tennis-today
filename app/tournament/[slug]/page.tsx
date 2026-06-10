@@ -5,7 +5,9 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
+import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
+import { getStableTournamentHub } from "@/data/tournamentHubs";
 
 export const dynamic = "force-dynamic";
 
@@ -177,22 +179,28 @@ function formatCalendarDateRange(calendarEntry: TournamentCalendarEntry | null) 
   return `${start} – ${end}`;
 }
 
-function statusPriority(status: string) {
-  if (status === "LIVE") return 1;
-  if (status === "SUSPENDED") return 2;
-  if (status === "UPCOMING") return 3;
-  return 4;
+function formatApiTournamentDateRange(apiRange: TournamentDateRange | null) {
+  if (!apiRange?.startDate || !apiRange.endDate) return null;
+
+  const start = formatTournamentDate(apiRange.startDate);
+  const end = formatTournamentDate(apiRange.endDate);
+
+  if (!start || !end) return null;
+  if (start === end) return start;
+
+  return `${start} – ${end}`;
 }
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const tournamentName = unslugify(slug);
+  const stableHub = getStableTournamentHub(slug);
+  const tournamentName = stableHub?.name || unslugify(slug);
   const calendarEntry = await getTournamentCalendarEntry(slug);
   const indexable = shouldIndexTournamentPage({
     slug,
     name: tournamentName,
     hasCalendarEntry: Boolean(calendarEntry),
-    hasEditorialProfile: INDEXABLE_TOURNAMENT_SLUGS.has(slug),
+    hasEditorialProfile: INDEXABLE_TOURNAMENT_SLUGS.has(slug) || Boolean(stableHub),
   });
 
   return {
@@ -234,7 +242,8 @@ export default async function Page({ params }: PageProps) {
       ? "Roland Garros"
       : slug.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
 
-  const tournamentName = tournamentMatches[0]?.tournament || unslugify(slug);
+  const stableHub = getStableTournamentHub(slug);
+  const tournamentName = tournamentMatches[0]?.tournament || stableHub?.name || unslugify(slug);
 
   const liveCount = tournamentMatches.filter(
     (match) => match.status === "LIVE"
@@ -242,13 +251,24 @@ export default async function Page({ params }: PageProps) {
 
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
   const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
-  const calendarEntry = await getTournamentCalendarEntry(slug);
+  const [calendarEntry, apiTournamentDateRange] = await Promise.all([
+    getTournamentCalendarEntry(slug),
+    getApiTennisTournamentFixtureDateRange(slug, tournamentName),
+  ]);
   const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);
   const calendarDateRange = formatCalendarDateRange(calendarEntry);
-  const tournamentDateRange = matchFeedDateRange || calendarDateRange;
-  const tournamentDateSource = matchFeedDateRange
-    ? "match feed"
-    : calendarEntry?.sourceName || "tournament calendar";
+  const apiFixtureDateRange = formatApiTournamentDateRange(apiTournamentDateRange);
+  const tournamentDateRange = calendarDateRange || apiFixtureDateRange || matchFeedDateRange;
+  const tournamentDateConfidence = calendarDateRange
+    ? "official"
+    : apiTournamentDateRange?.confidence || (matchFeedDateRange ? "partial" : "unknown");
+  const hasAuthoritativeTournamentDates = tournamentDateConfidence === "official";
+  const hasApiFixtureTournamentDates = Boolean(apiFixtureDateRange);
+  const tournamentDateSource = calendarDateRange
+    ? calendarEntry?.sourceName || "verified tournament calendar"
+    : apiFixtureDateRange
+      ? apiTournamentDateRange?.sourceName || "API-Tennis fixtures"
+      : "available local match feed";
 
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
@@ -260,8 +280,8 @@ export default async function Page({ params }: PageProps) {
         "@type": "SportsEvent",
         name: tournamentName,
         sport: "Tennis",
-        startDate: calendarEntry?.startDate || tournamentDateWindow?.start.toISOString(),
-        endDate: calendarEntry?.endDate || tournamentDateWindow?.end.toISOString(),
+        startDate: calendarEntry?.startDate || apiTournamentDateRange?.startDate || tournamentDateWindow?.start.toISOString(),
+        endDate: calendarEntry?.endDate || apiTournamentDateRange?.endDate || tournamentDateWindow?.end.toISOString(),
         url: `https://watchtennistoday.com/tournament/${slug}`,
         description: buildTournamentSeoDescription(tournamentName),
         organizer: { "@type": "Organization", name: "Official tournament organizer" },
@@ -272,13 +292,13 @@ export default async function Page({ params }: PageProps) {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
         <nav className="text-sm text-zinc-400 mb-6 flex flex-wrap gap-2">
-          <a href="/" className="hover:text-white">
+          <Link href="/" className="hover:text-white">
             Home
-          </a>
+          </Link>
           <span>/</span>
-          <a href="/tournament" className="hover:text-white">
+          <Link href="/tournament" className="hover:text-white">
             Tournaments
-          </a>
+          </Link>
           <span>/</span>
           <span className="text-white">{tournamentName}</span>
         </nav>
@@ -294,10 +314,18 @@ export default async function Page({ params }: PageProps) {
 
         {tournamentDateRange ? (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-300">
-            <span className="font-black text-white">Known tournament dates:</span>{" "}
-            {tournamentDateRange}. Source: {tournamentDateSource}. Match-feed
-            dates stay first priority; the stored tournament calendar is used
-            only when the API has not published fixtures yet.
+            <span className="font-black text-white">
+              {hasAuthoritativeTournamentDates
+                ? "Known tournament dates:"
+                : hasApiFixtureTournamentDates && tournamentDateConfidence === "fixture-range"
+                  ? "API fixture date range:"
+                  : "Available match-feed dates:"}
+            </span>{" "}
+            {tournamentDateRange}. Source: {tournamentDateSource}. {hasAuthoritativeTournamentDates
+              ? "Verified calendar dates are used for the event window; match-feed dates are used only for the listed matches below."
+              : hasApiFixtureTournamentDates && tournamentDateConfidence === "fixture-range"
+                ? "These dates are calculated from API-Tennis fixtures for this tournament key and season, so they update without code changes when the provider publishes more matches."
+                : "The API has only published listed match dates for this page, so these dates may not represent the full tournament week."}
           </p>
         ) : (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-400">
@@ -312,23 +340,33 @@ export default async function Page({ params }: PageProps) {
           <h2 className="mb-4 text-3xl font-black">{tournamentName} tournament context</h2>
           <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
             <div className="space-y-4 text-zinc-300 leading-8">
-              <p>{tournamentProfile.history}</p>
-              <p>{tournamentProfile.format}</p>
-              <p>{tournamentProfile.viewingContext}</p>
+              {stableHub ? (
+                <>
+                  <p>{stableHub.summary}</p>
+                  <p>{stableHub.whyItMatters}</p>
+                  <p>{stableHub.watchNote}</p>
+                </>
+              ) : (
+                <>
+                  <p>{tournamentProfile.history}</p>
+                  <p>{tournamentProfile.format}</p>
+                  <p>{tournamentProfile.viewingContext}</p>
+                </>
+              )}
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-black p-5">
               <div className="grid gap-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Dates</p>
-                  <p className="mt-1 font-black text-white">{tournamentDateRange || "Not published yet"}</p>
+                  <p className="mt-1 font-black text-white">{tournamentDateRange || stableHub?.seasonWindow || "Not published yet"}</p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Level</p>
-                  <p className="mt-1 font-black text-white">{tournamentProfile.level}</p>
+                  <p className="mt-1 font-black text-white">{stableHub?.level || tournamentProfile.level}</p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Surface / conditions</p>
-                  <p className="mt-1 font-black text-white">{tournamentProfile.surface}</p>
+                  <p className="mt-1 font-black text-white">{stableHub?.surface || tournamentProfile.surface}</p>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Fan checklist</p>
@@ -348,26 +386,26 @@ export default async function Page({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          <a
+          <Link
             href="/live-tennis"
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-red-500 hover:text-red-400 transition-all"
           >
             🔴 Live Tennis
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/tv-schedule"
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
           >
             📺 TV Schedule
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/best-ways-to-watch-tennis-online"
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
           >
             🌍 Watch Online
-          </a>
+          </Link>
         </div>
         <section className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
           <h2 className="mb-5 text-3xl font-black">Popular Tournament Pages</h2>
@@ -550,6 +588,27 @@ export default async function Page({ params }: PageProps) {
                   </a>
                 </div>
               </section>
+            ) : stableHub ? (
+              <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                <h2 className="mb-4 text-3xl font-black">{stableHub.name} hub</h2>
+                <p className="mb-5 max-w-3xl leading-8 text-zinc-300">
+                  No live match-feed entries are available for this tournament right now. This page still gives stable tournament context so readers are not left on a thin empty page while the event is outside the current schedule window.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {stableHub.relatedLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
+                    >
+                      <h3 className="text-xl font-black">{link.label}</h3>
+                      <p className="mt-3 text-sm leading-6 text-zinc-400">
+                        Continue with a related guide, schedule page or official-viewing context.
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
             ) : (
               <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-300">
                 No matches found for this tournament right now. Check back soon
@@ -565,7 +624,7 @@ export default async function Page({ params }: PageProps) {
           </h2>
 
           <p className="text-zinc-300 leading-8 mb-5">
-            {tournamentName} matches may be available on official broadcasters,
+            {(stableHub?.name || tournamentName)} matches may be available on official broadcasters,
             streaming services and sports TV platforms depending on your country.
             Always check official tennis streaming sources and local TV schedules
             for exact coverage.

@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/guides/how-tennis-draws-work",
+        destination: "/guides/tennis-draws-explained",
+        permanent: true,
+      },
+      {
         source: "/guides/how-to-watch-tennis-online-legally",
         destination: "/best-ways-to-watch-tennis-online",
         permanent: true,

@@ -1,6 +1,7 @@
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
 import { getTournamentCalendarEntries } from "@/app/lib/tournamentCalendar";
+import { stableTournamentHubs } from "@/data/tournamentHubs";
 
 export const revalidate = 60;
 
@@ -98,6 +99,9 @@ export default async function TournamentsPage() {
       category: firstMatch.category,
       dateRange: getTournamentDateRange(tournamentMatches),
       dateSource: "match feed",
+      summary: null as string | null,
+      surface: null as string | null,
+      location: null as string | null,
     };
   });
 
@@ -110,9 +114,30 @@ export default async function TournamentsPage() {
       category: "Grand Slam",
       dateRange: formatDateRange(entry.startDate, entry.endDate),
       dateSource: entry.sourceName || "tournament calendar",
+      summary: null as string | null,
+      surface: null as string | null,
+      location: null as string | null,
     }));
 
-  const tournaments = [...tournamentsFromMatches, ...calendarTournaments].sort((a, b) =>
+  const existingSlugs = new Set([
+    ...tournamentsFromMatches.map((tournament) => tournament.slug),
+    ...calendarTournaments.map((tournament) => tournament.slug),
+  ]);
+
+  const stableTournaments = stableTournamentHubs
+    .filter((hub) => !existingSlugs.has(hub.slug))
+    .map((hub) => ({
+      name: hub.name,
+      slug: hub.slug,
+      category: hub.level,
+      dateRange: hub.seasonWindow,
+      dateSource: "editorial tournament hub",
+      summary: hub.summary,
+      surface: hub.surface,
+      location: hub.location,
+    }));
+
+  const tournaments = [...tournamentsFromMatches, ...calendarTournaments, ...stableTournaments].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
 
@@ -127,10 +152,34 @@ export default async function TournamentsPage() {
           🎾 Tennis Tournaments
         </h1>
 
-        <p className="text-zinc-400 text-lg mb-10">
-          Browse ATP, WTA, Challenger and Grand Slam tennis tournaments,
-          live streams and TV schedule information.
+        <p className="text-zinc-400 text-lg mb-6">
+          Browse major ATP, WTA and Grand Slam tournament hubs with schedule context,
+          surface notes, legal viewing guidance and links to related tennis guides.
         </p>
+
+        <section className="mb-8 rounded-3xl border border-emerald-900 bg-emerald-950/30 p-6">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
+            Monetization-safe tournament hub
+          </p>
+          <h2 className="text-3xl font-black">Stable tournament pages, not empty feed pages</h2>
+          <p className="mt-3 max-w-3xl leading-8 text-zinc-300">
+            This directory now mixes live feed tournaments with manually reviewed evergreen tournament hubs. That keeps the page useful even when the tennis API has no matches for a major event and avoids creating thin, empty pages for AdSense review.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+              <p className="font-black text-white">{stableTournamentHubs.length} stable hubs</p>
+              <p className="mt-1 text-sm text-zinc-400">Grand Slams, 1000s and Finals</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+              <p className="font-black text-white">Surface context</p>
+              <p className="mt-1 text-sm text-zinc-400">Clay, grass, hard and indoor</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+              <p className="font-black text-white">Legal viewing notes</p>
+              <p className="mt-1 text-sm text-zinc-400">No fake free-stream claims</p>
+            </div>
+          </div>
+        </section>
 
         <div className="mb-8">
           <a
@@ -179,9 +228,19 @@ export default async function TournamentsPage() {
                 </p>
               )}
 
-              <p className="text-zinc-400">
-                View live matches, streaming information and TV schedule.
-              </p>
+              {tournament.summary ? (
+                <p className="text-zinc-400">{tournament.summary}</p>
+              ) : (
+                <p className="text-zinc-400">
+                  View live matches, streaming information and TV schedule.
+                </p>
+              )}
+
+              {tournament.surface ? (
+                <p className="mt-3 text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  {tournament.surface} · {tournament.location || "Tournament hub"}
+                </p>
+              ) : null}
 
               {tournament.dateRange && (
                 <p className="mt-3 text-xs text-zinc-500">

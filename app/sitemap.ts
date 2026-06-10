@@ -3,6 +3,7 @@ import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 import { publishedGuideArticles } from "@/app/guides/articles";
 import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
+import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 export const revalidate = 3600;
 
 type Match = {
@@ -368,12 +369,16 @@ const uniquePlayers = [
     ),
   ];
 
-  const tournamentPages: MetadataRoute.Sitemap = uniqueTournaments.map(
+  const stableTournamentDetailSlugs = Array.from(
+    new Set([...stableTournamentHubSlugs, ...uniqueTournaments])
+  );
+
+  const tournamentPages: MetadataRoute.Sitemap = stableTournamentDetailSlugs.map(
     (tournament) => ({
       url: `${BASE_URL}/tournament/${tournament}`,
       lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.9,
+      changeFrequency: uniqueTournaments.includes(tournament) ? ("daily" as const) : ("monthly" as const),
+      priority: stableTournamentHubSlugs.includes(tournament) ? 0.86 : 0.9,
     })
   );
 

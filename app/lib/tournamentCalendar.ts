@@ -20,12 +20,15 @@ type TournamentCalendarRow = {
   updated_at: string | null;
 };
 
+
 const TOURNAMENT_ALIASES: Record<string, string[]> = {
   "australian-open": ["australian-open", "ao", "australian-open-men-singles", "australian-open-women-singles"],
   "roland-garros": ["roland-garros", "french-open", "atp-french-open", "wta-french-open", "french-open-men-singles", "french-open-women-singles"],
   "french-open": ["roland-garros", "french-open", "atp-french-open", "wta-french-open", "french-open-men-singles", "french-open-women-singles"],
   wimbledon: ["wimbledon", "wimbledon-men-singles", "wimbledon-women-singles"],
   "us-open": ["us-open", "us-open-men-singles", "us-open-women-singles", "united-states-open"],
+  "w35-cuiaba": ["w35-cuiaba", "w35-cuiabá", "cuiaba-w35", "cuiabá-w35"],
+  "w35-cuiabá": ["w35-cuiaba", "w35-cuiabá", "cuiaba-w35", "cuiabá-w35"],
 };
 
 export function getTournamentCalendarSlugs(slug: string) {
@@ -56,7 +59,6 @@ function normalizeRow(row: TournamentCalendarRow): TournamentCalendarEntry {
 
 export async function getTournamentCalendarEntry(slug: string) {
   const slugs = getTournamentCalendarSlugs(slug);
-
   const { data, error } = await supabase
     .from("tournament_calendar")
     .select("slug,name,start_date,end_date,source_url,source_name,updated_at")
@@ -93,5 +95,9 @@ export async function getTournamentCalendarEntries() {
     return [];
   }
 
-  return (data || []).map((row) => normalizeRow(row as TournamentCalendarRow));
+  const remoteEntries = (data || []).map((row) => normalizeRow(row as TournamentCalendarRow));
+
+  return remoteEntries.sort((a, b) =>
+    (a.startDate || "").localeCompare(b.startDate || "")
+  );
 }
