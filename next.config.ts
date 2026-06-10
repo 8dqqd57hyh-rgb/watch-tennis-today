@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/guides/tennis-order-of-play-guide",
+        destination: "/tennis-order-of-play-today",
+        permanent: true,
+      },
+      {
         source: "/french-open-live-stream",
         destination: "/french-open",
         permanent: true,
