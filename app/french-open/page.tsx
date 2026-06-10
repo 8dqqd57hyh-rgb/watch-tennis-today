@@ -42,6 +42,7 @@ const primaryCards = [
 ];
 
 const resourceLinks = [
+  ["French Open guide", "/french-open-guide"],
   ["French Open live", "/french-open"],
   ["French Open results", "/french-open-results"],
   ["Order of play", "/french-open-order-of-play"],

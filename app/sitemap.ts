@@ -269,6 +269,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/advertise",
     "/watch-tennis-in",
     "/french-open",
+    "/french-open-guide",
     "/today",
     "/tomorrow",
     "/live-tennis",

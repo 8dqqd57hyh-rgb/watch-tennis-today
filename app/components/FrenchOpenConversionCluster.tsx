@@ -29,6 +29,7 @@ const clusters = [
     description:
       "Give users the bracket context they search for after a match: results, schedule paths and upcoming order of play.",
     links: [
+      ["French Open guide", "/french-open-guide"],
       ["French Open results", "/french-open-results"],
       ["French Open schedule", "/french-open-order-of-play"],
       ["Order of play", "/french-open-order-of-play"],

@@ -94,6 +94,11 @@ const guideCategories = [
     ],
     extras: [
       {
+        href: "/french-open-guide",
+        title: "French Open / Roland Garros guide",
+        description: "Evergreen background on the clay-court Grand Slam in Paris.",
+      },
+      {
         href: "/tennis-tournament-levels-guide",
         title: "Tennis tournament levels guide",
         description: "Compare Grand Slams, 1000s, 500s, 250s and lower-tier events.",

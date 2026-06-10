@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/guides/roland-garros-guide",
+        destination: "/french-open-guide",
+        permanent: true,
+      },
+      {
         source: "/french-open-live-stream",
         destination: "/french-open",
         permanent: true,

@@ -10,7 +10,7 @@ export const metadata = {
 
 const grandSlams = [
   { name: "Australian Open", month: "January", surface: "Hard", location: "Melbourne, Australia", href: "/tournament/australian-open", note: "The first major of the season and often the first big form test after the off-season." },
-  { name: "Roland Garros / French Open", month: "May–June", surface: "Clay", location: "Paris, France", href: "/french-open", note: "The clay-court major, where movement, patience and point construction matter heavily." },
+  { name: "Roland Garros / French Open", month: "May–June", surface: "Clay", location: "Paris, France", href: "/french-open-guide", note: "The clay-court major, where movement, patience and point construction matter heavily." },
   { name: "Wimbledon", month: "June–July", surface: "Grass", location: "London, United Kingdom", href: "/wimbledon-live", note: "The grass-court major, known for short preparation windows and very specific surface skills." },
   { name: "US Open", month: "August–September", surface: "Hard", location: "New York, United States", href: "/tournament/us-open", note: "The final major of the season and a major ranking, legacy and broadcast event." },
 ];
