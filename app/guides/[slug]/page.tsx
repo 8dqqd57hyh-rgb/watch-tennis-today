@@ -1,5 +1,6 @@
 import Link from "next/link";
 import EmailCapture from "@/components/EmailCapture";
+import RelatedGuides from "@/app/components/RelatedGuides";
 import { notFound } from "next/navigation";
 import {
   getGuideArticle,
@@ -34,7 +35,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
   const article = getGuideArticle(slug);
   if (!article) notFound();
 
-  const related = getRelatedGuides(article, 4);
+  const related = getRelatedGuides(article, 6);
   const { publishedDate, updatedDate } = getGuideArticleDates(article);
   const readingTime = getGuideReadingTime(article);
   const sourceReferences = getGuideSourceReferences(article);
@@ -162,19 +163,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
           </div>
         </section>
 
-        {related.length > 0 && (
-          <section className="mt-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-            <h2 className="text-2xl font-black text-white">Related guides</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {related.map((item) => (
-                <Link key={item.slug} href={`/guides/${item.slug}`} className="rounded-2xl border border-zinc-800 p-4 text-sm text-zinc-300 transition hover:border-emerald-400 hover:text-white">
-                  <span className="font-black">{item.title}</span>
-                  <span className="mt-2 block text-zinc-500">{item.description}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        <RelatedGuides guides={related} className="mt-10" />
 
         <aside className="mt-10 rounded-3xl border border-emerald-900 bg-emerald-950/30 p-6 text-zinc-300">
           <h2 className="text-2xl font-black text-white">Our legal-streaming rule</h2>

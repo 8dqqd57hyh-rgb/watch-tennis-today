@@ -81,7 +81,7 @@ function matchTitle(match?: FrenchOpenMatch) {
 }
 
 function matchHref(match?: FrenchOpenMatch) {
-  if (!match?.id) return "/french-open-today";
+  if (!match?.id) return "/french-open";
   return `/watch/${match.id}`;
 }
 

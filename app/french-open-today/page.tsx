@@ -137,12 +137,12 @@ export default async function FrenchOpenTodayPage() {
   ];
 
   const relatedLinks = [
-    ["French Open Live", "/french-open-live"],
+    ["French Open Live", "/french-open"],
     ["Order of Play", "/french-open-order-of-play"],
     ["French Open Results", "/french-open-results"],
     ["Yesterday’s Roland Garros recap", "/roland-garros-recap"],
-    ["TV Schedule", "/french-open-tv-schedule"],
-    ["Streaming Countries", "/french-open-streaming-countries"],
+    ["TV Schedule", "/where-to-watch-french-open"],
+    ["Streaming Countries", "/where-to-watch-french-open"],
     ["Watch Online", "/watch-french-open-online"],
     ["Where to Watch", "/where-to-watch-french-open"],
   ];
@@ -191,7 +191,7 @@ export default async function FrenchOpenTodayPage() {
             </a>
 
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule

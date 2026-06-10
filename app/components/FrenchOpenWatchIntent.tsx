@@ -6,14 +6,14 @@ const intentCards = [
     eyebrow: "Live now",
     title: "I want to watch a match now",
     text: "Start with live matches, then jump to the broadcaster guide if the match is available in your country.",
-    href: "/french-open-live",
+    href: "/french-open",
     cta: "Open live matches",
   },
   {
     eyebrow: "Today",
     title: "I want to know what plays next",
     text: "Use today's schedule to find upcoming Roland Garros matches and plan when to come back.",
-    href: "/french-open-today",
+    href: "/french-open",
     cta: "See today’s matches",
   },
   {
@@ -27,7 +27,7 @@ const intentCards = [
     eyebrow: "Schedule path",
     title: "I follow a player, not a schedule",
     text: "Track who is still in the schedule, next opponents and the matches that matter most.",
-    href: "/french-open-schedule",
+    href: "/french-open-order-of-play",
     cta: "Open schedule tracker",
   },
 ];

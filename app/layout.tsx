@@ -154,7 +154,7 @@ export default function RootLayout({
             <Link href="/tennis-on-tv-today">Tennis on TV Today</Link>
             <Link href="/tennis-time-zone-converter">Time Zone Converter</Link>
             <Link href="/tennis-watchlist-today">Tennis Watchlist</Link>
-            <Link href="/french-open-live">French Open</Link>
+            <Link href="/french-open">French Open</Link>
             <Link href="/wimbledon-live">Wimbledon</Link>
           </div>
         </details>
@@ -198,7 +198,7 @@ export default function RootLayout({
           <Link href="/tennis-watchlist-today" className="block hover:text-white">Tennis Watchlist</Link>
           <Link href="/tennis-resources" className="block hover:text-white">Tennis Resources</Link>
           <Link href="/newsletter" className="block hover:text-white">Newsletter</Link>
-          <Link href="/french-open-live" className="block hover:text-white">French Open</Link>
+          <Link href="/french-open" className="block hover:text-white">French Open</Link>
           <Link href="/wimbledon-live" className="block hover:text-white">Wimbledon</Link>
           <Link href="/grand-slam-live" className="block hover:text-white">Grand Slam Live</Link>
         </div>

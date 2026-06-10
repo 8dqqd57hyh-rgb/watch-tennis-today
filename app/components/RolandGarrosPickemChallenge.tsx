@@ -362,7 +362,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
       `${completedPickCount} settled · ${pendingPickCount} pending`,
       ...pickLines,
       ...moreLine,
-      "Play here: https://watchtennistoday.com/french-open-today",
+      "Play here: https://watchtennistoday.com/french-open",
     ].join("\n");
   }
 
@@ -375,7 +375,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
         await navigator.share({
           title: "My Roland Garros Pick’em picks",
           text,
-          url: "https://watchtennistoday.com/french-open-today",
+          url: "https://watchtennistoday.com/french-open",
         });
         setShareStatus("Shared");
         return;
@@ -404,7 +404,7 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
         <p className="leading-7 text-zinc-400">
           {error || "No active Roland Garros matches are available for Pick’em right now. Check back when today’s order of play is listed."}
         </p>
-        <Link href="/french-open-today" className="mt-5 inline-flex rounded-2xl border border-orange-500/50 px-5 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
+        <Link href="/french-open" className="mt-5 inline-flex rounded-2xl border border-orange-500/50 px-5 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
           See French Open today →
         </Link>
       </section>
@@ -506,11 +506,11 @@ export default function RolandGarrosPickemChallenge({ compact = false }: { compa
 
       <div className="mt-6 flex flex-wrap gap-3">
         {compact ? (
-          <Link href="/french-open-today" className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400">
+          <Link href="/french-open" className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400">
             Open full Pick’em board →
           </Link>
         ) : null}
-        <Link href="/french-open-today" className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black transition hover:border-orange-500 hover:text-orange-200">
+        <Link href="/french-open" className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black transition hover:border-orange-500 hover:text-orange-200">
           See match schedule →
         </Link>
         {picks.length > 0 ? (

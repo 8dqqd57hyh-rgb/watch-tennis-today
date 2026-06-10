@@ -186,14 +186,14 @@ export default async function FrenchOpenOrderOfPlayPage() {
   ];
 
   const relatedLinks = [
-    ["French Open Today", "/french-open-today"],
+    ["French Open Today", "/french-open"],
     ["French Open Results", "/french-open-results"],
-    ["French Open Schedule", "/french-open-schedule"],
-    ["French Open Live", "/french-open-live"],
-    ["TV Schedule", "/french-open-tv-schedule"],
-    ["Live Stream Guide", "/french-open-live-stream"],
+    ["French Open Schedule", "/french-open-order-of-play"],
+    ["French Open Live", "/french-open"],
+    ["TV Schedule", "/where-to-watch-french-open"],
+    ["French Open Hub", "/french-open"],
     ["Where to Watch", "/where-to-watch-french-open"],
-    ["Streaming Countries", "/french-open-streaming-countries"],
+    ["Streaming Countries", "/where-to-watch-french-open"],
   ];
 
   const faq = [
@@ -242,14 +242,14 @@ export default async function FrenchOpenOrderOfPlayPage() {
             </a>
 
             <a
-              href="/french-open-live"
+              href="/french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               Live matches
             </a>
 
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule

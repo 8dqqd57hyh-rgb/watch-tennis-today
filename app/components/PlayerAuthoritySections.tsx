@@ -18,8 +18,8 @@ const countryGuides = [
 ];
 
 const tournamentGuides = [
-  { label: "French Open live", href: "/french-open-live" },
-  { label: "French Open TV schedule", href: "/french-open-tv-schedule" },
+  { label: "French Open live", href: "/french-open" },
+  { label: "French Open TV schedule", href: "/where-to-watch-french-open" },
   { label: "Grand Slam live guide", href: "/grand-slam-live" },
   { label: "Today’s tennis schedule", href: "/today" },
 ];

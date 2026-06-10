@@ -6,5 +6,5 @@ export const metadata = {
 
 export default function RemovedLowDataPage() {
   // Draw tracker removed; use French Open schedule.
-  redirect("/french-open-schedule");
+  redirect("/french-open-order-of-play");
 }

@@ -43,13 +43,13 @@ export default function FrenchOpenSchedulePage() {
           <a href="/french-open-order-of-play" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             View French Open order of play
           </a>
-          <a href="/french-open-today" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          <a href="/french-open" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             See French Open matches today
           </a>
           <a href="/french-open-results" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             Check French Open results
           </a>
-          <a href="/french-open-live" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          <a href="/french-open" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             Open French Open live hub
           </a>
         </div>

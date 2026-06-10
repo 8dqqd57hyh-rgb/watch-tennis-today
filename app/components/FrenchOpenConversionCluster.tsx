@@ -8,7 +8,7 @@ const clusters = [
       "Move visitors through the daily French Open loop instead of letting them leave after one result page.",
     links: [
       ["Yesterday’s recap", "/roland-garros-recap"],
-      ["French Open today", "/french-open-today"],
+      ["French Open today", "/french-open"],
       ["Tomorrow’s schedule", "/tomorrow"],
     ],
   },
@@ -18,9 +18,9 @@ const clusters = [
     description:
       "Send high-intent visitors toward broadcaster, country and safe streaming pages that can monetize better.",
     links: [
-      ["TV schedule", "/french-open-tv-schedule"],
+      ["TV schedule", "/where-to-watch-french-open"],
       ["Where to watch", "/where-to-watch-french-open"],
-      ["Streaming countries", "/french-open-streaming-countries"],
+      ["Streaming countries", "/where-to-watch-french-open"],
     ],
   },
   {
@@ -30,7 +30,7 @@ const clusters = [
       "Give users the bracket context they search for after a match: results, schedule paths and upcoming order of play.",
     links: [
       ["French Open results", "/french-open-results"],
-      ["French Open schedule", "/french-open-schedule"],
+      ["French Open schedule", "/french-open-order-of-play"],
       ["Order of play", "/french-open-order-of-play"],
     ],
   },

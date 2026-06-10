@@ -8,7 +8,7 @@ export const metadata = {
   title: "French Open Live 2026 | Watch Roland Garros Matches Today",
   description:
     "Follow French Open live matches today. Find Roland Garros live streams, TV channels, schedules, scores and official ways to watch tennis online.",
-  alternates: { canonical: "https://watchtennistoday.com/french-open-live" },
+  alternates: { canonical: "https://watchtennistoday.com/french-open" },
 };
 
 
@@ -99,7 +99,7 @@ export default async function FrenchOpenLivePage() {
             </a>
 
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
             >
               TV Schedule
@@ -173,10 +173,10 @@ export default async function FrenchOpenLivePage() {
         <section className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
   ["French Open Streaming Guide", "/where-to-watch-french-open"],
-            ["French Open Today", "/french-open-today"],
+            ["French Open Today", "/french-open"],
             ["French Open Order of Play", "/french-open-order-of-play"],
             ["French Open Results", "/french-open-results"],
-            ["French Open Schedule", "/french-open-schedule"],
+            ["French Open Schedule", "/french-open-order-of-play"],
             ["Where to Watch French Open", "/where-to-watch-french-open"],
           ].map(([title, href]) => (
             <a
@@ -226,7 +226,7 @@ export default async function FrenchOpenLivePage() {
               "@context": "https://schema.org",
               "@type": "WebPage",
               name: "French Open Live",
-              url: "https://watchtennistoday.com/french-open-live",
+              url: "https://watchtennistoday.com/french-open",
               description:
                 "French Open live matches, Roland Garros schedules, TV channels and streaming options.",
             }),

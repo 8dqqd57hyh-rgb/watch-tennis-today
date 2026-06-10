@@ -90,13 +90,13 @@ export default async function FrenchOpenResultsPage() {
   ];
 
   const relatedLinks = [
-    ["French Open Live", "/french-open-live"],
-    ["French Open Today", "/french-open-today"],
+    ["French Open Live", "/french-open"],
+    ["French Open Today", "/french-open"],
     ["Roland Garros Recap", "/roland-garros-recap"],
     ["Order of Play", "/french-open-order-of-play"],
-    ["French Open Schedule", "/french-open-schedule"],
-    ["TV Schedule", "/french-open-tv-schedule"],
-    ["Streaming by Country", "/french-open-streaming-countries"],
+    ["French Open Schedule", "/french-open-order-of-play"],
+    ["TV Schedule", "/where-to-watch-french-open"],
+    ["Streaming by Country", "/where-to-watch-french-open"],
     ["Where to Watch", "/where-to-watch-french-open"],
     ["Watch French Open Online", "/watch-french-open-online"],
   ];
@@ -144,14 +144,14 @@ export default async function FrenchOpenResultsPage() {
             </a>
 
             <a
-              href="/french-open-live"
+              href="/french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               Live matches
             </a>
 
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule
@@ -191,7 +191,7 @@ export default async function FrenchOpenResultsPage() {
             </div>
 
             <a
-              href="/french-open-today"
+              href="/french-open"
               className="rounded-full border border-zinc-700 px-5 py-3 text-sm font-bold transition hover:border-orange-500"
             >
               See today’s schedule →

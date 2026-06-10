@@ -15,7 +15,7 @@ const dailyLinks = [
     label: "Today",
     title: "French Open Today",
     description: "Live matches, current schedule and official viewing links.",
-    href: "/french-open-today",
+    href: "/french-open",
     accent: "green",
   },
   {
@@ -29,7 +29,7 @@ const dailyLinks = [
     label: "Schedule",
     title: "French Open Schedule",
     description: "Follow player paths, next opponents and bracket context.",
-    href: "/french-open-schedule",
+    href: "/french-open-order-of-play",
     accent: "purple",
   },
 ];
@@ -61,7 +61,7 @@ export default function DailyTennisLoop({
         </div>
 
         <a
-          href="/french-open-tv-schedule"
+          href="/where-to-watch-french-open"
           className="rounded-2xl border border-zinc-700 px-5 py-3 text-sm font-black transition hover:border-orange-400"
         >
           TV schedule →

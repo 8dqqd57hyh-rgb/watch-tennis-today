@@ -7,7 +7,7 @@ export const metadata = {
   title: "French Open Streaming by Country | Roland Garros Broadcasters",
   description:
     "Find how French Open streaming differs by country and how to check legal Roland Garros broadcasters in your region.",
-  alternates: { canonical: "https://watchtennistoday.com/french-open-streaming-countries" },
+  alternates: { canonical: "https://watchtennistoday.com/where-to-watch-french-open" },
 };
 
 export default function FrenchOpenStreamingCountriesPage() {
@@ -20,7 +20,7 @@ export default function FrenchOpenStreamingCountriesPage() {
           name: "French Open Streaming Countries",
           description:
             "Country-by-country guide to Roland Garros streaming rights and official viewing options.",
-          url: "https://watchtennistoday.com/french-open-streaming-countries",
+          url: "https://watchtennistoday.com/where-to-watch-french-open",
         }}
       />
 

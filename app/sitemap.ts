@@ -18,6 +18,36 @@ type Match = {
 
 const BASE_URL = "https://watchtennistoday.com";
 
+const REDIRECT_ONLY_PATHS = new Set([
+  "/french-open-draw",
+  "/french-open-survivors",
+  "/french-open-upsets",
+  "/french-open-live-stream",
+  "/french-open-streaming-countries",
+  "/french-open-schedule",
+  "/french-open-tv-schedule",
+  "/french-open-live",
+  "/french-open-today",
+  "/privacy-policy",
+  "/roland-garros-draw",
+  "/roland-garros-live",
+  "/roland-garros-live-stream",
+  "/roland-garros-pulse",
+  "/roland-garros-predictions",
+  "/roland-garros-results",
+  "/roland-garros-tv-schedule",
+  "/tennis-schedule-tomorrow",
+  "/watch-french-open-in-australia",
+  "/watch-french-open-in-canada",
+  "/watch-french-open-in-uk",
+  "/watch-french-open-in-usa",
+  "/watch-sabalenka-live",
+  "/watch-swiatek-live",
+  "/watch/tennis-spoiler-free-scores",
+  "/wimbledon-live-stream",
+  "/wimbledon-tv-schedule",
+]);
+
 
 const ADSENSE_INDEXABLE_PLAYERS = new Set([
   "jannik-sinner",
@@ -251,6 +281,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/authors/watch-tennis-today",
     "/guides",
     "/tennis-guides",
+    "/tennis-glossary",
     "/best-tennis-matches-today",
     "/tennis-tv-broadcast-finder",
     "/tennis-tv-not-working",
@@ -303,7 +334,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-streaming",
     "/start-here",
     "/best-ways-to-watch-tennis-online",
-  ].map((path) => {
+  ].filter((path) => !REDIRECT_ONLY_PATHS.has(path)).map((path) => {
   const livePages = [
     "",
   ];

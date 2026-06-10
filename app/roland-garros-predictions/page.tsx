@@ -6,5 +6,5 @@ export const metadata = {
 
 export default function RemovedLowDataPage() {
   // Roland Garros predictions removed; use the live French Open today hub.
-  redirect("/french-open-today");
+  redirect("/french-open");
 }

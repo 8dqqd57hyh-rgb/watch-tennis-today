@@ -22,7 +22,7 @@ export default function Page() {
         { href: "/live-tennis", label: "Live tennis matches" },
         { href: "/watch-tennis-live-today", label: "Watch tennis live today" },
         { href: "/tv-schedule", label: "Tennis TV schedule" },
-        { href: "/french-open-live", label: "French Open live" },
+        { href: "/french-open", label: "French Open live" },
         { href: "/best-ways-to-watch-tennis-online", label: "Best ways to watch tennis online" },
       ]}
     />

@@ -753,7 +753,140 @@ export function getGuideSourceReferences(article: GuideArticle) {
   ];
 }
 
+const manualRelatedGuideSlugs: Record<string, string[]> = {
+  "break-points-explained": [
+    "tennis-scoring-system-explained",
+    "tennis-tiebreak-rules",
+    "tennis-match-formats-explained",
+    "tennis-retirement-rules-explained",
+  ],
+  "tennis-tiebreak-rules": [
+    "tennis-scoring-system-explained",
+    "break-points-explained",
+    "tennis-match-formats-explained",
+    "grand-slam-tournaments-explained",
+  ],
+  "atp-rankings-explained": [
+    "tennis-ranking-points-explained",
+    "protected-ranking-in-tennis",
+    "masters-1000-500-250-explained",
+    "tennis-seeds-explained",
+  ],
+  "walkover-vs-retirement": [
+    "tennis-walkover-explained",
+    "tennis-retirement-rules-explained",
+    "tennis-match-formats-explained",
+    "tennis-draws-explained",
+  ],
+  "tennis-surfaces-explained": [
+    "grand-slam-tournaments-explained",
+    "masters-1000-500-250-explained",
+    "tennis-match-formats-explained",
+    "atp-vs-wta-explained",
+  ],
+  "tennis-scoring-system-explained": [
+    "break-points-explained",
+    "tennis-tiebreak-rules",
+    "tennis-match-formats-explained",
+    "walkover-vs-retirement",
+  ],
+  "tennis-seeds-explained": [
+    "tennis-draws-explained",
+    "tennis-qualifying-explained",
+    "lucky-loser-explained",
+    "wild-card-in-tennis-explained",
+  ],
+  "lucky-loser-explained": [
+    "tennis-qualifying-explained",
+    "wild-card-in-tennis-explained",
+    "tennis-draws-explained",
+    "tennis-seeds-explained",
+  ],
+  "wild-card-in-tennis-explained": [
+    "tennis-qualifying-explained",
+    "lucky-loser-explained",
+    "tennis-draws-explained",
+    "tennis-seeds-explained",
+  ],
+  "protected-ranking-in-tennis": [
+    "tennis-ranking-points-explained",
+    "atp-rankings-explained",
+    "wild-card-in-tennis-explained",
+    "tennis-draws-explained",
+  ],
+  "tennis-draws-explained": [
+    "tennis-seeds-explained",
+    "tennis-qualifying-explained",
+    "lucky-loser-explained",
+    "wild-card-in-tennis-explained",
+  ],
+  "grand-slam-tournaments-explained": [
+    "masters-1000-500-250-explained",
+    "tennis-surfaces-explained",
+    "tennis-tv-vs-grand-slam-broadcasters",
+    "tennis-tiebreak-rules",
+  ],
+  "atp-vs-wta-explained": [
+    "atp-rankings-explained",
+    "tennis-ranking-points-explained",
+    "masters-1000-500-250-explained",
+    "tennis-tv-vs-grand-slam-broadcasters",
+  ],
+  "tennis-retirement-rules-explained": [
+    "walkover-vs-retirement",
+    "tennis-walkover-explained",
+    "tennis-match-formats-explained",
+    "tennis-scoring-system-explained",
+  ],
+  "tennis-ranking-points-explained": [
+    "atp-rankings-explained",
+    "protected-ranking-in-tennis",
+    "masters-1000-500-250-explained",
+    "tennis-seeds-explained",
+  ],
+  "tennis-match-formats-explained": [
+    "tennis-scoring-system-explained",
+    "tennis-tiebreak-rules",
+    "tennis-retirement-rules-explained",
+    "walkover-vs-retirement",
+  ],
+  "tennis-walkover-explained": [
+    "walkover-vs-retirement",
+    "tennis-retirement-rules-explained",
+    "tennis-draws-explained",
+    "tennis-match-formats-explained",
+  ],
+  "tennis-bye-explained": [
+    "tennis-draws-explained",
+    "tennis-seeds-explained",
+    "tennis-qualifying-explained",
+    "wild-card-in-tennis-explained",
+  ],
+  "tennis-qualifying-explained": [
+    "lucky-loser-explained",
+    "wild-card-in-tennis-explained",
+    "tennis-draws-explained",
+    "tennis-seeds-explained",
+  ],
+  "tennis-tv-vs-grand-slam-broadcasters": [
+    "grand-slam-tournaments-explained",
+    "masters-1000-500-250-explained",
+    "atp-vs-wta-explained",
+    "tennis-ranking-points-explained",
+  ],
+  "masters-1000-500-250-explained": [
+    "grand-slam-tournaments-explained",
+    "atp-rankings-explained",
+    "tennis-ranking-points-explained",
+    "atp-vs-wta-explained",
+  ],
+};
+
 export function getRelatedGuides(article: GuideArticle, limit = 4) {
+  const manuallyRelated = (manualRelatedGuideSlugs[article.slug] || [])
+    .map(getGuideArticle)
+    .filter((item): item is GuideArticle => Boolean(item));
+
   const sameCategory = publishedGuideArticles.filter(
     (item) => item.slug !== article.slug && item.category === article.category
   );
@@ -761,5 +894,5 @@ export function getRelatedGuides(article: GuideArticle, limit = 4) {
     (item) => item.slug !== article.slug && item.category !== article.category
   );
 
-  return [...sameCategory, ...fallback].slice(0, limit);
+  return [...new Map([...manuallyRelated, ...sameCategory, ...fallback].map((item) => [item.slug, item])).values()].slice(0, limit);
 }

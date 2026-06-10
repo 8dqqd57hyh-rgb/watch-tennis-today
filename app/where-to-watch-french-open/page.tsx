@@ -13,10 +13,10 @@ export const metadata = {
 };
 
 const relatedLinks = [
-  ["French Open live", "/french-open-live"],
+  ["French Open live", "/french-open"],
   ["Watch online", "/watch-french-open-online"],
-  ["TV schedule", "/french-open-tv-schedule"],
-  ["French Open today", "/french-open-today"],
+  ["TV schedule", "/where-to-watch-french-open"],
+  ["French Open today", "/french-open"],
   ["Order of play", "/french-open-order-of-play"],
   ["Results", "/french-open-results"],
 ];
@@ -75,7 +75,7 @@ export default function WhereToWatchFrenchOpenPage() {
               View countries →
             </a>
             <Link
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule

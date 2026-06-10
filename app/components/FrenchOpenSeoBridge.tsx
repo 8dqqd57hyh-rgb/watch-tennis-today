@@ -11,7 +11,7 @@ const intentCards = [
     eyebrow: "Watching today",
     title: "French Open today",
     text: "Jump to live, upcoming and completed Roland Garros matches from the current day.",
-    href: "/french-open-today",
+    href: "/french-open",
   },
   {
     eyebrow: "Planning ahead",

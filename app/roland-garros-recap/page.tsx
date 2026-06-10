@@ -293,10 +293,10 @@ export default async function RolandGarrosRecapPage() {
   ];
 
   const relatedLinks = [
-    ["Today at Roland Garros", "/french-open-today"],
+    ["Today at Roland Garros", "/french-open"],
     ["French Open Results", "/french-open-results"],
     ["Order of Play", "/french-open-order-of-play"],
-    ["TV Schedule", "/french-open-tv-schedule"],
+    ["TV Schedule", "/where-to-watch-french-open"],
     ["Where to Watch", "/where-to-watch-french-open"],
     ["Best VPN for Roland Garros", "/best-vpn-for-roland-garros"],
   ];
@@ -405,13 +405,13 @@ export default async function RolandGarrosRecapPage() {
               Who advanced? →
             </a>
             <a
-              href="/french-open-today"
+              href="/french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               See today’s matches
             </a>
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule

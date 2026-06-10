@@ -126,7 +126,7 @@ export default function FrenchOpenSurvivorsBoard({ compact = false }: { compact?
         </div>
 
         <a
-          href="/french-open-schedule"
+          href="/french-open-order-of-play"
           className="inline-flex rounded-2xl border border-emerald-500/50 px-5 py-3 font-black text-emerald-100 transition hover:border-emerald-300 hover:text-white"
         >
           Open full draw tracker →

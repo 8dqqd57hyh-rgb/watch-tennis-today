@@ -5,7 +5,7 @@ export const metadata = {
   title: "Wimbledon TV Schedule | Channels, Sessions and Legal Streams",
   description:
     "Plan Wimbledon viewing with TV schedule guidance, country broadcaster checks, streaming app notes and travel viewing safety tips.",
-  alternates: { canonical: "https://watchtennistoday.com/wimbledon-tv-schedule" },
+  alternates: { canonical: "https://watchtennistoday.com/where-to-watch-wimbledon" },
 };
 
 export default function WimbledonTvSchedulePage() {

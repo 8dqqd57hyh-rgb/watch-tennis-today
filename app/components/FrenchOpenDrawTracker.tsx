@@ -58,7 +58,7 @@ const fallbackPlayerPaths: PlayerPath[] = [
         opponent: "Next confirmed opponent",
         status: "upcoming",
         note: "The live API will replace this fallback when fixtures load.",
-        watchHref: "/french-open-today",
+        watchHref: "/french-open",
       },
     ],
   },

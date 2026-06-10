@@ -54,7 +54,7 @@ export default function Page() {
         { href: "/live-tennis", label: "Live tennis matches" },
         { href: "/watch-tennis-live-today", label: "Watch tennis live today" },
         { href: "/tennis-on-tv-today", label: "Tennis on TV today" },
-        { href: "/french-open-live", label: "French Open live" },
+        { href: "/french-open", label: "French Open live" },
         { href: "/how-to-watch-tennis-without-cable", label: "Watch tennis without cable" },
       ]}
     />

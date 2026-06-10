@@ -45,8 +45,8 @@ export const stableTournamentHubs: StableTournamentHub[] = [
     watchNote:
       "French Open rights are separate from many regular tour subscriptions, so verify your country’s official rights holder before match time.",
     relatedLinks: [
-      { label: "French Open live", href: "/french-open-live" },
-      { label: "French Open TV schedule", href: "/french-open-tv-schedule" },
+      { label: "French Open live", href: "/french-open" },
+      { label: "French Open TV schedule", href: "/where-to-watch-french-open" },
       { label: "Where to watch French Open", href: "/where-to-watch-french-open" },
     ],
   },
@@ -159,7 +159,7 @@ export const stableTournamentHubs: StableTournamentHub[] = [
     watchNote:
       "Check official daily schedule pages because late clay matches and weather can move projected start times.",
     relatedLinks: [
-      { label: "French Open live", href: "/french-open-live" },
+      { label: "French Open live", href: "/french-open" },
       { label: "Tennis calendar", href: "/tennis-calendar" },
       { label: "Live scores explained", href: "/tennis-live-scores-explained" },
     ],

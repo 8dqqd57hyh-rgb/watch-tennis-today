@@ -31,7 +31,7 @@ const primaryCards = [
     label: "Today",
     title: "French Open today",
     text: "See live, upcoming and completed Roland Garros matches from today’s schedule.",
-    href: "/french-open-today",
+    href: "/french-open",
   },
   {
     label: "Tomorrow",
@@ -42,15 +42,15 @@ const primaryCards = [
 ];
 
 const resourceLinks = [
-  ["French Open live", "/french-open-live"],
+  ["French Open live", "/french-open"],
   ["French Open results", "/french-open-results"],
   ["Order of play", "/french-open-order-of-play"],
-  ["TV schedule", "/french-open-tv-schedule"],
+  ["TV schedule", "/where-to-watch-french-open"],
   ["Where to watch", "/where-to-watch-french-open"],
   ["French Open in USA", "/watch-tennis-in/usa"],
   ["French Open in UK", "/watch-tennis-in/uk"],
   ["French Open in Poland", "/watch-tennis-in/poland"],
-  ["Streaming countries", "/french-open-streaming-countries"],
+  ["Streaming countries", "/where-to-watch-french-open"],
   ["Watch French Open online", "/watch-french-open-online"],
   ["Best VPN for Roland Garros", "/best-vpn-for-roland-garros"],
 ];
@@ -129,7 +129,7 @@ export default function FrenchOpenHubPage() {
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="/french-open-today"
+              href="/french-open"
               className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black transition hover:bg-orange-400"
             >
               See today’s matches →
@@ -141,7 +141,7 @@ export default function FrenchOpenHubPage() {
               Yesterday’s recap
             </a>
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-orange-500"
             >
               TV schedule

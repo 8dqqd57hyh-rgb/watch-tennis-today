@@ -41,10 +41,10 @@ function getMatchTitle(match: FrenchOpenMatch) {
 }
 
 function getMatchHref(match: FrenchOpenMatch) {
-  if (match.status === "LIVE") return "/french-open-live";
+  if (match.status === "LIVE") return "/french-open";
   if (match.status === "Finished") return "/french-open-results";
 
-  return "/french-open-today";
+  return "/french-open";
 }
 
 function statusPill(match: FrenchOpenMatch) {
@@ -128,7 +128,7 @@ export default function FrenchOpenLiveSnapshot({ compact = false }: { compact?: 
           Check the schedule, draw tracker or country viewing guide while the live match feed updates.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/french-open-today" className="rounded-2xl bg-orange-500 px-4 py-3 text-sm font-black text-black transition hover:bg-orange-400">
+          <Link href="/french-open" className="rounded-2xl bg-orange-500 px-4 py-3 text-sm font-black text-black transition hover:bg-orange-400">
             Open today’s schedule →
           </Link>
           <Link href="/where-to-watch-french-open" className="rounded-2xl border border-zinc-700 px-4 py-3 text-sm font-black transition hover:border-orange-500">
@@ -149,7 +149,7 @@ export default function FrenchOpenLiveSnapshot({ compact = false }: { compact?: 
             A quick live/upcoming/results summary so visitors can choose the fastest path: watch, follow the draw, or catch up.
           </p>
         </div>
-        <Link href="/french-open-today" className="rounded-2xl border border-orange-500/50 px-4 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
+        <Link href="/french-open" className="rounded-2xl border border-orange-500/50 px-4 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
           Full schedule →
         </Link>
       </div>

@@ -413,7 +413,7 @@ export default async function Page({ params }: PageProps) {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <a
-              href="/french-open-live"
+              href="/french-open"
               className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
             >
               <h3 className="text-xl font-black mb-2">French Open Live</h3>
@@ -433,7 +433,7 @@ export default async function Page({ params }: PageProps) {
             </a>
 
             <a
-              href="/french-open-tv-schedule"
+              href="/where-to-watch-french-open"
               className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
             >
               <h3 className="text-xl font-black mb-2">French Open TV Schedule</h3>
@@ -529,7 +529,7 @@ export default async function Page({ params }: PageProps) {
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <a
-                    href="/french-open-live"
+                    href="/french-open"
                     className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
                   >
                     <h3 className="text-xl font-black">French Open Live</h3>
@@ -549,7 +549,7 @@ export default async function Page({ params }: PageProps) {
                   </a>
 
                   <a
-                    href="/french-open-tv-schedule"
+                    href="/where-to-watch-french-open"
                     className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
                   >
                     <h3 className="text-xl font-black">French Open TV Schedule</h3>

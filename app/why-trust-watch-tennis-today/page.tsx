@@ -146,7 +146,7 @@ export default function WhyTrustPage() {
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
             <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Editorial policy</Link>
             <Link href="/content-guidelines" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Content guidelines</Link>
-            <Link href="/privacy-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Privacy policy</Link>
+            <Link href="/privacy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Privacy policy</Link>
             <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Contact</Link>
           </div>
         </section>

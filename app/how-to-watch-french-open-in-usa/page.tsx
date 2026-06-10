@@ -1,6 +1,7 @@
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -17,9 +18,9 @@ export default function Page() {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
         <nav className="text-sm text-zinc-400 mb-8">
-          <a href="/" className="hover:text-white">
+          <Link href="/" className="hover:text-white">
             Home
-          </a>{" "}
+          </Link>{" "}
           / How to Watch French Open in USA
         </nav>
 
@@ -94,12 +95,12 @@ export default function Page() {
                 Try NordVPN
               </a>
 
-              <a
+              <Link
                 href="/best-vpn-for-tennis-streaming"
                 className="border border-zinc-700 px-6 py-4 rounded-2xl font-black hover:border-green-500 hover:text-green-400 transition-all"
               >
                 Best VPN for Tennis
-              </a>
+              </Link>
             </div>
 
             <p className="text-zinc-500 text-sm mt-5">
@@ -127,39 +128,39 @@ export default function Page() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <a
-                href="/french-open-live-stream"
+              <Link
+                href="/french-open"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 French Open Live Stream
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/grand-slam-live"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Grand Slam Live
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/live-tennis"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Live Tennis Today
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/watch-tennis-in/usa"
                 className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
               >
                 Watch Tennis in USA
-              </a>
-              <a
-  href="/french-open-schedule"
-  className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
->
-  French Open Schedule
-</a>
+              </Link>
+              <Link
+                href="/french-open-order-of-play"
+                className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
+              >
+                French Open order of play
+              </Link>
             </div>
           </section>
 

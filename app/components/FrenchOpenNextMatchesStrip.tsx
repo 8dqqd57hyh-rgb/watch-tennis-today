@@ -108,7 +108,7 @@ export default function FrenchOpenNextMatchesStrip({ compact = false }: { compac
           status: path.nextMatchStatus || (next.status === "live" ? "LIVE" : "Scheduled"),
           date: path.nextMatchDate,
           time: path.nextMatchTime,
-          href: next.status === "live" ? "/french-open-live" : "/french-open-today",
+          href: next.status === "live" ? "/french-open" : "/french-open",
         });
       }
     });
@@ -138,7 +138,7 @@ export default function FrenchOpenNextMatchesStrip({ compact = false }: { compac
             Built from the same active-player feed as the draw tracker, so completed matches do not appear as next fixtures.
           </p>
         </div>
-        <Link href="/french-open-schedule" className="rounded-2xl border border-orange-500/50 px-4 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
+        <Link href="/french-open-order-of-play" className="rounded-2xl border border-orange-500/50 px-4 py-3 text-sm font-black text-orange-200 transition hover:bg-orange-500 hover:text-black">
           Open draw tracker →
         </Link>
       </div>

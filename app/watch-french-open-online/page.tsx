@@ -30,14 +30,14 @@ export default function WatchFrenchOpenOnlinePage() {
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="/french-open-live"
+              href="/french-open"
               className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
             >
               Live French Open Matches →
             </a>
 
             <a
-              href="/french-open-live-stream"
+              href="/french-open"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-orange-500 transition-all"
             >
               Live Stream Guide
@@ -117,12 +117,12 @@ export default function WatchFrenchOpenOnlinePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              ["French Open Live", "/french-open-live"],
-              ["French Open Today", "/french-open-today"],
-              ["TV Schedule", "/french-open-tv-schedule"],
+              ["French Open Live", "/french-open"],
+              ["French Open Today", "/french-open"],
+              ["TV Schedule", "/where-to-watch-french-open"],
               ["Where to Watch", "/where-to-watch-french-open"],
               ["Order of Play", "/french-open-order-of-play"],
-              ["Streaming Countries", "/french-open-streaming-countries"],
+              ["Streaming Countries", "/where-to-watch-french-open"],
             ].map(([title, href]) => (
               <a
                 key={href}

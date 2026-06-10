@@ -290,7 +290,7 @@ function buildPlayerPath(player: string, matches: NormalizedMatch[]): PlayerPath
       status: nextMatch.status === "LIVE" ? "live" : "upcoming",
       result: nextMatch.status === "LIVE" ? "Live now" : [nextMatch.date, nextMatch.time].filter(Boolean).join(" · "),
       note: nextMatch.court ? `Court: ${nextMatch.court}` : "Pulled from active Roland Garros fixtures.",
-      watchHref: nextMatch.status === "LIVE" ? "/french-open-live" : "/french-open-today",
+      watchHref: "/french-open",
     });
   }
 
@@ -300,7 +300,7 @@ function buildPlayerPath(player: string, matches: NormalizedMatch[]): PlayerPath
     opponent: "Next bracket slot after this match",
     status: "potential",
     note: "The next opponent updates when the tournament feed publishes the following round.",
-    watchHref: "/french-open-schedule",
+    watchHref: "/french-open-order-of-play",
   });
 
   return {

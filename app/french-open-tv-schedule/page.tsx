@@ -2,7 +2,7 @@ export const metadata = {
   title: "French Open TV Schedule 2026 | Roland Garros Channels Today",
   description:
     "French Open TV schedule for Roland Garros 2026. Find today’s tennis matches, TV channels, streaming guides and where to watch French Open coverage.",
-  alternates: { canonical: "https://watchtennistoday.com/french-open-tv-schedule" },
+  alternates: { canonical: "https://watchtennistoday.com/where-to-watch-french-open" },
 };
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default function FrenchOpenTvSchedulePage() {
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="/french-open-live"
+              href="/french-open"
               className="rounded-2xl bg-orange-500 px-6 py-4 text-lg font-black text-black hover:bg-orange-400 transition-all"
             >
               Live Matches →
@@ -57,9 +57,9 @@ export default function FrenchOpenTvSchedulePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              ["Live matches", "/french-open-live"],
+              ["Live matches", "/french-open"],
               ["Order of play", "/french-open-order-of-play"],
-              ["French Open today", "/french-open-today"],
+              ["French Open today", "/french-open"],
             ].map(([title, href]) => (
               <a
                 key={href}
@@ -118,11 +118,11 @@ export default function FrenchOpenTvSchedulePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              ["French Open live stream", "/french-open-live-stream"],
+              ["French Open hub", "/french-open"],
               ["Watch French Open online", "/watch-french-open-online"],
               ["French Open results", "/french-open-results"],
-              ["French Open schedule", "/french-open-schedule"],
-              ["Streaming countries", "/french-open-streaming-countries"],
+              ["French Open schedule", "/french-open-order-of-play"],
+              ["Streaming countries", "/where-to-watch-french-open"],
               ["Where to watch French Open", "/where-to-watch-french-open"],
             ].map(([title, href]) => (
               <a

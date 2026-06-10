@@ -237,7 +237,7 @@ export default function FrenchOpenDayTimeline({ compact = false }: { compact?: b
         </div>
 
         <a
-          href="/french-open-today"
+          href="/french-open"
           className="rounded-2xl border border-orange-500/60 px-5 py-3 text-sm font-black text-orange-300 transition hover:bg-orange-500 hover:text-black"
         >
           Full today page →

@@ -121,7 +121,7 @@ export default function WimbledonGuidePage({
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <a href="/wimbledon-live" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Live hub</a>
           <a href="/wimbledon-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Schedule</a>
-          <a href="/wimbledon-tv-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
+          <a href="/where-to-watch-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
           <a href="/best-vpn-for-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">VPN guide</a>
         </div>
       </section>

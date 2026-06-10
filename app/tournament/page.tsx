@@ -183,7 +183,7 @@ export default async function TournamentsPage() {
 
         <div className="mb-8">
           <a
-            href="/french-open-live-stream"
+            href="/french-open"
             className="block bg-gradient-to-br from-orange-500 to-red-500 text-black rounded-3xl p-6 hover:scale-[1.01] transition-all"
           >
             <p className="uppercase text-sm font-black tracking-widest opacity-70 mb-2">

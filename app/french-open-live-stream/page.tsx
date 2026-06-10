@@ -6,7 +6,7 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 const resources = [
-  { href: "/french-open-live", label: "French Open live hub" },
+  { href: "/french-open", label: "French Open live hub" },
   { href: "/where-to-watch-french-open", label: "Where to watch by country" },
   { href: "/french-open-order-of-play", label: "French Open order of play" },
   { href: "/french-open-results", label: "Latest French Open results" },

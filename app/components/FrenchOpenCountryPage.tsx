@@ -122,13 +122,13 @@ export default function FrenchOpenCountryPage({
           <h2 className="mb-4 text-2xl font-black">More French Open guides</h2>
 
           <div className="flex flex-wrap gap-3">
-            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/french-open-live">
+            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/french-open">
               French Open live
             </a>
-            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/french-open-tv-schedule">
+            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/where-to-watch-french-open">
               French Open TV schedule
             </a>
-            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/french-open-today">
+            <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/french-open">
               French Open today
             </a>
             <a className="rounded-full bg-zinc-800 px-4 py-2 text-sm font-bold hover:bg-zinc-700" href="/best-vpn-for-tennis-streaming">

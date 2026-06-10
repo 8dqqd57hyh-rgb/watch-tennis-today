@@ -324,7 +324,7 @@ export default function MyPlayersClient() {
           <Link href="/players" className="rounded-2xl bg-black px-5 py-3 font-black text-white hover:bg-zinc-800">
             Browse all players →
           </Link>
-          <Link href="/french-open-schedule" className="rounded-2xl border border-zinc-200 px-5 py-3 font-black hover:border-green-400 hover:bg-green-50">
+          <Link href="/french-open-order-of-play" className="rounded-2xl border border-zinc-200 px-5 py-3 font-black hover:border-green-400 hover:bg-green-50">
             Open schedule tracker →
           </Link>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 
@@ -48,12 +49,12 @@ export default function TvSchedulePage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-        <a
+        <Link
           href="/"
           className="inline-block mb-8 text-zinc-400 hover:text-white"
         >
           ← Back to matches
-        </a>
+        </Link>
 
         <section className="mt-8 mb-10">
   <h1 className="text-5xl font-black mb-4">
@@ -94,7 +95,7 @@ export default function TvSchedulePage() {
   </h2>
 
   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    <a
+    <Link
       href="/tv-schedule/jannik-sinner"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
@@ -105,9 +106,9 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         Match times, TV channels and streaming coverage.
       </p>
-    </a>
+    </Link>
 
-    <a
+    <Link
       href="/tv-schedule/carlos-alcaraz"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
@@ -118,9 +119,9 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         Live ATP match schedule and TV coverage.
       </p>
-    </a>
+    </Link>
 
-    <a
+    <Link
       href="/tv-schedule/novak-djokovic"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
@@ -131,9 +132,9 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         Tennis TV listings and streaming information.
       </p>
-    </a>
+    </Link>
 
-    <a
+    <Link
       href="/tv-schedule/iga-swiatek"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
@@ -144,9 +145,9 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         WTA broadcast schedule and live streams.
       </p>
-    </a>
+    </Link>
 
-    <a
+    <Link
       href="/tv-schedule/aryna-sabalenka"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
@@ -157,10 +158,10 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         Watch Sabalenka matches live on TV and online.
       </p>
-    </a>
+    </Link>
 
-    <a
-      href="/french-open-tv-schedule"
+    <Link
+      href="/where-to-watch-french-open"
       className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 hover:border-green-500 transition"
     >
       <h3 className="text-xl font-black mb-2">
@@ -170,7 +171,7 @@ export default function TvSchedulePage() {
       <p className="text-zinc-400">
         Roland Garros TV channels and streaming schedule.
       </p>
-    </a>
+    </Link>
   </div>
 </section>
 
@@ -184,12 +185,12 @@ export default function TvSchedulePage() {
     broadcaster links and streaming availability.
   </p>
 
-  <a
+  <Link
     href="/live-tennis"
     className="inline-block bg-black text-white px-5 py-3 rounded-2xl font-black"
   >
     View Live Tennis
-  </a>
+  </Link>
 </section>
 
         {loading ? (
@@ -202,15 +203,15 @@ export default function TvSchedulePage() {
               Use the live tennis hub, today&apos;s matches and broadcaster guide while the channel list refreshes.
             </p>
             <div className="mt-6 flex flex-wrap gap-4">
-              <a href="/live-tennis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+              <Link href="/live-tennis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
                 Live Tennis →
-              </a>
-              <a href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+              </Link>
+              <Link href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
                 Today&apos;s Matches →
-              </a>
-              <a href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+              </Link>
+              <Link href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
                 Broadcaster Guide →
-              </a>
+              </Link>
             </div>
           </section>
         ) : (

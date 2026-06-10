@@ -142,7 +142,7 @@ export const comparisons: StreamingComparison[] = [
     },
     secondaryCta: {
       label: "French Open streaming countries",
-      href: "/french-open-streaming-countries",
+      href: "/where-to-watch-french-open",
     },
   },
   {
