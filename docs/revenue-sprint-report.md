@@ -181,3 +181,24 @@ Result:
 3. Add affiliate disclosure near monetized links.
 4. Track clicks separately for official broadcasters, VPN traveler guides and streaming comparison pages.
 5. Prioritize Wimbledon, US Open and ATP Finals legal viewing hubs before adding more player pages.
+
+## Follow-up sprint: email capture infrastructure cleanup
+
+### What changed
+
+- Added `app/api/subscribe-general/route.ts` so reusable email CTAs no longer depend on a hardcoded third-party Formspree endpoint.
+- Updated `components/EmailCapture.tsx` to submit non-player signups to the first-party API route.
+- Updated `app/components/EmailSignup.tsx` to reuse `EmailCapture`, reducing duplicate signup UI and keeping privacy/illegal-stream copy consistent.
+- Added `docs/sql/email-subscriptions.sql` for the optional Supabase table that stores non-player email signups by context.
+- Fixed duplicate confirmation sending in `app/api/subscribe-finals/route.ts`.
+
+### Production setup still needed
+
+- Run `docs/sql/email-subscriptions.sql` in Supabase if you want daily, guide, watch, tournament and streaming signups to persist.
+- Configure `RESEND_API_KEY` for confirmation emails.
+- Replace `onboarding@resend.dev` with a verified sender domain before public launch.
+- Add unsubscribe handling before sending regular marketing/newsletter emails.
+
+### Why this matters for monetization
+
+The previous CTA layer collected some signups through mixed mechanisms. This follow-up centralizes capture behind site-owned API routes, which makes the email list easier to segment later by player, tournament, streaming guide, watch page and daily tennis intent.

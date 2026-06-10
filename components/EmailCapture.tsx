@@ -88,20 +88,19 @@ export default function EmailCapture({
         return;
       }
 
-      const formData = new FormData();
-      formData.append("email", normalizedEmail);
-      formData.append("source", getSource(contextType));
-      formData.append("contextType", contextType);
-      formData.append("contextValue", contextValue);
-      formData.append("frequency", "only-useful-tennis-updates");
-
-      const response = await fetch("https://formspree.io/f/xeenwwbk", {
+      const response = await fetch("/api/subscribe-general", {
         method: "POST",
-        body: formData,
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          source: getSource(contextType),
+          contextType,
+          contextValue,
+        }),
       });
 
-      if (!response.ok) throw new Error("Subscription failed");
+      const data = await response.json();
+      if (!data.ok) throw new Error("Subscription failed");
       setSuccess(true);
     } catch (subscriptionError) {
       console.error(subscriptionError);

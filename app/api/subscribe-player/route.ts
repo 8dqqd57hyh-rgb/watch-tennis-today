@@ -3,8 +3,6 @@ import { Resend } from "resend";
 import { supabase } from "@/app/lib/supabase";
 import { getCanonicalPlayerSlug, players } from "@/data/playerSlugs";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -66,15 +64,17 @@ export async function POST(request: Request) {
       );
     }
 
-    await resend.emails.send({
-      from:
-        "Watch Tennis Today <onboarding@resend.dev>",
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from:
+          "Watch Tennis Today <onboarding@resend.dev>",
 
-      to: email,
+        to: email,
 
-      subject: `🎾 You are following ${playerName}`,
+        subject: `🎾 You are following ${playerName}`,
 
-      html: `
+        html: `
         <div style="font-family:Arial;padding:24px;">
           <h1>
             🎾 You are now following ${playerName}
@@ -97,8 +97,9 @@ export async function POST(request: Request) {
             View Player Page
           </a>
         </div>
-      `,
-    });
+        `,
+      });
+    }
 
     return NextResponse.json({
       ok: true,

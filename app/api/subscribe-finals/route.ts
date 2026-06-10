@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getUpcomingFinals } from "@/app/lib/finals";
 
+type FinalsMatch = {
+  player1?: string;
+  player2?: string;
+  tournament?: string;
+  category?: string;
+  startTime?: string | number | Date;
+};
+
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
 
@@ -58,7 +66,7 @@ export async function POST(request: Request) {
       finals.length > 0
         ? finals
             .map(
-              (match: any) => `
+              (match: FinalsMatch) => `
                 <div style="margin-bottom:24px;padding:16px;border:1px solid #ddd;border-radius:12px;">
                   <h2>
                     ${match.player1} vs ${match.player2}
@@ -91,31 +99,6 @@ export async function POST(request: Request) {
           </p>
         `;
 
-    await resend.emails.send({
-      from:
-        "Watch Tennis Today <onboarding@resend.dev>",
-
-      to: email,
-
-      subject:
-        finals.length > 0
-          ? "🏆 ATP/WTA Finals Alerts"
-          : "🎾 Tennis Finals Alerts",
-
-      html: `
-        <div style="font-family:Arial,sans-serif;padding:24px;">
-          <h1>
-            🎾 You are subscribed to ATP/WTA Finals Alerts
-          </h1>
-
-          <p>
-            We will notify you when new ATP or WTA finals appear.
-          </p>
-
-          ${finalsHtml}
-        </div>
-      `,
-    });
 const emailResult = await resend.emails.send({
   from: "Watch Tennis Today <onboarding@resend.dev>",
   to: email,
