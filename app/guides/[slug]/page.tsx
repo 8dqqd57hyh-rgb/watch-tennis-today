@@ -36,21 +36,33 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
   if (!article) notFound();
 
   const related = getRelatedGuides(article, 6);
-  const supplementalLinks =
-    article.slug === "tennis-retirement-walkover-withdrawal"
-      ? [
-          {
-            href: "/tennis-glossary",
-            label: "Tennis glossary",
-            description: "Quick definitions for RET, walkover, withdrawal and other tennis terms.",
-          },
-          {
-            href: "/tennis-scoring-explained",
-            label: "Tennis scoring explained",
-            description: "A broader scoring guide for points, games, sets and match results.",
-          },
-        ]
-      : [];
+  const supplementalLinkMap: Record<string, Array<{ href: string; label: string; description: string }>> = {
+    "tennis-retirement-walkover-withdrawal": [
+      {
+        href: "/tennis-glossary",
+        label: "Tennis glossary",
+        description: "Quick definitions for RET, walkover, withdrawal and other tennis terms.",
+      },
+      {
+        href: "/tennis-scoring-explained",
+        label: "Tennis scoring explained",
+        description: "A broader scoring guide for points, games, sets and match results.",
+      },
+    ],
+    "tennis-qualifying-rounds-explained": [
+      {
+        href: "/tennis-glossary",
+        label: "Tennis glossary",
+        description: "Quick definitions for qualifier, lucky loser, wild card, seed and draw terms.",
+      },
+      {
+        href: "/tennis-guides",
+        label: "Tennis guides",
+        description: "The full guide hub for rules, rankings, tournament structure and legal viewing context.",
+      },
+    ],
+  };
+  const supplementalLinks = supplementalLinkMap[article.slug] || [];
   const { publishedDate, updatedDate } = getGuideArticleDates(article);
   const readingTime = getGuideReadingTime(article);
   const sourceReferences = getGuideSourceReferences(article);

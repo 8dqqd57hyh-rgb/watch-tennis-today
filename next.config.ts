@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/guides/tennis-qualifying-explained",
+        destination: "/guides/tennis-qualifying-rounds-explained",
+        permanent: true,
+      },
+      {
         source: "/french-open-live-stream",
         destination: "/french-open",
         permanent: true,

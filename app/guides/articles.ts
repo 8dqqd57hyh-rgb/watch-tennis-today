@@ -637,23 +637,77 @@ export const guideArticles: GuideArticle[] = [
     ]
   },
   {
-    "slug": "tennis-qualifying-explained",
-    "title": "Tennis Qualifying Explained",
-    "description": "How qualifying rounds work, why qualifiers matter, and what fans should know before reading a main draw.",
+    "slug": "tennis-qualifying-rounds-explained",
+    "title": "Tennis Qualifying Rounds Explained",
+    "description": "A beginner-friendly guide to tennis qualifying rounds, qualifiers, wild cards, lucky losers, direct entries, seeds and main-draw places.",
     "category": "Draws",
-    "intro": "Qualifying is the tournament before the tournament. Players who do not enter the main draw directly can earn a place by winning qualifying matches. Those who succeed are called qualifiers, and they often arrive in the main draw with confidence and match rhythm.\n\nFor fans, qualifiers are important because they are not just filler names. Many are rising players, returning players or specialists whose ranking does not fully show their danger in that specific week.",
+    "intro": "Qualifying rounds are the matches played before the main draw to decide which extra players earn a place in the tournament. They matter because a tournament field is not made only of famous names and top seeds. Some players enter directly by ranking, some receive wild cards, and others have to win their way in through qualifying.\n\nThis guide explains qualifying in plain language for fans reading a draw, checking an order of play or wondering why a player has a Q, WC, LL or seed number beside their name. It uses general tennis structure rather than pretending every event works exactly the same way.",
     "sections": [
-      {"heading":"How qualifying works","body":"Before the main draw begins, tournaments hold qualifying rounds for players outside the direct-entry cutoff. A player usually needs to win multiple matches to qualify, depending on draw size and event level.\n\nOnce they qualify, they receive a main-draw position and compete under the same match rules as other players."},
-      {"heading":"Why players enter qualifying","body":"Qualifying gives players a route into bigger events when their ranking is not high enough for direct entry. It can provide prize money, ranking opportunities and valuable experience against stronger fields.\n\nFor young players or players returning from injury, qualifying can be an important step back toward tour stability."},
-      {"heading":"Why qualifiers can be dangerous","body":"A qualifier has already played competitive matches at the event. They may understand the court speed, balls, weather and bounce better than a seeded player starting cold.\n\nThat match rhythm can make qualifiers especially dangerous in first-round main-draw matches."},
-      {"heading":"Qualifier versus lucky loser","body":"A qualifier wins enough qualifying matches to earn entry. A lucky loser loses in qualifying but enters later because someone withdraws from the main draw.\n\nBoth labels come from qualifying, but one is earned through wins and the other comes through replacement rules."},
-      {"heading":"How fans should use qualifying context","body":"When previewing a main-draw match, check whether a player is a qualifier. Then look at who they beat, how many matches they played and whether the surface suits them.\n\nA qualifier with three confident wins may be more prepared than their ranking suggests."}
+      {
+        "heading": "What qualifying rounds are",
+        "body": "Qualifying is a smaller competition held before the main draw. Players who are close to the entry cutoff, but not high enough for direct entry, can play qualifying matches for a limited number of main-draw spots. If they win the required matches, they become qualifiers and join the main tournament.\n\nThe clean way to think about it is this: the main draw is the tournament bracket most fans follow, while qualifying is the entry route for players still trying to reach that bracket. Qualifying matches are real professional matches, not exhibitions or practice sets."
+      },
+      {
+        "heading": "How players enter qualifying",
+        "body": "Players usually enter qualifying through ranking-based entry lists. The highest-ranked available players who miss direct entry may be accepted into the qualifying draw. Depending on the event, there may also be qualifying wild cards, protected ranking entries or other approved entry routes.\n\nThe exact list can change when players withdraw, move into the main draw, receive wild cards or choose another event. That is why qualifying draws can shift before play begins. Fans should treat the official tournament draw and order of play as the final reference for a specific event."
+      },
+      {
+        "heading": "How qualifiers reach the main draw",
+        "body": "A player reaches the main draw by winning enough qualifying matches. The number of wins depends on the tournament level and draw size. Some events require two wins, while larger qualifying draws may require more. Once the player qualifies, they are placed into the main draw and compete like any other entrant.\n\nA qualifier may have a Q beside their name on a draw sheet. That label explains how they entered; it does not mean they are weaker in the match itself. A qualifier often arrives with match rhythm because they have already played competitive tennis at the venue."
+      },
+      {
+        "heading": "Qualifier, wild card, lucky loser, direct entry and seed",
+        "body": "A qualifier earns a main-draw place by winning qualifying matches. A wild card receives entry from the tournament or governing body without relying only on the normal ranking cutoff. A lucky loser loses in qualifying but later enters the main draw because another player withdraws before starting. A direct entry gets into the main draw through ranking or entry status without needing qualifying. A seed is a player placed in the draw to separate highly ranked entrants from each other in the early rounds.\n\nThese labels answer different questions. Qualifier, wild card, lucky loser and direct entry explain how a player got into the draw. Seed explains where a player is placed once the draw is built."
+      },
+      {
+        "heading": "Grand Slam qualifying in general terms",
+        "body": "Grand Slams usually run qualifying before the main draw begins, with separate men's and women's qualifying events. Players try to win their way into the larger major draw, where direct entries, seeds, wild cards and qualifiers all appear together.\n\nGrand Slam qualifying can feel like its own tournament because the reward is so visible: a main-draw place at one of the four biggest events. Still, fans should avoid assuming every major uses identical timing or procedures in every year. Check the official tournament site for the current draw and schedule."
+      },
+      {
+        "heading": "Qualifying at ATP and WTA events",
+        "body": "Regular ATP and WTA events also use qualifying, but the size and format vary by tournament category, field size and calendar position. A smaller tour event may have a shorter qualifying path than a large combined event. Some top players may enter directly, some may be seeded, and lower-ranked players may need qualifying to join the same main draw.\n\nFor fans, the practical effect is the same: qualifying explains why some players have already played matches before first-round main-draw opponents appear on the schedule."
+      },
+      {
+        "heading": "Simple examples without fake match claims",
+        "body": "Imagine a tournament has room for 32 players in the main draw. Most places are filled by direct entries and wild cards, but a few are reserved for qualifiers. A player outside the direct-entry cutoff enters qualifying, wins two matches, and receives a main-draw spot. On the bracket, that player may be listed with Q beside their name.\n\nNow imagine another player loses in the final round of qualifying but stays available. If a main-draw player withdraws before starting, the tournament may use a lucky loser. That player did not qualify by winning every required match, but they can still enter as a replacement under the event's rules."
+      },
+      {
+        "heading": "Why qualifying matters for match previews",
+        "body": "Qualifying can change how a first-round match feels. A qualifier may know the court speed, balls, weather and bounce better than a direct-entry player who has not played yet. They may also be more physically tired after extra matches. Both things can be true at once.\n\nWhen reading a draw, use qualifying labels as context rather than automatic predictions. Ask how many matches the player has played, whether the surface suits them, and whether the main-draw opponent is starting cold or already has recent match rhythm."
+      }
     ],
     "faq": [
-      {"question":"What is qualifying in tennis?","answer":"It is a pre-main-draw competition where players try to earn a place in the tournament."},
-      {"question":"What does qualifier mean?","answer":"A qualifier is a player who won enough qualifying matches to enter the main draw."},
-      {"question":"Are qualifiers weaker players?","answer":"Not always. They may be rising players, returning players or strong specialists with lower rankings."},
-      {"question":"Can a qualifier win the main tournament?","answer":"Yes. It is uncommon but possible once the player enters the main draw."}
+      {
+        "question": "What are qualifying rounds in tennis?",
+        "answer": "They are matches played before the main draw to decide which players earn the remaining main-draw places."
+      },
+      {
+        "question": "What does qualifier mean in a tennis draw?",
+        "answer": "A qualifier is a player who won the required qualifying matches and entered the main draw through that route."
+      },
+      {
+        "question": "Is a qualifier the same as a wild card?",
+        "answer": "No. A qualifier earns entry by winning qualifying matches. A wild card receives direct entry from the tournament or governing body."
+      },
+      {
+        "question": "What is the difference between a qualifier and a lucky loser?",
+        "answer": "A qualifier wins through qualifying. A lucky loser loses in qualifying but enters the main draw later because another player withdraws."
+      },
+      {
+        "question": "Can qualifiers beat seeded players?",
+        "answer": "Yes. A seed has a protected draw position, but the match still has to be played and qualifiers can beat seeded opponents."
+      },
+      {
+        "question": "Do Grand Slams have qualifying rounds?",
+        "answer": "Yes. Grand Slams generally hold qualifying before the main draw, though fans should check the official tournament schedule for the current format and timing."
+      }
+    ],
+    "publishedDate": "2026-06-10",
+    "updatedDate": "2026-06-10",
+    "sourceReferences": [
+      "ITF Rules of Tennis",
+      "ATP and WTA tournament entry and draw terminology",
+      "Official Grand Slam and tournament draw pages where available"
     ]
   }
 
@@ -881,18 +935,18 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
   ],
   "tennis-seeds-explained": [
     "tennis-draws-explained",
-    "tennis-qualifying-explained",
+    "tennis-qualifying-rounds-explained",
     "lucky-loser-explained",
     "wild-card-in-tennis-explained",
   ],
   "lucky-loser-explained": [
-    "tennis-qualifying-explained",
+    "tennis-qualifying-rounds-explained",
     "wild-card-in-tennis-explained",
     "tennis-draws-explained",
     "tennis-seeds-explained",
   ],
   "wild-card-in-tennis-explained": [
-    "tennis-qualifying-explained",
+    "tennis-qualifying-rounds-explained",
     "lucky-loser-explained",
     "tennis-draws-explained",
     "tennis-seeds-explained",
@@ -905,7 +959,7 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
   ],
   "tennis-draws-explained": [
     "tennis-seeds-explained",
-    "tennis-qualifying-explained",
+    "tennis-qualifying-rounds-explained",
     "lucky-loser-explained",
     "wild-card-in-tennis-explained",
   ],
@@ -951,10 +1005,10 @@ const manualRelatedGuideSlugs: Record<string, string[]> = {
   "tennis-bye-explained": [
     "tennis-draws-explained",
     "tennis-seeds-explained",
-    "tennis-qualifying-explained",
+    "tennis-qualifying-rounds-explained",
     "wild-card-in-tennis-explained",
   ],
-  "tennis-qualifying-explained": [
+  "tennis-qualifying-rounds-explained": [
     "lucky-loser-explained",
     "wild-card-in-tennis-explained",
     "tennis-draws-explained",

@@ -86,7 +86,7 @@ const guideCategories = [
       "masters-1000-500-250-explained",
       "tennis-draws-explained",
       "tennis-seeds-explained",
-      "tennis-qualifying-explained",
+      "tennis-qualifying-rounds-explained",
       "lucky-loser-explained",
       "wild-card-in-tennis-explained",
       "tennis-bye-explained",

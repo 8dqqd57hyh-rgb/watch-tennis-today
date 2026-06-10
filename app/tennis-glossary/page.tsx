@@ -71,6 +71,7 @@ const glossarySections = [
     ],
     links: [
       ["/guides/tennis-draws-explained", "Tennis draws explained"],
+      ["/guides/tennis-qualifying-rounds-explained", "Qualifying rounds explained"],
       ["/guides/grand-slam-tournaments-explained", "Grand Slam tournaments"],
       ["/guides/masters-1000-500-250-explained", "ATP tournament levels"],
       ["/tennis-tournament-levels-guide", "Tournament levels guide"],
