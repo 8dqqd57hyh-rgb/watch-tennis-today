@@ -578,6 +578,71 @@ export const guideArticles: GuideArticle[] = [
     ]
   }
 
+,
+  {
+    "slug": "tennis-tv-vs-grand-slam-broadcasters",
+    "title": "Tennis TV vs Grand Slam Broadcasters",
+    "description": "Understand the difference between Tennis TV and Grand Slam broadcasters, why some major matches are not on Tennis TV, and how to check legal viewing options by tournament and country.",
+    "category": "Streaming",
+    "intro": "Tennis TV and Grand Slam broadcasters answer two different viewing questions. Tennis TV is the official ATP streaming service for many ATP Tour events. Grand Slam broadcasters are separate rights holders for the Australian Open, Roland Garros, Wimbledon and the US Open. That split is the main reason a fan can pay for Tennis TV and still not find a Grand Slam match there.\n\nThis guide explains the difference without promising free streams or pretending one service covers all tennis. Use it before subscribing to a service, checking a match page, or trying to understand why a major tournament appears on a different channel in your country.",
+    "sections": [
+      {
+        "heading": "The short version",
+        "body": "Tennis TV is best understood as an ATP Tour product. It is useful for fans who follow ATP Masters 1000, ATP 500, ATP 250 and ATP Finals events across the season. Grand Slam events sit outside that normal ATP Tour streaming package, even when ATP players are competing in them.\n\nGrand Slam broadcasters are arranged separately by each major tournament and by region. The same match may be shown by one broadcaster in the United States, another in the United Kingdom, another in Australia and another in parts of Europe. That is why a generic answer like “watch it on Tennis TV” can be misleading for the biggest tournaments."
+      },
+      {
+        "heading": "What Tennis TV usually covers",
+        "body": "Tennis TV is the official ATP streaming service. Its value is strongest for ATP-focused fans who want a regular season product rather than a one-tournament solution. It commonly points fans toward ATP Masters 1000, ATP 500, ATP 250, the Nitto ATP Finals and the Next Gen ATP Finals.\n\nThe important limitation is just as valuable as the coverage list: Tennis TV does not normally carry Grand Slam live video rights. It also should not be treated as a WTA subscription, a Challenger subscription, a Davis Cup subscription or a guaranteed Olympic tennis source. If your goal is one specific match, always check the tournament and country before assuming the service has it."
+      },
+      {
+        "heading": "What Grand Slam broadcasters cover",
+        "body": "Grand Slam broadcasters cover the four majors: Australian Open, Roland Garros, Wimbledon and the US Open. These events sell broadcast and streaming rights separately from the normal weekly tour calendar. The official broadcaster list can change by tournament, year and country.\n\nFor fans, this creates a simple rule: when the tournament is a Grand Slam, start with the official tournament broadcaster page or the local rights holder in your country. A player’s tour, ranking or popularity does not decide where the match is available. Broadcast rights do."
+      },
+      {
+        "heading": "Why the same player appears on different services",
+        "body": "Carlos Alcaraz, Jannik Sinner, Novak Djokovic, Iga Swiatek, Coco Gauff or Aryna Sabalenka may appear on different services during the same season because tennis rights are event-based. An ATP match in Rome or Cincinnati is a different media product from a Wimbledon semifinal or a US Open night match.\n\nThat distinction matters for site copy and SEO. A page about an ATP Tour match can mention Tennis TV as a possible official route if the event is included and the user’s region allows it. A page about a Grand Slam should direct readers to official Grand Slam broadcaster checks instead of implying Tennis TV will show the match."
+      },
+      {
+        "heading": "How to choose the right viewing check",
+        "body": "Start with the tournament name. If it is an ATP Tour event, Tennis TV may be relevant. If it is one of the four Grand Slams, use the tournament’s official broadcaster information. If it is a WTA event, team event, Challenger, exhibition or Olympic event, check that event’s own rights information instead of relying on an ATP streaming product.\n\nThen check your country. Tennis streaming is not global in a simple way. A legal option in one region may not be available in another. A responsible guide should explain the process and link readers toward official sources, not promise universal access."
+      },
+      {
+        "heading": "Common mistakes fans make",
+        "body": "The biggest mistake is assuming that because Tennis TV has ATP players, it must show every ATP player in every tournament. Grand Slams include ATP and WTA players, but their broadcast rights are not controlled by the weekly tour streaming package.\n\nAnother mistake is treating highlights, social clips or live scores as the same thing as live match video. A service may provide highlights, statistics or alerts without having the right to stream the full match live. For AdSense-safe and user-safe content, the page should keep those concepts separate."
+      },
+      {
+        "heading": "What Watch Tennis Today should say on match pages",
+        "body": "For ATP Tour matches, the safest wording is conditional: check Tennis TV and local official broadcasters for availability. For Grand Slam matches, the safest wording is different: Grand Slam rights are separate from Tennis TV, so check the official broadcaster list for your country.\n\nAvoid phrases like “watch free,” “free live stream,” or “available on Tennis TV” unless an official source confirms that exact claim. That keeps the page useful for fans and reduces policy risk from misleading streaming promises."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Does Tennis TV show Grand Slam matches?",
+        "answer": "No. Tennis TV says it does not have live or replay streaming rights for the Australian Open, Roland Garros, Wimbledon or the US Open."
+      },
+      {
+        "question": "Is Tennis TV only for ATP matches?",
+        "answer": "Tennis TV is an official ATP streaming service. It is mainly useful for ATP Tour coverage, including many Masters 1000, ATP 500, ATP 250 and ATP Finals events."
+      },
+      {
+        "question": "Where should I check Grand Slam coverage?",
+        "answer": "Use the official broadcaster page for the specific Grand Slam and then confirm availability with the listed broadcaster in your country."
+      },
+      {
+        "question": "Why can a Grand Slam match have ATP players but not be on Tennis TV?",
+        "answer": "Because streaming rights are sold by event. Grand Slams have separate media rights even when ATP players compete in them."
+      }
+    ],
+    "publishedDate": "2026-06-10",
+    "updatedDate": "2026-06-10",
+    "sourceReferences": [
+      "Tennis TV Help Centre: What can I watch on Tennis TV?",
+      "Tennis TV Help Centre: Why does Tennis TV not show Grand Slams/WTA?",
+      "Official Australian Open, Roland Garros, Wimbledon and US Open broadcaster pages",
+      "Official broadcaster pages should be checked by country before making viewing decisions"
+    ]
+  }
+
 
 ];
 
