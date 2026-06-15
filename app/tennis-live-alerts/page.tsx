@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import EmailSignup from "@/app/components/EmailSignup";
+import AuthorBox from "@/app/components/AuthorBox";
+import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -84,14 +86,8 @@ const articleSchema = {
   headline: "Tennis Live Alerts",
   description:
     "A guide to tennis schedule alerts, TV reminders and legal streaming updates for tennis fans.",
-  author: {
-    "@type": "Organization",
-    name: "Watch Tennis Today",
-  },
-  publisher: {
-    "@type": "Organization",
-    name: "Watch Tennis Today",
-  },
+  author: buildArticleAuthorSchema(),
+  publisher: buildOrganizationSchema(),
   mainEntityOfPage: "https://watchtennistoday.com/tennis-live-alerts",
 };
 
@@ -199,6 +195,8 @@ export default function TennisLiveAlertsPage() {
             Watch tennis abroad →
           </Link>
         </section>
+
+        <AuthorBox />
       </div>
     </main>
   );

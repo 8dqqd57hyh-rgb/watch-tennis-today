@@ -5,6 +5,8 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import EmailSignup from "@/app/components/EmailSignup";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { broadcastCountries, getBroadcastCountry, shouldIndexBroadcastCountry } from "@/data/broadcastFinder";
+import AuthorBox from "@/app/components/AuthorBox";
+import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 
 const BASE_URL = "https://watchtennistoday.com";
 
@@ -111,14 +113,8 @@ export default async function CountryPage({
     description: `Official tennis broadcaster guide for ATP, WTA and Grand Slam coverage in ${broadcastCountry.country}.`,
     mainEntityOfPage: `${BASE_URL}/watch-tennis-in/${broadcastCountry.slug}`,
     dateModified: new Date().toISOString(),
-    author: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
+    author: buildArticleAuthorSchema(),
+    publisher: buildOrganizationSchema(),
   };
 
   return (
@@ -224,6 +220,7 @@ export default async function CountryPage({
         </section>
 
         <ContentQualityNotice pageType={`country broadcaster guide for ${broadcastCountry.country}`} />
+        <AuthorBox />
         <EmailSignup />
       </div>
 

@@ -1,7 +1,13 @@
 import Link from "next/link";
 import EmailCapture from "@/components/EmailCapture";
+import AuthorBox from "@/app/components/AuthorBox";
 import RelatedGuides from "@/app/components/RelatedGuides";
 import { notFound } from "next/navigation";
+import {
+  authorProfile,
+  buildArticleAuthorSchema,
+  buildOrganizationSchema,
+} from "@/data/authorProfile";
 import {
   getGuideArticle,
   getGuideArticleDates,
@@ -74,11 +80,16 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
     description: article.description,
     datePublished: publishedDate,
     dateModified: updatedDate,
-    author: { "@type": "Organization", name: "Watch Tennis Today", url: "https://watchtennistoday.com/authors/watch-tennis-today" },
-    publisher: { "@type": "Organization", name: "Watch Tennis Today", url: "https://watchtennistoday.com" },
+    author: buildArticleAuthorSchema(),
+    publisher: buildOrganizationSchema(),
     mainEntityOfPage: `https://watchtennistoday.com/guides/${article.slug}`,
     articleSection: article.category,
     wordCount: [article.intro, ...article.sections.map((section) => section.body)].join(" ").split(/\s+/).length,
+  };
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    ...buildArticleAuthorSchema(),
   };
 
   const faqSchema = {
@@ -103,9 +114,10 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
 
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema).replace(/</g, "\\u003c") }} />
       <article className="mx-auto max-w-4xl">
         <nav className="flex flex-wrap gap-2 text-sm text-zinc-400">
           <Link href="/" className="hover:text-white">Home</Link>
@@ -119,6 +131,13 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
           <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-emerald-300">{article.category} guide</p>
           <h1 className="text-4xl font-black leading-tight md:text-6xl">{article.title}</h1>
           <p className="mt-5 text-lg leading-8 text-zinc-300">{article.description}</p>
+          <p className="mt-4 text-sm font-semibold text-zinc-400">
+            By{" "}
+            <Link href="/authors/watch-tennis-today" className="text-emerald-300 hover:text-white">
+              {authorProfile.name}
+            </Link>
+            {" "}for Watch Tennis Today
+          </p>
           <dl className="mt-6 grid gap-3 text-sm text-zinc-300 sm:grid-cols-3">
             <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
               <dt className="font-black uppercase tracking-wide text-zinc-500">Published</dt>
@@ -178,6 +197,9 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
           <p className="mt-3 leading-8 text-zinc-300">
             This guide is editorial content for tennis fans. Rules, rankings and broadcast availability can change, so readers should verify match-specific details with official tournament or broadcaster sources before making viewing decisions.
           </p>
+          <p className="mt-3 leading-8 text-zinc-300">
+            Last updated by {authorProfile.name} on {updatedDate}. The review focuses on current tennis rules context, official viewing routes and whether any schedule or broadcaster claims need more cautious wording.
+          </p>
           <ul className="mt-4 space-y-2 text-zinc-300">
             {sourceReferences.map((source) => (
               <li key={source}>• {source}</li>
@@ -189,6 +211,8 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
             <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-emerald-300">How we verify streams</Link>
           </div>
         </section>
+
+        <AuthorBox />
 
         <RelatedGuides guides={related} className="mt-10" />
 

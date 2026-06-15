@@ -1,105 +1,152 @@
+import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+import {
+  authorProfile,
+  buildAuthorPersonSchema,
+  buildOrganizationSchema,
+  siteUrl,
+} from "@/data/authorProfile";
+import { publishedGuideArticles } from "@/app/guides/articles";
 
-export const metadata = {
-  title: "Watch Tennis Today Editorial Team | Author and Review Process",
+export const metadata: Metadata = {
+  title: "Angelika Sokolova | Founder of Watch Tennis Today",
   description:
-    "Learn who maintains Watch Tennis Today, how tennis data is sourced, how guides are reviewed and how streaming information is verified.",
-  alternates: { canonical: "https://watchtennistoday.com/authors/watch-tennis-today" },
+    "Meet Angelika Sokolova, founder of Watch Tennis Today, and learn how she researches tennis schedules, broadcasters and legal streaming availability.",
+  alternates: { canonical: `${siteUrl}/authors/watch-tennis-today` },
+  openGraph: {
+    title: "Angelika Sokolova | Watch Tennis Today",
+    description:
+      "Founder profile, tennis research process and recent Watch Tennis Today articles.",
+    url: `${siteUrl}/authors/watch-tennis-today`,
+    type: "profile",
+    images: [
+      {
+        url: authorProfile.image,
+        width: 1280,
+        height: 1707,
+        alt: `${authorProfile.name}, founder of Watch Tennis Today`,
+      },
+    ],
+  },
 };
 
 export default function AuthorPage() {
-  const aboutPageSchema = {
+  const recentArticles = publishedGuideArticles.slice(0, 6);
+  const pageSchema = {
     "@context": "https://schema.org",
-    "@type": "AboutPage",
-    name: "Watch Tennis Today Editorial Team",
-    url: "https://watchtennistoday.com/authors/watch-tennis-today",
-    description:
-      "Editorial and review process for Watch Tennis Today, an informational tennis schedule, guide and legal viewing resource.",
-    publisher: { "@type": "Organization", name: "Watch Tennis Today", url: "https://watchtennistoday.com" },
-    mainEntity: { "@id": "https://watchtennistoday.com/authors/watch-tennis-today#editorial-team" },
-  };
-
-  const personSchema = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "@id": "https://watchtennistoday.com/authors/watch-tennis-today#editorial-team",
-    name: "Watch Tennis Today Editorial Team",
-    url: "https://watchtennistoday.com/authors/watch-tennis-today",
-    affiliation: { "@type": "Organization", name: "Watch Tennis Today" },
-    knowsAbout: [
-      "Tennis schedules",
-      "ATP and WTA tournaments",
-      "Grand Slam viewing information",
-      "Tennis scoring and rules",
-      "Legal sports broadcast verification",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": `${authorProfile.url}#profile-page`,
+        name: `${authorProfile.name} author profile`,
+        url: authorProfile.url,
+        description: metadata.description,
+        mainEntity: { "@id": `${authorProfile.url}#person` },
+        publisher: { "@id": `${siteUrl}/#organization` },
+      },
+      buildAuthorPersonSchema(),
+      buildOrganizationSchema(),
     ],
   };
 
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
-      <div className="mx-auto max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(pageSchema).replace(/</g, "\\u003c"),
+        }}
+      />
+      <div className="mx-auto max-w-5xl">
         <nav className="flex flex-wrap gap-2 text-sm text-zinc-400">
           <Link href="/" className="hover:text-white">Home</Link>
           <span>/</span>
-          <span className="text-white">Editorial team</span>
+          <span className="text-white">Angelika Sokolova</span>
         </nav>
 
-        <section className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
-          <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-emerald-300">Editorial team</p>
-          <h1 className="mb-6 text-5xl font-black">Watch Tennis Today Editorial Team</h1>
-          <p className="mb-8 text-lg leading-8 text-zinc-300">
-            Watch Tennis Today is maintained as an informational tennis resource for fans who want match schedules, player pages, tournament context, country viewing guides and clear explanations of how to verify legal tennis broadcasts. The site does not host video, embed streams, sell unofficial access or claim that every match is available for free.
-          </p>
-
-          <div className="space-y-8 leading-8 text-zinc-300">
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">What we publish</h2>
-              <p>
-                We publish tennis schedule pages, live-match context, player and tournament pages, country viewing guides and evergreen educational guides. Editorial pages explain concepts such as scoring, break points, tiebreaks, ranking movement, tournament levels, surfaces and streaming-rights basics. Data-driven pages are designed to help users navigate tennis coverage, while guide pages provide the evergreen context that makes those pages useful.
+        <section className="mt-10 overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950">
+          <div className="grid gap-0 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="relative min-h-[360px] bg-zinc-900">
+              <Image
+                src={authorProfile.imagePath}
+                alt={`${authorProfile.name}, founder of Watch Tennis Today`}
+                fill
+                priority
+                sizes="(min-width: 1024px) 420px, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="p-8 md:p-10">
+              <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-emerald-300">
+                Founder and author
               </p>
-            </section>
-
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">How match data is sourced</h2>
-              <p>
-                Match and schedule pages may use licensed or public tennis data feeds, archived match data, official tournament calendars and visible tournament information. When data is missing, incomplete or uncertain, Watch Tennis Today avoids presenting it as a confirmed full schedule. Pages that depend heavily on unstable data may be kept out of search indexing until they have enough useful editorial context.
+              <h1 className="text-4xl font-black leading-tight md:text-6xl">
+                {authorProfile.name}
+              </h1>
+              <p className="mt-3 text-lg font-bold text-zinc-200">
+                {authorProfile.role}
               </p>
-            </section>
-
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">Editorial standards</h2>
-              <p>
-                We avoid thin placeholder pages, auto-generated pages with little original value and unfinished pages that only display headings or empty states. Guides should explain the subject in plain language, include practical tennis context and help readers make a better decision or understand a match more clearly. We do not add fake author credentials, fake first-hand reviews or invented statistics.
+              <p className="mt-6 text-lg leading-9 text-zinc-300">
+                {authorProfile.bio}
               </p>
-            </section>
-
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">Fact-checking and updates</h2>
-              <p>
-                Evergreen guides are reviewed against official rules, public ATP/WTA information and official tournament or broadcaster pages where relevant. Date-sensitive pages are treated more carefully because order of play, match times, withdrawals and broadcaster availability can change quickly. When a page contains time-sensitive information, readers are encouraged to verify with the official tournament, tour or broadcaster before making travel, ticketing or subscription decisions.
+              <p className="mt-5 leading-8 text-zinc-400">
+                {authorProfile.researchNote}
               </p>
-            </section>
+            </div>
+          </div>
+        </section>
 
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">Streaming-information verification</h2>
-              <p>
-                Streaming guidance starts with legality and availability. We point readers toward official tournament pages, tour sites, licensed broadcasters and provider information. Because TV rights vary by country and event, we do not promise that a provider covers every match. We also avoid directing users to unauthorized streams or methods that bypass broadcaster restrictions.
-              </p>
-            </section>
+        <section className="mt-8 grid gap-5 md:grid-cols-2">
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-black">Areas of expertise</h2>
+            <ul className="mt-5 space-y-3 text-zinc-300">
+              {authorProfile.expertise.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-1 h-2 w-2 flex-none rounded-full bg-emerald-400" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
 
-            <section>
-              <h2 className="mb-3 text-3xl font-black text-white">Corrections</h2>
-              <p>
-                Tennis information can change quickly. If you notice an outdated schedule note, country guide, broadcaster reference or match page issue, use the contact page so it can be reviewed.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-4">
-                <Link href="/contact" className="rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black hover:bg-emerald-300">Contact</Link>
-                <Link href="/editorial-policy" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-emerald-300">Editorial policy</Link>
-                <Link href="/how-we-source-data" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-emerald-300">How we source data</Link>
-              </div>
-            </section>
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <h2 className="text-2xl font-black">Editorial approach</h2>
+            <p className="mt-4 leading-8 text-zinc-300">
+              Angelika avoids fake credentials, guaranteed stream promises and
+              unsupported claims about TV rights. Pages are written to help fans
+              check official tournament schedules, licensed broadcasters and
+              country-specific availability before making a viewing decision.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+              <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">
+                Editorial policy
+              </Link>
+              <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">
+                Data sources
+              </Link>
+            </div>
+          </article>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-2xl font-black">Recent articles</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {recentArticles.map((article) => (
+              <Link
+                key={article.slug}
+                href={`/guides/${article.slug}`}
+                className="rounded-2xl border border-zinc-800 bg-black p-5 transition hover:border-emerald-400"
+              >
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                  {article.category}
+                </p>
+                <h3 className="mt-2 text-xl font-black">{article.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  {article.description}
+                </p>
+              </Link>
+            ))}
           </div>
         </section>
       </div>

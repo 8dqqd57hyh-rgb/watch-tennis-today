@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthorBox from "@/app/components/AuthorBox";
 
 type Section = {
   title: string;
@@ -63,6 +64,8 @@ export default function HelpfulArticle({
             </p>
           </div>
         </aside>
+
+        <AuthorBox theme="light" />
 
         {related.length > 0 && (
           <aside className="mt-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-7">

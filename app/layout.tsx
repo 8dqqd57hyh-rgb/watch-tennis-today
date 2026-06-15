@@ -7,6 +7,10 @@ import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
 import ClickAnalytics from "@/app/components/ClickAnalytics";
 import { ADSENSE_SCRIPT_SRC } from "@/app/lib/adsense";
+import {
+  buildAuthorPersonSchema,
+  buildOrganizationSchema,
+} from "@/data/authorProfile";
 
 
 export const metadata: Metadata = {
@@ -90,19 +94,10 @@ export default function RootLayout({
             "@id": "https://watchtennistoday.com/#organization",
           },
         },
-        {
-          "@type": "Organization",
-          "@id": "https://watchtennistoday.com/#organization",
-          name: "Watch Tennis Today",
-          url: "https://watchtennistoday.com",
-          logo: {
-            "@type": "ImageObject",
-            url: "https://watchtennistoday.com/icon.png",
-          },
-          sameAs: [],
-        },
+        buildOrganizationSchema(),
+        buildAuthorPersonSchema(),
       ],
-    }),
+    }).replace(/</g, "\\u003c"),
   }}
 />
   <header className="site-header sticky top-0 z-50 border-b border-zinc-800 bg-black backdrop-blur" style={{ backgroundColor: "#050505", color: "#ffffff" }}>

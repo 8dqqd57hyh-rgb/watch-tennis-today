@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: process.cwd(),
+  },
   typescript: {
     // TypeScript is validated separately with `tsc --noEmit`.
     // This prevents Vercel/Next from hanging during the production build type-check phase.

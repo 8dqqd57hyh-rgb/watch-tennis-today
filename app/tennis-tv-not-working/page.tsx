@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import AuthorBox from "@/app/components/AuthorBox";
+import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -96,14 +98,8 @@ export default function TennisTvNotWorkingPage() {
     headline: "Tennis TV Not Working? Legal Streaming Fixes & Region Checks",
     description:
       "A practical troubleshooting guide for Tennis TV and tennis streaming availability issues.",
-    author: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
+    author: buildArticleAuthorSchema(),
+    publisher: buildOrganizationSchema(),
     dateModified: new Date().toISOString(),
     mainEntityOfPage: "https://watchtennistoday.com/tennis-tv-not-working",
   };
@@ -204,6 +200,8 @@ export default function TennisTvNotWorkingPage() {
             View VPN option →
           </a>
         </section>
+
+        <AuthorBox theme="light" />
       </section>
     </main>
   );

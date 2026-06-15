@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import JsonLd from "@/app/components/JsonLd";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import { authorProfile, buildAuthorPersonSchema } from "@/data/authorProfile";
 
 export const metadata: Metadata = {
   title: "Why Trust Watch Tennis Today | Editorial Standards & Data Sources",
@@ -55,11 +57,17 @@ export default function WhyTrustPage() {
     name: "Why Trust Watch Tennis Today",
     url: "https://watchtennistoday.com/why-trust-watch-tennis-today",
     description: metadata.description,
+    author: { "@id": `${authorProfile.url}#person` },
+  };
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    ...buildAuthorPersonSchema(),
   };
 
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white">
-      <JsonLd data={[webPageSchema, faqSchema]} />
+      <JsonLd data={[webPageSchema, faqSchema, personSchema]} />
       <BreadcrumbSchema
         items={[
           { name: "Home", url: "https://watchtennistoday.com" },
@@ -86,13 +94,30 @@ export default function WhyTrustPage() {
 
         <section className="mt-8 grid gap-5 md:grid-cols-2">
           <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-            <h2 className="text-2xl font-black">Who runs the site</h2>
-            <p className="mt-3 leading-8 text-zinc-300">
-              Watch Tennis Today is maintained as an independent tennis information project. The site focuses on editorial guidance, schedule organization, legal viewing education and clear warnings around unofficial streaming claims.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
-              <Link href="/about" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">About</Link>
-              <Link href="/authors/watch-tennis-today" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Author page</Link>
+            <div className="flex flex-col gap-5 sm:flex-row">
+              <Image
+                src={authorProfile.imagePath}
+                alt={`${authorProfile.name}, founder of Watch Tennis Today`}
+                width={120}
+                height={120}
+                sizes="120px"
+                className="h-28 w-28 rounded-full object-cover"
+              />
+              <div>
+                <h2 className="text-2xl font-black">Who runs the site</h2>
+                <p className="mt-3 leading-8 text-zinc-300">
+                  Watch Tennis Today is run by {authorProfile.name}, the founder
+                  of the site and a tennis enthusiast who follows ATP and WTA
+                  schedules, tournament coverage and legal viewing availability.
+                  The site focuses on editorial guidance, schedule organization,
+                  legal viewing education and clear warnings around unofficial
+                  streaming claims.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+                  <Link href="/about" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">About</Link>
+                  <Link href="/authors/watch-tennis-today" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">Author page</Link>
+                </div>
+              </div>
             </div>
           </article>
 

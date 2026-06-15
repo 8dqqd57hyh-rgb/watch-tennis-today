@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
+import AuthorBox from "@/app/components/AuthorBox";
+import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -134,14 +136,8 @@ export default function TennisStreamingServicesPage() {
     headline: "Best Tennis Streaming Services Compared",
     description:
       "A practical comparison of legal tennis streaming services and broadcaster options.",
-    author: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
+    author: buildArticleAuthorSchema(),
+    publisher: buildOrganizationSchema(),
     dateModified: new Date().toISOString(),
     mainEntityOfPage: "https://watchtennistoday.com/tennis-streaming-services",
   };
@@ -281,6 +277,8 @@ export default function TennisStreamingServicesPage() {
             ))}
           </div>
         </section>
+
+        <AuthorBox theme="light" />
       </section>
     </main>
   );

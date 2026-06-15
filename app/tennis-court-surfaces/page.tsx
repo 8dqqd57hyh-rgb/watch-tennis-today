@@ -1,6 +1,8 @@
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import AuthorBox from "@/app/components/AuthorBox";
+import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 
 export const metadata = {
   title: "Tennis Court Surfaces Explained | Clay, Grass & Hard Courts",
@@ -42,18 +44,8 @@ export default function TennisCourtSurfacesPage() {
     headline: "Tennis Court Surfaces Explained",
     description: metadata.description,
     url: "https://watchtennistoday.com/tennis-court-surfaces",
-    author: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Watch Tennis Today",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://watchtennistoday.com/icon.png",
-      },
-    },
+    author: buildArticleAuthorSchema(),
+    publisher: buildOrganizationSchema(),
   };
 
   return (
@@ -114,6 +106,8 @@ export default function TennisCourtSurfacesPage() {
             </div>
           </section>
         </article>
+
+        <AuthorBox />
       </div>
 
       <BreadcrumbSchema
