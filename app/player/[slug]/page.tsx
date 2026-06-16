@@ -22,8 +22,10 @@ type PlayerEditorialProfile = {
   biography: string;
   playingStyle: string;
   careerContext: string;
+  recentForm?: string;
   strengths: string[];
   surfaceContext: string;
+  surfacePreferences?: string;
   watchReasons?: string[];
 };
 
@@ -57,19 +59,25 @@ const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfi
   },
   "daniil-medvedev": {
     nationality: "Russia",
-    biography: "Daniil Medvedev is a leading ATP player known for unusual court positioning, tactical patience and strong hard-court results. His matches are popular with fans who enjoy long rallies, defensive problem-solving and strategic adjustments.",
-    playingStyle: "Medvedev often starts points from deeper court positions, absorbs pace and redirects the ball into awkward spaces. His flat backhand and patient rally tolerance can make opponents uncomfortable.",
-    careerContext: "Hard-court events, indoor tournaments and matches against attacking players are especially useful contexts when evaluating Medvedev's schedule.",
+    biography: "Daniil Medvedev is one of the most distinctive champions in modern ATP tennis because his best matches rarely look like anyone else's. The 2021 US Open champion and 2020 ATP Finals winner built an elite career by turning hard-court tennis into a geometry problem: deep return positions, low-risk depth, flat backhands and relentless court coverage. He also reached world No. 1, a milestone that reflected more than one peak fortnight. Medvedev has been a sustained threat across Grand Slams, Masters events and indoor tournaments, especially when the conditions let him stretch rallies and test an opponent's shot tolerance. For fans, his page needs more than a live-score snapshot because his matches often explain the tactical side of tennis better than highlight clips do.",
+    playingStyle: "Medvedev plays from unusual court positions, often standing far behind the baseline on return and daring servers to find repeated precision. Once the rally starts, he uses a flat, skidding backhand, a compact forehand and awkward depth to pull opponents out of comfortable strike zones. He does not rely on classic looking attack patterns; instead, he makes rivals hit one extra ball from bad locations until the court opens. His serve can earn free points, but the larger pattern is pressure through patience. Watch how often he changes a clean attacking point into a neutral rally, then how quickly he redirects when an opponent loses balance.",
+    careerContext: "Medvedev is most relevant in hard-court Grand Slams, Masters 1000 tournaments, ATP Finals-style indoor conditions and matchups against aggressive baseliners. He has played some of his most important tennis in Australia, North America and late-season indoor events, where bounce and court speed reward his return depth and flat ball. Against big servers, the first question is whether his deep return position still gives him enough looks at second serves. Against elite movers, the match often turns on whether he can create awkward angles without giving up court position.",
+    recentForm: "The evergreen version of Medvedev's recent form is less about a weekly ranking number and more about how his physical, precise style ages across long tournaments. When he is confident, service games become calmer, return games become longer, and opponents look impatient before the scoreboard is truly dangerous. When he is under pressure, fans should watch second-serve protection and forehand depth, because those two details usually reveal whether he is dictating the pattern or only surviving it.",
     strengths: ["Deep return positioning", "Flat backhand control", "Defensive coverage", "Tactical patience"],
-    surfaceContext: "Hard courts and indoor courts are the most relevant viewing contexts.",
+    surfaceContext: "Hard courts and indoor courts are the most relevant viewing contexts because they reward Medvedev's low, flat drives and his ability to turn defense into controlled depth.",
+    surfacePreferences: "Outdoor hard courts give Medvedev his clearest identity: enough speed to make his backhand bite, enough bounce to defend from deep positions and enough predictability to build long return games. Indoor courts can make his serve and backhand even sharper. Clay asks him to create more height and patience, while grass can reward his serve but makes low-bounce movement and net exchanges more urgent.",
+    watchReasons: ["A rare tactical contrast between deep court positioning and elite hard-court results", "Return games that make even strong servers play uncomfortable rallies", "Flat backhand patterns that expose impatient attacking players", "Matches where problem-solving matters as much as highlight winners"],
   },
   "alexander-zverev": {
     nationality: "Germany",
-    biography: "Alexander Zverev is a long-established ATP contender with a powerful serve, heavy baseline game and regular appearances deep in major tournaments. Fans often search for his match pages during Masters events, Grand Slams and clay-court swings.",
-    playingStyle: "Zverev builds many service games around a strong first serve and heavy backhand. From the baseline, he can control direction with depth and create pressure when his first serve percentage is high.",
-    careerContext: "Clay and hard-court tournaments are important contexts, especially when Zverev is scheduled on a main court or facing another top seed.",
+    biography: "Alexander Zverev has been a central ATP contender for years, with Olympic gold from Tokyo 2021, ATP Finals titles and a long record of deep runs at Masters 1000 and Grand Slam level. His career is useful for tennis fans because it sits at the intersection of raw physical tools and high-pressure match management. At his best, Zverev can look almost impossible to hit through: a tall first serve, a heavy two-handed backhand, long reach in defense and the ability to play patient baseline tennis without giving up pace. His player page deserves indexable editorial context because his matches are often main-court events with real tactical stakes, especially on clay and hard courts.",
+    playingStyle: "Zverev's game starts with a first serve that can set up short replies or end points outright, but his backhand is the stroke that gives his baseline tennis its shape. He can absorb pace crosscourt, redirect down the line and keep depth without taking unnecessary risks. The forehand is more volatile, so fans should watch whether he is stepping through that wing or falling into defensive contact. In return games, Zverev often uses reach and depth rather than constant early aggression. When he is serving well and landing the backhand deep, opponents are forced to take bigger risks just to escape neutral rallies.",
+    careerContext: "Zverev is especially important during clay swings, hard-court Masters events and Grand Slams, where his combination of serve, stamina and baseline weight can carry through long matches. His Olympic title and ATP Finals success show that he has already won in very different competitive settings: national pressure, elite round-robin fields and knockout tournaments. For viewing purposes, check surface, round and opponent style. A match against a counterpuncher tests his patience and forehand discipline; a match against a first-strike attacker tests his second serve, return depth and willingness to move forward.",
+    recentForm: "Zverev's form is best evaluated through repeatable indicators rather than a single result: first-serve percentage, second-serve confidence, backhand depth and how often he takes initiative with the forehand. When those pieces align, he can control matches without playing flashy tennis. When one piece drops, especially second-serve protection, his service games can become longer and the pressure on his baseline tolerance rises.",
     strengths: ["First serve power", "Two-handed backhand", "Baseline depth", "Big-event experience"],
-    surfaceContext: "Clay and hard courts are both important contexts.",
+    surfaceContext: "Clay and hard courts are both important contexts because Zverev can combine serve protection with long-rally patience and deep backhand control.",
+    surfacePreferences: "Clay gives Zverev time to use his reach, construct points and lean on the backhand without being rushed. Outdoor hard courts also fit him well when the bounce is high enough for his service patterns and baseline depth. Faster indoor courts can reward his first serve, while grass places extra emphasis on low-ball movement and forehand clarity.",
+    watchReasons: ["A top-tier first serve paired with one of the ATP's most stable two-handed backhands", "Clay and hard-court matches where physical reach changes rally geometry", "Clear tactical signals around second-serve confidence and forehand discipline", "High-stakes history in Olympic, ATP Finals, Masters and Grand Slam settings"],
   },
   "taylor-fritz": {
     nationality: "United States",
@@ -145,27 +153,36 @@ const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfi
   },
   "iga-swiatek": {
     nationality: "Poland",
-    biography: "Iga Swiatek is one of the most dominant WTA players of her era and a major draw during Grand Slams, clay events and WTA 1000 tournaments. Her matches are frequently watched by fans tracking both title races and ranking implications.",
-    playingStyle: "Swiatek uses heavy topspin, fast footwork and intense return pressure. She can rush opponents by taking time away and controlling rally patterns with the forehand.",
-    careerContext: "Clay-court events, major finals and WTA 1000 draws are especially important contexts for following Swiatek.",
+    biography: "Iga Swiatek is one of the defining WTA players of her generation, with multiple Roland Garros titles, a US Open title, a Wimbledon title and a long record of dominance in high-level events. Her rise from teenage major champion to sustained No. 1-level force changed expectations for modern clay-court tennis and made her schedule essential for fans far beyond Poland. Swiatek's appeal is not only the trophy list. It is the way her tennis has a recognizable identity: heavy spin, fast feet, ruthless return pressure and an ability to turn neutral rallies into uncomfortable defensive work for opponents. A strong player page should explain those patterns because her matches often look routine only after she has spent several games tightening every available space.",
+    playingStyle: "Swiatek plays with heavy topspin, especially on the forehand, and uses exceptional footwork to take balls early while still creating height and margin. Her return games are often the clearest sign of control: she crowds second serves, lands deep replies and forces servers to hit under pressure before the rally has settled. She is also skilled at using the backhand to redirect down the line, which prevents opponents from simply camping in forehand exchanges. The visual rhythm of a Swiatek match is intense but structured. She wants to own the first neutral ball, build pressure through spin and depth, then finish when the opponent offers a short reply.",
+    careerContext: "Swiatek is a priority page during Roland Garros, WTA 1000 clay events, Grand Slams and late-stage matches against elite power players. Her Roland Garros record is central to modern tennis context, but her major success on hard courts and grass prevents the page from being only a clay profile. Fans should check court speed and opponent style before match time. A big server asks whether Swiatek can start enough return points in balance. A flat hitter asks whether her spin and movement can break timing. A strong defender asks whether she can finish without forcing the issue too soon.",
+    recentForm: "Swiatek's form is most usefully read through return pressure, forehand shape and emotional tempo. When she is sharp, her service games become efficient because opponents know the return games will be demanding. When she is slightly off, the forehand can land shorter and opponents get more chances to attack before she takes command. Those indicators stay useful across seasons and surfaces, which makes them better for fans than a weekly ranking snapshot.",
     strengths: ["Heavy topspin forehand", "Return pressure", "Movement intensity", "Clay dominance"],
-    surfaceContext: "Clay is the signature context, with hard courts also important.",
+    surfaceContext: "Clay is the signature context because Swiatek's spin, sliding movement and point construction become especially punishing, but hard courts and grass now matter in any complete viewing guide.",
+    surfacePreferences: "Slow and medium clay courts best showcase Swiatek's ability to build pressure with height, angles and repeatable footwork. Outdoor hard courts reward her return intensity when she controls depth. Grass asks for quicker strike timing and lower contact points, making serve placement and first-ball decisions more visible than on clay.",
+    watchReasons: ["Elite clay-court patterns that are easy to see point by point", "Return games that can change a match before the score looks lopsided", "Heavy topspin and footwork that create a distinctive WTA style", "Major-title context across clay, hard courts and grass"],
   },
   "aryna-sabalenka": {
     nationality: "Belarus",
-    biography: "Aryna Sabalenka is a leading WTA player known for power tennis, major-title contention and high-demand matchups against other top players. Her matches often become must-watch events when she is scheduled on a show court.",
-    playingStyle: "Sabalenka plays aggressive first-strike tennis with a big serve, heavy groundstrokes and direct baseline pressure. When her timing is sharp, she can control rallies quickly.",
-    careerContext: "Hard-court Grand Slams, WTA 1000 events and matchups against elite defenders are key contexts.",
+    biography: "Aryna Sabalenka is the current WTA singles No. 1 and one of the clearest power identities in women's tennis, with major titles in Australia and New York and a career that also includes a previous doubles No. 1 ranking. Her matches often become the physical benchmark of a tournament because she can make elite opponents defend from the first strike. Her best tennis is direct, loud in the sporting sense and tactically braver than a simple power label suggests. Sabalenka has turned a huge serve and explosive groundstrokes into repeatable major-title contention by improving shot selection, emotional control and point construction. Fans search for her because the matchup can feel decisive before the first point: if she has time to set her feet, few opponents can absorb the pace for long.",
+    playingStyle: "Sabalenka plays first-strike baseline tennis with a heavy serve, a bruising forehand and a backhand that can redirect pace down the line. She wants to shorten points, but the best version of her game is not mindless hitting. She uses deep returns to seize the center of the court, then attacks through bigger targets until the open space appears. On second serve, her improved reliability is a major tactical detail because it lets her play aggressive return games without constantly defending service games. Fans should watch the spacing between her feet and the ball: when she is balanced, the power looks clean rather than forced.",
+    careerContext: "Sabalenka is essential viewing at hard-court Grand Slams, WTA 1000 events, late-stage clay tournaments and major show-court sessions against defenders or counterpunchers. Her Australian Open titles confirmed her ability to handle pressure over a full major, while her US Open titles added another hard-court milestone. Against elite defenders, the question is whether she can stay patient enough to keep the rally on her terms. Against other power players, serve quality, return depth and first forehand location usually decide whether the match becomes controlled aggression or a race of errors.",
+    recentForm: "Sabalenka's form is best measured through controlled aggression: first-serve rhythm, second-serve trust, return depth and how often she attacks with margin before going for the sideline. When those details hold, she can dominate without needing spectacular winners every few points. When timing slips, the same weapons can produce rushed errors, so early games often reveal whether she is building points or swinging through tension.",
     strengths: ["Serve power", "Forehand aggression", "Backhand pace", "Big-match intensity"],
-    surfaceContext: "Hard courts are especially relevant, with clay and grass also important in major seasons.",
+    surfaceContext: "Hard courts are especially relevant because Sabalenka's serve and flat power get full value, while clay and grass add different tests of patience, movement and contact height.",
+    surfacePreferences: "Medium and quick hard courts are the cleanest setting for Sabalenka's first strike tennis. Clay can still work because her weight of shot pushes opponents back, but it asks for more rally tolerance and disciplined targets. Grass rewards the serve and first ball, while also testing low-bounce adjustment and quick recovery after attacking shots.",
+    watchReasons: ["One of the WTA's most forceful serve and return combinations", "Power tennis with visible tactical choices around margin and timing", "Major-title context in Australia and New York", "High-contrast matchups against elite defenders and counterpunchers"],
   },
   "coco-gauff": {
     nationality: "United States",
-    biography: "Coco Gauff is one of the most followed WTA players, combining elite athleticism, strong defense and major-title relevance. Her matches carry strong fan interest, especially in the United States and at Grand Slams.",
-    playingStyle: "Gauff uses speed, defensive reach, a strong backhand and improving first-strike patterns. She can extend rallies until opponents overplay.",
-    careerContext: "Grand Slams, American hard-court events and matchups against power players are important contexts.",
+    biography: "Coco Gauff has already moved from teenage prospect to major champion and one of the most watched players in the sport. Her US Open title gave American fans a home Grand Slam centerpiece, and her later Roland Garros success showed that her game is not confined to hard courts. Gauff's profile is especially valuable for a watch guide because her matches attract casual viewers, U.S. audiences, younger fans and tennis people interested in athletic problem-solving. She brings unusual defensive reach, a dangerous backhand, strong returning and a willingness to compete through imperfect patches. That combination makes her matches more layered than a simple star-player schedule listing.",
+    playingStyle: "Gauff is built around movement, defense-to-offense transitions and a backhand that can hold up in the fastest rallies. She reads direction well, covers wide balls with long strides and often forces opponents to hit several winners in the same point. The serve gives her free points when the rhythm is right, while the forehand is the wing opponents most often test under pressure. Her best attacking tennis comes when she uses the backhand to change direction, steps inside the baseline after deep returns and finishes at the net instead of letting rallies reset.",
+    careerContext: "Gauff is a priority page during Grand Slams, the North American hard-court swing, high-profile night sessions and matches against power hitters. Her US Open win proved she can handle the noise of a huge home stage; her clay success underlined how valuable her movement and rally tolerance are when the court gives her time to defend and counter. For viewers, matchup style matters. Against aggressive baseliners, watch whether she can lengthen rallies without leaving the forehand short. Against patient defenders, watch whether she can choose the right moment to step forward.",
+    recentForm: "Gauff's form is best understood through serve rhythm, forehand depth, backhand confidence and how often her defense creates attacking chances rather than only survival. When those pieces connect, she can win ugly points and clean points in the same game, which is a rare pressure combination. When the serve or forehand becomes inconsistent, return games and athletic coverage usually keep her competitive while she searches for timing.",
     strengths: ["Movement and defense", "Backhand strength", "Return games", "Crowd interest"],
-    surfaceContext: "Hard courts are especially relevant, with clay also important.",
+    surfaceContext: "Hard courts are especially relevant because they frame Gauff's U.S. star power and return game, while clay is important because her movement and patience can become major weapons.",
+    surfacePreferences: "Outdoor hard courts give Gauff a strong balance of speed, bounce and crowd energy, especially in North American events. Clay rewards her defense, sliding and ability to extend points until opponents press. Grass can help her serve and athletic reactions, but it makes first-strike clarity and forehand timing more important.",
+    watchReasons: ["Elite athletic defense that can turn a lost point into a winning position", "A strong backhand and return game that pressure even powerful opponents", "Major-title context on both hard courts and clay", "High-interest American matches with real tactical substance"],
   },
   "elena-rybakina": {
     nationality: "Kazakhstan",
@@ -379,8 +396,10 @@ function isIndexablePlayerSlug(slug: string) {
     biography: profile?.biography,
     playingStyle: profile?.playingStyle,
     careerContext: profile?.careerContext,
+    recentForm: profile?.recentForm,
     strengths: profile?.strengths,
     surfaceContext: profile?.surfaceContext,
+    surfacePreferences: profile?.surfacePreferences,
     watchReasons: profile?.watchReasons,
   });
 }
@@ -1170,6 +1189,7 @@ const playerMatches = allMatches
             <p>{editorialProfile.biography}</p>
             <p>{editorialProfile.playingStyle}</p>
             <p>{editorialProfile.careerContext}</p>
+            {editorialProfile.recentForm ? <p>{editorialProfile.recentForm}</p> : null}
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -1185,6 +1205,12 @@ const playerMatches = allMatches
                 <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Surface note</p>
                 <p className="mt-1 text-sm leading-6 text-zinc-700">{editorialProfile.surfaceContext}</p>
               </div>
+              {editorialProfile.surfacePreferences ? (
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Surface preferences</p>
+                  <p className="mt-1 text-sm leading-6 text-zinc-700">{editorialProfile.surfacePreferences}</p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

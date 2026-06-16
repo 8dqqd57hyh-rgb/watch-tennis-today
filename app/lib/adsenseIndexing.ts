@@ -18,6 +18,11 @@ export const ADSENSE_INDEXABLE_PLAYER_SLUGS = new Set([
   "jannik-sinner",
   "carlos-alcaraz",
   "novak-djokovic",
+  "aryna-sabalenka",
+  "iga-swiatek",
+  "coco-gauff",
+  "daniil-medvedev",
+  "alexander-zverev",
 ]);
 
 export type IndexablePlayerInput = {
@@ -25,8 +30,10 @@ export type IndexablePlayerInput = {
   biography?: string | null;
   playingStyle?: string | null;
   careerContext?: string | null;
+  recentForm?: string | null;
   strengths?: string[] | null;
   surfaceContext?: string | null;
+  surfacePreferences?: string | null;
   watchReasons?: string[] | null;
 };
 
@@ -74,7 +81,9 @@ export function shouldIndexPlayerPage(input: IndexablePlayerInput) {
     wordCount(input.biography) +
     wordCount(input.playingStyle) +
     wordCount(input.careerContext) +
+    wordCount(input.recentForm) +
     wordCount(input.surfaceContext) +
+    wordCount(input.surfacePreferences) +
     wordCount(input.strengths?.join(" ")) +
     wordCount(input.watchReasons?.join(" "));
 
