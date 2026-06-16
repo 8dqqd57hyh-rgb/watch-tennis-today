@@ -35,6 +35,7 @@ export const players = {
   "stefanos-tsitsipas": { name: "Stefanos Tsitsipas", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "alex-de-minaur": { name: "Alex de Minaur", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "lorenzo-musetti": { name: "Lorenzo Musetti", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
+  "jack-draper": { name: "Jack Draper", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "tommy-paul": { name: "Tommy Paul", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "ben-shelton": { name: "Ben Shelton", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "frances-tiafoe": { name: "Frances Tiafoe", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },

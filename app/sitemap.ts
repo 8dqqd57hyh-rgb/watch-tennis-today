@@ -229,6 +229,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
+    "/today",
     "/tennis-time-zone-converter",
     "/players",
     "/players/atp",

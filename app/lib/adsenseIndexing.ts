@@ -23,6 +23,12 @@ export const ADSENSE_INDEXABLE_PLAYER_SLUGS = new Set([
   "coco-gauff",
   "daniil-medvedev",
   "alexander-zverev",
+  "taylor-fritz",
+  "jack-draper",
+  "tommy-paul",
+  "jessica-pegula",
+  "elena-rybakina",
+  "mirra-andreeva",
 ]);
 
 export type IndexablePlayerInput = {

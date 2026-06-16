@@ -3,9 +3,10 @@ import EmailCapture from "@/components/EmailCapture";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Today&apos;s Tennis Matches & Schedule | Live, Upcoming and Finished",
-  description: "A practical guide to today&apos;s tennis matches, live status, schedule changes and legal broadcast checks.",
-  robots: { index: false, follow: true },
+  title: "Today's Tennis Matches & Schedule | Live, Upcoming and Finished",
+  description: "Follow today's tennis matches with live, upcoming and completed match sections, featured matches, player links and legal viewing checks.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://watchtennistoday.com/today" },
 };
 
 export default function Page() {

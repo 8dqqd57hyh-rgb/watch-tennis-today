@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
-import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
 import TennisTimeZonePlanner from "@/app/components/TennisTimeZonePlanner";
 import SpoilerFreeScoreToggle, { SpoilerSafeScore, useSpoilerFreeScores } from "@/app/components/SpoilerFreeScoreToggle";
-import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
+import { safePlayerUrl, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
 type Match = {
   id: string;
@@ -40,6 +40,8 @@ const countries = [
   "canada",
   "australia",
 ];
+
+const TODAY_MATCHES_URL = "/api/matches?includeFinished=1&daysBack=0&daysForward=1";
 
 function slugify(text: string) {
   return text
@@ -74,6 +76,130 @@ function formatTime(value: string) {
   });
 }
 
+function isLiveStatus(status: string) {
+  return status.toUpperCase() === "LIVE";
+}
+
+function isCompletedStatus(status: string) {
+  return ["FINISHED", "COMPLETED", "FT", "ENDED"].includes(status.toUpperCase());
+}
+
+function isUpcomingStatus(status: string) {
+  const normalized = status.toUpperCase();
+  return ["UPCOMING", "SCHEDULED", "NOT STARTED"].includes(normalized) || (!isLiveStatus(status) && !isCompletedStatus(status));
+}
+
+function localDateKey(value?: string | null) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toLocaleDateString("en-CA");
+}
+
+function isTodayMatch(match: Match) {
+  const matchDate = localDateKey(match.startTime);
+  const today = localDateKey(new Date().toISOString());
+
+  return Boolean(matchDate && today && matchDate === today);
+}
+
+function PlayerLink({ name }: { name: string }) {
+  const href = safePlayerUrl(name);
+
+  if (!href) return <>{name}</>;
+
+  return (
+    <a href={href} className="hover:text-green-400">
+      {name}
+    </a>
+  );
+}
+
+function MatchCard({ match, spoilerFree }: { match: Match; spoilerFree: boolean }) {
+  const live = isLiveStatus(match.status);
+
+  return (
+    <article className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6 hover:border-green-500 transition-all">
+      <div className="flex items-center justify-between mb-5">
+        <span
+          className={`text-xs font-black px-3 py-1 rounded-full ${
+            live
+              ? "bg-red-500 text-white animate-pulse"
+              : isCompletedStatus(match.status)
+                ? "bg-zinc-200 text-zinc-950"
+                : "bg-zinc-700 text-zinc-200"
+          }`}
+        >
+          {match.status || "Scheduled"}
+        </span>
+
+        <span className="text-zinc-400">{match.category}</span>
+      </div>
+
+      <h3 className="text-3xl font-black leading-tight mb-4">
+        <PlayerLink name={match.player1} />
+        <br />
+        vs
+        <br />
+        <PlayerLink name={match.player2} />
+      </h3>
+
+      <p className="text-zinc-400 mb-3">
+        <a href={`/tournament/${slugify(match.tournament)}`} className="hover:text-green-400">
+          {match.tournament}
+        </a>
+      </p>
+
+      <p className="text-zinc-500 text-sm mb-3">
+        {formatTime(match.startTime)}
+      </p>
+
+      <p className="mb-5 text-sm font-black text-zinc-200">
+        Score: <SpoilerSafeScore score={match.score} hidden={spoilerFree} />
+      </p>
+
+      <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
+        <a href={`/watch/${matchSlug(match)}`}>Match details</a>
+      </div>
+    </article>
+  );
+}
+
+function MatchSection({
+  title,
+  intro,
+  matches,
+  spoilerFree,
+}: {
+  title: string;
+  intro: string;
+  matches: Match[];
+  spoilerFree: boolean;
+}) {
+  return (
+    <section className="mb-16">
+      <div className="mb-6">
+        <h2 className="text-4xl font-black">{title}</h2>
+        <p className="mt-3 max-w-3xl text-zinc-400 leading-7">{intro}</p>
+      </div>
+
+      {matches.length ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {matches.slice(0, 9).map((match) => (
+            <MatchCard key={match.id} match={match} spoilerFree={spoilerFree} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 text-zinc-300 leading-7">
+          No matches are currently listed in this group. Check the full tennis schedule, tournament pages or tomorrow&apos;s schedule because court assignments and feeds can update close to start time.
+        </div>
+      )}
+    </section>
+  );
+}
+
 
 export default function TodayPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -83,8 +209,11 @@ export default function TodayPage() {
   useEffect(() => {
     async function loadMatches() {
       try {
-        const safeMatches = await fetchClientMatches();
-        setMatches(safeMatches as Match[]);
+        const safeMatches = await fetchClientMatches(TODAY_MATCHES_URL, {
+          ttlMs: 30_000,
+          timeoutMs: 8000,
+        });
+        setMatches((safeMatches as Match[]).filter(isTodayMatch));
       } catch {
         setMatches([]);
       } finally {
@@ -95,11 +224,15 @@ export default function TodayPage() {
     loadMatches();
   }, []);
 
-  const liveMatches = matches.filter(
-    (match) => match.status.toUpperCase() === "LIVE"
-  );
-
-  const todayMatches = matches.slice(0, 18);
+  const liveMatches = matches.filter((match) => isLiveStatus(match.status));
+  const upcomingMatches = matches.filter((match) => isUpcomingStatus(match.status));
+  const completedMatches = matches.filter((match) => isCompletedStatus(match.status));
+  const todayMatches = matches.slice(0, 24);
+  const featuredMatches = [
+    ...liveMatches,
+    ...upcomingMatches.filter((match) => match.category === "ATP" || match.category === "WTA"),
+    ...todayMatches,
+  ].slice(0, 3);
 
   const featuredMatch =
     liveMatches[0] ||
@@ -109,9 +242,9 @@ export default function TodayPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
@@ -224,6 +357,22 @@ export default function TodayPage() {
           </section>
         ) : null}
 
+        {featuredMatches.length ? (
+          <section className="mb-16">
+            <div className="mb-6">
+              <h2 className="text-4xl font-black">Featured matches of the day</h2>
+              <p className="mt-3 max-w-3xl text-zinc-400 leading-7">
+                Start here for the matches most likely to matter for live viewing: active matches, ATP/WTA fixtures and player pages with useful context.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {featuredMatches.map((match) => (
+                <MatchCard key={`featured-${match.id}`} match={match} spoilerFree={spoilerFree} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {loading ? (
           <p className="text-zinc-500 text-xl">
             Loading today&apos;s tennis matches...
@@ -235,9 +384,9 @@ export default function TodayPage() {
   </h2>
 
   <p className="text-zinc-300 leading-8 mb-6">
-    There may be no scheduled ATP or WTA matches right now, or the daily
-    schedule may not be available yet. Check live tennis, ATP matches, WTA
-    matches or the TV schedule for more options.
+    No matches are currently scheduled in the live feed. Check today&apos;s tennis
+    schedule later, open tournament pages, or use the TV schedule to verify
+    official coverage while new order-of-play data is being published.
   </p>
 
   <div className="flex flex-wrap gap-4">
@@ -250,63 +399,32 @@ export default function TodayPage() {
     <a href="/wta-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
       WTA Matches →
     </a>
-    <a href="/tv-schedule" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
+    <Link href="/tv-schedule" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
       TV Schedule →
-    </a>
+    </Link>
   </div>
 </div>
         ) : (
-          <section className="mb-16">
-            <h2 className="text-4xl font-black mb-6">
-              🎾 Tennis Matches Today
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {todayMatches.map((match) => (
-                <a
-                  key={match.id}
-                  href={`/watch/${matchSlug(match)}`}
-                  className="block rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6 hover:border-green-500 transition-all"
-                >
-                  <div className="flex items-center justify-between mb-5">
-                    <span
-                      className={`text-xs font-black px-3 py-1 rounded-full ${
-                        match.status.toUpperCase() === "LIVE"
-                          ? "bg-red-500 text-white animate-pulse"
-                          : "bg-zinc-700 text-zinc-200"
-                      }`}
-                    >
-                      {match.status}
-                    </span>
-
-                    <span className="text-zinc-400">{match.category}</span>
-                  </div>
-
-                  <h3 className="text-3xl font-black leading-tight mb-4">
-                    {match.player1}
-                    <br />
-                    vs
-                    <br />
-                    {match.player2}
-                  </h3>
-
-                  <p className="text-zinc-400 mb-3">{match.tournament}</p>
-
-                  <p className="text-zinc-500 text-sm mb-3">
-                    {formatTime(match.startTime)}
-                  </p>
-
-                  <p className="mb-5 text-sm font-black text-zinc-200">
-                    Score: <SpoilerSafeScore score={match.score} hidden={spoilerFree} />
-                  </p>
-
-                  <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
-                    Watch Details →
-                  </div>
-                </a>
-              ))}
-            </div>
-          </section>
+          <>
+            <MatchSection
+              title="Live tennis matches now"
+              intro="Live rows are the best place to follow active score movement, then open the match page for player and tournament links."
+              matches={liveMatches}
+              spoilerFree={spoilerFree}
+            />
+            <MatchSection
+              title="Upcoming tennis matches today"
+              intro="Upcoming times are start windows. Previous matches, weather and court changes can move the real start, so verify the official order of play."
+              matches={upcomingMatches}
+              spoilerFree={spoilerFree}
+            />
+            <MatchSection
+              title="Completed tennis matches today"
+              intro="Completed rows help fans catch up on results, open match pages and continue to player or tournament coverage."
+              matches={completedMatches}
+              spoilerFree={spoilerFree}
+            />
+          </>
         )}
 
         <section className="mb-16">
@@ -426,6 +544,30 @@ export default function TodayPage() {
         </section>
 
         <RelatedMoneyLinks />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://watchtennistoday.com",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Today's tennis matches",
+                  item: "https://watchtennistoday.com/today",
+                },
+              ],
+            }),
+          }}
+        />
 
         <script
           type="application/ld+json"
