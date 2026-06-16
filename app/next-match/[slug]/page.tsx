@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { players } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
@@ -35,11 +36,16 @@ async function getBaseUrl() {
   return `${protocol}://${host}`;
 }
 
-async function getMatches(): Promise<Match[]> {
+async function getMatches(playerName: string): Promise<Match[]> {
   try {
     const baseUrl = await getBaseUrl();
+    const params = new URLSearchParams({
+      playerName,
+      daysBack: "1",
+      daysForward: "30",
+    });
 
-    const response = await fetch(`${baseUrl}/api/matches`, {
+    const response = await fetch(`${baseUrl}/api/matches?${params.toString()}`, {
       cache: "no-store",
     });
 
@@ -65,25 +71,45 @@ function formatDateTime(value?: string | null) {
   });
 }
 
-function playerIsInMatch(playerName: string, match: Match) {
-  const playerLastName = playerName.toLowerCase().split(" ").pop() || "";
-
-  const matchText = `${match.player1} ${match.player2}`
+function matchSlug(match: Match) {
+  const readablePart = `${match.player1}-vs-${match.player2}`
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, " ");
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 
-  return matchText.includes(playerLastName);
+  const numericId = String(match.id).split(":").pop();
+
+  return `${readablePart}-${numericId}`;
+}
+
+function isPlaceholderOpponent(value?: string | null) {
+  const normalized = normalizePlayerName(value || "");
+  return (
+    !normalized ||
+    normalized === "-" ||
+    normalized === "tbd" ||
+    normalized === "tba" ||
+    normalized === "unknown player" ||
+    normalized === "opponent to be confirmed"
+  );
 }
 
 function getOpponent(playerName: string, match: Match) {
   const lastName = playerName.toLowerCase().split(" ").pop() || "";
 
   if (match.player1.toLowerCase().includes(lastName)) {
-    return match.player2;
+    return isPlaceholderOpponent(match.player2)
+      ? "Opponent to be confirmed"
+      : match.player2;
   }
 
   if (match.player2.toLowerCase().includes(lastName)) {
-    return match.player1;
+    return isPlaceholderOpponent(match.player1)
+      ? "Opponent to be confirmed"
+      : match.player1;
   }
 
   return "Opponent to be confirmed";
@@ -130,6 +156,7 @@ const playerAliases: Record<string, string[]> = {
   "novak-djokovic": ["novak djokovic", "n. djokovic"],
   "iga-swiatek": ["iga swiatek", "i. swiatek", "iga swiatek", "i. swiatek"],
   "aryna-sabalenka": ["aryna sabalenka", "a. sabalenka"],
+  "coco-gauff": ["coco gauff", "c. gauff"],
 };
 
 function normalizePlayerName(name: string) {
@@ -160,7 +187,7 @@ export default async function NextMatchPlayerPage({ params }: Props) {
 
   if (!player) notFound();
 
-  const matches = await getMatches();
+  const matches = await getMatches(player.name);
 
   // replace any previous loose surname-only matching with strict check:
   const playerMatches = matches.filter((match) => {
@@ -180,11 +207,16 @@ export default async function NextMatchPlayerPage({ params }: Props) {
 
   const scheduledMatch =
     playerMatches.find((match) =>
-      ["NOT_STARTED", "SCHEDULED", "NS"].includes(match.status)
+      ["UPCOMING", "NOT_STARTED", "SCHEDULED", "NS"].includes(match.status)
     ) || playerMatches[0];
 
   const nextMatch = liveMatch || scheduledMatch;
-  const opponent = nextMatch ? getOpponent(player.name, nextMatch) : null;
+  const orderedPlayerMatches = nextMatch
+    ? [
+        nextMatch,
+        ...playerMatches.filter((match) => String(match.id) !== String(nextMatch.id)),
+      ]
+    : playerMatches;
 
   const otherPlayers = Object.entries(players)
     .filter(([playerSlug]) => playerSlug !== slug)
@@ -194,13 +226,13 @@ export default async function NextMatchPlayerPage({ params }: Props) {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
         <nav className="mb-8 flex flex-wrap gap-2 text-sm text-zinc-400">
-          <a href="/" className="hover:text-white">
+          <Link href="/" className="hover:text-white">
             Home
-          </a>
+          </Link>
           <span>/</span>
-          <a href="/next-match" className="hover:text-white">
+          <Link href="/next-match" className="hover:text-white">
             Next Match
-          </a>
+          </Link>
           <span>/</span>
           <span className="text-white">{player.name}</span>
         </nav>
@@ -222,10 +254,29 @@ export default async function NextMatchPlayerPage({ params }: Props) {
 
         {playerMatches.length > 0 ? (
           <section className="space-y-5">
-            {playerMatches.map((m) => (
-              <a key={m.id} href={`/watch/${""}`} className="...">
-                {/* ...existing match card JSX (unchanged) ... */}
-              </a>
+            {orderedPlayerMatches.map((m) => (
+              <Link
+                key={m.id}
+                href={`/watch/${matchSlug(m)}`}
+                className="block rounded-3xl border border-zinc-800 bg-zinc-950 p-6 hover:border-green-500"
+              >
+                <div className="mb-4 flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                  <span className="rounded-full bg-green-500/10 px-3 py-1 text-green-300">
+                    {m.status}
+                  </span>
+                  <span>{m.category}</span>
+                  {m.startTime && <span>{formatDateTime(m.startTime)}</span>}
+                </div>
+
+                <h2 className="text-2xl font-black text-white md:text-3xl">
+                  {player.name} vs {getOpponent(player.name, m)}
+                </h2>
+
+                <p className="mt-3 text-zinc-400">
+                  {m.tournament}
+                  {m.round ? ` · ${m.round}` : ""}
+                </p>
+              </Link>
             ))}
           </section>
         ) : (
@@ -269,7 +320,7 @@ export default async function NextMatchPlayerPage({ params }: Props) {
 
           <div className="grid gap-4 md:grid-cols-2">
             {otherPlayers.map(([playerSlug, popularPlayer]) => (
-              <a
+              <Link
                 key={playerSlug}
                 href={`/next-match/${playerSlug}`}
                 className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-500"
@@ -280,7 +331,7 @@ export default async function NextMatchPlayerPage({ params }: Props) {
                 <p className="mt-2 text-sm text-zinc-400">
                   Schedule, opponent and streaming info
                 </p>
-              </a>
+              </Link>
             ))}
           </div>
         </section>

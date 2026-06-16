@@ -44,6 +44,48 @@ type ApiTennisMatch = {
   }[];
 };
 
+type ApiTennisPlayer = {
+  player_key?: string | number | null;
+  player_name?: string | null;
+};
+
+type WatchProvider = {
+  name: string;
+  url: string;
+  accessType?: string;
+  verificationStatus?: string;
+  note?: string;
+};
+
+type MappedMatch = {
+  id: string;
+  player1: string;
+  player2: string;
+  tournament: string;
+  category: string;
+  status: string;
+  round?: string;
+  isFinal?: boolean;
+  score: string;
+  pointScore: string | null;
+  startTime: string | null;
+  winner: string | null;
+  winnerId: string | null;
+  watchProviders: WatchProvider[];
+};
+
+type ArchivedMatchRow = {
+  id?: string | number | null;
+  player1?: string | null;
+  player2?: string | null;
+  tournament?: string | null;
+  category?: string | null;
+  status?: string | null;
+  score?: string | null;
+  start_time?: string | null;
+  watch_providers?: WatchProvider[] | null;
+};
+
 
 function getMatchesCacheHeaders(matches: { status?: string | null }[], options: { realtime?: boolean } = {}) {
   if (options.realtime || matches.some((match) => String(match.status || "").toUpperCase() === "LIVE")) {
@@ -67,6 +109,36 @@ function formatDate(date: Date) {
 
 function shouldLogApiTennis() {
   return process.env.LOG_API_TENNIS === "1" || process.env.DEBUG_API_TENNIS === "1";
+}
+
+function shouldLogMatchFilters(searchParams: URLSearchParams) {
+  return searchParams.get("debug") === "1" || process.env.DEBUG_MATCH_FILTERS === "1";
+}
+
+function matchDebugLabel(match: Partial<ApiTennisMatch> & {
+  id?: string;
+  player1?: string;
+  player2?: string;
+  tournament?: string;
+  status?: string;
+  startTime?: string | null;
+}) {
+  const id = match.event_key || match.id || "unknown-id";
+  const player1 = match.event_first_player || match.player1 || "TBD";
+  const player2 = match.event_second_player || match.player2 || "TBD";
+  const tournament = match.tournament_name || match.tournament || "Unknown tournament";
+  const status = match.event_status || match.status || "unknown-status";
+  const startTime =
+    match.event_date || match.event_time
+      ? `${match.event_date || "unknown-date"} ${match.event_time || "unknown-time"}`
+      : match.startTime || "unknown-time";
+
+  return `${id}: ${player1} vs ${player2} | ${tournament} | ${status} | ${startTime}`;
+}
+
+function logMatchFilters(enabled: boolean, label: string, payload: unknown) {
+  if (!enabled) return;
+  console.info(`[MATCH-FILTERS] ${label} ${JSON.stringify(payload)}`);
 }
 
 function getPayloadSizeBytes(text: string) {
@@ -684,6 +756,23 @@ function getStartTime(match: ApiTennisMatch) {
   return `${match.event_date}T${match.event_time}:00`;
 }
 
+function normalizeParticipantName(value?: string | null) {
+  const name = String(value || "").trim();
+  const normalized = normalizeSearchName(name);
+
+  if (
+    !normalized ||
+    normalized === "tbd" ||
+    normalized === "tba" ||
+    normalized === "unknown player" ||
+    normalized === "opponent to be confirmed"
+  ) {
+    return "Opponent to be confirmed";
+  }
+
+  return name;
+}
+
 function getFixtureAgeMs(match: ApiTennisMatch) {
   const startTime = getStartTime(match);
   if (!startTime) return 0;
@@ -966,7 +1055,7 @@ async function getPlayerKeyByName(apiKey: string, playerName: string) {
   );
 
   const scoredPlayers = players
-    .map((player: any) => ({
+    .map((player: ApiTennisPlayer) => ({
       player,
       score: getPlayerNameScore(String(player.player_name || ""), playerName),
     }))
@@ -992,7 +1081,7 @@ async function getArchivedMatches(dateStart: string, limit = 2500) {
       return [];
     }
 
-    return data.map((match: any) => ({
+    return (data as ArchivedMatchRow[]).map((match) => ({
       id: String(match.id),
       player1: match.player1 || "Unknown player",
       player2: match.player2 || "Unknown player",
@@ -1026,13 +1115,13 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
       return [];
     }
 
-    return data
-      .filter((match: any) =>
+    return (data as ArchivedMatchRow[])
+      .filter((match) =>
         [match.player1, match.player2].some((sideName) =>
           apiNameMatchesPlayer(playerName, String(sideName || ""))
         )
       )
-      .map((match: any) => ({
+      .map((match) => ({
         id: String(match.id),
         player1: match.player1 || "Unknown player",
         player2: match.player2 || "Unknown player",
@@ -1062,6 +1151,7 @@ export async function GET(request: Request) {
   const formHistory = searchParams.get("formHistory") === "1";
   const daysBack = Number.parseInt(searchParams.get("daysBack") || "3", 10);
   const daysForward = Number.parseInt(searchParams.get("daysForward") || "30", 10);
+  const logFilters = shouldLogMatchFilters(searchParams);
 
   const apiKey = process.env.API_TENNIS_KEY;
 
@@ -1094,6 +1184,21 @@ dateStopDate.setDate(today.getDate() + safeDaysForward);
 const dateStart = formatDate(dateStartDate);
 const dateStop = formatDate(dateStopDate);
 
+  logMatchFilters(logFilters, "request", {
+    playerName,
+    playerKeyFromQuery,
+    resolvedPlayerKey,
+    matchId,
+    includeFinished,
+    formHistory,
+    requestedDaysBack: daysBack,
+    requestedDaysForward: daysForward,
+    safeDaysBack,
+    safeDaysForward,
+    dateStart,
+    dateStop,
+  });
+
   try {
     const cacheBust = `&_=${Date.now()}`;
 
@@ -1123,13 +1228,21 @@ const dateStop = formatDate(dateStopDate);
     // Fixtures can contain the same event_key with older/limited data, so merge historical/H2H
     // rows first and live matches last. That lets the live match object win in the Map below.
     const allMatches: ApiTennisMatch[] = [...h2hRecentMatches, ...fixtureMatches, ...liveMatches];
-    if (allMatches.length === 0) {
- 
-}
+    logMatchFilters(logFilters, "api-returned", {
+      liveMatches: liveMatches.length,
+      fixtureMatches: fixtureMatches.length,
+      h2hRecentMatches: h2hRecentMatches.length,
+      totalBeforeDedupe: allMatches.length,
+      samples: allMatches.slice(0, 20).map((match) => matchDebugLabel(match)),
+    });
 
     const uniqueMatches = Array.from(
       new Map(allMatches.map((match) => [String(match.event_key), match])).values()
     );
+    logMatchFilters(logFilters, "after-dedupe", {
+      count: uniqueMatches.length,
+      removed: allMatches.length - uniqueMatches.length,
+    });
 
     const filteredMatches = playerName
       ? uniqueMatches.filter((match) =>
@@ -1138,15 +1251,32 @@ const dateStop = formatDate(dateStopDate);
           )
         )
       : uniqueMatches;
+    logMatchFilters(logFilters, "after-player-filter", {
+      count: filteredMatches.length,
+      removed: uniqueMatches.length - filteredMatches.length,
+    });
+    if (logFilters && playerName) {
+      uniqueMatches
+        .filter((match) => !filteredMatches.includes(match))
+        .forEach((match) => {
+          logMatchFilters(logFilters, "excluded-by-player-filter", {
+            reason: "player-name-mismatch",
+            match: matchDebugLabel(match),
+            target: playerName,
+            player1Matches: apiNameMatchesPlayer(playerName, match.event_first_player || ""),
+            player2Matches: apiNameMatchesPlayer(playerName, match.event_second_player || ""),
+          });
+        });
+    }
 
-    let mappedMatches: any[] = filteredMatches.map((match) => {
+    let mappedMatches: MappedMatch[] = filteredMatches.map((match) => {
       const tournament = match.tournament_name || "Unknown tournament";
       const category = normalizeCategory(match.event_type_type, tournament);
 
       return {
         id: String(match.event_key),
-        player1: match.event_first_player || "Unknown player",
-        player2: match.event_second_player || "Unknown player",
+        player1: normalizeParticipantName(match.event_first_player),
+        player2: normalizeParticipantName(match.event_second_player),
         tournament,
         category,
         status: normalizeStatus(match),
@@ -1163,12 +1293,22 @@ const dateStop = formatDate(dateStopDate);
         watchProviders: getWatchProviders(category, tournament),
       };
     });
+    logMatchFilters(logFilters, "after-map", {
+      count: mappedMatches.length,
+      samples: mappedMatches.slice(0, 20).map((match) => matchDebugLabel(match)),
+    });
 
     if (includeFinished && playerName) {
+      const beforeArchiveMerge = mappedMatches.length;
       const archivedMatches = await getArchivedMatchesForPlayer(playerName, dateStart);
       mappedMatches = Array.from(
         new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
       );
+      logMatchFilters(logFilters, "after-player-archive-merge", {
+        before: beforeArchiveMerge,
+        archived: archivedMatches.length,
+        after: mappedMatches.length,
+      });
     }
 
     if (includeFinished && formHistory && !playerName && !resolvedPlayerKey) {
@@ -1176,10 +1316,16 @@ const dateStop = formatDate(dateStopDate);
       // normalized player name. Merge the archive even when the live API returns
       // rows, otherwise form widgets can stay stuck at a single current-tournament
       // match for players with known archived results.
+      const beforeArchiveMerge = mappedMatches.length;
       const archivedMatches = await getArchivedMatches(dateStart, 5000);
       mappedMatches = Array.from(
         new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
       );
+      logMatchFilters(logFilters, "after-form-archive-merge", {
+        before: beforeArchiveMerge,
+        archived: archivedMatches.length,
+        after: mappedMatches.length,
+      });
     }
 
     // Only fall back to the general archive for the global matches feed.
@@ -1187,6 +1333,9 @@ const dateStop = formatDate(dateStopDate);
     // wrong player alerts, e.g. a Jannik Sinner email for an unrelated match.
     if (mappedMatches.length === 0 && !playerName && !resolvedPlayerKey) {
       mappedMatches = await getArchivedMatches(dateStart);
+      logMatchFilters(logFilters, "after-global-archive-fallback", {
+        count: mappedMatches.length,
+      });
     }
 
     if (mappedMatches.length > 0 && !matchId) {
@@ -1240,10 +1389,23 @@ const dateStop = formatDate(dateStopDate);
 
     const matches = mappedMatches
       .filter((match) => {
-        if (match.status === "CANCELLED" || match.status === "EXPIRED") return false;
-        if (includeFinished) return true;
+        let exclusionReason: string | null = null;
 
-        return match.status !== "FINISHED" && match.status !== "RETIRED";
+        if (match.status === "CANCELLED" || match.status === "EXPIRED") {
+          exclusionReason = `status:${match.status}`;
+        } else if (!includeFinished && (match.status === "FINISHED" || match.status === "RETIRED")) {
+          exclusionReason = `status:${match.status}:includeFinished=false`;
+        }
+
+        if (exclusionReason) {
+          logMatchFilters(logFilters, "excluded-by-final-status-filter", {
+            reason: exclusionReason,
+            match: matchDebugLabel(match),
+          });
+          return false;
+        }
+
+        return true;
       })
       .sort((a, b) => {
         if (a.status === "LIVE" && b.status !== "LIVE") return -1;
@@ -1257,6 +1419,12 @@ const dateStop = formatDate(dateStopDate);
           new Date(b.startTime).getTime()
         );
       });
+    logMatchFilters(logFilters, "after-final-status-filter", {
+      before: mappedMatches.length,
+      after: matches.length,
+      removed: mappedMatches.length - matches.length,
+      samples: matches.slice(0, 20).map((match) => matchDebugLabel(match)),
+    });
 
     return NextResponse.json(matches, {
       headers: getMatchesCacheHeaders(matches, { realtime: Boolean(playerName || resolvedPlayerKey || includeFinished || formHistory) }),
