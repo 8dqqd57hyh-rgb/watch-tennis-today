@@ -18,27 +18,6 @@ export const ADSENSE_INDEXABLE_PLAYER_SLUGS = new Set([
   "jannik-sinner",
   "carlos-alcaraz",
   "novak-djokovic",
-  "daniil-medvedev",
-  "alexander-zverev",
-  "taylor-fritz",
-  "holger-rune",
-  "andrey-rublev",
-  "casper-ruud",
-  "stefanos-tsitsipas",
-  "alex-de-minaur",
-  "lorenzo-musetti",
-  "tommy-paul",
-  "ben-shelton",
-  "iga-swiatek",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "elena-rybakina",
-  "jessica-pegula",
-  "madison-keys",
-  "naomi-osaka",
-  "mirra-andreeva",
-  "jasmine-paolini",
-  "emma-navarro",
 ]);
 
 export type IndexablePlayerInput = {
@@ -47,6 +26,8 @@ export type IndexablePlayerInput = {
   playingStyle?: string | null;
   careerContext?: string | null;
   strengths?: string[] | null;
+  surfaceContext?: string | null;
+  watchReasons?: string[] | null;
 };
 
 export type IndexableTournamentInput = {
@@ -92,9 +73,12 @@ export function shouldIndexPlayerPage(input: IndexablePlayerInput) {
   const editorialWords =
     wordCount(input.biography) +
     wordCount(input.playingStyle) +
-    wordCount(input.careerContext);
+    wordCount(input.careerContext) +
+    wordCount(input.surfaceContext) +
+    wordCount(input.strengths?.join(" ")) +
+    wordCount(input.watchReasons?.join(" "));
 
-  return editorialWords >= 80 && Boolean(input.strengths?.length);
+  return editorialWords >= 300 && Boolean(input.strengths?.length) && Boolean(input.watchReasons?.length);
 }
 
 export function shouldIndexTournamentPage(input: IndexableTournamentInput) {

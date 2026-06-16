@@ -256,6 +256,10 @@ function isLive(status: string) {
   return normalizeStatus(status) === "LIVE";
 }
 
+function isActiveMatchStatus(status?: string | null) {
+  return ["LIVE", "SUSPENDED", "UPCOMING"].includes(normalizeStatus(status || ""));
+}
+
 function isFinished(status: string) {
   return ["FINISHED", "CANCELLED", "RETIRED", "COMPLETED"].includes(
     normalizeStatus(status)
@@ -545,6 +549,9 @@ export async function generateMetadata({
   const archivedMatch = matchId
     ? getArchivedMatch(matchId) || await getArchivedMatchFromDatabase(matchId)
     : null;
+  const indexableArchivedMatch = archivedMatch && !isActiveMatchStatus(archivedMatch.status)
+    ? archivedMatch
+    : null;
   const readableTitle = archivedMatch
     ? `${archivedMatch.player1} vs ${archivedMatch.player2}`
     : titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
@@ -553,7 +560,7 @@ export async function generateMetadata({
     description: buildWatchSeoDescription(readableTitle, false),
     // AdSense quality: /watch/* depends on changing match data. Only archived
     // matches with stable local content can be indexed; live/missing URLs stay noindex.
-    robots: archivedMatch ? { index: true, follow: true } : { index: false, follow: true },
+    robots: indexableArchivedMatch ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
@@ -667,13 +674,13 @@ export default async function MatchPage({
 
   const localArchivedMatch = getArchivedMatch(matchId);
 
-  if (localArchivedMatch) {
+  if (localArchivedMatch && !isActiveMatchStatus(localArchivedMatch.status)) {
     return <ArchivedMatchPage archivedMatch={localArchivedMatch} />;
   }
 
   const databaseArchivedMatch = await getArchivedMatchFromDatabase(matchId);
 
-  if (databaseArchivedMatch) {
+  if (databaseArchivedMatch && !isActiveMatchStatus(databaseArchivedMatch.status)) {
     return <ArchivedMatchPage archivedMatch={databaseArchivedMatch} />;
   }
 

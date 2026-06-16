@@ -24,32 +24,36 @@ type PlayerEditorialProfile = {
   careerContext: string;
   strengths: string[];
   surfaceContext: string;
+  watchReasons?: string[];
 };
 
 const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfile>> = {
   "jannik-sinner": {
     nationality: "Italy",
-    biography: "Jannik Sinner became one of the central names in modern ATP tennis through clean baseline power, calm decision-making and consistent results at the biggest events. Fans often look for his matches during Grand Slams, Masters tournaments and night-session schedules because his matches combine high pace with unusually controlled shot selection.",
-    playingStyle: "Sinner plays first-strike baseline tennis. He takes the ball early, redirects pace well and can turn neutral rallies into attacking positions with both the forehand and backhand. His return games are especially important to watch because he can pressure servers quickly.",
-    careerContext: "When following Sinner, check whether he is playing on a hard court, indoors or in a late-round match. Those contexts often increase demand for official streams and make schedule confirmation more important.",
+    biography: "Jannik Sinner has become one of the defining ATP players for fans who want a mix of clean baseline power, calm match management and week-to-week title relevance. His matches are rarely useful only as live-score rows; they usually carry tournament, ranking and broadcast significance because he is often scheduled on show courts, late sessions and high-demand Grand Slam windows. For a watch guide, Sinner deserves fuller context than a generic player template because his matches can attract casual fans, Italian viewers, hard-court specialists and people tracking the top of the ATP race at the same time. The most useful page for Sinner explains why the match matters, how the surface changes the viewing experience and where fans should verify official coverage before relying on a stream claim.",
+    playingStyle: "Sinner plays first-strike baseline tennis built around early contact, compact timing and unusually stable power from both wings. He can redirect pace without taking large preparation swings, which makes his rallies feel fast even before he goes for a clear winner. His backhand is a major viewing clue because it lets him hold court position under pressure and change direction without opening the court too early. On return, he often pressures servers by blocking or driving the ball deep enough to start neutral rallies on his terms. When he is serving well, the first serve and first forehand can shorten games quickly; when he is returning well, opponents can feel rushed from the first shot of the rally.",
+    careerContext: "When following Sinner, start with event level and surface. Grand Slam, Masters 1000, ATP Finals and Davis Cup matches tend to carry the strongest audience interest, while hard courts and indoor courts often showcase the most direct version of his game. Match timing matters too: Sinner in a night session or late tournament round is more likely to appear in premium broadcaster windows, so users should confirm the official order of play, court assignment and local rights holder before match time. If his opponent is an elite defender, watch whether Sinner can create short balls without overhitting. If his opponent is a big server, the key is whether Sinner turns enough return games into rallies.",
     strengths: ["Early ball striking", "Backhand stability", "Return pressure", "Calm match management"],
-    surfaceContext: "Hard courts and indoor events are especially relevant contexts.",
+    surfaceContext: "Hard courts and indoor events are especially relevant because the cleaner bounce rewards Sinner's early timing and direct redirection. Clay can still suit his patience and weight of shot, but the slower surface gives opponents more time to defend. Grass makes first-strike patterns more valuable, so serve quality and low-bounce movement become bigger viewing checks.",
+    watchReasons: ["Fast baseline exchanges with very little wasted motion", "Elite return games that can turn a server's advantage into pressure", "High-value Grand Slam, Masters and ATP Finals scheduling", "Useful contrast between calm point construction and sudden acceleration"],
   },
   "carlos-alcaraz": {
     nationality: "Spain",
-    biography: "Carlos Alcaraz is one of the most watched players in tennis because his matches mix athletic defense, explosive attack and creative shotmaking. His schedule attracts high interest at Grand Slams, clay-court events and marquee evening sessions where broadcasters often prioritize his court.",
-    playingStyle: "Alcaraz uses heavy forehands, quick transitions, drop shots, net attacks and aggressive returning. His matches can change momentum quickly because he is comfortable defending, counterattacking and finishing points at the net.",
-    careerContext: "Before watching Alcaraz, check the surface and court assignment. Clay, grass and hard-court matches can look very different because he changes the amount of spin, pace and forward movement he uses.",
+    biography: "Carlos Alcaraz is one of the most important player pages to keep indexable because his matches are not interchangeable with ordinary schedule entries. Fans search for him because they expect athletic defense, explosive attacking, tactical variety and highlight-level shotmaking, but a useful page also needs to explain how to follow him legally and practically. Alcaraz can be a title contender on clay, grass and hard courts, which means his schedule has different meanings across the season. A clay match may be about spin, patience and physical rallies; a grass match may be about fast reactions and confident movement; a hard-court match may turn on return position, serve plus one patterns and night-session conditions. Those differences make original editorial context valuable.",
+    playingStyle: "Alcaraz plays all-court tennis with unusually wide tactical range. He can use a heavy forehand to push opponents back, then change the rhythm with a drop shot, a net rush or a sudden angle. His movement is not only defensive; it lets him turn stretched positions into counterattacks, which is why his matches can swing quickly after points that looked under control for the opponent. On return, he can step in aggressively or use athletic defense to lengthen games. He is also comfortable finishing points forward, so fans should watch how often he earns short balls and whether he chooses power, touch or net pressure as the next move.",
+    careerContext: "Before watching Alcaraz, check the tournament stage, surface and court assignment. He is frequently placed in marquee sessions, and that can affect both start time volatility and broadcaster availability. In Grand Slams, best-of-five format increases the value of physical recovery and tactical adjustment. In Masters events, the short turnaround between rounds can make previous match length and surface conditions more important. The most useful viewing preparation is to confirm the official order of play, identify whether earlier matches could delay his start and verify the licensed broadcaster for the viewer's country instead of assuming every Alcaraz match appears on the same service.",
     strengths: ["Explosive movement", "Drop-shot creativity", "Forehand acceleration", "All-court finishing"],
-    surfaceContext: "Clay and outdoor hard courts are key contexts, with grass also important during Wimbledon season.",
+    surfaceContext: "Clay and outdoor hard courts are key contexts because they let Alcaraz combine spin, defense and acceleration. Grass is also important during Wimbledon season because it tests his movement, serve quality and willingness to move forward. Indoor hard courts can reduce the time available for creativity, making first-strike execution and return depth especially important.",
+    watchReasons: ["Momentum can change quickly because defense becomes attack", "Shot selection includes power, touch, net play and improvisation", "Surface changes visibly alter his tactical choices", "Marquee sessions often create high-demand official viewing windows"],
   },
   "novak-djokovic": {
     nationality: "Serbia",
-    biography: "Novak Djokovic is one of the most accomplished players in tennis history, and his matches remain major viewing events whenever he appears in Grand Slams, Masters tournaments or national-team competitions. Fans often track his schedule because even early-round matches can carry historical or ranking significance.",
-    playingStyle: "Djokovic is built around elite returning, defensive balance, depth control and tactical patience. He absorbs pace, extends rallies and often forces opponents to hit extra balls under pressure.",
-    careerContext: "When following Djokovic, pay attention to best-of-five matches, late tournament rounds and surface speed. Those factors strongly shape how his tactical advantages appear during a match.",
+    biography: "Novak Djokovic remains one of the strongest evergreen player pages because his matches carry historical, tactical and scheduling interest beyond the live score. Even when he is not playing every week, fans often search for his next match because Grand Slam appearances, Masters events and national-team competitions can affect records, rankings, seeding narratives and tournament attention. A thin Djokovic page would miss the point: the value is in explaining how his style changes match expectations, why best-of-five context matters and how fans should confirm official viewing routes. His matches also attract viewers who may not follow the weekly tour closely, so the page needs plain, reliable guidance rather than assuming users already know which broadcaster owns each event.",
+    playingStyle: "Djokovic's game is built around elite returning, balance under pressure, depth control and tactical patience. He is one of the best players to watch when the opponent has a strong serve because he can neutralize pace, make first serves come back and force extra shots in games that normally end quickly. From the baseline, he absorbs pace without giving up court position, then changes direction when the opponent leaves space. His flexibility and movement let him defend wide balls, but the larger tactical point is that he often turns defense into a neutral rally rather than a desperate scramble. Fans should watch return depth, backhand direction and how often he makes opponents hit one more ball on important points.",
+    careerContext: "When following Djokovic, format and surface matter. Best-of-five Grand Slam matches give him more time to solve an opponent, while faster best-of-three matches can put more weight on early service games and tiebreaks. Hard courts and major tournaments are especially important contexts, but grass and clay still require different viewing checks: on grass, return positioning and first-strike efficiency become louder; on clay, point construction and physical patience become more visible. Before match time, users should verify the official order of play and local broadcaster because Djokovic matches often sit in premium TV windows and can move if previous matches run long.",
     strengths: ["Return of serve", "Movement and flexibility", "Tactical point construction", "Pressure handling"],
-    surfaceContext: "Hard courts and Grand Slam match formats are especially important contexts.",
+    surfaceContext: "Hard courts and Grand Slam formats are especially important because they emphasize Djokovic's return quality, movement and ability to make tactical adjustments across a long match. Grass highlights the value of his return and balance on low balls. Clay can make rallies longer, which places more weight on patience, depth and physical rhythm.",
+    watchReasons: ["Return games against big servers are often tactical events by themselves", "Pressure points reveal patterns in serve location and rally tolerance", "Grand Slam matches can change after Djokovic solves an opponent's plan", "Historical stakes often make even routine-looking matches meaningful"],
   },
   "daniil-medvedev": {
     nationality: "Russia",
@@ -233,6 +237,7 @@ function getEditorialProfile(playerSlug: PlayerSlug | null, playerName: string, 
     careerContext: `For ${playerName}, the most useful fan checks are the official order of play, local broadcaster rights, start window and whether the match is singles or doubles.`,
     strengths: ["Tournament context", "Schedule tracking", "Legal viewing checks", "Live-score awareness"],
     surfaceContext: "Surface context depends on the tournament and current draw.",
+    watchReasons: ["Schedule context", "Official viewing checks", "Tournament relevance"],
   };
 }
 
@@ -375,6 +380,8 @@ function isIndexablePlayerSlug(slug: string) {
     playingStyle: profile?.playingStyle,
     careerContext: profile?.careerContext,
     strengths: profile?.strengths,
+    surfaceContext: profile?.surfaceContext,
+    watchReasons: profile?.watchReasons,
   });
 }
 
@@ -1187,6 +1194,16 @@ const playerMatches = allMatches
               <span className="text-green-600">✓</span> {strength}
             </div>
           ))}
+        </div>
+        <div className="mt-5 rounded-2xl border border-zinc-200 bg-white p-5">
+          <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Why watch</p>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+            {(editorialProfile.watchReasons || []).map((reason) => (
+              <li key={reason} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">
+                {reason}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
