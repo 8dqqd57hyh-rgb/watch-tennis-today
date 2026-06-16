@@ -4,6 +4,7 @@ import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/pla
 import { publishedGuideArticles } from "@/app/guides/articles";
 import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
+import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 export const revalidate = 3600;
 
 type Match = {
@@ -48,33 +49,6 @@ const REDIRECT_ONLY_PATHS = new Set([
   "/wimbledon-tv-schedule",
 ]);
 
-
-const ADSENSE_INDEXABLE_PLAYERS = new Set([
-  "jannik-sinner",
-  "carlos-alcaraz",
-  "novak-djokovic",
-  "daniil-medvedev",
-  "alexander-zverev",
-  "taylor-fritz",
-  "holger-rune",
-  "andrey-rublev",
-  "casper-ruud",
-  "stefanos-tsitsipas",
-  "alex-de-minaur",
-  "lorenzo-musetti",
-  "tommy-paul",
-  "ben-shelton",
-  "iga-swiatek",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "elena-rybakina",
-  "jessica-pegula",
-  "madison-keys",
-  "naomi-osaka",
-  "mirra-andreeva",
-  "jasmine-paolini",
-  "emma-navarro",
-]);
 
 const TOP_PLAYERS = new Set([
   "jannik-sinner",
@@ -255,7 +229,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
-    "/players/live-now",
     "/tennis-time-zone-converter",
     "/players",
     "/players/atp",
@@ -270,30 +243,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-tennis-in",
     "/french-open",
     "/french-open-guide",
-    "/today",
-    "/tomorrow",
-    "/live-tennis",
     "/watch",
-    "/next-match",
-    "/wta-live-today",
-      "/atp-live-today",
-    "/grand-slam-live",
     "/affiliate-disclosure",
     "/authors/watch-tennis-today",
     "/guides",
     "/tennis-guides",
     "/tennis-glossary",
-    "/best-tennis-matches-today",
     "/tennis-tv-broadcast-finder",
     "/tennis-tv-not-working",
     "/tennis-streaming-services",
     "/tennis-live-alerts",
     "/watch-tennis-abroad",
-    "/wimbledon-schedule",
-    "/wimbledon-results",
     "/where-to-watch-wimbledon",
     "/tennis-on-tv-today",
-    "/who-plays-tennis-today",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",
     "/how-to-watch-tennis-legally",
@@ -306,10 +268,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-live-scores-explained",
     "/grand-slam-tv-rights-explained",
     "/content-guidelines",
-    "/watch-tennis-live-today",
-    "/tennis-results-today",
-    "/tennis-order-of-play-today",
-    "/tennis-schedule-today",
     "/about",
     "/contact",
      "/privacy",
@@ -319,18 +277,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 "/how-we-source-data",
 "/how-we-verify-streams",
     "/tennis-streaming-rights-explained",
-"/rome-open-final-live",
     "/disclaimer",
-    "/how-to-watch-french-open-in-usa",
     "/tournament",
     "/wimbledon",
     "/us-open",
     "/australian-open",
     "/watch-tennis-online",
-    "/watch-tennis-in-usa",
-    "/watch-tennis-in-uk",
-    "/watch-tennis-in-australia",
-    "/watch-tennis-in-canada",
     "/why-trust-watch-tennis-today",
     "/tennis-streaming",
     "/start-here",
@@ -384,7 +336,7 @@ const uniquePlayers = [
 ]
   // AdSense quality: player URLs enter the sitemap only when the page has a
   // substantial editorial profile and is eligible for indexing.
-  .filter((player) => ADSENSE_INDEXABLE_PLAYERS.has(player))
+  .filter((player) => ADSENSE_INDEXABLE_PLAYER_SLUGS.has(player))
   .slice(0, 120);
 
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
@@ -426,11 +378,10 @@ const uniquePlayers = [
     priority: 0.9,
   }));
 
-// Add French Open / Roland Garros related pages
+// Add evergreen French Open / Roland Garros related pages only. Results, live
+// snapshots and recap URLs are excluded after the event window.
 const frenchOpenPages = [
   "/watch-french-open-online",
-  "/french-open-results",
-  "/roland-garros-recap",
   "/where-to-watch-french-open",
 ];
 

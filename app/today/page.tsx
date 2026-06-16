@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Today&apos;s Tennis Matches & Schedule | Live, Upcoming and Finished",
   description: "A practical guide to today&apos;s tennis matches, live status, schedule changes and legal broadcast checks.",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

@@ -8,6 +8,7 @@ export const metadata = {
   title: "How to Watch French Open in USA | TV Channel & Streaming Guide",
   description:
     "How to watch the French Open in the USA, including TV channels, streaming options, schedule tips and safe viewing advice for tennis fans.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/how-to-watch-french-open-in-usa",
   },

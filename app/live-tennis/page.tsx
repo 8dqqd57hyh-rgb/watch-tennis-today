@@ -41,6 +41,7 @@ export const metadata = {
 
   description:
     "Follow ATP, WTA, Challenger and ITF tennis schedules, live scores, tournament coverage and official viewing information.",
+  robots: { index: false, follow: true },
 };
 
 export default async function LiveTennisPage() {

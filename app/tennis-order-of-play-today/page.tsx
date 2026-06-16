@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Tennis Order of Play Today: Courts, Match Timing & Viewing Guide | Watch Tennis Today",
   description:
     "Understand today's tennis order of play, court sequence, match timing changes and legal viewing checks.",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

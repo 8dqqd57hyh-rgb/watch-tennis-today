@@ -4,6 +4,7 @@ import FrenchOpenTournamentRecords from "@/app/components/FrenchOpenTournamentRe
 export const dynamic = "force-dynamic";
 
 export const metadata = {
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/french-open-results" },
 };
 

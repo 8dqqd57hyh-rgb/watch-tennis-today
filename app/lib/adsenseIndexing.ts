@@ -12,6 +12,35 @@ const PLACEHOLDER_PATTERNS = [
   /coming soon/i,
 ];
 
+// Manually reviewed player hubs with enough original editorial profile content
+// to be eligible for indexing and sitemap inclusion.
+export const ADSENSE_INDEXABLE_PLAYER_SLUGS = new Set([
+  "jannik-sinner",
+  "carlos-alcaraz",
+  "novak-djokovic",
+  "daniil-medvedev",
+  "alexander-zverev",
+  "taylor-fritz",
+  "holger-rune",
+  "andrey-rublev",
+  "casper-ruud",
+  "stefanos-tsitsipas",
+  "alex-de-minaur",
+  "lorenzo-musetti",
+  "tommy-paul",
+  "ben-shelton",
+  "iga-swiatek",
+  "aryna-sabalenka",
+  "coco-gauff",
+  "elena-rybakina",
+  "jessica-pegula",
+  "madison-keys",
+  "naomi-osaka",
+  "mirra-andreeva",
+  "jasmine-paolini",
+  "emma-navarro",
+]);
+
 export type IndexablePlayerInput = {
   canonicalSlug?: string | null;
   biography?: string | null;
@@ -58,6 +87,7 @@ export function shouldIndexGeneratedPage(input: IndexableGeneratedPageInput) {
 
 export function shouldIndexPlayerPage(input: IndexablePlayerInput) {
   if (!input.canonicalSlug) return false;
+  if (!ADSENSE_INDEXABLE_PLAYER_SLUGS.has(input.canonicalSlug)) return false;
 
   const editorialWords =
     wordCount(input.biography) +

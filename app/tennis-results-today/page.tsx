@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Tennis Results Today: Scores, Live Updates & Follow-Up Guides | Watch Tennis Today",
   description:
     "Follow today’s tennis match updates, live scores and follow-up pages for ATP, WTA and Grand Slam tennis.",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

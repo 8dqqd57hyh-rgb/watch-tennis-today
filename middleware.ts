@@ -5,6 +5,10 @@ export function middleware(request: NextRequest) {
 
   const duplicateCanonicalRedirects: Record<string, string> = {
     "/privacy-policy": "/privacy",
+    "/watch-tennis-in-australia": "/watch-tennis-in/australia",
+    "/watch-tennis-in-canada": "/watch-tennis-in/canada",
+    "/watch-tennis-in-uk": "/watch-tennis-in/uk",
+    "/watch-tennis-in-usa": "/watch-tennis-in/usa",
     "/watch-french-open-in-australia": "/where-to-watch-french-open#australia",
     "/watch-french-open-in-canada": "/where-to-watch-french-open#canada",
     "/watch-french-open-in-uk": "/where-to-watch-french-open#uk",

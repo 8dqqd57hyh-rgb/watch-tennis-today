@@ -3,7 +3,7 @@ import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 
-export const metadata: Metadata = { title: "How to Watch Tennis in Australia | Legal Tennis Streaming Guide", description: "An Australia-focused guide to legal tennis streaming, Grand Slam viewing checks and ATP/WTA coverage decisions.", alternates: { canonical: "https://watchtennistoday.com/watch-tennis-in-australia" } };
+export const metadata: Metadata = { title: "How to Watch Tennis in Australia | Legal Tennis Streaming Guide", description: "An Australia-focused guide to legal tennis streaming, Grand Slam viewing checks and ATP/WTA coverage decisions.", robots: { index: false, follow: true }, alternates: { canonical: "https://watchtennistoday.com/watch-tennis-in/australia" } };
 
 const rows = [
   ["Grand Slams", "Use event and country-specific broadcasters; ATP/WTA tour services usually do not include these rights."],

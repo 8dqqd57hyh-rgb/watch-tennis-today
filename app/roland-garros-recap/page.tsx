@@ -14,6 +14,7 @@ export const metadata = {
   title: "Roland Garros Recap: Yesterday’s French Open Results & Highlights",
   description:
     "Missed Roland Garros yesterday? Catch up with the previous day’s French Open results, long matches, retirements, storylines and official viewing links.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/roland-garros-recap" },
 };
 

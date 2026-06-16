@@ -8,6 +8,7 @@ export const metadata = {
   title: "🔴 Rome Open Final Live Stream, Score & TV Schedule",
   description:
     "Watch the Rome Open final live. Find live score updates, TV channels, streaming options, match time and tennis viewing guides.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/rome-open-final-live",
   },

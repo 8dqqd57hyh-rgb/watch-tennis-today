@@ -25,6 +25,7 @@ const featuredWtaPlayers = [
 ];
 
 export const metadata = {
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/wta-live-today" },
 };
 

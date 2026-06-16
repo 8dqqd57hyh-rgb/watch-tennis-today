@@ -5,6 +5,7 @@ export const metadata = {
   title: "Tennis Matches Tomorrow: Schedule, Start Times & TV Guide",
   description:
     "Plan tomorrow&apos;s tennis with provisional order-of-play context, timezone checks, schedule changes and legal viewing guidance.",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Best Tennis Matches Today | Live ATP, WTA & Grand Slam Picks",
   description:
     "See the best tennis matches to watch today, including live ATP, WTA and Grand Slam matches, star players, H2H pages and legal streaming guides.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/best-tennis-matches-today",
   },

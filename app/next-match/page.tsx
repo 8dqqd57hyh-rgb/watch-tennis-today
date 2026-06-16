@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Tennis Next Matches Today | ATP & WTA Schedule",
   description:
     "Find upcoming ATP and WTA tennis matches, player schedules, live stream information and today's next tennis matches.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/next-match",
   },

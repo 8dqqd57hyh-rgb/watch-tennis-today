@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Tennis Schedule Today: Live ATP, WTA & Grand Slam Matches | Watch Tennis Today",
   description:
     "Check today's tennis schedule with live, upcoming and completed match context, tournament details and legal viewing routes.",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

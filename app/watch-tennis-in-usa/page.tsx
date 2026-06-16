@@ -3,7 +3,7 @@ import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 
-export const metadata: Metadata = { title: "How to Watch Tennis in the USA | Legal Tennis Streaming Guide", description: "A US-focused guide to legal tennis streaming, TV packages, Grand Slam coverage checks and ATP/WTA viewing options.", alternates: { canonical: "https://watchtennistoday.com/watch-tennis-in-usa" } };
+export const metadata: Metadata = { title: "How to Watch Tennis in the USA | Legal Tennis Streaming Guide", description: "A US-focused guide to legal tennis streaming, TV packages, Grand Slam coverage checks and ATP/WTA viewing options.", robots: { index: false, follow: true }, alternates: { canonical: "https://watchtennistoday.com/watch-tennis-in/usa" } };
 
 const rows = [
   ["Grand Slams", "Use event and country-specific broadcasters; ATP/WTA tour services usually do not include these rights."],

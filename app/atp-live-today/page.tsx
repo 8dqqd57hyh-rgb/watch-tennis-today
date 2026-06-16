@@ -25,6 +25,7 @@ const featuredAtpPlayers = [
 ];
 
 export const metadata = {
+  robots: { index: false, follow: true },
   alternates: { canonical: "https://watchtennistoday.com/atp-live-today" },
 };
 
