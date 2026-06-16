@@ -11,6 +11,8 @@ export type BroadcastCountry = {
   }[];
   notes: string;
   travelTip: string;
+  localContext: string;
+  verificationAdvice: string;
 };
 
 export const broadcastCountries: BroadcastCountry[] = [
@@ -28,6 +30,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Polish coverage can vary between ATP, WTA and Grand Slam events. Always check the tournament page before match time.",
     travelTip: "If you normally watch from Poland while traveling, check your broadcaster account terms before using it abroad.",
+    localContext: "In Poland, tennis fans often need to separate regular tour coverage from Grand Slam coverage. CANAL+ can be relevant for selected tour events, Eurosport is commonly checked for majors, and Tennis TV is useful for ATP events that are inside its rights package. WTA coverage can be more event-specific, so the safest workflow is to identify the tournament first, then confirm the local rightsholder.",
+    verificationAdvice: "Before match time, compare the tournament order of play with CANAL+, Eurosport/Max, ATP and WTA listings. If the match is a Grand Slam, verify the tournament broadcaster page because those rights do not always match normal ATP or WTA coverage.",
   },
   {
     slug: "usa",
@@ -43,6 +47,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "US tennis coverage is split between dedicated tennis platforms and larger sports packages, especially during Grand Slams.",
     travelTip: "US viewers abroad should check whether their streaming subscription allows temporary international access.",
+    localContext: "In the United States, tennis coverage is usually split across Tennis Channel, ESPN properties and tournament-specific partners. ESPN is especially important around several Grand Slam windows, while Tennis Channel and Tennis TV are more relevant for many tour-level weeks. Because rights can shift between main channels, streaming apps and overflow courts, do not assume one subscription covers every court.",
+    verificationAdvice: "Check the tournament page, ESPN/Tennis Channel schedules and ATP or WTA directories on the day of play. For Grand Slam matches, confirm whether the match is on a main TV channel, an app feed or a separate tournament package.",
   },
   {
     slug: "uk",
@@ -58,6 +64,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "UK rights are tournament-specific. Wimbledon information should be checked separately from ATP/WTA tour coverage.",
     travelTip: "Traveling UK fans should confirm whether their normal app works outside the UK before relying on it on match day.",
+    localContext: "In the United Kingdom, Wimbledon has its own broadcast pattern and should be treated separately from regular ATP and WTA weeks. Sky Sports, TNT Sports, Eurosport/discovery+ and Tennis TV can each matter in different tournament windows. The important check is whether the match belongs to a tour event, a Grand Slam, Davis Cup/Billie Jean King Cup, or another competition with separate rights.",
+    verificationAdvice: "Use the official Wimbledon, ATP and WTA directories first, then confirm against the broadcaster's live schedule. If the match is listed only as a score feed, video may still require a different rights package.",
   },
   {
     slug: "germany",
@@ -73,6 +81,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Grand Slam rights in Germany often differ from regular ATP tour coverage.",
     travelTip: "If you travel outside Germany, verify roaming and streaming restrictions for your existing subscription.",
+    localContext: "In Germany, Grand Slam viewing can differ from weekly tour coverage, so Eurosport/discovery+ checks are often separate from Sky Deutschland or Tennis TV checks. ATP matches may be easier to trace through Tennis TV and ATP listings, while WTA and major-event coverage should be verified from official broadcaster directories before relying on a service.",
+    verificationAdvice: "Confirm the event category first, then compare ATP, WTA, Eurosport/discovery+ and Sky Deutschland listings. Tournament pages are especially useful when a match moves courts or starts later than the original order of play.",
   },
   {
     slug: "france",
@@ -88,6 +98,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "French Open coverage has special local rights and should be checked separately from tour-level coverage.",
     travelTip: "French residents traveling abroad should confirm whether their normal broadcaster supports access outside France.",
+    localContext: "In France, Roland Garros has a special local profile and should be checked separately from normal tour coverage. France Televisions and Eurosport are frequent starting points for major-event checks, while Tennis TV applies to ATP events inside its package. WTA and smaller events may require a separate official directory check.",
+    verificationAdvice: "For Roland Garros, start with the tournament broadcaster page and local channel listings. For other events, match the tournament category to ATP, WTA or Grand Slam directories before choosing a viewing option.",
   },
 
   {
@@ -104,6 +116,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Spanish tennis coverage can differ between ATP, WTA and Grand Slam tournaments. Check the tournament page before match time.",
     travelTip: "If you normally watch from Spain while traveling, verify whether your broadcaster account supports international streaming.",
+    localContext: "In Spain, Movistar Plus+, Eurosport and Tennis TV may each be relevant depending on whether the match is a tour event, a Grand Slam or a combined tournament. Spanish players often receive prominent local coverage, but court-by-court availability can still depend on the rights package and app access.",
+    verificationAdvice: "Check the ATP or WTA schedule, then verify the event on Movistar Plus+, Eurosport or the tournament's broadcaster page. For Grand Slams, avoid assuming Tennis TV coverage because majors use separate rights.",
   },
   {
     slug: "italy",
@@ -119,6 +133,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Italian tennis coverage is split between local tennis channels, sports packages and official tour streaming options.",
     travelTip: "Italian viewers traveling abroad should confirm whether their normal broadcaster supports temporary access outside Italy.",
+    localContext: "In Italy, Sky Italia, SuperTennis, Eurosport and Tennis TV can all appear in the tennis viewing path depending on event level. Italian player matches can draw extra local programming, but the rights still depend on the tournament rather than the player alone.",
+    verificationAdvice: "Confirm the tournament category and court assignment, then check Sky Italia, SuperTennis, ATP/WTA directories and the relevant Grand Slam broadcaster list. Re-check close to start time if the match follows another match on the same court.",
   },
   {
     slug: "canada",
@@ -134,6 +150,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Canadian coverage can differ between English and French-language packages.",
     travelTip: "If you are outside Canada temporarily, check whether your normal broadcaster allows streaming abroad.",
+    localContext: "In Canada, TSN, RDS, Sportsnet and Tennis TV can all be part of the tennis landscape, with English and French-language coverage sometimes handled differently. Grand Slam matches, Canadian player matches and tour events may not share the same streaming path.",
+    verificationAdvice: "Check TSN/RDS and Sportsnet listings alongside ATP, WTA and tournament broadcaster pages. If a match is not on the main channel, look for app, bonus-court or language-specific availability before assuming it is unavailable.",
   },
   {
     slug: "australia",
@@ -149,6 +167,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "Australian coverage is strongest around the Australian Open and can differ for overseas tour events.",
     travelTip: "Australian viewers abroad should check broadcaster travel rules before match day.",
+    localContext: "In Australia, the Australian Open has a distinct local broadcast profile, while overseas ATP and WTA events may sit with beIN Sports, Tennis TV or other official partners. Time zones also matter: many European and North American matches fall overnight or early morning for Australian viewers.",
+    verificationAdvice: "For the Australian Open, start with official tournament and Nine/Stan Sport information. For overseas events, check ATP/WTA directories, beIN Sports and the tournament order of play, then convert the listed time carefully.",
   },
   {
     slug: "india",
@@ -164,6 +184,8 @@ export const broadcastCountries: BroadcastCountry[] = [
     ],
     notes: "India tennis coverage often depends on tournament rights and platform-specific sports bundles.",
     travelTip: "If you are traveling, check whether your Indian streaming plan supports viewing outside India.",
+    localContext: "In India, tennis viewing often depends on tournament rights, sports-bundle availability and app coverage. Sony Sports Network, SonyLIV and Tennis TV can all be relevant, but Grand Slam and WTA access should be checked separately from standard ATP tour streaming.",
+    verificationAdvice: "Verify the event through ATP, WTA or Grand Slam directories, then compare against Sony Sports/SonyLIV schedules and the tournament site. Late court changes can affect whether a match appears on a main feed or a secondary stream.",
   },
 ];
 

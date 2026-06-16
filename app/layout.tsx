@@ -164,9 +164,9 @@ export default function RootLayout({
       <div className="md:col-span-2">
         <p className="mb-3 text-lg font-black text-white">🎾 Watch Tennis Today</p>
         <p className="max-w-md text-xs leading-6 text-zinc-500">
-          Watch Tennis Today provides information about legal tennis broadcasts,
-          tournament schedules, TV coverage, player matches and viewing options.
-          We do not host, provide or stream copyrighted content.
+          Watch Tennis Today does not host or embed live streams. We help users
+          find official and legal broadcasters and streaming options, with
+          tournament schedules, TV coverage, player matches and viewing checks.
         </p>
       </div>
 
@@ -222,12 +222,13 @@ export default function RootLayout({
     <div className="mx-auto flex max-w-7xl flex-wrap gap-4 border-t border-zinc-900 px-6 py-6 text-xs text-zinc-500">
       <Link href="/about" className="hover:text-white">About</Link>
       <Link href="/contact" className="hover:text-white">Contact</Link>
-      <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+      <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
       <Link href="/terms" className="hover:text-white">Terms</Link>
       <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
       <Link href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</Link>
       <Link href="/advertise" className="hover:text-white">Advertise</Link>
       <Link href="/editorial-policy" className="hover:text-white">Editorial Policy</Link>
+      <Link href="/content-guidelines" className="hover:text-white">Content Guidelines</Link>
       <Link href="/how-we-source-data" className="hover:text-white">How We Source Data</Link>
       <Link href="/how-we-verify-streams" className="hover:text-white">How We Verify Streams</Link>
       <Link href="/authors/watch-tennis-today" className="hover:text-white">Author</Link>

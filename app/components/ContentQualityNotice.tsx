@@ -19,8 +19,8 @@ export default function ContentQualityNotice({
         <p>
           This {pageType} is written to help tennis fans understand schedules,
           official broadcasters, regional availability and legal viewing routes.
-          Watch Tennis Today does not host, embed, restream or provide direct
-          access to copyrighted tennis broadcasts.
+          Watch Tennis Today does not host or embed live streams. We help users
+          find official and legal broadcasters and streaming options.
         </p>
 
         <p>

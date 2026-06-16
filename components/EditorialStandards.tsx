@@ -15,8 +15,8 @@ export default function EditorialStandards() {
       </p>
 
       <p>
-        This website does not host copyrighted streams or distribute protected
-        broadcast content.
+        Watch Tennis Today does not host or embed live streams. We help users
+        find official and legal broadcasters and streaming options.
       </p>
     </section>
   );

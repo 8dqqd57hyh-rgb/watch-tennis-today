@@ -201,6 +201,37 @@ export default async function CountryPage({
           <p className="mt-4 leading-8 text-zinc-300">{broadcastCountry.notes}</p>
         </section>
 
+        <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
+              Local broadcast context
+            </p>
+            <h2 className="mt-3 text-3xl font-black">
+              How tennis coverage usually works in {broadcastCountry.country}
+            </h2>
+            <p className="mt-4 leading-8 text-zinc-300">
+              {broadcastCountry.localContext}
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-zinc-800 bg-black p-6">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
+              Before you subscribe
+            </p>
+            <h2 className="mt-3 text-3xl font-black">
+              Verify official availability
+            </h2>
+            <p className="mt-4 leading-8 text-zinc-300">
+              {broadcastCountry.verificationAdvice}
+            </p>
+            <p className="mt-4 leading-8 text-zinc-400">
+              Users should verify availability with official broadcasters before
+              paying for, renewing or relying on a streaming service. Rights can
+              change by event, court, session and territory.
+            </p>
+          </div>
+        </section>
+
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <h2 className="text-3xl font-black">FAQ</h2>
           <div className="mt-6 space-y-6">

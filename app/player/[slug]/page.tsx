@@ -1225,6 +1225,50 @@ const playerMatches = allMatches
         </div>
       </section>
 
+      <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
+          What to watch
+        </p>
+        <h2 className="text-2xl font-black text-zinc-950">
+          What matters in the next {playerName} match
+        </h2>
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-4 text-sm leading-7 text-zinc-700">
+            <p>
+              The most useful way to follow {playerName} is to connect the match
+              listing to the conditions around it. Surface, draw stage, rest
+              days, court assignment and opponent style can matter as much as a
+              ranking number. {editorialProfile.surfaceContext}
+            </p>
+            <p>
+              For live viewing, start with the official order of play, then
+              confirm whether the match belongs to ATP, WTA, Grand Slam or
+              team-event coverage. Watch Tennis Today does not host or embed
+              live streams; it helps users find official and legal broadcasters
+              and streaming options.
+            </p>
+            <p>
+              If no current match appears, that is still useful context rather
+              than a dead end. Tennis schedules update in waves as draws,
+              qualifiers, withdrawals and court assignments are published, so a
+              player page should be used alongside the live schedule and the
+              tournament hub.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
+            <h3 className="font-black text-zinc-950">
+              Match-day checklist for {playerName}
+            </h3>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-zinc-700">
+              <li>Check whether the match is live, upcoming or already completed.</li>
+              <li>Confirm the tournament page and official order of play.</li>
+              <li>Match the event level to the correct broadcaster rights.</li>
+              <li>Re-check local availability before subscribing or traveling.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {!isVerifiedPlayer ? (
         <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-sm leading-7 text-zinc-300">
           <p>

@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { players, type PlayerSlug } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
@@ -71,6 +72,49 @@ function isLive(match: Match) {
   return match.status.toUpperCase() === "LIVE";
 }
 
+function hasPlayerField<K extends string>(
+  player: (typeof players)[PlayerSlug],
+  key: K
+): player is (typeof players)[PlayerSlug] & Record<K, string> {
+  return key in player && typeof player[key as keyof typeof player] === "string";
+}
+
+function getPlayerText(player: (typeof players)[PlayerSlug], key: "bio" | "playStyle" | "surfaceStrength") {
+  return hasPlayerField(player, key) ? player[key] : null;
+}
+
+function getPlayerLiveEditorial(player: (typeof players)[PlayerSlug], playerMatches: Match[]) {
+  const bio = getPlayerText(player, "bio");
+  const playStyle = getPlayerText(player, "playStyle");
+  const surfaceStrength = getPlayerText(player, "surfaceStrength");
+  const activeTournaments = Array.from(new Set(playerMatches.map((match) => match.tournament).filter(Boolean))).slice(0, 3);
+  const hasLiveMatch = playerMatches.some(isLive);
+  const nextMatch = playerMatches.find((match) => !isLive(match) && new Date(match.startTime || 0) > new Date());
+
+  return {
+    overview:
+      bio ||
+      `${player.name} is listed in the Watch Tennis Today player directory for ${player.tour} schedules, live match checks and official viewing guidance. This page is built for fans who want a practical match-day path rather than an unofficial stream link.`,
+    playingStyle:
+      playStyle ||
+      `${player.name} matches should be read through tournament context, surface speed, opponent style and court assignment. Those details often explain why a match becomes a long baseline contest, a serve-dominant sprint or a tactical grind.`,
+    recentForm:
+      playerMatches.length > 0
+        ? `${player.name} currently has ${playerMatches.length} match listing${playerMatches.length === 1 ? "" : "s"} in the available schedule feed. Treat this as a live schedule snapshot, not a complete season record, because tennis data feeds may omit older matches, doubles entries or lower-level events.`
+        : `${player.name} does not have a live or upcoming listing in the current feed. That does not mean the player is inactive; it usually means the next order of play, qualifying draw or tournament schedule has not produced a current match entry yet.`,
+    surface:
+      surfaceStrength ||
+      `Surface preference depends on the tournament week. Check whether ${player.name} is on clay, grass, outdoor hard court or indoor hard court before judging match expectations.`,
+    whatToWatch:
+      hasLiveMatch
+        ? `Because ${player.name} has a live listing, prioritize official scoreboards, court assignment and broadcaster confirmation. Live pages can update faster than editorial notes, so use this page as a routing hub.`
+        : nextMatch
+          ? `For the next ${player.name} match, watch the start window, court order and local broadcaster listing. If earlier matches run long, the start time can move without changing the original listing immediately.`
+          : `For upcoming ${player.name} appearances, watch for draw releases, order-of-play updates and country-specific broadcaster announcements. A player page is most useful when it connects schedule context to legal viewing options.`,
+    activeTournaments,
+  };
+}
+
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -107,31 +151,18 @@ export default async function WatchPlayerLivePage({ params }: Props) {
 
   // use exact matching helper to find matches for this player slug
 
-  const liveMatches = matches.filter(isLive);
-  const upcomingMatches = matches.filter(
-    (m) => !isLive(m) && new Date(m.startTime || 0) > new Date()
-  );
-  const completedMatches = matches.filter(
-    (m) => !isLive(m) && new Date(m.startTime || 0) <= new Date()
-  );
-
-  const topMatches = [
-    ...liveMatches,
-    ...upcomingMatches,
-    ...completedMatches,
-  ].slice(0, 12);
-
   // example usage: filter matches for this player slug
   const playerMatches = matches.filter((m) =>
     matchContainsExactPlayer(m, slug)
   );
+  const editorial = getPlayerLiveEditorial(player, playerMatches);
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           🎾 Watch {player.name} Live Tennis Matches
@@ -193,11 +224,41 @@ export default async function WatchPlayerLivePage({ params }: Props) {
 )}
 </section>
         <div className="mb-8 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
-  <strong>Legal streaming notice:</strong> Watch Tennis Today does not host,
-  embed, or provide unauthorized live streams. We only provide information
-  about official broadcasters and legal streaming platforms available in
-  your region.
+  <strong>Legal streaming notice:</strong> Watch Tennis Today does not host or
+  embed live streams. We help users find official and legal broadcasters and
+  streaming options.
 </div>
+
+        <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.22em] text-green-400">
+            Player live guide
+          </p>
+          <h2 className="text-3xl font-black mb-5">
+            What to know before watching {player.name}
+          </h2>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="mb-2 text-xl font-black">Player overview</h3>
+              <p className="leading-8 text-zinc-300">{editorial.overview}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="mb-2 text-xl font-black">Playing style</h3>
+              <p className="leading-8 text-zinc-300">{editorial.playingStyle}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="mb-2 text-xl font-black">Recent form signal</h3>
+              <p className="leading-8 text-zinc-300">{editorial.recentForm}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="mb-2 text-xl font-black">Surface preference</h3>
+              <p className="leading-8 text-zinc-300">{editorial.surface}</p>
+            </div>
+          </div>
+          <div className="mt-5 rounded-2xl border border-green-500/25 bg-green-500/10 p-5">
+            <h3 className="mb-2 text-xl font-black">What to watch in the next match</h3>
+            <p className="leading-8 text-zinc-300">{editorial.whatToWatch}</p>
+          </div>
+        </section>
 
     
 <a
@@ -296,26 +357,26 @@ export default async function WatchPlayerLivePage({ params }: Props) {
 </p>
 
           <div className="flex flex-wrap gap-3">
-            <a
+            <Link
               href="/watch-tennis-in/usa"
               className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
             >
               Watch in USA
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/watch-tennis-in/uk"
               className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
             >
               Watch in UK
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/watch-tennis-in/poland"
               className="bg-green-500 text-black px-5 py-3 rounded-2xl font-black"
             >
               Watch in Poland
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -329,6 +390,27 @@ export default async function WatchPlayerLivePage({ params }: Props) {
               <p key={tournament}>{tournament}</p>
             ))}
           </div>
+          {editorial.activeTournaments.length > 0 ? (
+            <div className="mt-6 rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="mb-3 text-xl font-black">Active schedule context</h3>
+              <p className="mb-4 leading-7 text-zinc-400">
+                These tournament names are currently connected to {player.name}
+                in the live match feed. Use them to confirm draw, court and TV
+                rights before choosing a viewing option.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {editorial.activeTournaments.map((tournament) => (
+                  <a
+                    key={tournament}
+                    href={`/tournament/${slugify(tournament)}`}
+                    className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-bold text-zinc-200 hover:border-green-500 hover:text-green-400"
+                  >
+                    {tournament}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </section>
 <RelatedMoneyLinks playerName={player.name} />
         <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
@@ -385,8 +467,8 @@ export default async function WatchPlayerLivePage({ params }: Props) {
               </h3>
 
               <p className="text-zinc-400 leading-7">
-                No. Watch Tennis Today does not host or stream matches. The
-                website helps users find legal tennis schedules and viewing
+                No. Watch Tennis Today does not host or embed live streams. We
+                help users find official and legal broadcasters and streaming
                 options.
               </p>
             </div>

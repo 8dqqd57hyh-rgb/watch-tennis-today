@@ -677,8 +677,10 @@ export default async function MatchPage({
   const liveMatch = matches.find((item) => String(item.id) === String(matchId)) || null;
 
   if (!liveMatch) {
-    if (decodedSlug.includes("-vs-") && decodedSlug.match(/\d+$/)) {
-      notFound();
+    const fallbackMatch = getFallbackMatchFromSlug(decodedSlug, matchId);
+
+    if (fallbackMatch) {
+      return <ArchivedMatchPage archivedMatch={fallbackMatch} />;
     }
 
     notFound();
@@ -848,7 +850,7 @@ export default async function MatchPage({
 
           <div className="p-6 md:p-10">
             <section className="mb-8 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
-              <strong>Legal streaming notice:</strong> Watch Tennis Today does not host, embed, or provide unauthorized live streams. We provide match discovery, schedule context and links to official or licensed viewing information.
+              <strong>Legal streaming notice:</strong> Watch Tennis Today does not host or embed live streams. We help users find official and legal broadcasters and streaming options.
             </section>
 
             <section className="mb-10 grid gap-4 md:grid-cols-4">
@@ -912,6 +914,56 @@ export default async function MatchPage({
                 <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.preview}</p>
                 <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.scheduleNote}</p>
                 <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.tournamentNote}</p>
+              </div>
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">
+                What to watch for
+              </p>
+              <h2 className="mb-4 text-3xl font-black">
+                Match factors for {matchTitle}
+              </h2>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Head-to-head context</h3>
+                  <p className="leading-8 text-zinc-300">
+                    If an official head-to-head record is available from the ATP,
+                    WTA or tournament site, use it together with surface and
+                    current form rather than reading the record alone. A previous
+                    meeting on clay, grass or indoor hard court may not translate
+                    cleanly to {match.tournament}.
+                  </p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Surface and tournament relevance</h3>
+                  <p className="leading-8 text-zinc-300">
+                    {match.tournament} gives this match its viewing context:
+                    surface speed, round pressure, court assignment and local
+                    broadcast rights all affect how fans should prepare. Confirm
+                    the order of play and official broadcaster before the listed
+                    start time.
+                  </p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Why it matters</h3>
+                  <p className="leading-8 text-zinc-300">
+                    This page is useful beyond the score because it connects the
+                    match to schedule changes, legal viewing routes, tournament
+                    context and related player pages. Those checks help avoid
+                    thin live-score pages that leave users guessing where to go
+                    next.
+                  </p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Viewing route</h3>
+                  <p className="leading-8 text-zinc-300">
+                    Start with the country guides and official directories linked
+                    below, then verify availability with the broadcaster. Tennis
+                    rights can differ by event, court, session and viewer
+                    location.
+                  </p>
+                </div>
               </div>
             </section>
 

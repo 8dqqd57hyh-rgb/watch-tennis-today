@@ -21,7 +21,9 @@ export default function LegalStreamingOptions({ country = "global", title = "Leg
         Tennis rights change by tournament, country and season. Use this block as a safe starting point for {readableCountry(country)} and confirm the event on the provider or tournament website before paying.
       </p>
       <p className="mt-3 rounded-2xl bg-yellow-50 p-4 text-xs leading-6 text-yellow-900">
-        Disclosure: Some links may be affiliate links if partnerships are active. Watch Tennis Today does not host streams and does not link to unauthorized broadcasts.
+        Disclosure: Some links may be affiliate links if partnerships are
+        active. Watch Tennis Today does not host or embed live streams. We help
+        users find official and legal broadcasters and streaming options.
       </p>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {partners.map((partner) => {
