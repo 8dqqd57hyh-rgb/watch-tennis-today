@@ -49,15 +49,25 @@ function playerLookupAliases(name: string, slug: string) {
   return Array.from(aliases);
 }
 
-const canonicalNameToSlug = new Map<string, PlayerSlug>(
-  Object.entries(players).flatMap(([slug, player]) => {
-    const canonicalSlug = slug as PlayerSlug;
+const legacyPlayerSlugAliases: Record<string, PlayerSlug> = {
+  "h alexandrova": "ekaterina-alexandrova",
+};
 
-    return playerLookupAliases(player.name, slug).map((alias) => [
-      alias,
+const canonicalNameToSlug = new Map<string, PlayerSlug>(
+  [
+    ...Object.entries(players).flatMap(([slug, player]) => {
+      const canonicalSlug = slug as PlayerSlug;
+
+      return playerLookupAliases(player.name, slug).map((alias) => [
+        alias,
+        canonicalSlug,
+      ] as const);
+    }),
+    ...Object.entries(legacyPlayerSlugAliases).map(([alias, canonicalSlug]) => [
+      normalizePlayerName(alias),
       canonicalSlug,
-    ] as const);
-  })
+    ] as const),
+  ]
 );
 
 export function hasInitialOnlyName(nameOrSlug: string) {
@@ -244,7 +254,16 @@ export function playerNameMatchesSlug(playerName: string, slug: string) {
   return getCanonicalPlayerSlug(playerName) === canonicalSlug;
 }
 
-export function matchContainsExactPlayer(match: any, slug: string) {
+type MatchParticipantFields = {
+  event_first_player?: unknown;
+  event_second_player?: unknown;
+  firstPlayer?: unknown;
+  secondPlayer?: unknown;
+  player1?: unknown;
+  player2?: unknown;
+};
+
+export function matchContainsExactPlayer(match: MatchParticipantFields | null | undefined, slug: string) {
   if (!match || !slug) return false;
 
   const canonicalSlug = getCanonicalPlayerSlug(slug);

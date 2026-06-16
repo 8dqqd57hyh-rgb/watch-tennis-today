@@ -406,7 +406,29 @@ function isInitialToken(value: string) {
   return /^[a-z]$/.test(value.replace(/\./g, ""));
 }
 
-function apiNameMatchesPlayer(playerName: string, sideName: string) {
+function apiDoublesSideIncludesPlayer(playerName: string, sideName: string) {
+  if (!/[\/&+]/.test(sideName)) return false;
+
+  const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
+  const targetLast = targetParts[targetParts.length - 1] || "";
+  if (!targetLast) return false;
+
+  return sideName
+    .split(/[\/&+]/)
+    .map((part) => normalizeSearchName(part))
+    .filter(Boolean)
+    .some((part) => {
+      const partTokens = part.split(/\s+/).filter(Boolean);
+
+      if (partTokens.length === 1) {
+        return partTokens[0] === targetLast;
+      }
+
+      return apiNameMatchesPlayer(playerName, part);
+    });
+}
+
+function apiSinglesNameMatchesPlayer(playerName: string, sideName: string) {
   const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
   const sideParts = normalizeSearchName(sideName).split(/\s+/).filter(Boolean);
 
@@ -434,6 +456,32 @@ function apiNameMatchesPlayer(playerName: string, sideName: string) {
   }
 
   return false;
+}
+
+function apiNameMatchesPlayer(playerName: string, sideName: string) {
+  return (
+    apiSinglesNameMatchesPlayer(playerName, sideName) ||
+    apiDoublesSideIncludesPlayer(playerName, sideName)
+  );
+}
+
+function apiMatchHasPlayerBySinglesName(playerName: string, match: ApiTennisMatch) {
+  return [match.event_first_player, match.event_second_player].some((sideName) =>
+    apiSinglesNameMatchesPlayer(playerName, sideName || "")
+  );
+}
+
+function apiMatchHasPlayerByContextualDoublesName(
+  playerName: string,
+  match: ApiTennisMatch,
+  exactPlayerTournaments: Set<string>
+) {
+  const tournament = String(match.tournament_name || "").trim();
+  if (!tournament || !exactPlayerTournaments.has(tournament)) return false;
+
+  return [match.event_first_player, match.event_second_player].some((sideName) =>
+    apiDoublesSideIncludesPlayer(playerName, sideName || "")
+  );
 }
 
 function normalizeStatus(match: ApiTennisMatch) {
@@ -1118,7 +1166,7 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
     return (data as ArchivedMatchRow[])
       .filter((match) =>
         [match.player1, match.player2].some((sideName) =>
-          apiNameMatchesPlayer(playerName, String(sideName || ""))
+          apiSinglesNameMatchesPlayer(playerName, String(sideName || ""))
         )
       )
       .map((match) => ({
@@ -1244,11 +1292,18 @@ const dateStop = formatDate(dateStopDate);
       removed: allMatches.length - uniqueMatches.length,
     });
 
+    const exactPlayerMatches = playerName
+      ? uniqueMatches.filter((match) => apiMatchHasPlayerBySinglesName(playerName, match))
+      : [];
+    const exactPlayerTournaments = new Set(
+      exactPlayerMatches
+        .map((match) => String(match.tournament_name || "").trim())
+        .filter(Boolean)
+    );
     const filteredMatches = playerName
       ? uniqueMatches.filter((match) =>
-          [match.event_first_player, match.event_second_player].some((sideName) =>
-            apiNameMatchesPlayer(playerName, sideName || "")
-          )
+          apiMatchHasPlayerBySinglesName(playerName, match) ||
+          apiMatchHasPlayerByContextualDoublesName(playerName, match, exactPlayerTournaments)
         )
       : uniqueMatches;
     logMatchFilters(logFilters, "after-player-filter", {

@@ -57,6 +57,7 @@ export const players = {
   "emma-navarro": { name: "Emma Navarro", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "jelena-ostapenko": { name: "Jelena Ostapenko", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "elina-svitolina": { name: "Elina Svitolina", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
+  "ekaterina-alexandrova": { name: "Ekaterina Alexandrova", tour: "WTA", tournaments: ["WTA 500 tournaments", "WTA 250 tournaments", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "ons-jabeur": { name: "Ons Jabeur", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "maria-sakkari": { name: "Maria Sakkari", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "qinwen-zheng": { name: "Qinwen Zheng", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },

@@ -540,7 +540,7 @@ async function getArchivedMatchesForPlayerPage(playerName: string): Promise<Matc
 
     return data
       .filter((match) =>
-        [match.player1, match.player2].some((name) => doPlayerNamesMatch(String(name || ""), playerName))
+        [match.player1, match.player2].some((name) => doSinglesPlayerNamesMatch(String(name || ""), playerName))
       )
       .map((match) => ({
         id: String(match.id),
@@ -622,7 +622,29 @@ function isInitialNamePart(value?: string) {
   return /^[a-z]$/i.test(String(value || "").replace(/\./g, ""));
 }
 
-function doPlayerNamesMatch(candidateName: string, targetName: string) {
+function doublesSideIncludesPlayer(candidateName: string, targetName: string) {
+  if (!/[\/&+]/.test(candidateName)) return false;
+
+  const targetParts = normalizePlayerName(targetName || "").replace(/\./g, "").split(" ").filter(Boolean);
+  const targetLast = targetParts.at(-1);
+  if (!targetLast) return false;
+
+  return candidateName
+    .split(/[\/&+]/)
+    .map((part) => normalizePlayerName(part).replace(/\./g, ""))
+    .filter(Boolean)
+    .some((part) => {
+      const partTokens = part.split(" ").filter(Boolean);
+
+      if (partTokens.length === 1) {
+        return partTokens[0] === targetLast;
+      }
+
+      return doPlayerNamesMatch(part, targetName);
+    });
+}
+
+function doSinglesPlayerNamesMatch(candidateName: string, targetName: string) {
   const candidate = normalizePlayerName(candidateName || "").replace(/\./g, "");
   const target = normalizePlayerName(targetName || "").replace(/\./g, "");
 
@@ -662,6 +684,13 @@ function doPlayerNamesMatch(candidateName: string, targetName: string) {
   }
 
   return false;
+}
+
+function doPlayerNamesMatch(candidateName: string, targetName: string) {
+  return (
+    doSinglesPlayerNamesMatch(candidateName, targetName) ||
+    doublesSideIncludesPlayer(candidateName, targetName)
+  );
 }
 
 function getOpponentForPlayer(match: Match, playerName: string) {
