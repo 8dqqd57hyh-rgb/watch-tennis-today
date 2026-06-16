@@ -8,7 +8,7 @@ import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import ContentQualityNotice from "@/app/components/ContentQualityNotice";
-import { getArchivedMatch } from "@/app/lib/matchArchive";
+import { getArchivedMatch, getArchivedMatchFromDatabase } from "@/app/lib/matchArchive";
 import LiveMatchScore from "./LiveMatchScore";
 import EmailCapture from "@/components/EmailCapture";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
@@ -168,8 +168,8 @@ function getFallbackMatchFromSlug(slug: string, matchId: string): ArchivedMatchL
 
   return {
     id: matchId,
-    player1: titleCaseMatchName(left.replace(/-/g, " ")),
-    player2: titleCaseMatchName(right.replace(/-/g, " ")),
+    player1: formatFallbackPlayerName(left),
+    player2: formatFallbackPlayerName(right),
     tournament: "Current tennis schedule",
     category: "Tennis",
     status: "No longer in live feed",
@@ -177,6 +177,17 @@ function getFallbackMatchFromSlug(slug: string, matchId: string): ArchivedMatchL
     startTime: null,
     watchProviders: [],
   };
+}
+
+function formatFallbackPlayerName(value: string) {
+  const words = value.replace(/-/g, " ").split(" ").filter(Boolean);
+
+  return words
+    .map((word, index) => {
+      if (index === 0 && /^[a-z]$/i.test(word)) return `${word.toUpperCase()}.`;
+      return word.length <= 2 ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
 
 function getMatchSlug(match: Match) {
@@ -531,8 +542,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const matchId = getMatchIdFromSlug(decodedSlug);
-  const archivedMatch = matchId ? getArchivedMatch(matchId) : null;
-  const readableTitle = titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
+  const archivedMatch = matchId
+    ? getArchivedMatch(matchId) || await getArchivedMatchFromDatabase(matchId)
+    : null;
+  const readableTitle = archivedMatch
+    ? `${archivedMatch.player1} vs ${archivedMatch.player2}`
+    : titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
   return {
     title: buildWatchSeoTitle(readableTitle, false),
     description: buildWatchSeoDescription(readableTitle, false),
@@ -654,6 +669,12 @@ export default async function MatchPage({
 
   if (localArchivedMatch) {
     return <ArchivedMatchPage archivedMatch={localArchivedMatch} />;
+  }
+
+  const databaseArchivedMatch = await getArchivedMatchFromDatabase(matchId);
+
+  if (databaseArchivedMatch) {
+    return <ArchivedMatchPage archivedMatch={databaseArchivedMatch} />;
   }
 
   const headersList = await headers();

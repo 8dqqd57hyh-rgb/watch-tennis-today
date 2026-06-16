@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabase";
 
+type ArchivedMatchRow = {
+  id?: string | number | null;
+  player1?: string | null;
+  player2?: string | null;
+  tournament?: string | null;
+  category?: string | null;
+  status?: string | null;
+  score?: string | null;
+  start_time?: string | null;
+  watch_providers?: unknown[] | null;
+};
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,7 +23,7 @@ export async function GET(
     .from("match_archive")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle<ArchivedMatchRow>();
 
   if (error || !data) {
     return NextResponse.json(
