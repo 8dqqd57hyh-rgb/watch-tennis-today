@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   const privateOrTechnicalPaths = [
     "/api/",
+    "/_next/",
     "/_next/data/",
     "/newsletter-confirmation",
   ];
@@ -12,9 +13,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // AdSense quality: keep technical/private URLs out of crawlers, but do not
-        // block thin public pages here. Public generated pages use meta noindex so
-        // Google can crawl them, see follow links, and confirm the noindex signal.
+        // Keep crawler budget focused on public editorial/schedule pages.
+        // Thin public routes still use page-level noindex so Google can crawl
+        // them, follow internal links, and confirm the noindex signal.
         disallow: privateOrTechnicalPaths,
       },
       {
@@ -24,5 +25,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: "https://watchtennistoday.com/sitemap.xml",
+    host: "https://watchtennistoday.com",
   };
 }

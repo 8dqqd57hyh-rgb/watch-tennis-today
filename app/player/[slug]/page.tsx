@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
 import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
@@ -12,7 +13,6 @@ import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { supabase } from "@/app/lib/supabase";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
-import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 
@@ -483,18 +483,16 @@ export async function generateMetadata({
   return {
     // AdSense quality: verified player pages with substantial editorial profiles can index;
     // unknown/API-only player pages stay noindex to avoid thin generated pages.
-    robots: indexable
-      ? { index: true, follow: true }
-      : { index: false, follow: true },
+    robots: robotsFor({ index: indexable }),
     title: buildPlayerSeoTitle(playerName),
     description: buildPlayerSeoDescription(playerName),
     alternates: {
-      canonical: `https://watchtennistoday.com/player/${pageSlug}`,
+      canonical: canonicalUrl(`/player/${pageSlug}`),
     },
     openGraph: {
       title: buildPlayerSeoTitle(playerName),
       description: buildPlayerSeoDescription(playerName),
-      url: `https://watchtennistoday.com/player/${pageSlug}`,
+      url: canonicalUrl(`/player/${pageSlug}`),
       siteName: "Watch Tennis Today",
       type: "website",
     },
@@ -1231,7 +1229,7 @@ const playerMatches = allMatches
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     name: `${playerName} tennis profile`,
-    url: `https://watchtennistoday.com/player/${pageSlug}`,
+    url: canonicalUrl(`/player/${pageSlug}`),
     about: {
       "@type": "Person",
       name: playerName,
@@ -1251,7 +1249,7 @@ const playerMatches = allMatches
     name: playerName,
     nationality: country || undefined,
     description: `${playerName} tennis schedule, next match, results and legal live viewing guide.`,
-    url: `https://watchtennistoday.com/player/${pageSlug}`,
+    url: canonicalUrl(`/player/${pageSlug}`),
     sameAs: canonicalSlug
       ? [
           `https://watchtennistoday.com/watch-player-live/${pageSlug}`,
@@ -2146,17 +2144,6 @@ const playerMatches = allMatches
   </p>
 </section>
      
-
-      <TennisNavigationHub
-        dark={false}
-        className="mb-10"
-        links={[
-          { href: "/live-tennis", title: "Live tennis today", description: "See whether this player, rivals or related matches are live now.", label: "Live" },
-          { href: "/today", title: "Today’s tennis schedule", description: "Browse all scheduled, live and completed matches for today.", label: "Schedule" },
-          { href: "/players", title: "More player pages", description: "Find other ATP and WTA player hubs with schedules and match links.", label: "Players" },
-          { href: "/tennis-on-tv-today", title: "Tennis on TV today", description: "Check legal viewing options before the next match starts.", label: "TV" },
-        ]}
-      />
 
       <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6 text-zinc-700">
         <h2 className="text-2xl font-black text-zinc-950">Sources for this player page</h2>

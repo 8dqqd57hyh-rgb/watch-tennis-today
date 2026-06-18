@@ -5,6 +5,7 @@ import { publishedGuideArticles } from "@/app/guides/articles";
 import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
+import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 export const revalidate = 3600;
 
 type Match = {
@@ -16,39 +17,6 @@ type Match = {
   status?: string;
   startTime?: string;
 };
-
-const BASE_URL = "https://watchtennistoday.com";
-
-const REDIRECT_ONLY_PATHS = new Set([
-  "/french-open-draw",
-  "/french-open-survivors",
-  "/french-open-upsets",
-  "/french-open-live-stream",
-  "/french-open-streaming-countries",
-  "/french-open-schedule",
-  "/french-open-tv-schedule",
-  "/french-open-live",
-  "/french-open-today",
-  "/privacy-policy",
-  "/roland-garros-draw",
-  "/roland-garros-live",
-  "/roland-garros-live-stream",
-  "/roland-garros-pulse",
-  "/roland-garros-predictions",
-  "/roland-garros-results",
-  "/roland-garros-tv-schedule",
-  "/tennis-schedule-tomorrow",
-  "/watch-french-open-in-australia",
-  "/watch-french-open-in-canada",
-  "/watch-french-open-in-uk",
-  "/watch-french-open-in-usa",
-  "/watch-sabalenka-live",
-  "/watch-swiatek-live",
-  "/watch/tennis-spoiler-free-scores",
-  "/wimbledon-live-stream",
-  "/wimbledon-tv-schedule",
-]);
-
 
 const TOP_PLAYERS = new Set([
   "jannik-sinner",
@@ -227,9 +195,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
 
-  const staticPages: MetadataRoute.Sitemap = [
+  const staticPages = [
     "",
     "/today",
+    "/live-tennis",
     "/tennis-time-zone-converter",
     "/players",
     "/players/atp",
@@ -288,24 +257,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-streaming",
     "/start-here",
     "/best-ways-to-watch-tennis-online",
-  ].filter((path) => !REDIRECT_ONLY_PATHS.has(path)).map((path) => {
-  const livePages = [
-    "",
-  ];
-  return {
-    url: `${BASE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: livePages.includes(path)
-      ? ("hourly" as const)
-      : ("weekly" as const),
-    priority: path === "" ? 1 : 0.9,
-  };
-});
+  ].map((path) => {
+    const livePages = ["", "/live-tennis", "/today"];
+
+    return buildSitemapEntry({
+      path,
+      lastModified: now,
+      changeFrequency: livePages.includes(path) ? "hourly" : "weekly",
+      priority: path === "" ? 1 : 0.9,
+    });
+  });
 
 
   // AdSense quality: include only manually reviewed country guides.
   const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
-    url: `${BASE_URL}/watch-tennis-in/${country}`,
+    url: `https://watchtennistoday.com/watch-tennis-in/${country}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.82,
@@ -341,7 +307,7 @@ const uniquePlayers = [
   .slice(0, 120);
 
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
-    url: `${BASE_URL}/player/${player}`,
+    url: `https://watchtennistoday.com/player/${player}`,
     lastModified: now,
     changeFrequency: "daily" as const,
     priority: canonicalTopPlayers.includes(player) ? 0.9 : 0.75,
@@ -363,7 +329,7 @@ const uniquePlayers = [
 
   const tournamentPages: MetadataRoute.Sitemap = stableTournamentDetailSlugs.map(
     (tournament) => ({
-      url: `${BASE_URL}/tournament/${tournament}`,
+      url: `https://watchtennistoday.com/tournament/${tournament}`,
       lastModified: now,
       changeFrequency: uniqueTournaments.includes(tournament) ? ("daily" as const) : ("monthly" as const),
       priority: stableTournamentHubSlugs.includes(tournament) ? 0.86 : 0.9,
@@ -371,7 +337,7 @@ const uniquePlayers = [
   );
 
   const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
-    url: `${BASE_URL}/watch/${matchSlug(match)}`,
+    url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
     lastModified: match.startTime
   ? new Date(match.startTime)
   : now,
@@ -390,24 +356,24 @@ const frenchOpenPages = [
   // they are templated affiliate/comparison pages and are marked noindex.
 
   const guidePages: MetadataRoute.Sitemap = publishedGuideArticles.map((article) => ({
-    url: `${BASE_URL}/guides/${article.slug}`,
+    url: `https://watchtennistoday.com/guides/${article.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.86,
   }));
 
- return [
+ return uniqueSitemapEntries([
   ...staticPages,
   ...countryPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,
   ...matchPages,
-  ...frenchOpenPages.map((page) => ({
-    url: `${BASE_URL}${page}`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
+  ...frenchOpenPages.map((page) => buildSitemapEntry({
+    path: page,
+    lastModified: now,
+    changeFrequency: "daily",
     priority: 0.9,
   })),
-];
+]);
 }

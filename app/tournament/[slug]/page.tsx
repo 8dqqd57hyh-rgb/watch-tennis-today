@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
@@ -10,7 +11,6 @@ import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 import { getStableTournamentHub } from "@/data/tournamentHubs";
 import { safePlayerUrl } from "@/data/playerSlugs";
-import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 
@@ -403,14 +403,14 @@ export async function generateMetadata({ params }: PageProps) {
     description: buildTournamentSeoDescription(tournamentName),
     // AdSense quality: unknown tournament pages can be empty when the live API has
     // no matches, so only stable editorial/calendar-backed tournaments can index.
-    robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
+    robots: robotsFor({ index: indexable }),
     alternates: {
-      canonical: `https://watchtennistoday.com/tournament/${slug}`,
+      canonical: canonicalUrl(`/tournament/${slug}`),
     },
     openGraph: {
       title: buildTournamentSeoTitle(tournamentName),
       description: buildTournamentSeoDescription(tournamentName),
-      url: `https://watchtennistoday.com/tournament/${slug}`,
+      url: canonicalUrl(`/tournament/${slug}`),
       siteName: "Watch Tennis Today",
       type: "website",
     },
@@ -506,7 +506,7 @@ export default async function Page({ params }: PageProps) {
         sport: "Tennis",
         startDate: calendarEntry?.startDate || apiTournamentDateRange?.startDate,
         endDate: calendarEntry?.endDate || apiTournamentDateRange?.endDate,
-        url: `https://watchtennistoday.com/tournament/${slug}`,
+        url: canonicalUrl(`/tournament/${slug}`),
         description: buildTournamentSeoDescription(tournamentName),
         organizer: { "@type": "Organization", name: "Official tournament organizer" },
       }
@@ -521,7 +521,7 @@ export default async function Page({ params }: PageProps) {
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         eventStatus: "https://schema.org/EventScheduled",
         location: stableHub?.location ? { "@type": "Place", name: stableHub.location } : undefined,
-        url: `https://watchtennistoday.com/tournament/${slug}`,
+        url: canonicalUrl(`/tournament/${slug}`),
         description: buildTournamentSeoDescription(tournamentName),
       }
     : null;
@@ -1186,16 +1186,6 @@ export default async function Page({ params }: PageProps) {
           </div>
         </section>
 
-        <TennisNavigationHub
-          className="mt-12"
-          links={[
-            { href: "/live-tennis", title: "Live tennis today", description: "Jump back to all live and upcoming ATP/WTA matches.", label: "Live" },
-            { href: "/today", title: "Today’s tennis schedule", description: "See every match scheduled for today across tournaments.", label: "Today" },
-            { href: "/tennis-on-tv-today", title: "Tennis on TV today", description: "Check legal viewing routes before match time.", label: "TV" },
-            { href: "/tennis-guides", title: "Tennis guides", description: "Read schedule, scoring and streaming guides for tennis fans.", label: "Guides" },
-          ]}
-        />
-
         <AuthorBox />
         
       </div>
@@ -1233,7 +1223,7 @@ export default async function Page({ params }: PageProps) {
     },
     {
       name: typeof readableTournamentName !== "undefined" ? readableTournamentName : tournamentName,
-      url: `https://watchtennistoday.com/tournament/${slug}`,
+      url: canonicalUrl(`/tournament/${slug}`),
     },
   ]}
 />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import AdSlot from "@/app/components/AdSlot";
@@ -18,7 +19,6 @@ import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
-import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 
@@ -638,14 +638,14 @@ export async function generateMetadata({
     description: buildWatchSeoDescription(readableTitle, isLiveMatch),
     // AdSense quality: /watch/* depends on changing match data. Only archived
     // matches with stable local content can be indexed; live/missing URLs stay noindex.
-    robots: indexableArchivedMatch ? { index: true, follow: true } : { index: false, follow: true },
+    robots: robotsFor({ index: Boolean(indexableArchivedMatch) }),
     alternates: {
-      canonical: `https://watchtennistoday.com/watch/${slug}`,
+      canonical: canonicalUrl(`/watch/${slug}`),
     },
     openGraph: {
       title: buildWatchSeoTitle(readableTitle, isLiveMatch),
       description: buildWatchSeoDescription(readableTitle, isLiveMatch),
-      url: `https://watchtennistoday.com/watch/${slug}`,
+      url: canonicalUrl(`/watch/${slug}`),
       siteName: "Watch Tennis Today",
       type: "website",
     },
@@ -1447,16 +1447,6 @@ function CurrentMatchPage({
                 <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
               </div>
             </section>
-
-            <TennisNavigationHub
-              className="mb-12"
-              links={[
-                { href: "/live-tennis", title: "Back to live tennis", description: "Return to the full live match hub for today.", label: "Live" },
-                { href: `/tournament/${tournamentSlug}`, title: `More from ${match.tournament}`, description: "Open the tournament hub for schedules, results and related matches.", label: "Tournament" },
-                { href: "/today", title: "Today’s tennis schedule", description: "See other matches from today’s order of play.", label: "Schedule" },
-                { href: "/best-ways-to-watch-tennis-online", title: "Best ways to watch tennis online", description: "Compare legal viewing options and streaming basics.", label: "Viewing" },
-              ]}
-            />
 
             <AuthorBox />
 

@@ -1,6 +1,5 @@
 import TodayClient from "./TodayClient";
 import EmailCapture from "@/components/EmailCapture";
-import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -74,7 +73,6 @@ export default function Page() {
           contextValue="today-page"
         />
       </div>
-      <TennisNavigationHub dark={false} className="mb-8" />
       <TodayClient />
     </main>
   );
