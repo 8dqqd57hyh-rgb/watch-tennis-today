@@ -9,6 +9,7 @@ import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/
 import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 import { getStableTournamentHub } from "@/data/tournamentHubs";
+import { safePlayerUrl } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
 
@@ -33,11 +34,11 @@ const INDEXABLE_TOURNAMENT_SLUGS = new Set([
 ]);
 
 function buildTournamentSeoTitle(tournamentName: string) {
-  return `${tournamentName} ${CURRENT_SEASON}: Schedule, Results, Draw & Live Coverage`;
+  return `${tournamentName} ${CURRENT_SEASON}: Live Stream, Schedule, Results & TV`;
 }
 
 function buildTournamentSeoDescription(tournamentName: string) {
-  return `Follow ${tournamentName} ${CURRENT_SEASON} with today's schedule, live match updates, results, draw information and legal TV or streaming options.`;
+  return `How to watch ${tournamentName} ${CURRENT_SEASON}: live stream and TV schedule guidance, matches today, upcoming matches, completed results and draw context.`;
 }
 
 type Match = {
@@ -70,7 +71,7 @@ async function getBaseUrl() {
 async function getMatches(): Promise<Match[]> {
   const baseUrl = await getBaseUrl();
 
-  const response = await fetch(`${baseUrl}/api/matches?daysBack=3&daysForward=3`, {
+  const response = await fetch(`${baseUrl}/api/matches?includeFinished=1&daysBack=7&daysForward=14`, {
     cache: "no-store",
   });
 
@@ -192,6 +193,198 @@ function formatApiTournamentDateRange(apiRange: TournamentDateRange | null) {
   return `${start} – ${end}`;
 }
 
+function getItfEstimatedTournamentWeek(slug: string, dateWindow: ReturnType<typeof getTournamentDateWindow>) {
+  if (!dateWindow || !/^[wm]\d+(-|$)/i.test(slug)) return null;
+
+  const anchorDate = new Date(dateWindow.start);
+  if (Number.isNaN(anchorDate.getTime())) return null;
+
+  const day = anchorDate.getUTCDay();
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
+  const start = new Date(Date.UTC(
+    anchorDate.getUTCFullYear(),
+    anchorDate.getUTCMonth(),
+    anchorDate.getUTCDate() - daysSinceMonday
+  ));
+  const end = new Date(start);
+  end.setUTCDate(start.getUTCDate() + 6);
+
+  return {
+    startDate: start.toISOString().slice(0, 10),
+    endDate: end.toISOString().slice(0, 10),
+  };
+}
+
+function formatEstimatedTournamentWeek(estimatedWeek: ReturnType<typeof getItfEstimatedTournamentWeek>) {
+  if (!estimatedWeek) return null;
+
+  const start = formatTournamentDate(estimatedWeek.startDate);
+  const end = formatTournamentDate(estimatedWeek.endDate);
+
+  if (!start || !end) return null;
+  if (start === end) return start;
+
+  return `${start} – ${end}`;
+}
+
+function parseMatchTime(value?: string | null) {
+  if (!value) return null;
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getLocalDateKey(value: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(value);
+}
+
+function isTodayMatch(match: Match, now: Date) {
+  const startTime = parseMatchTime(match.startTime);
+  return startTime ? getLocalDateKey(startTime) === getLocalDateKey(now) : false;
+}
+
+function isLiveMatch(match: Match) {
+  return match.status?.toUpperCase() === "LIVE";
+}
+
+function isCompletedMatch(match: Match) {
+  const normalized = match.status?.toUpperCase() || "";
+  return ["FINISHED", "COMPLETED", "ENDED", "FINAL", "RETIRED", "WALKOVER"].includes(normalized);
+}
+
+function isCancelledMatch(match: Match) {
+  const normalized = match.status?.toUpperCase() || "";
+  return ["CANCELLED", "CANCELED"].includes(normalized);
+}
+
+function isScheduledMatch(match: Match) {
+  return !isLiveMatch(match) && !isCompletedMatch(match) && !isCancelledMatch(match);
+}
+
+function getMatchTimestamp(match: Match) {
+  const startTime = parseMatchTime(match.startTime);
+  return startTime ? startTime.getTime() : Number.MAX_SAFE_INTEGER;
+}
+
+function sortUpcomingMatches(a: Match, b: Match) {
+  if (isLiveMatch(a) && !isLiveMatch(b)) return -1;
+  if (!isLiveMatch(a) && isLiveMatch(b)) return 1;
+
+  return getMatchTimestamp(a) - getMatchTimestamp(b);
+}
+
+function sortCompletedMatches(a: Match, b: Match) {
+  return getMatchTimestamp(b) - getMatchTimestamp(a);
+}
+
+function formatMatchDateTime(value?: string | null) {
+  const parsed = parseMatchTime(value);
+  if (!parsed) return "Time to be announced";
+
+  return new Intl.DateTimeFormat("en", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(parsed);
+}
+
+function getTournamentUrl(tournament: string) {
+  const slug = slugify(tournament || "");
+  return slug ? `/tournament/${slug}` : "/tournament";
+}
+
+function getMatchStatusBadge(match: Match) {
+  if (isLiveMatch(match)) return { label: "Live", className: "bg-red-500 text-white" };
+  if (isCompletedMatch(match)) return { label: "Completed", className: "bg-zinc-700 text-white" };
+  if (match.status === "SUSPENDED") return { label: "Suspended", className: "bg-yellow-500 text-black" };
+  if (match.status === "POSTPONED") return { label: "Postponed", className: "bg-yellow-500 text-black" };
+  if (isCancelledMatch(match)) return { label: "Cancelled", className: "bg-zinc-600 text-white" };
+  return { label: "Scheduled", className: "bg-green-400 text-black" };
+}
+
+function PlayerLink({ name }: { name: string }) {
+  const href = safePlayerUrl(name);
+
+  if (!href) return <span>{name}</span>;
+
+  return (
+    <Link href={href} className="hover:text-green-300">
+      {name}
+    </Link>
+  );
+}
+
+function TournamentMatchCard({ match }: { match: Match }) {
+  const badge = getMatchStatusBadge(match);
+
+  return (
+    <article className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 transition-all hover:border-green-500">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <span className={`rounded-full px-3 py-1 text-xs font-black uppercase ${badge.className}`}>
+          {badge.label}
+        </span>
+        <span className="rounded-full bg-black px-3 py-1 text-xs font-bold text-zinc-300">
+          {match.category}
+        </span>
+      </div>
+
+      <h3 className="text-2xl font-black leading-tight">
+        <PlayerLink name={match.player1} />
+        <span className="mx-2 text-zinc-500">vs</span>
+        <PlayerLink name={match.player2} />
+      </h3>
+
+      <p className="mt-3 text-sm text-zinc-400">{formatMatchDateTime(match.startTime)}</p>
+      {match.score ? <p className="mt-2 text-sm font-bold text-zinc-200">Score: {match.score}</p> : null}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href={`/watch/${matchSlug(match)}`} className="rounded-xl bg-green-500 px-3 py-2 text-sm font-black text-black hover:bg-green-400">
+          {isLiveMatch(match) ? "Follow live" : isCompletedMatch(match) ? "Open result" : "Open match"}
+        </Link>
+        <Link href={getTournamentUrl(match.tournament)} className="rounded-xl border border-zinc-700 px-3 py-2 text-sm font-black text-white hover:border-green-400">
+          Tournament
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function EmptyTournamentState({
+  tournamentName,
+  kind,
+}: {
+  tournamentName: string;
+  kind: "today" | "upcoming" | "completed";
+}) {
+  const copy =
+    kind === "today"
+      ? `No ${tournamentName} matches are listed for today in the current feed.`
+      : kind === "upcoming"
+        ? `No future ${tournamentName} matches are listed in the current feed.`
+        : `No completed ${tournamentName} results are available in this feed yet.`;
+
+  return (
+    <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 text-zinc-300">
+      <p className="font-bold text-white">{copy}</p>
+      <p className="mt-2 text-sm leading-6 text-zinc-400">
+        Use the live tennis hub, today&apos;s schedule and official tournament pages for updated order-of-play details.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href="/live-tennis" className="rounded-xl bg-green-500 px-3 py-2 text-sm font-black text-black">Live tennis</Link>
+        <Link href="/today" className="rounded-xl border border-zinc-700 px-3 py-2 text-sm font-black text-white">Matches today</Link>
+        <Link href="/tennis-on-tv-today" className="rounded-xl border border-zinc-700 px-3 py-2 text-sm font-black text-white">TV schedule</Link>
+      </div>
+    </div>
+  );
+}
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const stableHub = getStableTournamentHub(slug);
@@ -246,9 +439,7 @@ export default async function Page({ params }: PageProps) {
   const stableHub = getStableTournamentHub(slug);
   const tournamentName = tournamentMatches[0]?.tournament || stableHub?.name || unslugify(slug);
 
-  const liveCount = tournamentMatches.filter(
-    (match) => match.status === "LIVE"
-  ).length;
+  const liveCount = tournamentMatches.filter(isLiveMatch).length;
 
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
   const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
@@ -259,35 +450,128 @@ export default async function Page({ params }: PageProps) {
   const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);
   const calendarDateRange = formatCalendarDateRange(calendarEntry);
   const apiFixtureDateRange = formatApiTournamentDateRange(apiTournamentDateRange);
-  const tournamentDateRange = calendarDateRange || apiFixtureDateRange || matchFeedDateRange;
+  const estimatedItfWeek = getItfEstimatedTournamentWeek(slug, tournamentDateWindow);
+  const estimatedItfWeekRange = formatEstimatedTournamentWeek(estimatedItfWeek);
+  const hasFixtureRangeTournamentDates = apiTournamentDateRange?.confidence === "fixture-range";
+  const verifiedTournamentDateRange = calendarDateRange || (hasFixtureRangeTournamentDates ? apiFixtureDateRange : null);
+  const matchCoverageDateRange = matchFeedDateRange || (!hasFixtureRangeTournamentDates ? apiFixtureDateRange : null);
+  const visibleTournamentDateRange = verifiedTournamentDateRange || estimatedItfWeekRange;
   const tournamentDateConfidence = calendarDateRange
     ? "official"
-    : apiTournamentDateRange?.confidence || (matchFeedDateRange ? "partial" : "unknown");
+    : hasFixtureRangeTournamentDates
+      ? "fixture-range"
+      : estimatedItfWeekRange
+        ? "estimated-itf-week"
+        : "unknown";
   const hasAuthoritativeTournamentDates = tournamentDateConfidence === "official";
   const tournamentDateLabel = hasAuthoritativeTournamentDates
     ? "Tournament dates"
-    : "Published match dates";
+    : tournamentDateConfidence === "estimated-itf-week"
+      ? "Estimated ITF tournament week"
+      : "Tournament dates from fixture range";
   const tournamentDateNote = hasAuthoritativeTournamentDates
     ? "These dates come from a verified tournament calendar. Match times and court assignments can still change during the event."
-    : "These dates come from currently published matches and may not include the full event yet. Check the official tournament schedule for final dates.";
+    : tournamentDateConfidence === "estimated-itf-week"
+      ? "This week is calculated from the first published ITF fixture date for this tournament slug. Confirm the official tournament dates with ITF before relying on them."
+      : "These dates are inferred from a multi-day fixture range. Check the official tournament schedule for final dates.";
 
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"
   ).length;
+  const now = new Date();
+  const todayMatches = tournamentMatches
+    .filter((match) => isTodayMatch(match, now) && !isCompletedMatch(match))
+    .sort(sortUpcomingMatches);
+  const upcomingMatches = tournamentMatches
+    .filter((match) => isScheduledMatch(match) && !isTodayMatch(match, now))
+    .sort(sortUpcomingMatches);
+  const completedMatches = tournamentMatches
+    .filter(isCompletedMatch)
+    .sort(sortCompletedMatches);
+  const cancelledMatches = tournamentMatches.filter(isCancelledMatch).length;
+  const featuredPlayers = Array.from(
+    new Set(
+      tournamentMatches
+        .flatMap((match) => [match.player1, match.player2])
+        .filter((name) => safePlayerUrl(name))
+    )
+  ).slice(0, 8);
 
-  const sportsEventSchema = tournamentDateRange
+  const sportsEventSchema = verifiedTournamentDateRange
     ? {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         name: tournamentName,
         sport: "Tennis",
-        startDate: calendarEntry?.startDate || apiTournamentDateRange?.startDate || tournamentDateWindow?.start.toISOString(),
-        endDate: calendarEntry?.endDate || apiTournamentDateRange?.endDate || tournamentDateWindow?.end.toISOString(),
+        startDate: calendarEntry?.startDate || apiTournamentDateRange?.startDate,
+        endDate: calendarEntry?.endDate || apiTournamentDateRange?.endDate,
         url: `https://watchtennistoday.com/tournament/${slug}`,
         description: buildTournamentSeoDescription(tournamentName),
         organizer: { "@type": "Organization", name: "Official tournament organizer" },
       }
     : null;
+  const tournamentEventSchema = verifiedTournamentDateRange
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: tournamentName,
+        startDate: calendarEntry?.startDate || apiTournamentDateRange?.startDate,
+        endDate: calendarEntry?.endDate || apiTournamentDateRange?.endDate,
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        eventStatus: "https://schema.org/EventScheduled",
+        location: stableHub?.location ? { "@type": "Place", name: stableHub.location } : undefined,
+        url: `https://watchtennistoday.com/tournament/${slug}`,
+        description: buildTournamentSeoDescription(tournamentName),
+      }
+    : null;
+  const matchSportsEventSchema = tournamentMatches.filter((match) => match.startTime).slice(0, 8).map((match) => ({
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: `${match.player1} vs ${match.player2}`,
+    sport: "Tennis",
+    startDate: match.startTime || undefined,
+    eventStatus: isCompletedMatch(match)
+      ? "https://schema.org/EventCompleted"
+      : isLiveMatch(match)
+        ? "https://schema.org/EventInProgress"
+        : "https://schema.org/EventScheduled",
+    location: { "@type": "Place", name: tournamentName },
+    competitor: [
+      { "@type": "Person", name: match.player1 },
+      { "@type": "Person", name: match.player2 },
+    ],
+    url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
+  }));
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `How can I watch ${tournamentName}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Legal viewing options for ${tournamentName} depend on the event rights in your country. Confirm coverage with official tournament and broadcaster sources before match time.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Where is the ${tournamentName} schedule?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `This page lists available ${tournamentName} matches from the current feed and links to live tennis, today's matches and TV schedule pages for updated viewing checks.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Why can ${tournamentName} match times change?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Tennis match times can move when earlier matches run long, weather interrupts play, courts change or players withdraw.",
+        },
+      },
+    ],
+  };
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -304,21 +588,75 @@ export default async function Page({ params }: PageProps) {
           <span className="text-white">{tournamentName}</span>
         </nav>
 
-        <h1 className="text-5xl md:text-7xl font-black mb-6">
-          🎾 {tournamentName} Live Matches
-        </h1>
+        <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
+          <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">
+            Tournament hub
+          </p>
+          <h1 className="text-5xl font-black leading-tight md:text-7xl">
+            {tournamentName}
+          </h1>
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
+            Follow {tournamentName} matches today, upcoming schedule, completed results, draw context and legal TV or streaming guidance.
+          </p>
 
-        <p className="text-zinc-300 text-lg leading-8 mb-5">
+          <div className="mt-6 grid gap-4 md:grid-cols-4">
+            {stableHub?.location ? (
+              <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+                <p className="text-xs font-black uppercase text-zinc-500">Location</p>
+                <p className="mt-1 font-black text-white">{stableHub.location}</p>
+              </div>
+            ) : null}
+            <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+              <p className="text-xs font-black uppercase text-zinc-500">Tour / level</p>
+              <p className="mt-1 font-black text-white">{stableHub?.level || tournamentProfile.level}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+              <p className="text-xs font-black uppercase text-zinc-500">Surface</p>
+              <p className="mt-1 font-black text-white">{stableHub?.surface || tournamentProfile.surface}</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-4">
+              <p className="text-xs font-black uppercase text-zinc-500">Dates</p>
+              <p className="mt-1 font-black text-white">{visibleTournamentDateRange || stableHub?.seasonWindow || "Tournament dates not verified"}</p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Link href="#todays-matches" className="rounded-full bg-green-500 px-4 py-2 text-sm font-black text-black hover:bg-green-400">Today&apos;s matches</Link>
+            <Link href="#upcoming-matches" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Upcoming</Link>
+            <Link href="#completed-matches" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Results</Link>
+            <Link href="#how-to-watch" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">How to watch</Link>
+            <Link href="/live-tennis" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Live tennis</Link>
+            <Link href="/today" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Matches today</Link>
+          </div>
+        </section>
+
+        <div className="sr-only">
+          🎾 {tournamentName} Live Matches
+        </div>
+
+        <p className="hidden text-zinc-300 text-lg leading-8 mb-5">
           Watch {tournamentName} tennis matches live today with match schedules,
           TV channels, streaming information, live scores and tournament updates.
         </p>
 
-        {tournamentDateRange ? (
+        {visibleTournamentDateRange ? (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-300">
             <span className="font-black text-white">
               {tournamentDateLabel}:
             </span>{" "}
-            {tournamentDateRange}. {tournamentDateNote}
+            {visibleTournamentDateRange}. {tournamentDateNote}
+            {matchCoverageDateRange && !verifiedTournamentDateRange ? (
+              <>
+                {" "}Current match-feed coverage: {matchCoverageDateRange}.
+              </>
+            ) : null}
+          </p>
+        ) : matchCoverageDateRange ? (
+          <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-300">
+            <span className="font-black text-white">
+              Match-feed coverage:
+            </span>{" "}
+            {matchCoverageDateRange}. The full tournament dates are not verified in the local calendar yet, so this page does not label the feed window as official event dates.
           </p>
         ) : (
           <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-400">
@@ -351,10 +689,18 @@ export default async function Page({ params }: PageProps) {
               <div className="grid gap-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Dates</p>
-                  <p className="mt-1 font-black text-white">{tournamentDateRange || stableHub?.seasonWindow || "Not published yet"}</p>
-                  {!hasAuthoritativeTournamentDates && tournamentDateRange ? (
+                  <p className="mt-1 font-black text-white">{visibleTournamentDateRange || stableHub?.seasonWindow || "Tournament dates not verified"}</p>
+                  {tournamentDateConfidence === "estimated-itf-week" ? (
                     <p className="mt-2 text-sm leading-6 text-zinc-400">
-                      Published match dates only
+                      Estimated from the published ITF fixture week
+                    </p>
+                  ) : matchCoverageDateRange && !verifiedTournamentDateRange ? (
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                      Current feed coverage: {matchCoverageDateRange}
+                    </p>
+                  ) : !hasAuthoritativeTournamentDates && verifiedTournamentDateRange ? (
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                      Inferred from fixture range
                     </p>
                   ) : null}
                 </div>
@@ -443,8 +789,8 @@ export default async function Page({ params }: PageProps) {
 
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <p className="text-zinc-500 text-sm mb-2">Tournament dates</p>
-            <p className="text-2xl font-black">{tournamentDateRange || "TBA"}</p>
+            <p className="text-zinc-500 text-sm mb-2">{visibleTournamentDateRange ? "Tournament dates" : "Feed coverage"}</p>
+            <p className="text-2xl font-black">{visibleTournamentDateRange || matchCoverageDateRange || "TBA"}</p>
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
@@ -465,7 +811,114 @@ export default async function Page({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="space-y-5">
+        {cancelledMatches > 0 ? (
+          <p className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-sm text-zinc-400">
+            {cancelledMatches} cancelled match{cancelledMatches === 1 ? "" : "es"} in the feed are excluded from the schedule sections below.
+          </p>
+        ) : null}
+
+        <section id="todays-matches" className="mb-12 scroll-mt-24">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-green-400">Matches today</p>
+              <h2 className="mt-2 text-3xl font-black">Today&apos;s Matches</h2>
+            </div>
+            <Link href="/today" className="text-sm font-black text-green-400 hover:text-green-300">
+              Full tennis schedule today
+            </Link>
+          </div>
+          {todayMatches.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {todayMatches.map((match) => (
+                <TournamentMatchCard key={match.id} match={match} />
+              ))}
+            </div>
+          ) : (
+            <EmptyTournamentState tournamentName={tournamentName} kind="today" />
+          )}
+        </section>
+
+        <section id="upcoming-matches" className="mb-12 scroll-mt-24">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-green-400">Schedule</p>
+              <h2 className="mt-2 text-3xl font-black">Upcoming Matches</h2>
+            </div>
+            <Link href="/live-tennis" className="text-sm font-black text-green-400 hover:text-green-300">
+              Live tennis hub
+            </Link>
+          </div>
+          {upcomingMatches.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {upcomingMatches.map((match) => (
+                <TournamentMatchCard key={match.id} match={match} />
+              ))}
+            </div>
+          ) : (
+            <EmptyTournamentState tournamentName={tournamentName} kind="upcoming" />
+          )}
+        </section>
+
+        <section id="completed-matches" className="mb-12 scroll-mt-24">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-green-400">Results</p>
+              <h2 className="mt-2 text-3xl font-black">Completed Matches</h2>
+            </div>
+            <Link href="/tennis-results-today" className="text-sm font-black text-green-400 hover:text-green-300">
+              Tennis results today
+            </Link>
+          </div>
+          {completedMatches.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {completedMatches.map((match) => (
+                <TournamentMatchCard key={match.id} match={match} />
+              ))}
+            </div>
+          ) : (
+            <EmptyTournamentState tournamentName={tournamentName} kind="completed" />
+          )}
+        </section>
+
+        <section id="featured-players" className="mb-12 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <h2 className="mb-4 text-3xl font-black">Featured Players</h2>
+          {featuredPlayers.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {featuredPlayers.map((player) => {
+                const href = safePlayerUrl(player);
+                if (!href) return null;
+
+                return (
+                  <Link key={player} href={href} className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">
+                    {player}
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="leading-8 text-zinc-300">
+              Player links will appear here when the current tournament feed includes players with available profile pages.
+            </p>
+          )}
+        </section>
+
+        <section id="tournament-schedule" className="mb-12 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <h2 className="mb-4 text-3xl font-black">{tournamentName} Schedule</h2>
+          <p className="max-w-3xl leading-8 text-zinc-300">
+            Tennis schedules can change when earlier matches run long, weather interrupts play or courts are reassigned. Use the links below to cross-check current match windows and TV listings.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Link href="/today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">Matches today</Link>
+            <Link href="/tennis-order-of-play-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">Order of play</Link>
+            <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">Tennis on TV today</Link>
+            <Link href="/tv-schedule" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">TV schedule</Link>
+            <Link href="/tennis-time-zone-converter" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">Time zone converter</Link>
+            <Link href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">Official broadcaster guide</Link>
+          </div>
+        </section>
+
+        {false ? (
+        <section className="hidden">
           {tournamentMatches.length > 0 ? (
             tournamentMatches.map((match) => (
               <a
@@ -615,6 +1068,7 @@ export default async function Page({ params }: PageProps) {
             )
           )}
         </section>
+        ) : null}
 
         <div className="mt-12">
           <EmailCapture
@@ -628,7 +1082,7 @@ export default async function Page({ params }: PageProps) {
           />
         </div>
 
-        <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+        <section id="how-to-watch" className="mt-12 scroll-mt-24 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-4">
             📺 Where to Watch {tournamentName}
           </h2>
@@ -640,12 +1094,32 @@ export default async function Page({ params }: PageProps) {
             for exact coverage.
           </p>
 
-          <a
-            href="/best-ways-to-watch-tennis-online"
-            className="inline-block bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
-          >
-            Best Ways to Watch Tennis Online
-          </a>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/best-ways-to-watch-tennis-online"
+              className="inline-block bg-green-500 text-black font-black px-5 py-3 rounded-2xl hover:bg-green-400 transition-all"
+            >
+              Best ways to watch tennis online
+            </Link>
+            <Link
+              href="/tennis-on-tv-today"
+              className="inline-block border border-zinc-700 px-5 py-3 rounded-2xl font-black hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Tennis on TV today
+            </Link>
+            <Link
+              href="/watch-tennis-in"
+              className="inline-block border border-zinc-700 px-5 py-3 rounded-2xl font-black hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Country watch guides
+            </Link>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm font-black">
+            <Link href="/watch-tennis-in-usa" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">USA</Link>
+            <Link href="/watch-tennis-in-uk" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">UK</Link>
+            <Link href="/watch-tennis-in-canada" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Canada</Link>
+            <Link href="/watch-tennis-in-australia" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Australia</Link>
+          </div>
         </section>
 
         <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
@@ -667,6 +1141,30 @@ export default async function Page({ params }: PageProps) {
           </a>
         </section>
 
+        <section id="faq" className="mt-12 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <h2 className="mb-5 text-3xl font-black">{tournamentName} FAQ</h2>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="text-xl font-black">How can I watch {tournamentName}?</h3>
+              <p className="mt-3 leading-8 text-zinc-300">
+                Legal viewing options depend on the event rights in your country. Check the tournament site, official tour pages and licensed broadcaster listings before match time.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="text-xl font-black">Where is the {tournamentName} schedule?</h3>
+              <p className="mt-3 leading-8 text-zinc-300">
+                This page separates available matches into today, upcoming and completed sections. The full daily tennis hub and TV schedule links above help verify late court or time changes.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+              <h3 className="text-xl font-black">Why do match times change?</h3>
+              <p className="mt-3 leading-8 text-zinc-300">
+                Tennis start times can move when earlier matches run long, weather interrupts play, players withdraw or organizers reassign courts.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="mt-12 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
           <h2 className="mb-4 text-3xl font-black">Sources for {tournamentName}</h2>
           <p className="leading-8 text-zinc-300">
@@ -681,6 +1179,8 @@ export default async function Page({ params }: PageProps) {
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
             <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we source data</Link>
             <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we verify streams</Link>
+            <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Editorial policy</Link>
+            <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
             <Link href="/tennis-guides" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Tennis guides hub</Link>
           </div>
         </section>
@@ -694,6 +1194,22 @@ export default async function Page({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEventSchema) }}
         />
       ) : null}
+      {tournamentEventSchema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(tournamentEventSchema) }}
+        />
+      ) : null}
+      {matchSportsEventSchema.length > 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(matchSportsEventSchema) }}
+        />
+      ) : null}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <BreadcrumbSchema
   items={[
     {

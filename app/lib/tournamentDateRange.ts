@@ -53,7 +53,7 @@ function formatDate(date: Date) {
 }
 
 type TournamentFixtureSegment = {
-  key: "recent-completed" | "current" | "upcoming";
+  key: "recent-completed" | "current" | "upcoming" | "expanded-from-fixtures";
   label: string;
   date_start: string;
   date_stop: string;
@@ -62,11 +62,16 @@ type TournamentFixtureSegment = {
 const TOURNAMENT_FIXTURE_CACHE_SECONDS = 60 * 60 * 6;
 const RECENT_COMPLETED_DAYS = 7;
 const UPCOMING_DAYS = 7;
+const TOURNAMENT_EXPANSION_DAYS = 21;
 
 function shiftDate(date: Date, days: number) {
   const shifted = new Date(date);
   shifted.setDate(date.getDate() + days);
   return shifted;
+}
+
+function parseDateOnly(value: string) {
+  return new Date(`${value}T00:00:00Z`);
 }
 
 function getTournamentLookupSegments(): TournamentFixtureSegment[] {
@@ -92,6 +97,22 @@ function getTournamentLookupSegments(): TournamentFixtureSegment[] {
       date_stop: formatDate(shiftDate(today, UPCOMING_DAYS)),
     },
   ];
+}
+
+function getExpandedTournamentLookupSegment(range: TournamentDateRange): TournamentFixtureSegment | null {
+  if (!dateOnly(range.startDate) || !dateOnly(range.endDate)) return null;
+
+  const startDate = parseDateOnly(range.startDate);
+  const endDate = parseDateOnly(range.endDate);
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return null;
+
+  return {
+    key: "expanded-from-fixtures",
+    label: `${TOURNAMENT_EXPANSION_DAYS}-day expanded tournament window from discovered fixtures`,
+    date_start: formatDate(shiftDate(startDate, -TOURNAMENT_EXPANSION_DAYS)),
+    date_stop: formatDate(shiftDate(endDate, TOURNAMENT_EXPANSION_DAYS)),
+  };
 }
 
 function scoreTournamentCandidate(candidate: ApiTournament, slug: string, name?: string | null) {
@@ -205,7 +226,7 @@ function buildFixtureDateRange(
     endDate,
     source: "api-tennis-fixtures",
     sourceName,
-    confidence: daySpan >= 4 || uniqueDates.length >= 4 ? "fixture-range" : "partial",
+    confidence: daySpan >= 4 && uniqueDates.length >= 4 ? "fixture-range" : "partial",
     matchCount: matchingFixtures.length,
     tournamentKey,
   };
@@ -233,7 +254,7 @@ function combineFixtureRanges(ranges: TournamentDateRange[]) {
     endDate,
     source: "api-tennis-fixtures" as const,
     sourceName: sourceNames.join("; "),
-    confidence: daySpan >= 4 || totalMatches >= 4 ? ("fixture-range" as const) : ("partial" as const),
+    confidence: daySpan >= 4 ? ("fixture-range" as const) : ("partial" as const),
     matchCount: totalMatches,
     tournamentKey,
   };
@@ -326,6 +347,24 @@ export const getApiTennisTournamentFixtureDateRange = cache(
         }
       }
 
+      const discoveredRange = pickBestFixtureRange(ranges);
+      const expandedSegment = discoveredRange ? getExpandedTournamentLookupSegment(discoveredRange) : null;
+
+      if (expandedSegment) {
+        for (const baseAttempt of baseAttempts) {
+          const params = {
+            ...baseAttempt.params,
+            date_start: expandedSegment.date_start,
+            date_stop: expandedSegment.date_stop,
+          };
+          const label = `${baseAttempt.label}, ${expandedSegment.label}`;
+          const fixtures = await fetchFixturesWithParams(params, label);
+          const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, label);
+
+          if (range) ranges.push(range);
+        }
+      }
+
       if (ranges.length === 0 && candidate.eventTypeKey) {
         for (const segment of lookupSegments) {
           const params = {
@@ -334,6 +373,24 @@ export const getApiTennisTournamentFixtureDateRange = cache(
             date_stop: segment.date_stop,
           };
           const label = `API-Tennis fixtures by tournament_key fallback, ${segment.label}`;
+          const fixtures = await fetchFixturesWithParams(params, label);
+          const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, label);
+
+          if (range) ranges.push(range);
+        }
+
+        const fallbackDiscoveredRange = pickBestFixtureRange(ranges);
+        const fallbackExpandedSegment = fallbackDiscoveredRange
+          ? getExpandedTournamentLookupSegment(fallbackDiscoveredRange)
+          : null;
+
+        if (fallbackExpandedSegment) {
+          const params = {
+            tournament_key: candidate.tournamentKey,
+            date_start: fallbackExpandedSegment.date_start,
+            date_stop: fallbackExpandedSegment.date_stop,
+          };
+          const label = `API-Tennis fixtures by tournament_key fallback, ${fallbackExpandedSegment.label}`;
           const fixtures = await fetchFixturesWithParams(params, label);
           const range = buildFixtureDateRange(fixtures, candidate.tournamentKey, label);
 
