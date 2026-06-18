@@ -18,6 +18,7 @@ import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
+import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 
@@ -1446,6 +1447,16 @@ function CurrentMatchPage({
                 <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
               </div>
             </section>
+
+            <TennisNavigationHub
+              className="mb-12"
+              links={[
+                { href: "/live-tennis", title: "Back to live tennis", description: "Return to the full live match hub for today.", label: "Live" },
+                { href: `/tournament/${tournamentSlug}`, title: `More from ${match.tournament}`, description: "Open the tournament hub for schedules, results and related matches.", label: "Tournament" },
+                { href: "/today", title: "Today’s tennis schedule", description: "See other matches from today’s order of play.", label: "Schedule" },
+                { href: "/best-ways-to-watch-tennis-online", title: "Best ways to watch tennis online", description: "Compare legal viewing options and streaming basics.", label: "Viewing" },
+              ]}
+            />
 
             <AuthorBox />
 

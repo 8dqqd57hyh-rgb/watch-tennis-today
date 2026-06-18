@@ -5,6 +5,7 @@ import EmailCapture from "@/components/EmailCapture";
 import { getLiveTennisPageMatches, type ServerMatch } from "@/app/lib/serverMatches";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import Link from "next/link";
+import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const revalidate = 60;
 
@@ -704,6 +705,7 @@ export default async function LiveTennisPage() {
           />
         </div>
 
+                <TennisNavigationHub className="my-10" />
         <VpnPromo />
         <RelatedMoneyLinks />
       </div>

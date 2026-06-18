@@ -10,6 +10,7 @@ import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 import { getStableTournamentHub } from "@/data/tournamentHubs";
 import { safePlayerUrl } from "@/data/playerSlugs";
+import TennisNavigationHub from "@/app/components/TennisNavigationHub";
 
 export const dynamic = "force-dynamic";
 
@@ -1184,6 +1185,16 @@ export default async function Page({ params }: PageProps) {
             <Link href="/tennis-guides" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Tennis guides hub</Link>
           </div>
         </section>
+
+        <TennisNavigationHub
+          className="mt-12"
+          links={[
+            { href: "/live-tennis", title: "Live tennis today", description: "Jump back to all live and upcoming ATP/WTA matches.", label: "Live" },
+            { href: "/today", title: "Today’s tennis schedule", description: "See every match scheduled for today across tournaments.", label: "Today" },
+            { href: "/tennis-on-tv-today", title: "Tennis on TV today", description: "Check legal viewing routes before match time.", label: "TV" },
+            { href: "/tennis-guides", title: "Tennis guides", description: "Read schedule, scoring and streaming guides for tennis fans.", label: "Guides" },
+          ]}
+        />
 
         <AuthorBox />
         
