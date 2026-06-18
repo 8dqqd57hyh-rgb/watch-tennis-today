@@ -52,13 +52,22 @@ function normalizeMatches(data: unknown): ServerMatch[] {
   return rawMatches.map((item) => normalizeMatch(item as ServerMatch));
 }
 
-async function fetchServerMatches(path: string, revalidateSeconds = 60): Promise<ServerMatch[]> {
+async function fetchServerMatches(
+  path: string,
+  revalidateSeconds = 60,
+  options: { timeoutMs?: number } = {}
+): Promise<ServerMatch[]> {
   const baseUrl = await getBaseUrl();
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), options.timeoutMs ?? 5000);
+  const developmentCacheBust =
+    process.env.NODE_ENV === "development"
+      ? `${path.includes("?") ? "&" : "?"}_=${Date.now()}`
+      : "";
+  const requestPath = `${path}${developmentCacheBust}`;
 
   try {
-    const response = await fetch(`${baseUrl}${path}`, {
+    const response = await fetch(`${baseUrl}${requestPath}`, {
       signal: controller.signal,
       next: { revalidate: revalidateSeconds },
     });
@@ -75,6 +84,12 @@ async function fetchServerMatches(path: string, revalidateSeconds = 60): Promise
 
 export async function getServerMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
   return fetchServerMatches("/api/matches", revalidateSeconds);
+}
+
+export async function getLiveTennisPageMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
+  return fetchServerMatches("/api/matches?includeFinished=1&daysBack=1&daysForward=1", revalidateSeconds, {
+    timeoutMs: 15000,
+  });
 }
 
 export async function getServerMatchById(matchId: string, revalidateSeconds = 30): Promise<ServerMatch | null> {

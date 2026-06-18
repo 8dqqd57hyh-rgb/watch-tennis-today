@@ -484,8 +484,67 @@ function apiMatchHasPlayerByContextualDoublesName(
   );
 }
 
+function normalizeApiStatusText(value?: string | null) {
+  return String(value || "").toLowerCase().trim();
+}
+
+function compactApiStatus(value?: string | null) {
+  return normalizeApiStatusText(value).replace(/[\s_-]+/g, "");
+}
+
+function isApiScheduledStatus(value?: string | null) {
+  const status = normalizeApiStatusText(value);
+  const compact = compactApiStatus(value);
+
+  return (
+    compact === "notstarted" ||
+    compact === "scheduled" ||
+    compact === "fixture" ||
+    compact === "upcoming" ||
+    status.includes("not started")
+  );
+}
+
+function isApiFinishedStatus(value?: string | null) {
+  const compact = compactApiStatus(value);
+
+  return (
+    compact.includes("finished") ||
+    compact.includes("completed") ||
+    compact.includes("complete") ||
+    compact.includes("ended") ||
+    compact.includes("final")
+  );
+}
+
+function isApiCancelledStatus(value?: string | null) {
+  const compact = compactApiStatus(value);
+  return compact.includes("cancelled") || compact.includes("canceled");
+}
+
+function isApiPostponedStatus(value?: string | null) {
+  const compact = compactApiStatus(value);
+  return compact.includes("postponed");
+}
+
+function isApiLiveStatus(value?: string | null) {
+  const status = normalizeApiStatusText(value);
+  const compact = compactApiStatus(value);
+
+  if (
+    isApiScheduledStatus(value) ||
+    isApiFinishedStatus(value) ||
+    isApiCancelledStatus(value) ||
+    isApiPostponedStatus(value)
+  ) {
+    return false;
+  }
+
+  return compact === "live" || compact === "inprogress" || status.includes("in progress");
+}
+
 function normalizeStatus(match: ApiTennisMatch) {
-  const status = (match.event_status || "").toLowerCase();
+  const status = normalizeApiStatusText(match.event_status);
   const startTime = getStartTime(match);
   const startsInFuture = startTime ? new Date(startTime) > new Date() : false;
 
@@ -513,6 +572,26 @@ const hasScore = Boolean(
 
   if (isPastUnplayedFixture(match, hasScore)) {
     return "EXPIRED";
+  }
+
+  if (isApiCancelledStatus(status)) {
+    return "CANCELLED";
+  }
+
+  if (isApiFinishedStatus(status)) {
+    return "FINISHED";
+  }
+
+  if (status.includes("retired") || status.includes("walkover")) {
+    return "RETIRED";
+  }
+
+  if (isApiScheduledStatus(status) && !hasScore) {
+    return "UPCOMING";
+  }
+
+  if (isApiPostponedStatus(status)) {
+    return startsInFuture && !hasScore ? "UPCOMING" : "SUSPENDED";
   }
 
   if (
@@ -543,28 +622,9 @@ const hasScore = Boolean(
 
   if (
     match.event_live === "1" ||
-    status.includes("live") ||
-    status.includes("in progress") ||
-    status.includes("progress")
+    isApiLiveStatus(status)
   ) {
     return "LIVE";
-  }
-
-  if (
-    status.includes("finished") ||
-    status.includes("ended") ||
-    status.includes("complete") ||
-    status.includes("final")
-  ) {
-    return "FINISHED";
-  }
-
-  if (status.includes("cancel")) {
-    return "CANCELLED";
-  }
-
-  if (status.includes("retired") || status.includes("walkover")) {
-    return "RETIRED";
   }
 
   // API-Tennis fixtures often return past completed matches with a score but
@@ -577,8 +637,7 @@ const hasScore = Boolean(
 // fixtures without official time yet
 if (
   !status ||
-  status.includes("scheduled") ||
-  status.includes("not started")
+  isApiScheduledStatus(status)
 ) {
   return "UPCOMING";
 }
@@ -844,12 +903,10 @@ function isPastUnplayedFixture(match: ApiTennisMatch, hasScore: boolean) {
 }
 
 function isStaleLiveFixture(match: ApiTennisMatch) {
-  const status = (match.event_status || "").toLowerCase();
+  const status = normalizeApiStatusText(match.event_status);
   const looksLive =
     match.event_live === "1" ||
-    status.includes("live") ||
-    status.includes("in progress") ||
-    status.includes("progress");
+    isApiLiveStatus(status);
 
   if (!looksLive) return false;
 
