@@ -64,6 +64,9 @@ type Match = {
   score: string;
   pointScore?: string | null;
   startTime: string | null;
+  round?: string | null;
+  court?: string | null;
+  surface?: string | null;
   watchProviders: WatchProvider[];
 };
 
@@ -266,6 +269,10 @@ function isFinished(status: string) {
   );
 }
 
+function isCancelledOrPostponed(status: string) {
+  return ["CANCELLED", "CANCELED", "POSTPONED"].includes(normalizeStatus(status));
+}
+
 function getStatusStyles(status: string) {
   const normalized = normalizeStatus(status);
 
@@ -275,6 +282,14 @@ function getStatusStyles(status: string) {
 
   if (normalized === "UPCOMING") {
     return "bg-sky-400 text-black";
+  }
+
+  if (normalized === "SCHEDULED" || normalized === "NOTSTARTED" || normalized === "NOT_STARTED") {
+    return "bg-green-400 text-black";
+  }
+
+  if (normalized === "POSTPONED") {
+    return "bg-orange-400 text-black";
   }
 
   if (normalized === "SUSPENDED") {
@@ -290,7 +305,9 @@ function getStatusStyles(status: string) {
 
 function getMatchPhase(match: Match) {
   if (isLive(match.status)) return "Live now";
-  if (normalizeStatus(match.status) === "UPCOMING") return "Upcoming match";
+  if (["UPCOMING", "SCHEDULED", "NOTSTARTED", "NOT_STARTED"].includes(normalizeStatus(match.status))) return "Scheduled match";
+  if (normalizeStatus(match.status) === "POSTPONED") return "Postponed match";
+  if (isCancelledOrPostponed(match.status) && normalizeStatus(match.status).includes("CANCEL")) return "Cancelled match";
   if (normalizeStatus(match.status) === "SUSPENDED") return "Delayed or suspended";
   if (isFinished(match.status)) return "Completed match";
   return "Match status";
@@ -301,11 +318,69 @@ function getScoreDisplay(match: Match) {
 
   if (!score || score === "-" || score === "0-0") {
     if (isLive(match.status)) return "Live score pending";
-    if (normalizeStatus(match.status) === "UPCOMING") return "Not started";
+    if (["UPCOMING", "SCHEDULED", "NOTSTARTED", "NOT_STARTED"].includes(normalizeStatus(match.status))) return "Not started";
     return "Score unavailable";
   }
 
   return score;
+}
+
+function formatLocalDateTime(value: string | null) {
+  if (!value) return "Time to be confirmed";
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "Time to be confirmed";
+
+  return new Intl.DateTimeFormat("en", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(parsed);
+}
+
+function getLastUpdatedLabel() {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(new Date());
+}
+
+function getOptionalMatchDetail(match: Match, key: "round" | "court" | "surface") {
+  const value = match[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function getWatchability(match: Match, matches: Match[]) {
+  const round = getOptionalMatchDetail(match, "round") || "";
+  const sameTournamentCount = matches.filter((item) => item.tournament === match.tournament).length;
+  const liveOrSoon = isLive(match.status) || getRelatedMatchStartScore(match.startTime) > 0;
+  const importantRound = /final|semi|quarter|round of 16|last 16/i.test(round);
+  const category = match.category || "tennis";
+
+  return {
+    entertainment: liveOrSoon
+      ? "High if you want a match you can follow right now or very soon."
+      : "Useful for planning, with entertainment depending on the final order of play.",
+    rankingImportance: importantRound
+      ? "Likely higher than an early-round match because the listed round is deeper in the draw."
+      : `Depends on draw context and ranking points for this ${category} event.`,
+    upsetPotential: "No reliable upset signal is available from the current feed, so this page does not assign fake odds.",
+    intensity: isLive(match.status)
+      ? "Live intensity can change point by point; use the score panel and official feed for the current state."
+      : importantRound
+        ? "Expected to be meaningful because later rounds usually raise pressure."
+        : "Best judged close to start time once court assignment, conditions and player workload are clear.",
+    audience: sameTournamentCount > 1
+      ? "Best for fans following the whole tournament day; related matches from the same event are linked below."
+      : "Best for fans of either player or viewers checking legal ways to watch this specific matchup.",
+  };
 }
 
 function buildCountryWatchLinks(match: Match) {
@@ -546,8 +621,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const matchId = getMatchIdFromSlug(decodedSlug);
+  const liveMatch = matchId ? await getServerMatchById(matchId, 60) : null;
   const archivedMatch = matchId
-    ? getArchivedMatch(matchId) || await getArchivedMatchFromDatabase(matchId)
+    ? liveMatch || getArchivedMatch(matchId) || await getArchivedMatchFromDatabase(matchId)
     : null;
   const indexableArchivedMatch = archivedMatch && !isActiveMatchStatus(archivedMatch.status)
     ? archivedMatch
@@ -555,9 +631,10 @@ export async function generateMetadata({
   const readableTitle = archivedMatch
     ? `${archivedMatch.player1} vs ${archivedMatch.player2}`
     : titleCaseMatchName(decodedSlug.replace(/-\d+$/, "").replace(/-/g, " "));
+  const isLiveMatch = liveMatch ? isLive(liveMatch.status) : false;
   return {
-    title: buildWatchSeoTitle(readableTitle, false),
-    description: buildWatchSeoDescription(readableTitle, false),
+    title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+    description: buildWatchSeoDescription(readableTitle, isLiveMatch),
     // AdSense quality: /watch/* depends on changing match data. Only archived
     // matches with stable local content can be indexed; live/missing URLs stay noindex.
     robots: indexableArchivedMatch ? { index: true, follow: true } : { index: false, follow: true },
@@ -565,16 +642,16 @@ export async function generateMetadata({
       canonical: `https://watchtennistoday.com/watch/${slug}`,
     },
     openGraph: {
-      title: buildWatchSeoTitle(readableTitle, false),
-      description: buildWatchSeoDescription(readableTitle, false),
+      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
       url: `https://watchtennistoday.com/watch/${slug}`,
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: buildWatchSeoTitle(readableTitle, false),
-      description: buildWatchSeoDescription(readableTitle, false),
+      title: buildWatchSeoTitle(readableTitle, isLiveMatch),
+      description: buildWatchSeoDescription(readableTitle, isLiveMatch),
     },
   };
 }
@@ -675,7 +752,8 @@ export default async function MatchPage({
   const directLiveMatch = await getServerMatchById(matchId, 30);
 
   if (directLiveMatch) {
-    return <CurrentMatchPage match={directLiveMatch} slug={slug} />;
+    const matches = await getServerMatches(60);
+    return <CurrentMatchPage match={directLiveMatch} slug={slug} relatedMatchesSource={matches.length > 0 ? matches : [directLiveMatch]} />;
   }
 
   const localArchivedMatch = getArchivedMatch(matchId);
@@ -742,6 +820,11 @@ function CurrentMatchPage({
   const relatedMatches = getRelatedMatches(match, matches);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
+  const round = getOptionalMatchDetail(match, "round");
+  const court = getOptionalMatchDetail(match, "court");
+  const surface = getOptionalMatchDetail(match, "surface");
+  const lastUpdated = getLastUpdatedLabel();
+  const watchability = getWatchability(match, matches);
   const playerDescription =
     playerDescriptions[match.player1.toLowerCase()] ||
     playerDescriptions[match.player2.toLowerCase()] ||
@@ -759,7 +842,7 @@ function CurrentMatchPage({
     "@type": "SportsEvent",
     name: matchTitle,
     sport: "Tennis",
-    startDate: match.startTime,
+    startDate: match.startTime || undefined,
     eventStatus,
     competitor: [
       { "@type": "Person", name: match.player1 },
@@ -770,6 +853,25 @@ function CurrentMatchPage({
       name: match.tournament,
     },
     url: currentUrl,
+  };
+
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: buildWatchSeoTitle(matchTitle, isLive(match.status)),
+    description: buildWatchSeoDescription(matchTitle, isLive(match.status)),
+    url: currentUrl,
+    dateModified: new Date().toISOString(),
+    about: {
+      "@type": "SportsEvent",
+      name: matchTitle,
+      sport: "Tennis",
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Watch Tennis Today",
+      url: "https://watchtennistoday.com",
+    },
   };
 
   const faqSchema = {
@@ -838,17 +940,17 @@ function CurrentMatchPage({
                 </p>
                 <h1 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
                   {player1Url ? (
-                    <a href={player1Url} className="hover:text-green-400">
+                    <Link href={player1Url} className="hover:text-green-400">
                       {match.player1}
-                    </a>
+                    </Link>
                   ) : (
                     <span>{match.player1}</span>
                   )}
                   <span className="block text-zinc-500">vs</span>
                   {player2Url ? (
-                    <a href={player2Url} className="hover:text-green-400">
+                    <Link href={player2Url} className="hover:text-green-400">
                       {match.player2}
-                    </a>
+                    </Link>
                   ) : (
                     <span>{match.player2}</span>
                   )}
@@ -856,6 +958,38 @@ function CurrentMatchPage({
                 <p className="max-w-3xl text-lg leading-8 text-zinc-300">
                   Follow {matchTitle} with match timing, score context, tournament details and official viewing information. This page links only to legal broadcaster and schedule sources.
                 </p>
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-xs font-black uppercase text-zinc-500">Local start time</p>
+                    <p className="mt-1 font-black">{formatLocalDateTime(match.startTime)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-xs font-black uppercase text-zinc-500">Status</p>
+                    <p className="mt-1 font-black">{getMatchPhase(match)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-xs font-black uppercase text-zinc-500">Last updated</p>
+                    <p className="mt-1 font-black">{lastUpdated}</p>
+                  </div>
+                  {round ? (
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                      <p className="text-xs font-black uppercase text-zinc-500">Round</p>
+                      <p className="mt-1 font-black">{round}</p>
+                    </div>
+                  ) : null}
+                  {court ? (
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                      <p className="text-xs font-black uppercase text-zinc-500">Court</p>
+                      <p className="mt-1 font-black">{court}</p>
+                    </div>
+                  ) : null}
+                  {surface ? (
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                      <p className="text-xs font-black uppercase text-zinc-500">Surface</p>
+                      <p className="mt-1 font-black">{surface}</p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
 
               <LiveMatchScore
@@ -869,15 +1003,15 @@ function CurrentMatchPage({
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#where-to-watch" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
+              <Link href="#where-to-watch" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
                 Where to watch
-              </a>
-              <a href="/tennis-schedule-today" className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
+              </Link>
+              <Link href="/today" className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
                 Today’s schedule
-              </a>
-              <a href={`/tournament/${tournamentSlug}`} className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
+              </Link>
+              <Link href={`/tournament/${tournamentSlug}`} className="rounded-2xl border border-white/10 bg-white/10 px-6 py-4 font-black text-white transition-all hover:bg-white/15">
                 Tournament page
-              </a>
+              </Link>
               <LocalMatchFollowButton
                 match={{
                   id: match.id,
@@ -897,6 +1031,43 @@ function CurrentMatchPage({
           <div className="p-6 md:p-10">
             <section className="mb-8 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
               <strong>Legal streaming notice:</strong> Watch Tennis Today does not host or embed live streams. We help users find official and legal broadcasters and streaming options.
+            </section>
+
+            <section className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match details</p>
+              <h2 className="mb-5 text-3xl font-black">Match Details</h2>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Players</p>
+                  <p className="text-lg font-black">{match.player1} vs {match.player2}</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Tournament</p>
+                  <Link href={`/tournament/${tournamentSlug}`} className="text-lg font-black hover:text-green-400">{match.tournament}</Link>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Local start time</p>
+                  <p className="text-lg font-black">{formatLocalDateTime(match.startTime)}</p>
+                </div>
+                {round ? (
+                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                    <p className="mb-2 text-sm text-zinc-500">Round</p>
+                    <p className="text-lg font-black">{round}</p>
+                  </div>
+                ) : null}
+                {court ? (
+                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                    <p className="mb-2 text-sm text-zinc-500">Court</p>
+                    <p className="text-lg font-black">{court}</p>
+                  </div>
+                ) : null}
+                {surface ? (
+                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                    <p className="mb-2 text-sm text-zinc-500">Surface</p>
+                    <p className="text-lg font-black">{surface}</p>
+                  </div>
+                ) : null}
+              </div>
             </section>
 
             <section className="mb-10 grid gap-4 md:grid-cols-4">
@@ -939,6 +1110,38 @@ function CurrentMatchPage({
 
             <MatchEdgePredictor match={match} matches={matches} />
 
+            <section className="mb-12 rounded-[2rem] border border-green-500/30 bg-green-500/10 p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">
+                Watch guide
+              </p>
+              <h2 className="mb-4 text-3xl font-black">Should I Watch This Match?</h2>
+              <p className="mb-5 max-w-3xl leading-8 text-zinc-300">
+                This guide uses available schedule, status, tournament and round context only. It does not invent rankings, odds or prediction data.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="rounded-3xl border border-green-500/20 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Entertainment rating</h3>
+                  <p className="leading-7 text-zinc-300">{watchability.entertainment}</p>
+                </div>
+                <div className="rounded-3xl border border-green-500/20 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Ranking importance</h3>
+                  <p className="leading-7 text-zinc-300">{watchability.rankingImportance}</p>
+                </div>
+                <div className="rounded-3xl border border-green-500/20 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Upset potential</h3>
+                  <p className="leading-7 text-zinc-300">{watchability.upsetPotential}</p>
+                </div>
+                <div className="rounded-3xl border border-green-500/20 bg-black p-5">
+                  <h3 className="mb-2 text-xl font-black">Expected intensity</h3>
+                  <p className="leading-7 text-zinc-300">{watchability.intensity}</p>
+                </div>
+                <div className="rounded-3xl border border-green-500/20 bg-black p-5 md:col-span-2">
+                  <h3 className="mb-2 text-xl font-black">Best for</h3>
+                  <p className="leading-7 text-zinc-300">{watchability.audience}</p>
+                </div>
+              </div>
+            </section>
+
             <RelatedCoverageEngine match={match} matches={matches} />
 
 
@@ -961,6 +1164,43 @@ function CurrentMatchPage({
                 <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.scheduleNote}</p>
                 <p className="leading-8 text-zinc-300 md:col-span-1">{matchEditorialContext.tournamentNote}</p>
               </div>
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Player comparison</p>
+              <h2 className="mb-4 text-3xl font-black">Player Comparison</h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-2xl font-black">{match.player1}</h3>
+                  <p className="leading-7 text-zinc-300">
+                    {playerDescriptions[match.player1.toLowerCase()] || "No verified player style note is available in the current editorial data. Use the player page and official match feed for schedule context."}
+                  </p>
+                  {player1Url ? (
+                    <Link href={player1Url} className="mt-4 inline-block rounded-2xl border border-zinc-700 px-4 py-3 font-black hover:border-green-400">
+                      Open {match.player1} page
+                    </Link>
+                  ) : null}
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
+                  <h3 className="mb-2 text-2xl font-black">{match.player2}</h3>
+                  <p className="leading-7 text-zinc-300">
+                    {playerDescriptions[match.player2.toLowerCase()] || "No verified player style note is available in the current editorial data. Use the player page and official match feed for schedule context."}
+                  </p>
+                  {player2Url ? (
+                    <Link href={player2Url} className="mt-4 inline-block rounded-2xl border border-zinc-700 px-4 py-3 font-black hover:border-green-400">
+                      Open {match.player2} page
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-black p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Recent form</p>
+              <h2 className="mb-4 text-3xl font-black">Recent Form</h2>
+              <p className="max-w-3xl leading-8 text-zinc-300">
+                Verified recent-form data is shown only when it is available from the current match feed or official sources. This page does not infer wins, losses or form streaks from incomplete data.
+              </p>
             </section>
 
             <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
@@ -1193,6 +1433,20 @@ function CurrentMatchPage({
             <AdSlot label="Advertisement" />
             <ContentQualityNotice pageType="match page" />
             <RelatedMoneyLinks playerName={match.player1} player2Name={match.player2} />
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <h2 className="mb-4 text-3xl font-black">Sources and Verification</h2>
+              <p className="max-w-3xl leading-8 text-zinc-300">
+                Match pages combine current tennis feed data, archived match records, official broadcaster checks and editorial review. Start times, scores, courts and availability can change, so verify final details with the tournament or licensed broadcaster before match time.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+                <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we source data</Link>
+                <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we verify streams</Link>
+                <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Editorial policy</Link>
+                <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
+              </div>
+            </section>
+
             <AuthorBox />
 
             <section className="mt-16 border-t border-zinc-800 pt-8">
@@ -1211,6 +1465,7 @@ function CurrentMatchPage({
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <BreadcrumbSchema
         items={[

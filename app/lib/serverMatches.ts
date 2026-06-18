@@ -11,6 +11,8 @@ export type ServerMatch = {
   pointScore?: string | null;
   startTime: string | null;
   round?: string;
+  court?: string | null;
+  surface?: string | null;
   watchProviders: {
     name: string;
     url: string;
