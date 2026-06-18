@@ -16,7 +16,7 @@ import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
 import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
-import { getServerMatches } from "@/app/lib/serverMatches";
+import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
 
 export const dynamic = "force-dynamic";
@@ -672,6 +672,12 @@ export default async function MatchPage({
 
   if (!matchId) notFound();
 
+  const directLiveMatch = await getServerMatchById(matchId, 30);
+
+  if (directLiveMatch) {
+    return <CurrentMatchPage match={directLiveMatch} slug={slug} />;
+  }
+
   const localArchivedMatch = getArchivedMatch(matchId);
 
   if (localArchivedMatch && !isActiveMatchStatus(localArchivedMatch.status)) {
@@ -714,7 +720,19 @@ export default async function MatchPage({
     notFound();
   }
 
-  const match = liveMatch;
+  return <CurrentMatchPage match={liveMatch} slug={slug} relatedMatchesSource={matches} />;
+}
+
+function CurrentMatchPage({
+  match,
+  slug,
+  relatedMatchesSource,
+}: {
+  match: Match;
+  slug: string;
+  relatedMatchesSource?: Match[];
+}) {
+  const matches = relatedMatchesSource || [match];
 
   const tournamentSlug = slugify(match.tournament);
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;

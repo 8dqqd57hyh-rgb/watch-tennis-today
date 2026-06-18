@@ -95,7 +95,8 @@ export async function getLiveTennisPageMatches(revalidateSeconds = 60): Promise<
 export async function getServerMatchById(matchId: string, revalidateSeconds = 30): Promise<ServerMatch | null> {
   const matches = await fetchServerMatches(
     `/api/matches?matchId=${encodeURIComponent(matchId)}&daysBack=1&daysForward=7`,
-    revalidateSeconds
+    revalidateSeconds,
+    { timeoutMs: 15000 }
   );
 
   return matches.find((match) => String(match.id) === String(matchId)) || null;

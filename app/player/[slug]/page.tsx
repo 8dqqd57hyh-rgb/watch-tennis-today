@@ -285,11 +285,11 @@ function getEditorialProfile(playerSlug: PlayerSlug | null, playerName: string, 
 }
 
 function buildPlayerSeoTitle(playerName: string) {
-  return `Watch ${playerName} Live Today: Next Match, Schedule & Results`;
+  return `${playerName} Next Match, Live Stream, Schedule & Results`;
 }
 
 function buildPlayerSeoDescription(playerName: string) {
-  return `Watch ${playerName} live today with next match time, recent results, tournament context and legal tennis TV and streaming information.`;
+  return `${playerName} next match, live stream guide, schedule, results, ranking context and legal tennis TV information from Watch Tennis Today.`;
 }
 
 export async function generateStaticParams() {
@@ -312,6 +312,14 @@ type Match = {
   round?: string;
 };
 
+type PlayerDataWithOptionalSeoFields = {
+  country?: string;
+  nationality?: string;
+  ranking?: string | number;
+  rank?: string | number;
+  singlesRanking?: string | number;
+  worldRanking?: string | number;
+};
 
 const PLAYER_SLUGS = Object.keys(players) as PlayerSlug[];
 
@@ -754,6 +762,121 @@ function getOpponentForPlayer(match: Match, playerName: string) {
   return `${match.player1} / ${match.player2}`;
 }
 
+function getPlayerCountry(canonicalSlug: PlayerSlug | null, editorialProfile: PlayerEditorialProfile) {
+  if (canonicalSlug) {
+    const playerData = players[canonicalSlug] as PlayerDataWithOptionalSeoFields;
+    const country = playerData.country || playerData.nationality;
+    if (country) return String(country);
+  }
+
+  return editorialProfile.nationality === "Professional tennis" ? null : editorialProfile.nationality;
+}
+
+function getPlayerRanking(canonicalSlug: PlayerSlug | null) {
+  if (!canonicalSlug) return null;
+
+  const playerData = players[canonicalSlug] as PlayerDataWithOptionalSeoFields;
+  const ranking = playerData.ranking || playerData.rank || playerData.singlesRanking || playerData.worldRanking;
+  if (!ranking) return null;
+
+  const rankingText = String(ranking).trim();
+  if (!rankingText) return null;
+
+  return rankingText.startsWith("#") ? rankingText : `#${rankingText}`;
+}
+
+function getTournamentUrl(tournament: string) {
+  const slug = slugify(tournament || "");
+  return slug ? `/tournament/${slug}` : "/tennis-tournaments";
+}
+
+function getWatchMatchUrl(match: Match) {
+  return `/watch/${getMatchSlug(match)}`;
+}
+
+function getStatusLabel(match: Match) {
+  if (isLiveMatch(match)) return "Live";
+  if (isFinishedMatch(match)) return "Finished";
+  if (isUpcomingMatch(match)) return "Scheduled";
+
+  return match.status || "Status pending";
+}
+
+function statusBadgeClass(match: Match) {
+  if (isLiveMatch(match)) return "bg-red-500 text-white";
+  if (isFinishedMatch(match)) return "bg-zinc-900 text-white";
+  return "bg-green-100 text-green-800";
+}
+
+function getOpponentPlayerSlug(match: Match, playerName: string) {
+  return getPlayerSlugByName(getOpponentForPlayer(match, playerName));
+}
+
+function formatUpdatedAt(value: Date) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(value);
+}
+
+function sortByNewest(a: Match, b: Match) {
+  return getMatchTime(b) - getMatchTime(a);
+}
+
+function MatchSummaryCard({
+  match,
+  playerName,
+  cta = "Open match",
+}: {
+  match: Match;
+  playerName: string;
+  cta?: string;
+}) {
+  const opponent = getOpponentForPlayer(match, playerName);
+  const opponentSlug = getOpponentPlayerSlug(match, playerName);
+
+  return (
+    <article className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span className={`rounded-full px-3 py-1 text-xs font-black uppercase ${statusBadgeClass(match)}`}>
+          {getStatusLabel(match)}
+        </span>
+        <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-600">
+          {match.category}
+        </span>
+      </div>
+
+      <h3 className="text-lg font-black text-zinc-950">
+        {match.player1} vs {match.player2}
+      </h3>
+      <p className="mt-2 text-sm leading-6 text-zinc-600">
+        Opponent: {opponentSlug ? (
+          <Link href={`/player/${opponentSlug}`} className="font-bold text-green-700 hover:text-green-600">
+            {opponent}
+          </Link>
+        ) : (
+          opponent
+        )}{" "}
+        · {formatMatchDateTime(match.startTime)}
+      </p>
+      {match.score ? <p className="mt-2 text-sm font-bold text-zinc-800">Score: {match.score}</p> : null}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href={getWatchMatchUrl(match)} className="rounded-xl bg-black px-3 py-2 text-sm font-bold text-white hover:bg-zinc-800">
+          {cta}
+        </Link>
+        <Link href={getTournamentUrl(match.tournament)} className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-800 hover:border-green-500 hover:bg-green-50">
+          {match.tournament}
+        </Link>
+      </div>
+    </article>
+  );
+}
+
 function isLiveMatch(match: Match) {
   return match.status?.toUpperCase() === "LIVE" && !isFinishedMatch(match);
 }
@@ -1079,9 +1202,19 @@ const playerMatches = allMatches
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
   const editorialProfile = getEditorialProfile(canonicalSlug, playerName, sameTourLabel);
   const pageSummary = getPlayerPageSummary(playerName, playerMatches);
-  const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments, headline } = pageSummary;
+  const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments } = pageSummary;
   const currentTournament = tournaments[0] || finishedMatches[0]?.tournament || upcomingMatches[0]?.tournament || liveMatches[0]?.tournament || "Not listed";
   const playerForm = buildPlayerForm(playerName, playerMatches);
+  const lastUpdated = new Date();
+  const country = getPlayerCountry(canonicalSlug, editorialProfile);
+  const ranking = getPlayerRanking(canonicalSlug);
+  const scheduledMatches = upcomingMatches
+    .filter((match) => !isLiveMatch(match) && !isFinishedMatch(match))
+    .sort(sortMatchesByUserIntent);
+  const recentResults = finishedMatches.sort(sortByNewest);
+  const visibleTournaments = Array.from(
+    new Set(playerMatches.map((match) => match.tournament).filter(Boolean))
+  ).slice(0, 6);
 
   if (process.env.NODE_ENV !== "production") {
     console.info("Player page match dataset debug", {
@@ -1110,6 +1243,38 @@ const playerMatches = allMatches
       url: "https://watchtennistoday.com",
     },
   };
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: playerName,
+    nationality: country || undefined,
+    description: `${playerName} tennis schedule, next match, results and legal live viewing guide.`,
+    url: `https://watchtennistoday.com/player/${pageSlug}`,
+    sameAs: canonicalSlug
+      ? [
+          `https://watchtennistoday.com/watch-player-live/${pageSlug}`,
+        ]
+      : undefined,
+  };
+
+  const sportsEventSchema = scheduledMatches.slice(0, 5).map((match) => ({
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: `${match.player1} vs ${match.player2}`,
+    startDate: match.startTime || undefined,
+    eventStatus: "https://schema.org/EventScheduled",
+    sport: "Tennis",
+    location: {
+      "@type": "Place",
+      name: match.tournament,
+    },
+    competitor: [
+      { "@type": "Person", name: match.player1 },
+      { "@type": "Person", name: match.player2 },
+    ],
+    url: `https://watchtennistoday.com${getWatchMatchUrl(match)}`,
+  }));
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -1172,6 +1337,16 @@ const playerMatches = allMatches
             <span className="rounded-full bg-green-400 px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
               {canonicalSlug ? players[canonicalSlug].tour : "Tennis"} player hub
             </span>
+            {country ? (
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-zinc-200">
+                {country}
+              </span>
+            ) : null}
+            {ranking ? (
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-zinc-200">
+                Ranking {ranking}
+              </span>
+            ) : null}
             {liveMatches.length ? (
               <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-black uppercase tracking-wide text-white animate-pulse">
                 Live now
@@ -1180,7 +1355,7 @@ const playerMatches = allMatches
           </div>
 
           <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
-            {headline}
+            {playerName}
           </h1>
 
           <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300 md:text-lg">
@@ -1188,7 +1363,7 @@ const playerMatches = allMatches
             tournament context and official tennis viewing guides in one place.
           </p>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Live matches</p>
               <p className="mt-1 text-3xl font-black">{liveMatches.length}</p>
@@ -1198,9 +1373,23 @@ const playerMatches = allMatches
               <p className="mt-1 text-3xl font-black">{upcomingMatches.length}</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Current tournament</p>
-              <p className="mt-1 truncate text-2xl font-black">{currentTournament}</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Next match</p>
+              <p className="mt-1 text-lg font-black leading-tight">
+                {nextMatch ? getOpponentForPlayer(nextMatch, playerName) : "Not listed"}
+              </p>
             </div>
+            <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Current tournament</p>
+              <p className="mt-1 truncate text-lg font-black">{currentTournament}</p>
+            </div>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
+            <span className="font-bold text-zinc-400">Last updated {formatUpdatedAt(lastUpdated)}</span>
+            <a href="#next-match" className="rounded-full border border-zinc-700 px-3 py-2 font-black hover:border-green-400">Next match</a>
+            <a href="#upcoming-matches" className="rounded-full border border-zinc-700 px-3 py-2 font-black hover:border-green-400">Upcoming</a>
+            <a href="#recent-results" className="rounded-full border border-zinc-700 px-3 py-2 font-black hover:border-green-400">Results</a>
+            <a href="#how-to-watch" className="rounded-full border border-zinc-700 px-3 py-2 font-black hover:border-green-400">How to watch</a>
+            <a href="#faq" className="rounded-full border border-zinc-700 px-3 py-2 font-black hover:border-green-400">FAQ</a>
           </div>
         </div>
       </section>
@@ -1350,6 +1539,134 @@ const playerMatches = allMatches
           </p>
         </section>
       ) : null}
+
+      <section id="next-match" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Next Match</p>
+            <h2 className="text-2xl font-black text-zinc-950">{playerName} next match</h2>
+          </div>
+          <Link href="/live-tennis" className="text-sm font-bold text-green-700 hover:text-green-600">
+            Live tennis hub
+          </Link>
+        </div>
+        {nextMatch ? (
+          <MatchSummaryCard
+            match={nextMatch}
+            playerName={playerName}
+            cta={isLiveMatch(nextMatch) ? "Follow live match" : isFinishedMatch(nextMatch) ? "Open result" : "Open match"}
+          />
+        ) : (
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
+            <p className="font-bold text-zinc-900">No confirmed next match is listed right now.</p>
+            <p className="mt-2">
+              Check the live tennis hub, today&apos;s matches and tournament pages for updated draws and order-of-play changes.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/live-tennis" className="rounded-xl bg-black px-3 py-2 font-bold text-white">Live tennis</Link>
+              <Link href="/today" className="rounded-xl border border-zinc-200 px-3 py-2 font-bold text-zinc-900">Matches today</Link>
+              <Link href="/tournament" className="rounded-xl border border-zinc-200 px-3 py-2 font-bold text-zinc-900">Tournaments</Link>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section id="upcoming-matches" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Upcoming Matches</p>
+            <h2 className="text-2xl font-black text-zinc-950">{playerName} upcoming matches</h2>
+          </div>
+          <Link href="/today" className="text-sm font-bold text-green-700 hover:text-green-600">
+            Matches today
+          </Link>
+        </div>
+        {scheduledMatches.length ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {scheduledMatches.slice(0, 6).map((match) => (
+              <MatchSummaryCard key={match.id} match={match} playerName={playerName} cta="Open match" />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
+            No future {playerName} matches are currently available in the feed. Tennis draws and court assignments often update close to the tournament day.
+          </p>
+        )}
+      </section>
+
+      <section id="recent-results" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Recent Results</p>
+            <h2 className="text-2xl font-black text-zinc-950">{playerName} results</h2>
+          </div>
+          <Link href="/tennis-results-today" className="text-sm font-bold text-green-700 hover:text-green-600">
+            Tennis results today
+          </Link>
+        </div>
+        {recentResults.length ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {recentResults.slice(0, 6).map((match) => (
+              <MatchSummaryCard key={match.id} match={match} playerName={playerName} cta="Open result" />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
+            No reliable completed {playerName} results are available in this feed yet. We avoid showing partial rows as confirmed results.
+          </p>
+        )}
+      </section>
+
+      <section id="player-tournaments" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Tournaments</p>
+        <h2 className="text-2xl font-black text-zinc-950">{playerName} tournaments</h2>
+        <p className="mt-3 text-sm leading-7 text-zinc-600">
+          Tournament pages help confirm draw context, event level and legal viewing routes before a match starts.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {(visibleTournaments.length ? visibleTournaments : (canonicalSlug ? players[canonicalSlug].tournaments : [])).slice(0, 6).map((tournament) => (
+            <Link
+              key={tournament}
+              href={getTournamentUrl(tournament)}
+              className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500"
+            >
+              {tournament}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="how-to-watch" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">How to Watch</p>
+        <h2 className="text-2xl font-black text-zinc-950">How to watch {playerName} live</h2>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <p className="text-sm leading-7 text-zinc-600">
+            Legal viewing depends on the tournament, tour and country. Start from the match or tournament page, then confirm the official broadcaster for your region before subscribing or clicking through.
+          </p>
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-7 text-zinc-600">
+            Watch Tennis Today does not host streams or bypass broadcaster restrictions. We organize schedules, match context and official viewing checks.
+          </div>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Link href={`/watch-player-live/${pageSlug}`} className="rounded-xl bg-black px-3 py-2 text-sm font-bold text-white">Player live guide</Link>
+          <Link href="/tennis-on-tv-today" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Tennis on TV today</Link>
+          <Link href="/watch-tennis-in" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Country guides</Link>
+          <Link href="/best-ways-to-watch-tennis-online" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Streaming guide</Link>
+        </div>
+      </section>
+
+      <section id="player-schedule" className="mb-8 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Player Schedule</p>
+        <h2 className="text-2xl font-black text-zinc-950">{playerName} schedule snapshot</h2>
+        <p className="mt-3 text-sm leading-7 text-zinc-600">
+          This schedule snapshot is generated from available match rows for {playerName}. Times are shown in your local browser/server locale and can move when earlier court matches run long.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <Link href="/live-tennis" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Live tennis</Link>
+          <Link href="/today" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Matches today</Link>
+          <Link href="/tennis-time-zone-converter" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Time zone converter</Link>
+        </div>
+      </section>
 
       <div className="mb-8">
         <LocalPlayerFollowButton
@@ -1646,7 +1963,7 @@ const playerMatches = allMatches
       </section>
 
 
-      {tournaments.length ? (
+      {false ? (
         <section className="mb-10 rounded-3xl border border-zinc-200 bg-neutral-50 p-6">
           <h2 className="mb-3 text-2xl font-black text-zinc-950">
             Current tournament context for {playerName}
@@ -1730,7 +2047,7 @@ const playerMatches = allMatches
         </div>
       </section>
 
-      <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-6">
+      <section id="faq" className="mb-10 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6">
         <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Related resources</p>
         <h2 className="text-2xl font-black text-zinc-950">Player resources for rankings, tournaments and legal viewing</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
@@ -1786,7 +2103,7 @@ const playerMatches = allMatches
 
       <section className="mb-10 rounded-2xl border border-green-500/30 bg-green-500/10 p-5">
   <h2 className="text-xl font-bold mb-3">
-    Legal Tennis Viewing Information
+    Editorial transparency note
   </h2>
 
   <p className="text-sm leading-7 text-zinc-700">
@@ -1843,6 +2160,8 @@ const playerMatches = allMatches
         <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
           <Link href="/how-we-source-data" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">How we source data</Link>
           <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">How we verify streams</Link>
+          <Link href="/editorial-policy" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">Editorial policy</Link>
+          <Link href="/contact" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">Report outdated info</Link>
           <Link href="/tennis-guides" className="rounded-full border border-zinc-300 px-4 py-2 text-zinc-900 hover:border-green-500">Tennis guides hub</Link>
         </div>
       </section>
@@ -1880,6 +2199,18 @@ const playerMatches = allMatches
   type="application/ld+json"
   dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageSchema) }}
 />
+
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+/>
+
+      {sportsEventSchema.length ? (
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEventSchema) }}
+/>
+      ) : null}
 
       <script
   type="application/ld+json"
