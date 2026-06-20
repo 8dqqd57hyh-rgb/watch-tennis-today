@@ -894,6 +894,7 @@ function CurrentMatchPage({
   const scoreDisplay = getScoreDisplay(match);
   const countryLinks = buildCountryWatchLinks(match);
   const relatedMatches = getRelatedMatches(match, matches);
+  const safeWatchProviders = getSafeWatchProviders(match);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
   const moreTennisCoverageLinks = buildMoreTennisCoverageLinks({
@@ -967,8 +968,8 @@ function CurrentMatchPage({
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            getSafeWatchProviders(match).length > 0
-              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${getSafeWatchProviders(match)
+            safeWatchProviders.length > 0
+              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${safeWatchProviders
                   .map((provider) => provider.name)
                   .join(", ")}.`
               : `Official viewing information for ${matchTitle} may depend on your country, tournament rights and broadcaster availability.`,
@@ -1347,9 +1348,9 @@ function CurrentMatchPage({
                 </a>
               </div>
 
-              {getSafeWatchProviders(match).length > 0 ? (
+              {safeWatchProviders.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {getSafeWatchProviders(match).map((provider) => (
+                  {safeWatchProviders.map((provider) => (
                     <a
                       key={`${provider.name}-${provider.url}`}
                       href={provider.url}

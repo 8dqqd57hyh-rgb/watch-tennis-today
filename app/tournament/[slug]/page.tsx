@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
-import { headers } from "next/headers";
 import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
@@ -11,6 +10,7 @@ import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 import { getStableTournamentHub } from "@/data/tournamentHubs";
 import { safePlayerUrl } from "@/data/playerSlugs";
+import { getServerMatchesWindow, type ServerMatch } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -43,16 +43,7 @@ function buildTournamentSeoDescription(tournamentName: string) {
   return `How to watch ${tournamentName} ${CURRENT_SEASON}: live stream and TV schedule guidance, matches today, upcoming matches, completed results and draw context.`;
 }
 
-type Match = {
-  id: string;
-  player1: string;
-  player2: string;
-  tournament: string;
-  category: string;
-  status: string;
-  score: string;
-  startTime: string | null;
-};
+type Match = Pick<ServerMatch, "id" | "player1" | "player2" | "tournament" | "category" | "status" | "score" | "startTime">;
 
 type PageProps = {
   params: Promise<{
@@ -60,26 +51,13 @@ type PageProps = {
   }>;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(): Promise<Match[]> {
-  const baseUrl = await getBaseUrl();
-
-  const response = await fetch(`${baseUrl}/api/matches?includeFinished=1&daysBack=7&daysForward=14`, {
-    cache: "no-store",
+  return getServerMatchesWindow({
+    includeFinished: true,
+    daysBack: 7,
+    daysForward: 14,
+    noStore: true,
   });
-
-  if (!response.ok) return [];
-
-  return response.json();
 }
 
 function slugify(text: string) {

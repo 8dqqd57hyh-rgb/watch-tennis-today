@@ -57,7 +57,7 @@ function normalizeMatches(data: unknown): ServerMatch[] {
 async function fetchServerMatches(
   path: string,
   revalidateSeconds = 60,
-  options: { timeoutMs?: number } = {}
+  options: { timeoutMs?: number; noStore?: boolean } = {}
 ): Promise<ServerMatch[]> {
   const baseUrl = await getBaseUrl();
   const controller = new AbortController();
@@ -71,7 +71,7 @@ async function fetchServerMatches(
   try {
     const response = await fetch(`${baseUrl}${requestPath}`, {
       signal: controller.signal,
-      next: { revalidate: revalidateSeconds },
+      ...(options.noStore ? { cache: "no-store" as const } : { next: { revalidate: revalidateSeconds } }),
     });
 
     if (!response.ok) return [];
@@ -91,6 +91,36 @@ export async function getServerMatches(revalidateSeconds = 60): Promise<ServerMa
 export async function getLiveTennisPageMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
   return fetchServerMatches("/api/matches?includeFinished=1&daysBack=1&daysForward=1", revalidateSeconds, {
     timeoutMs: 15000,
+  });
+}
+
+export async function getServerMatchesWindow({
+  revalidateSeconds = 60,
+  timeoutMs,
+  noStore,
+  includeFinished = false,
+  daysBack = 3,
+  daysForward = 3,
+}: {
+  revalidateSeconds?: number;
+  timeoutMs?: number;
+  noStore?: boolean;
+  includeFinished?: boolean;
+  daysBack?: number;
+  daysForward?: number;
+}): Promise<ServerMatch[]> {
+  const params = new URLSearchParams({
+    daysBack: String(daysBack),
+    daysForward: String(daysForward),
+  });
+
+  if (includeFinished) {
+    params.set("includeFinished", "1");
+  }
+
+  return fetchServerMatches(`/api/matches?${params.toString()}`, revalidateSeconds, {
+    timeoutMs,
+    noStore,
   });
 }
 
