@@ -1393,12 +1393,12 @@ const playerMatches = allMatches
 
   <span>/</span>
 
-  <a
+  <Link
     href="/players"
     className="hover:text-white"
   >
     Players
-  </a>
+  </Link>
 
   <span>/</span>
 
@@ -2085,9 +2085,9 @@ const playerMatches = allMatches
               Related tennis players
             </h2>
           </div>
-          <a href="/players" className="text-sm font-bold text-green-600 hover:text-green-500">
+          <Link href="/players" className="text-sm font-bold text-green-600 hover:text-green-500">
             All players →
-          </a>
+          </Link>
         </div>
 
         <p className="mb-5 text-sm leading-7 text-zinc-600">

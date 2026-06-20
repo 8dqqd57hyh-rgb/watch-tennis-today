@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCanonicalPlayerSlug, looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
 
   const duplicateCanonicalRedirects: Record<string, string> = {
     "/privacy-policy": "/privacy",
@@ -24,7 +24,28 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
+  const pluralPlayerPathMatch = request.nextUrl.pathname.match(/^\/players\/(.+)$/);
   const watchPlayerLiveMatch = request.nextUrl.pathname.match(/^\/watch-player-live\/(.+)$/);
+
+  if (pluralPlayerPathMatch) {
+    const firstSegment = pluralPlayerPathMatch[1].split("/").filter(Boolean)[0];
+
+    if (!["atp", "wta", "live-now"].includes(firstSegment || "")) {
+      const requestedSlug = decodeURIComponent(pluralPlayerPathMatch[1] || "")
+        .split("/")
+        .filter(Boolean)
+        .join("-")
+        .replace(/-+/g, "-")
+        .replace(/^[-.]+|[-.]+$/g, "");
+
+      if (requestedSlug) {
+        const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedSlug);
+        const url = request.nextUrl.clone();
+        url.pathname = `/player/${canonicalPlayerSlug || requestedSlug}`;
+        return NextResponse.redirect(url, 308);
+      }
+    }
+  }
 
   if (playerPathMatch) {
     const requestedSlug = decodeURIComponent(playerPathMatch[1] || "")

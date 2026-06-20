@@ -804,9 +804,9 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
             <a href="/live-tennis" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
               Live Tennis
             </a>
-            <a href="/players" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
+            <Link href="/players" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
               Tennis Players
-            </a>
+            </Link>
           </div>
         </div>
       </div>

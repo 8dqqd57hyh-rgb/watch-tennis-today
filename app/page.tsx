@@ -935,12 +935,12 @@ tennis viewing information.
   How to Watch Tennis Safely Abroad
 </a>
 
-<a
+<Link
   href="/players/live-now"
   className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-red-500 hover:text-red-400 transition-all"
 >
   Live Players Now
-</a>
+</Link>
 
 <a
   href="/tennis-trending-now"
@@ -949,12 +949,12 @@ tennis viewing information.
   🔥 Tennis Trending Now
 </a>
 
-<a
+<Link
   href="/players"
   className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
 >
   ⭐ Tennis Players
-</a>
+</Link>
 
             </div>
 

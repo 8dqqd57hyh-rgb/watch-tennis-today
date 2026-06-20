@@ -60,19 +60,19 @@ export default function PlayersPage() {
   </h2>
 
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <a
+    <Link
       href="/players/atp"
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-green-500 transition-all"
     >
       ATP Tennis Players
-    </a>
+    </Link>
 
-    <a
+    <Link
       href="/players/wta"
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-purple-500 transition-all"
     >
       WTA Tennis Players
-    </a>
+    </Link>
 
     <a
       href="/best-tennis-players"
@@ -133,12 +133,12 @@ export default function PlayersPage() {
               Live Tennis Today
             </a>
 
-            <a
+            <Link
               href="/players/live-now"
               className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-red-500 transition-all"
             >
               Live Players Now
-            </a>
+            </Link>
 
             <a
               href="/tennis-trending-now"

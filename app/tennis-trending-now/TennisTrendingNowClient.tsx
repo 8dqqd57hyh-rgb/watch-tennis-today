@@ -289,12 +289,12 @@ export default function TennisTrendingNowPage() {
                   Live Tennis Today
                 </a>
 
-                <a
+                <Link
                   href="/players/live-now"
                   className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-green-500 transition-all"
                 >
                   Live Players Now
-                </a>
+                </Link>
 
                 <a
                   href="/how-to-watch-tennis-safely-abroad"

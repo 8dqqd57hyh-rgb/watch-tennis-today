@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
@@ -28,12 +29,12 @@ export default function ATPPlayersPage() {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
 
-        <a
+        <Link
           href="/players"
           className="text-zinc-400 hover:text-white"
         >
           ← Back to Players
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <div className="inline-flex items-center rounded-full bg-green-500/20 px-4 py-2 text-sm font-bold text-green-400 mb-5">
@@ -83,12 +84,12 @@ export default function ATPPlayersPage() {
               Live ATP Matches
             </a>
 
-            <a
+            <Link
               href="/players/live-now"
               className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-red-500 transition-all"
             >
               ATP Players Live Now
-            </a>
+            </Link>
 
             <a
               href="/tennis-trending-now"
