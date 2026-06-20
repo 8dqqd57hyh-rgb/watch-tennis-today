@@ -490,6 +490,81 @@ type RelatedCoverageLink = {
   priority: number;
 };
 
+type MoreTennisCoverageLink = {
+  label: string;
+  href: string | null;
+  priority: number;
+};
+
+function buildMoreTennisCoverageLinks({
+  match,
+  currentPath,
+  tournamentSlug,
+  player1Url,
+  player2Url,
+}: {
+  match: Match;
+  currentPath: string;
+  tournamentSlug: string;
+  player1Url: string | null;
+  player2Url: string | null;
+}) {
+  const links: MoreTennisCoverageLink[] = [
+    {
+      label: `${match.player1} player profile`,
+      href: player1Url,
+      priority: 100,
+    },
+    {
+      label: `${match.player2} player profile`,
+      href: player2Url,
+      priority: 95,
+    },
+    {
+      label: `${match.tournament} tournament page`,
+      href: tournamentSlug ? `/tournament/${tournamentSlug}` : null,
+      priority: 90,
+    },
+    {
+      label: "Live tennis matches today",
+      href: "/live-tennis",
+      priority: 80,
+    },
+    {
+      label: "Tennis schedule today",
+      href: "/tennis-schedule-today",
+      priority: 75,
+    },
+    {
+      label: "Tennis TV broadcast finder",
+      href: "/tennis-tv-broadcast-finder",
+      priority: 70,
+    },
+    {
+      label: "Best ways to watch tennis online",
+      href: "/best-ways-to-watch-tennis-online",
+      priority: 65,
+    },
+    {
+      label: "How we verify tennis streams",
+      href: "/how-we-verify-streams",
+      priority: 60,
+    },
+    {
+      label: "Today's tennis hub",
+      href: "/today",
+      priority: 55,
+    },
+  ];
+
+  return links
+    .filter((link): link is MoreTennisCoverageLink & { href: string } => Boolean(link.href))
+    .filter((link) => link.href.startsWith("/") && link.href !== currentPath)
+    .filter((link, index, list) => list.findIndex((item) => item.href === link.href) === index)
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, 8);
+}
+
 function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
@@ -821,6 +896,13 @@ function CurrentMatchPage({
   const relatedMatches = getRelatedMatches(match, matches);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
+  const moreTennisCoverageLinks = buildMoreTennisCoverageLinks({
+    match,
+    currentPath: `/watch/${slug}`,
+    tournamentSlug,
+    player1Url,
+    player2Url,
+  });
   const round = getOptionalMatchDetail(match, "round");
   const court = getOptionalMatchDetail(match, "court");
   const surface = getOptionalMatchDetail(match, "surface");
@@ -1453,12 +1535,11 @@ function CurrentMatchPage({
             <section className="mt-16 border-t border-zinc-800 pt-8">
               <h2 className="mb-5 text-2xl font-black">More tennis coverage</h2>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <a href="/tennis-schedule-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Tennis Schedule Today</a>
-                <a href={`/tournament/${tournamentSlug}`} className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">More from {match.tournament}</a>
-                <a href="/best-ways-to-watch-tennis-online" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Best Ways to Watch Tennis Online</a>
-                <a href="/atp-live-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">ATP Live Matches</a>
-                <a href="/wta-live-today" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">WTA Live Matches</a>
-                <a href="/grand-slam-live" className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">Grand Slam Coverage</a>
+                {moreTennisCoverageLinks.map((link) => (
+                  <Link key={link.href} href={link.href} className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">
+                    {link.label}
+                  </Link>
+                ))}
               </div>
             </section>
           </div>
