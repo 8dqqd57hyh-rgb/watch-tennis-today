@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
-import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug } from "@/data/playerSlugs";
+import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import EmailCapture from "@/components/EmailCapture";
@@ -789,6 +789,76 @@ function getTournamentUrl(tournament: string) {
   return slug ? `/tournament/${slug}` : "/tennis-tournaments";
 }
 
+type PlayerResourceLink = {
+  label: string;
+  href: string | null;
+  priority: number;
+};
+
+function buildPlayerResourceLinks({
+  playerName,
+  pageSlug,
+  currentPath,
+  tournaments,
+}: {
+  playerName: string;
+  pageSlug: string;
+  currentPath: string;
+  tournaments: string[];
+}) {
+  const tournamentLinks: PlayerResourceLink[] = tournaments.slice(0, 2).map((tournament, index) => ({
+    label: `${tournament} tournament page`,
+    href: getTournamentUrl(tournament),
+    priority: 90 - index,
+  }));
+
+  const links: PlayerResourceLink[] = [
+    {
+      label: `${playerName} live stream guide`,
+      href: safeWatchPlayerLiveUrl(pageSlug),
+      priority: 100,
+    },
+    ...tournamentLinks,
+    {
+      label: "Today's tennis hub",
+      href: "/today",
+      priority: 80,
+    },
+    {
+      label: "Live tennis matches today",
+      href: "/live-tennis",
+      priority: 75,
+    },
+    {
+      label: "Tennis schedule today",
+      href: "/tennis-schedule-today",
+      priority: 70,
+    },
+    {
+      label: "Tennis TV broadcast finder",
+      href: "/tennis-tv-broadcast-finder",
+      priority: 65,
+    },
+    {
+      label: "Best ways to watch tennis online",
+      href: "/best-ways-to-watch-tennis-online",
+      priority: 60,
+    },
+    {
+      label: "How we verify tennis streams",
+      href: "/how-we-verify-streams",
+      priority: 55,
+    },
+  ];
+
+  return links
+    .filter((link): link is PlayerResourceLink & { href: string } => Boolean(link.href))
+    .filter((link) => link.href.startsWith("/") && link.href !== currentPath)
+    .filter((link, index, list) => list.findIndex((item) => item.href === link.href) === index)
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, 8);
+}
+
 function getWatchMatchUrl(match: Match) {
   return `/watch/${getMatchSlug(match)}`;
 }
@@ -1214,6 +1284,12 @@ const playerMatches = allMatches
   const visibleTournaments = Array.from(
     new Set(playerMatches.map((match) => match.tournament).filter(Boolean))
   ).slice(0, 6);
+  const playerResourceLinks = buildPlayerResourceLinks({
+    playerName,
+    pageSlug,
+    currentPath: `/player/${pageSlug}`,
+    tournaments: visibleTournaments,
+  });
 
   if (process.env.NODE_ENV !== "production") {
     console.info("Player page match dataset debug", {
@@ -2053,10 +2129,11 @@ const playerMatches = allMatches
           Continue from {playerName} to evergreen guides that explain rankings, tournament levels, scoring and legal streaming checks.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Link href="/atp-wta-rankings-explained" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Rankings explained →</Link>
-          <Link href="/tennis-tournament-levels-guide" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Tournament levels →</Link>
-          <Link href="/guides/tennis-scoring-explained" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Tennis scoring →</Link>
-          <Link href="/tennis-streaming" className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">Legal streaming hub →</Link>
+          {playerResourceLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">
+              {link.label}
+            </Link>
+          ))}
         </div>
       </section>
 
