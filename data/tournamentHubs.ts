@@ -13,6 +13,28 @@ export type StableTournamentHub = {
 
 export const stableTournamentHubs: StableTournamentHub[] = [
   {
+    slug: "grand-slam-tournaments",
+    name: "Grand Slam Tournaments",
+    level: "Grand Slam group",
+    surface: "Hard, clay and grass courts",
+    seasonWindow: "January, May-June, June-July and August-September",
+    location: "Melbourne, Paris, London and New York",
+    summary:
+      "Grand Slam Tournaments covers the four majors: Australian Open, Roland Garros, Wimbledon and US Open. This hub is useful when readers want major-event context without starting from a single tournament page.",
+    whyItMatters:
+      "Majors use larger draws, two-week schedules, separate broadcast rights and more court-by-court coverage than most tour events. Men's singles main-draw matches are also best-of-five sets, which changes timing and viewing expectations.",
+    watchNote:
+      "Use this page as the Grand Slam overview, then verify the exact daily order of play, draw, court assignment and broadcaster on the official page for the specific major.",
+    relatedLinks: [
+      { label: "Australian Open", href: "/tournament/australian-open" },
+      { label: "Roland Garros", href: "/tournament/roland-garros" },
+      { label: "Wimbledon", href: "/tournament/wimbledon" },
+      { label: "US Open", href: "/tournament/us-open" },
+      { label: "Grand Slam live", href: "/grand-slam-live" },
+      { label: "Grand Slam TV rights", href: "/grand-slam-tv-rights-explained" },
+    ],
+  },
+  {
     slug: "australian-open",
     name: "Australian Open",
     level: "Grand Slam",

@@ -8,6 +8,14 @@ export type TournamentEditorialProfile = {
 };
 
 const TOURNAMENT_PROFILES: Record<string, TournamentEditorialProfile> = {
+  "grand-slam-tournaments": {
+    level: "Grand Slam group",
+    surface: "Hard, clay and grass courts",
+    format: "Australian Open, Roland Garros, Wimbledon and US Open each run singles, doubles, qualifying and mixed-doubles events, with best-of-five men's singles matches in the main draw.",
+    history: "The Grand Slam tournaments are the four majors of the tennis season. They anchor the calendar across Melbourne, Paris, London and New York, and each event has its own surface, draw rhythm, traditions and broadcast setup.",
+    viewingContext: "Grand Slam coverage is usually sold separately from regular ATP and WTA tour packages. Fans should confirm the specific major, court and country broadcaster before assuming a subscription includes live video.",
+    fanChecklist: ["Specific major", "Official order of play", "Draw and round", "Court assignment", "Country broadcaster", "Time-zone conversion"],
+  },
   "roland-garros": {
     level: "Grand Slam",
     surface: "Outdoor clay",

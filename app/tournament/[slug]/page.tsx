@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 const CURRENT_SEASON = new Date().getFullYear();
 
 const INDEXABLE_TOURNAMENT_SLUGS = new Set([
+  "grand-slam-tournaments",
   "australian-open",
   "roland-garros",
   "french-open",
@@ -499,6 +500,52 @@ export default async function Page({ params }: PageProps) {
         .filter((name) => safePlayerUrl(name))
     )
   ).slice(0, 8);
+  const knownInfoItems = [
+    {
+      label: "Current feed matches",
+      value: tournamentMatches.length ? `${tournamentMatches.length} match entries` : "No current feed entries",
+      note: tournamentMatches.length
+        ? "Split below into today, upcoming and completed matches."
+        : "This page stays useful with stable context while the live feed has no matching entries.",
+    },
+    {
+      label: "Event window",
+      value: visibleTournamentDateRange || stableHub?.seasonWindow || "Needs calendar verification",
+      note: visibleTournamentDateRange
+        ? tournamentDateNote
+        : "Best source: official tournament calendar, then ATP/WTA/ITF calendar data.",
+    },
+    {
+      label: "Location",
+      value: stableHub?.location || "Event-specific location needed",
+      note: stableHub?.location
+        ? "Stable tournament-hub data."
+        : "Best source: official tournament profile or tour calendar entry.",
+    },
+    {
+      label: "Viewing route",
+      value: "Country and tournament specific",
+      note: "Best source: official tournament broadcaster page, local TV listings and licensed streaming providers.",
+    },
+  ];
+  const missingDataSources = [
+    {
+      label: "Exact dates",
+      source: "Official tournament calendars, ATP/WTA event pages and the stored local calendar.",
+    },
+    {
+      label: "Draws and rounds",
+      source: "Official draw PDFs/pages from the tournament, ATP, WTA or ITF.",
+    },
+    {
+      label: "Court assignments",
+      source: "Daily order of play from the tournament website, then match-feed updates close to start time.",
+    },
+    {
+      label: "TV and streaming",
+      source: "Official broadcaster lists, local TV schedules and provider event pages by country.",
+    },
+  ];
 
   const sportsEventSchema = verifiedTournamentDateRange
     ? {
@@ -724,6 +771,38 @@ export default async function Page({ params }: PageProps) {
                   </ul>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-green-400">Known data</p>
+              <h2 className="mt-2 text-3xl font-black">What we know about {tournamentName}</h2>
+            </div>
+            <Link href="/how-we-source-data" className="text-sm font-black text-green-400 hover:text-green-300">
+              Data sourcing
+            </Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {knownInfoItems.map((item) => (
+              <div key={item.label} className="rounded-2xl border border-zinc-800 bg-black p-5">
+                <p className="text-xs font-black uppercase tracking-wide text-zinc-500">{item.label}</p>
+                <p className="mt-2 text-xl font-black text-white">{item.value}</p>
+                <p className="mt-3 text-sm leading-6 text-zinc-400">{item.note}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-2xl border border-zinc-800 bg-black p-5">
+            <h3 className="text-xl font-black">Where to get missing details</h3>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {missingDataSources.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                  <p className="font-black text-white">{item.label}</p>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{item.source}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
