@@ -67,7 +67,7 @@ export default function BestWaysPage() {
             </p>
 
             <p className="text-zinc-400 leading-relaxed">
-              The most reliable way to find an official broadcaster is to visit the official tournament website or your country's major sports network. For Grand Slams, each tournament publishes a complete list of broadcasters by country. For ATP and WTA events, check the official ATP and WTA websites for broadcast information. Official broadcasters are always the safest option because they provide stable, high-quality streams with no risk of malware or service interruptions.
+              The most reliable way to find an official broadcaster is to visit the official tournament website or your country&apos;s major sports network. For Grand Slams, each tournament publishes a complete list of broadcasters by country. For ATP and WTA events, check the official ATP and WTA websites for broadcast information. Official broadcasters are always the safest option because they provide stable, high-quality streams with no risk of malware or service interruptions.
             </p>
           </div>
 

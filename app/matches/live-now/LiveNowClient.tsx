@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import AdSlot from "@/app/components/AdSlot";
 import VpnPromo from "@/app/components/VpnPromo";
@@ -88,12 +89,12 @@ export default function LiveMatchesNowPage() {
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Hero / intro block */}
-        <a
+        <Link
           href="/"
           className="text-zinc-400 hover:text-white"
         >
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400 mb-5">
@@ -152,7 +153,7 @@ export default function LiveMatchesNowPage() {
 
   <div className="flex flex-wrap gap-4">
     <a href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
-      Today's Schedule →
+      Today&apos;s Schedule →
     </a>
     <a href="/atp-live-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all">
       ATP Live →

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const dynamic = "force-dynamic";
@@ -11,12 +12,12 @@ export default function HowToWatchTennisSafelyAbroadPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
-        <a
+        <Link
           href="/"
           className="inline-block mb-8 text-green-400 font-bold hover:text-green-300"
         >
           ← Back to Watch Tennis Today
-        </a>
+        </Link>
 
         <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
           How to Watch Tennis Safely Abroad
@@ -37,12 +38,12 @@ export default function HowToWatchTennisSafelyAbroadPage() {
     📺 Watch Tennis Online
   </a>
 
-  <a
+  <Link
     href="/watch"
     className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 font-black hover:border-yellow-500 hover:text-yellow-400 transition-all"
   >
     🌍 Tennis TV Channels
-  </a>
+  </Link>
 </div>
 
         <p className="text-zinc-300 text-lg leading-8 mb-8">
@@ -128,12 +129,12 @@ export default function HowToWatchTennisSafelyAbroadPage() {
               matches may be available legally.
             </p>
 
-            <a
+            <Link
               href="/watch"
               className="inline-block mt-5 rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
             >
               Check where to watch tennis
-            </a>
+            </Link>
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">

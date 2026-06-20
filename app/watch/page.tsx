@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Where to Watch Tennis Online | Watch Tennis Today",
   description:
@@ -12,9 +14,9 @@ export default function WatchPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-4xl md:text-5xl font-black mt-8">
           Where to Watch Tennis Online
@@ -28,7 +30,7 @@ export default function WatchPage() {
         </p>
 
         <section className="mt-10 grid gap-4 md:grid-cols-2">
-          <a
+          <Link
             href="/live-tennis"
             className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600"
           >
@@ -37,9 +39,9 @@ export default function WatchPage() {
               See current and upcoming tennis matches with links to match pages
               and legal viewing information.
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/tv-schedule"
             className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600"
           >
@@ -47,9 +49,9 @@ export default function WatchPage() {
             <p className="text-zinc-400 mt-2">
               Check tennis coverage by channel, tournament and region.
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/watch-tennis-in/poland"
             className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600"
           >
@@ -57,9 +59,9 @@ export default function WatchPage() {
             <p className="text-zinc-400 mt-2">
               Find country-specific broadcaster guides for tennis fans.
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/how-to-watch-tennis-legally"
             className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600"
           >
@@ -68,7 +70,7 @@ export default function WatchPage() {
               Learn how to avoid unsafe streams and use official tennis
               broadcasters and streaming services.
             </p>
-          </a>
+          </Link>
         </section>
 
         <section className="mt-12 space-y-5 text-zinc-300 leading-relaxed">

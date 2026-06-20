@@ -61,9 +61,30 @@ type RankedPlayer = {
 
 type StandingPlayer = {
   place?: string | number;
+  rank?: string | number;
+  position?: string | number;
   player?: string;
   player_name?: string;
+  player_full_name?: string;
   name?: string;
+};
+
+type UpsetEntry = {
+  id: string;
+  tour: "ATP" | "WTA";
+  tournament: string;
+  round: string;
+  date: string;
+  time: string;
+  court: string;
+  winner: string;
+  loser: string;
+  score: string;
+  loserSeed: number;
+  winnerSeed: number | null;
+  label: string;
+  severity: "major" | "big" | "watchlist";
+  href: string;
 };
 
 // Top 32 seed watchlist. API-Tennis does not reliably return seed metadata,
@@ -275,13 +296,13 @@ function getSeededPlayer(player?: string, tour?: "ATP" | "WTA", dynamicSeeds: Ra
 }
 
 function parseStandingRank(player: StandingPlayer) {
-  const raw = player.place ?? (player as any).rank ?? (player as any).position ?? "";
+  const raw = player.place ?? player.rank ?? player.position ?? "";
   const rank = Number.parseInt(String(raw), 10);
   return Number.isFinite(rank) ? rank : null;
 }
 
 function parseStandingName(player: StandingPlayer) {
-  return normalizeName(player.player_name || player.player || player.name || (player as any).player_full_name || "");
+  return normalizeName(player.player_name || player.player || player.name || player.player_full_name || "");
 }
 
 async function fetchApiStandings(apiKey: string, tour: "ATP" | "WTA") {
@@ -378,7 +399,7 @@ function toUpset(input: {
   winner: string;
   score?: string;
   dynamicSeeds?: RankedPlayer[];
-}) {
+}): UpsetEntry | null {
   const player1 = normalizeName(input.player1);
   const player2 = normalizeName(input.player2);
   const winner = normalizeName(input.winner);
@@ -410,8 +431,12 @@ function toUpset(input: {
   };
 }
 
+function isUpsetEntry(upset: UpsetEntry | null): upset is UpsetEntry {
+  return upset !== null;
+}
 
-function buildVerified2026Upsets(seedPool: RankedPlayer[]) {
+
+function buildVerified2026Upsets(seedPool: RankedPlayer[]): UpsetEntry[] {
   // Verified 2026 Roland Garros seeded exits. This is not a fake UI fallback:
   // it is a small curated source layer used when API-Tennis does not expose
   // seed metadata or temporarily omits completed fixtures from get_fixtures.
@@ -504,7 +529,7 @@ function buildVerified2026Upsets(seedPool: RankedPlayer[]) {
         dynamicSeeds: seedPool,
       })
     )
-    .filter(Boolean);
+    .filter(isUpsetEntry);
 }
 
 async function fetchApiFixtures(apiKey: string, dateStart: string, dateStop: string) {
@@ -547,7 +572,7 @@ async function fetchArchiveMatches(dateStart: string) {
   }
 }
 
-async function fetchNormalizedMatchesFromOwnApi(origin: string, dateStart: string) {
+async function fetchNormalizedMatchesFromOwnApi(origin: string) {
   try {
     const url = new URL("/api/matches", origin);
     url.searchParams.set("includeFinished", "1");
@@ -618,11 +643,11 @@ export async function GET(request: Request) {
           dynamicSeeds: seedPool,
         });
       })
-      .filter(Boolean);
+      .filter(isUpsetEntry);
 
     const [archiveMatches, normalizedMatches] = await Promise.all([
       fetchArchiveMatches(dateStart),
-      fetchNormalizedMatchesFromOwnApi(origin, dateStart),
+      fetchNormalizedMatchesFromOwnApi(origin),
     ]);
 
     const archiveUpsets = archiveMatches
@@ -647,7 +672,7 @@ export async function GET(request: Request) {
           dynamicSeeds: seedPool,
         });
       })
-      .filter(Boolean);
+      .filter(isUpsetEntry);
 
     const normalizedUpsets = normalizedMatches
       .filter((match) => isFrenchOpenText(match.tournament) && isMainSinglesText(`${match.tournament || ""} ${match.category || ""} ${match.round || ""}`) && isFinishedStatus(match.status, match.score))
@@ -671,17 +696,17 @@ export async function GET(request: Request) {
           dynamicSeeds: seedPool,
         });
       })
-      .filter(Boolean);
+      .filter(isUpsetEntry);
 
     const verifiedUpsets = buildVerified2026Upsets(seedPool);
 
-    const liveUpsets = Array.from(
-      new Map([...apiUpsets, ...normalizedUpsets, ...archiveUpsets].map((upset: any) => [String(upset.id), upset])).values()
+    const liveUpsets: UpsetEntry[] = Array.from(
+      new Map([...apiUpsets, ...normalizedUpsets, ...archiveUpsets].map((upset) => [upset.id, upset])).values()
     );
 
     const upsets = Array.from(
-      new Map([...liveUpsets, ...verifiedUpsets].map((upset: any) => [String(upset.id), upset])).values()
-    ).sort((a: any, b: any) => a.loserSeed - b.loserSeed || `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
+      new Map([...liveUpsets, ...verifiedUpsets].map((upset) => [upset.id, upset])).values()
+    ).sort((a, b) => a.loserSeed - b.loserSeed || `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
 
     return NextResponse.json({
       success: true,

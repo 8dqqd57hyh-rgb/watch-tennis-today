@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
@@ -48,9 +49,9 @@ export default function WatchTennisAbroadPage() {
   return (
     <main className="min-h-screen bg-black px-5 py-10 text-white md:px-10">
       <article className="mx-auto max-w-5xl">
-        <a href="/" className="text-sm font-bold text-zinc-400 hover:text-white">
+        <Link href="/" className="text-sm font-bold text-zinc-400 hover:text-white">
           ← Back to Watch Tennis Today
-        </a>
+        </Link>
 
         <header className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-7 md:p-10">
           <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
@@ -124,7 +125,7 @@ export default function WatchTennisAbroadPage() {
           <p className="mb-5 max-w-3xl leading-8 text-zinc-300">
             If you already pay for a legal tennis streaming service and are traveling,
             a reputable VPN can help secure your connection on hotel, airport or cafe
-            Wi‑Fi. Always follow your broadcaster's terms.
+            Wi‑Fi. Always follow your broadcaster&apos;s terms.
           </p>
           <a
             href={affiliateLinks.nordvpn}

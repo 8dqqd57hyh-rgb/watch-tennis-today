@@ -1,20 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import nextDynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
-import TodaysTennisHub from "@/app/components/TodaysTennisHub";
-import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
-import BestMatchesTodayEngine from "@/app/components/BestMatchesTodayEngine";
-import BroadcastFinder from "@/app/components/BroadcastFinder";
-import HomepageGrowthEngine from "@/app/components/HomepageGrowthEngine";
-import EmailSignup from "@/app/components/EmailSignup";
-import TennisWatchlistHub from "@/app/components/TennisWatchlistHub";
-import MatchImportanceHub from "@/app/components/MatchImportanceHub";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
+
+const TodaysTennisHub = nextDynamic(() => import("@/app/components/TodaysTennisHub"));
+const RevenueConversionPanel = nextDynamic(() => import("@/app/components/RevenueConversionPanel"));
+const BestMatchesTodayEngine = nextDynamic(() => import("@/app/components/BestMatchesTodayEngine"));
+const BroadcastFinder = nextDynamic(() => import("@/app/components/BroadcastFinder"));
+const HomepageGrowthEngine = nextDynamic(() => import("@/app/components/HomepageGrowthEngine"));
+const EmailSignup = nextDynamic(() => import("@/app/components/EmailSignup"));
+const MatchImportanceHub = nextDynamic(() => import("@/app/components/MatchImportanceHub"));
+const TennisWatchlistHub = nextDynamic(() => import("@/app/components/TennisWatchlistHub"), {
+  ssr: false,
+});
 type WatchProvider = {
   name: string;
   url: string;

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Privacy Policy | Watch Tennis Today",
   description:
@@ -12,9 +14,9 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           Privacy Policy
@@ -73,7 +75,7 @@ export default function PrivacyPolicyPage() {
               use cookies, device identifiers or similar technologies to serve ads,
               measure ad performance, limit repeated ads, personalize advertising
               where permitted and prevent invalid activity or fraud. Google may use
-              advertising cookies to help serve ads based on a visitor's prior visits
+              advertising cookies to help serve ads based on a visitor&apos;s prior visits
               to this website or other websites.
             </p>
           </section>
@@ -88,7 +90,7 @@ export default function PrivacyPolicyPage() {
               attribution and basic website functionality. You can control or
               disable cookies through your browser settings, but some website
               features may not work as expected. You can also manage how Google
-              uses information for ads through Google's ad settings and related
+              uses information for ads through Google&apos;s ad settings and related
               privacy controls available from Google.
             </p>
           </section>

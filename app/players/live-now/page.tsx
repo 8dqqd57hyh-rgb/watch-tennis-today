@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { looksLikeUnverifiedDoublesSlug, safeWatchPlayerLiveUrl, safePlayerUrl, verifiedPlayerNameForLink } from "@/data/playerSlugs";
 
@@ -151,9 +152,9 @@ export default function LiveNowPlayersPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-10">
           <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">

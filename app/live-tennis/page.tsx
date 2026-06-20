@@ -296,7 +296,7 @@ function buildSections(matches: Match[], now: Date): MatchSection[] {
     });
   }
 
-  return [
+  const sections: MatchSection[] = [
     {
       id: "live-now",
       title: "Live Now",
@@ -325,7 +325,9 @@ function buildSections(matches: Match[], now: Date): MatchSection[] {
       tone: "done",
       matches: buckets.completed,
     },
-  ].filter((section) => section.matches.length > 0);
+  ];
+
+  return sections.filter((section) => section.matches.length > 0);
 }
 
 function badgeClass(tone: MatchSection["tone"]) {

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 
 type RelatedMoneyLinksProps = {
@@ -27,118 +28,118 @@ export default function RelatedMoneyLinks({
 
       <div className="grid gap-3 md:grid-cols-2">
         {playerName && (
-          <a
+          <Link
             href="/best-vpn-for-tennis-streaming"
             data-track-category="money_internal"
             data-track-id="related_best_vpn_player"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Best VPN for watching {playerName} matches
-          </a>
+          </Link>
         )}
 
         {playerName && !isDoublesTeam(playerName) && (
-          <a
+          <Link
             href={safePlayerUrl(playerName) || "/players"}
             data-track-category="player_internal"
             data-track-id="related_player_primary"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {playerName} live
-          </a>
+          </Link>
         )}
 
         {player2Name && !isDoublesTeam(player2Name) && (
-          <a
+          <Link
             href={safePlayerUrl(player2Name) || "/players"}
             data-track-category="player_internal"
             data-track-id="related_player_secondary"
             className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
           >
             Watch {player2Name} live
-          </a>
+          </Link>
         )}
 
-        <a
+        <Link
           href="/watch-tennis-abroad"
           data-track-category="money_internal"
           data-track-id="related_watch_abroad"
           className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis abroad safely
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/best-ways-to-watch-tennis-online"
           data-track-category="money_internal"
           data-track-id="related_best_ways_online"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Best ways to watch tennis online
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/compare/tennis-tv-vs-espn"
           data-track-category="compare_internal"
           data-track-id="related_compare_tennis_tv_espn"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Tennis TV vs ESPN+
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/compare/nordvpn-vs-surfshark-for-tennis"
           data-track-category="compare_internal"
           data-track-id="related_compare_nordvpn_surfshark"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           NordVPN vs Surfshark for tennis
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/compare/espn-vs-tennis-channel"
           data-track-category="compare_internal"
           data-track-id="related_compare_espn_tennis_channel"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           ESPN+ vs Tennis Channel
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/watch-tennis-in/usa"
           data-track-category="country_internal"
           data-track-id="related_country_usa"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis in the USA
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/watch-tennis-in/uk"
           data-track-category="country_internal"
           data-track-id="related_country_uk"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           Watch tennis in the UK
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/atp-live-today"
           data-track-category="schedule_internal"
           data-track-id="related_atp_live_today"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           ATP live today
-        </a>
+        </Link>
 
-        <a
+        <Link
           href="/wta-live-today"
           data-track-category="schedule_internal"
           data-track-id="related_wta_live_today"
           className="rounded-2xl border border-zinc-700 bg-black p-4 font-bold text-white hover:border-green-500"
         >
           WTA live today
-        </a>
+        </Link>
       </div>
     </section>
   );

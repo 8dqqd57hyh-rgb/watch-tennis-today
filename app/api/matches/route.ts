@@ -406,7 +406,7 @@ function isInitialToken(value: string) {
   return /^[a-z]$/.test(value.replace(/\./g, ""));
 }
 
-function apiDoublesSideIncludesPlayer(playerName: string, sideName: string) {
+function apiDoublesSideIncludesPlayer(playerName: string, sideName: string): boolean {
   if (!/[\/&+]/.test(sideName)) return false;
 
   const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
@@ -428,7 +428,7 @@ function apiDoublesSideIncludesPlayer(playerName: string, sideName: string) {
     });
 }
 
-function apiSinglesNameMatchesPlayer(playerName: string, sideName: string) {
+function apiSinglesNameMatchesPlayer(playerName: string, sideName: string): boolean {
   const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
   const sideParts = normalizeSearchName(sideName).split(/\s+/).filter(Boolean);
 
@@ -458,7 +458,7 @@ function apiSinglesNameMatchesPlayer(playerName: string, sideName: string) {
   return false;
 }
 
-function apiNameMatchesPlayer(playerName: string, sideName: string) {
+function apiNameMatchesPlayer(playerName: string, sideName: string): boolean {
   return (
     apiSinglesNameMatchesPlayer(playerName, sideName) ||
     apiDoublesSideIncludesPlayer(playerName, sideName)

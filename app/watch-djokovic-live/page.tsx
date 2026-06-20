@@ -1,3 +1,4 @@
+import Link from "next/link";
 import PlayerLiveMoneyGuide from "@/app/components/PlayerLiveMoneyGuide";
 import PlayerAuthoritySections from "@/app/components/PlayerAuthoritySections";
 
@@ -56,18 +57,18 @@ export default function WatchNovakDjokovicLivePage() {
         </section>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <a href="/watch-player-live/novak-djokovic" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          <Link href="/watch-player-live/novak-djokovic" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             Open live match hub for Novak Djokovic
-          </a>
-          <a href="/player/novak-djokovic" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          </Link>
+          <Link href="/player/novak-djokovic" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             View Novak Djokovic player profile
-          </a>
-          <a href="/today" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          </Link>
+          <Link href="/today" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             See today&apos;s tennis schedule
-          </a>
-          <a href="/watch-tennis-live-today" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
+          </Link>
+          <Link href="/watch-tennis-live-today" className="rounded-xl border p-4 font-medium hover:bg-neutral-50">
             Find legal tennis streams today
-          </a>
+          </Link>
         </div>
 
 

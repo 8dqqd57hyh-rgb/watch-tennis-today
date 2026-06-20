@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Editorial Policy | Watch Tennis Today",
   description:
@@ -12,9 +14,9 @@ export default function EditorialPolicyPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-4xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-4xl md:text-5xl font-black mt-8">
           Editorial Policy

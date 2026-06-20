@@ -683,7 +683,7 @@ function isInitialNamePart(value?: string) {
   return /^[a-z]$/i.test(String(value || "").replace(/\./g, ""));
 }
 
-function doublesSideIncludesPlayer(candidateName: string, targetName: string) {
+function doublesSideIncludesPlayer(candidateName: string, targetName: string): boolean {
   if (!/[\/&+]/.test(candidateName)) return false;
 
   const targetParts = normalizePlayerName(targetName || "").replace(/\./g, "").split(" ").filter(Boolean);
@@ -705,7 +705,7 @@ function doublesSideIncludesPlayer(candidateName: string, targetName: string) {
     });
 }
 
-function doSinglesPlayerNamesMatch(candidateName: string, targetName: string) {
+function doSinglesPlayerNamesMatch(candidateName: string, targetName: string): boolean {
   const candidate = normalizePlayerName(candidateName || "").replace(/\./g, "");
   const target = normalizePlayerName(targetName || "").replace(/\./g, "");
 
@@ -747,7 +747,7 @@ function doSinglesPlayerNamesMatch(candidateName: string, targetName: string) {
   return false;
 }
 
-function doPlayerNamesMatch(candidateName: string, targetName: string) {
+function doPlayerNamesMatch(candidateName: string, targetName: string): boolean {
   return (
     doSinglesPlayerNamesMatch(candidateName, targetName) ||
     doublesSideIncludesPlayer(candidateName, targetName)

@@ -84,9 +84,11 @@ export async function POST(request: Request) {
 
                   <p>
                     <strong>Start:</strong>
-                    ${new Date(
+                    ${
                       match.startTime
-                    ).toLocaleString()}
+                        ? new Date(match.startTime).toLocaleString()
+                        : "Time to be confirmed"
+                    }
                   </p>
                 </div>
               `

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { players } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
@@ -108,12 +109,12 @@ export default async function TvSchedulePage({
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
-        <a
+        <Link
           href="/"
           className="text-zinc-400 hover:text-white"
         >
           ← Back
-        </a>
+        </Link>
 
         <h1 className="text-5xl font-black mt-8 mb-6">
           📺 {player.name} TV Schedule
@@ -194,12 +195,12 @@ export default async function TvSchedulePage({
       Live Tennis Today
     </a>
 
-    <a
+    <Link
       href="/tournament"
       className="rounded-2xl border border-zinc-700 px-5 py-3 font-bold hover:border-green-500 hover:text-green-400 transition-all"
     >
       Tennis Tournaments
-    </a>
+    </Link>
   </div>
 </section>
         )}

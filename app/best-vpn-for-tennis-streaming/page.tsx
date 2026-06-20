@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const dynamic = "force-dynamic";
@@ -51,12 +52,12 @@ export default function BestVpnForTennisStreamingPage() {
   }}
 />
       <div className="max-w-4xl mx-auto">
-        <a
+        <Link
           href="/"
           className="inline-block mb-8 text-green-400 font-bold hover:text-green-300"
         >
           ← Back to Watch Tennis Today
-        </a>
+        </Link>
 
         <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
           Best VPN for Tennis Streaming

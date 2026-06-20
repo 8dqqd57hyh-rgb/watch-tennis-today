@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
@@ -84,9 +85,9 @@ export default function TennisTrendingNowPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-        <a href="/" className="text-zinc-400 hover:text-white">
+        <Link href="/" className="text-zinc-400 hover:text-white">
           ← Back
-        </a>
+        </Link>
 
         <section className="mt-8 mb-12">
           <div className="inline-flex items-center rounded-full bg-red-500/20 px-4 py-2 text-sm font-bold text-red-400 mb-5">

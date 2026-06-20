@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "How Tennis Streaming Rights Work | Watch Tennis Today",
   description:
@@ -12,7 +14,7 @@ export default function TennisStreamingRightsExplainedPage() {
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
       <article className="mx-auto max-w-4xl">
-        <a href="/" className="text-zinc-400 hover:text-white">← Back</a>
+        <Link href="/" className="text-zinc-400 hover:text-white">← Back</Link>
         <header className="my-10">
           <p className="mb-4 font-bold text-green-400">Tennis viewing guide</p>
           <h1 className="mb-6 text-4xl font-black md:text-6xl">How Tennis Streaming Rights Work</h1>

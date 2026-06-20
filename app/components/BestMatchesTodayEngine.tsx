@@ -1,5 +1,3 @@
-"use client";
-
 import { withTracking } from "@/app/lib/tracking";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import { safePlayerUrl } from "@/data/playerSlugs";

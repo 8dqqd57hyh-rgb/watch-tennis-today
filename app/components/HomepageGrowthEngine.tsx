@@ -1,5 +1,3 @@
-"use client";
-
 type Match = {
   id: string;
   player1: string;

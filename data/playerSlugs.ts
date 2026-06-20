@@ -278,7 +278,7 @@ export function matchContainsExactPlayer(match: MatchParticipantFields | null | 
       .join(" "),
   ].map(normalizePlayerName);
 
-  const fields = [
+  const fields: (keyof MatchParticipantFields)[] = [
     "event_first_player",
     "event_second_player",
     "firstPlayer",

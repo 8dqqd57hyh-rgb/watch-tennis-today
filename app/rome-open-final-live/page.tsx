@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AdSlot from "@/app/components/AdSlot";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
@@ -180,12 +181,12 @@ export default async function RomeOpenFinalLivePage() {
               Check Live Tennis →
             </a>
 
-            <a
+            <Link
               href="/watch"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-green-500 hover:text-green-400"
             >
               Where to Watch
-            </a>
+            </Link>
           </div>
 
           <p className="mt-6 text-sm text-zinc-500">
@@ -212,26 +213,26 @@ export default async function RomeOpenFinalLivePage() {
           </p>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <a
+            <Link
               href="/watch-tennis-in/usa"
               className="rounded-2xl border border-zinc-800 bg-black p-5 font-bold hover:border-green-500 hover:text-green-400"
             >
               Watch in USA
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/watch-tennis-in/uk"
               className="rounded-2xl border border-zinc-800 bg-black p-5 font-bold hover:border-green-500 hover:text-green-400"
             >
               Watch in UK
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/watch-tennis-in/poland"
               className="rounded-2xl border border-zinc-800 bg-black p-5 font-bold hover:border-green-500 hover:text-green-400"
             >
               Watch in Poland
-            </a>
+            </Link>
           </div>
 
           {finalMatch?.watchProviders?.length ? (

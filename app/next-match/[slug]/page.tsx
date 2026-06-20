@@ -18,6 +18,7 @@ type Match = {
   status: string;
   score?: string;
   startTime?: string | null;
+  round?: string | null;
 };
 
 type Props = {

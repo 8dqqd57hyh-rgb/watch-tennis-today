@@ -438,6 +438,8 @@ export default async function Page({ params }: PageProps) {
       : slug.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
 
   const stableHub = getStableTournamentHub(slug);
+  const stableHubName = stableHub?.name;
+  const stableHubRelatedLinks = stableHub?.relatedLinks || [];
   const tournamentName = tournamentMatches[0]?.tournament || stableHub?.name || unslugify(slug);
 
   const liveCount = tournamentMatches.filter(isLiveMatch).length;
@@ -1040,14 +1042,14 @@ export default async function Page({ params }: PageProps) {
                   </a>
                 </div>
               </section>
-            ) : stableHub ? (
+            ) : stableHubName ? (
               <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                <h2 className="mb-4 text-3xl font-black">{stableHub.name} hub</h2>
+                <h2 className="mb-4 text-3xl font-black">{stableHubName} hub</h2>
                 <p className="mb-5 max-w-3xl leading-8 text-zinc-300">
                   No live match-feed entries are available for this tournament right now. This page still gives stable tournament context so readers are not left on a thin empty page while the event is outside the current schedule window.
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {stableHub.relatedLinks.map((link) => (
+                  {stableHubRelatedLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}

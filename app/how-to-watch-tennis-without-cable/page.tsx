@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const dynamic = "force-dynamic";
@@ -64,9 +65,9 @@ export default function HowToWatchTennisWithoutCablePage() {
           <li>Use a VPN only for privacy or travel access to your own legal account where allowed.</li>
         </ol>
         <div className="mt-5 flex flex-wrap gap-3">
-          <a href="/watch" className="rounded-full bg-emerald-500 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-400">
+          <Link href="/watch" className="rounded-full bg-emerald-500 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-400">
             Find where to watch
-          </a>
+          </Link>
           <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow sponsored noopener noreferrer" className="rounded-full border border-emerald-300 px-5 py-3 text-sm font-bold text-neutral-900 hover:bg-white">
             Check VPN option
           </a>
@@ -76,10 +77,10 @@ export default function HowToWatchTennisWithoutCablePage() {
       <section className="rounded-3xl border bg-white p-6">
         <h2 className="mb-4 text-2xl font-bold text-neutral-950">Related guides</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <a href="/best-ways-to-watch-tennis-online" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Best ways to watch tennis online</a>
-          <a href="/best-vpn-for-tennis-streaming" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Best VPN for tennis streaming</a>
-          <a href="/watch-tennis-in/usa" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Watch tennis in the USA</a>
-          <a href="/watch-tennis-in/uk" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Watch tennis in the UK</a>
+          <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Best ways to watch tennis online</Link>
+          <Link href="/best-vpn-for-tennis-streaming" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Best VPN for tennis streaming</Link>
+          <Link href="/watch-tennis-in/usa" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Watch tennis in the USA</Link>
+          <Link href="/watch-tennis-in/uk" className="rounded-2xl border p-4 font-semibold hover:bg-neutral-50">Watch tennis in the UK</Link>
         </div>
       </section>
     </main>
