@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { getKnownBroadcastPriceOptions } from "@/src/data/tennisBroadcasts";
 
 type ServiceKey = "main" | "grandSlam" | "vpn" | "extra";
 type CurrencyCode = "USD" | "EUR" | "GBP";
@@ -21,82 +22,37 @@ type ServiceItem = {
   options: ServiceOption[];
 };
 
+const knownBroadcastPriceOptions = getKnownBroadcastPriceOptions();
+
 const serviceItems: ServiceItem[] = [
   {
     key: "main",
-    label: "Main tennis subscription",
-    help: "Choose the regular service you would use for weekly ATP/WTA coverage or a sports bundle that includes tennis channels.",
+    label: "Known official service price",
+    help: "Choose a service price that is stored in the reusable broadcaster database, or use a custom value for a provider that still needs checkout verification.",
     options: [
-      {
-        id: "tennis-tv-eu",
-        name: "Tennis TV — ATP monthly estimate",
-        monthlyCost: 17,
-        currency: "EUR",
-        coverageNote: "ATP Tour matches and replays, but not Grand Slams or WTA.",
-        priceNote: "Typical European monthly estimate; Tennis TV pricing varies by country and offer.",
-      },
-      {
-        id: "tennis-channel-us",
-        name: "Tennis Channel app — US",
-        monthlyCost: 12,
-        currency: "USD",
-        coverageNote: "Useful for US tennis fans when Tennis Channel owns the relevant rights.",
-        priceNote: "Monthly subscription estimate based on the 2026 listed price increase.",
-      },
-      {
-        id: "youtube-tv-us",
-        name: "YouTube TV base plan — US",
-        monthlyCost: 83,
-        currency: "USD",
-        coverageNote: "Broad live TV bundle; may include channels that carry tennis depending on rights and package.",
-        priceNote: "Base plan estimate; taxes, add-ons and promos can change the real bill.",
-      },
+      ...knownBroadcastPriceOptions,
       {
         id: "custom-main",
         name: "Other / custom service",
         monthlyCost: 15,
         currency: "USD",
         coverageNote: "Use this for your local broadcaster, cable package or another legal service.",
-        priceNote: "Custom value — edit it to match your real plan.",
+        priceNote: "Custom value - edit it to match your real plan.",
       },
     ],
   },
   {
     key: "grandSlam",
     label: "Grand Slam add-on or separate service",
-    help: "Grand Slam rights are often separate from regular tour coverage, so choose the service you would realistically add.",
+    help: "Grand Slam rights are often separate from regular tour coverage, so add the official service your country uses for the Slam you want.",
     options: [
-      {
-        id: "espn-select-us",
-        name: "ESPN Select — US",
-        monthlyCost: 13,
-        currency: "USD",
-        coverageNote: "Can matter for US Grand Slam coverage, depending on event rights and current ESPN plan access.",
-        priceNote: "Monthly ESPN Select listed price rounded to the nearest dollar.",
-      },
-      {
-        id: "espn-unlimited-us",
-        name: "ESPN Unlimited — US",
-        monthlyCost: 30,
-        currency: "USD",
-        coverageNote: "Bigger ESPN package for users who need ESPN linear networks and ESPN+ access.",
-        priceNote: "Monthly ESPN Unlimited listed price rounded to the nearest dollar.",
-      },
-      {
-        id: "peacock-premium-us",
-        name: "Peacock Premium — US",
-        monthlyCost: 11,
-        currency: "USD",
-        coverageNote: "Useful when NBC/Peacock has the relevant event rights, such as selected Roland Garros coverage.",
-        priceNote: "Monthly Premium listed price rounded to the nearest dollar.",
-      },
       {
         id: "custom-slam",
         name: "Other / custom Grand Slam provider",
         monthlyCost: 10,
         currency: "USD",
-        coverageNote: "Use this for BBC iPlayer, Eurosport, Stan Sport, beIN, TSN, DAZN or another legal local option.",
-        priceNote: "Custom value — edit it to match your country and plan.",
+        coverageNote: "Use this for BBC iPlayer, Eurosport, Stan Sport, beIN, TSN, DAZN, ESPN, Prime Video or another legal local option.",
+        priceNote: "Custom value - verify the current price on the official broadcaster checkout page.",
       },
     ],
   },
@@ -127,7 +83,7 @@ const serviceItems: ServiceItem[] = [
         monthlyCost: 4,
         currency: "USD",
         coverageNote: "Use your actual VPN monthly equivalent if you already pay for one.",
-        priceNote: "Custom value — edit it to match your bill.",
+        priceNote: "Custom value - edit it to match your bill.",
       },
     ],
   },
@@ -137,20 +93,12 @@ const serviceItems: ServiceItem[] = [
     help: "Add this only if you keep a bigger bundle mostly because of tennis coverage.",
     options: [
       {
-        id: "disney-hulu-espn-select",
-        name: "Disney+, Hulu, ESPN Select bundle — US",
-        monthlyCost: 20,
-        currency: "USD",
-        coverageNote: "Bundle option when ESPN Select is part of a wider entertainment setup.",
-        priceNote: "Ad-supported bundle estimate rounded to the nearest dollar.",
-      },
-      {
         id: "sports-pack-custom",
         name: "Cable / sports pack custom",
         monthlyCost: 25,
         currency: "USD",
         coverageNote: "Use this for a local sports pack, cable add-on or TV provider bundle.",
-        priceNote: "Custom value — edit it to match your real package.",
+        priceNote: "Custom value - edit it to match your real package.",
       },
       {
         id: "no-extra",
@@ -173,11 +121,11 @@ const exchangeToUsd: Record<CurrencyCode, number> = {
 const eventProfiles = [
   {
     label: "ATP/WTA weekly events",
-    note: "Often needs one regular tour service, but country rights still matter.",
+    note: "The known-price dropdown is populated from the reusable broadcaster database where official pricing is available.",
   },
   {
     label: "Grand Slams",
-    note: "Usually requires checking each Slam separately: Australian Open, Roland Garros, Wimbledon and US Open can have different broadcasters.",
+    note: "Most Slam rows still need provider checkout verification, so use the custom add-on until a verified price is added to the data source.",
   },
   {
     label: "One favorite player only",
@@ -224,7 +172,7 @@ export default function StreamingCostCalculatorClient() {
 
   const selectedItems = useMemo(
     () => serviceItems.map((item) => ({ item, option: getSelectedOption(item, selectedServices[item.key]) })),
-    [selectedServices]
+    [selectedServices],
   );
 
   const monthlyTotal = useMemo(
@@ -235,7 +183,7 @@ export default function StreamingCostCalculatorClient() {
 
       return sum + costs[item.key] * exchangeToUsd[option.currency];
     }, 0),
-    [costs, enabled, selectedItems]
+    [costs, enabled, selectedItems],
   );
 
   const seasonalTotal = monthlyTotal * months;
@@ -255,7 +203,7 @@ export default function StreamingCostCalculatorClient() {
           <p className="text-sm font-black uppercase tracking-[0.18em] text-emerald-700">Interactive planner</p>
           <h2 className="mt-2 text-3xl font-black">Estimate your tennis streaming cost</h2>
           <p className="mt-3 leading-7 text-neutral-700">
-            Choose the legal services you are considering and the calculator will prefill typical monthly prices. Use custom options only when your country, bundle or current offer is different.
+            Choose the legal services you are considering. Known prices come from the shared broadcaster database; custom values are for providers that still need checkout verification.
           </p>
           <p className="mt-3 rounded-2xl border border-emerald-200 bg-white/80 p-3 text-sm leading-6 text-neutral-700">
             Prices are planning estimates, not live billing data. Streaming rights and offers change by country, season and platform, so always confirm the final price on the provider checkout page.
@@ -295,7 +243,7 @@ export default function StreamingCostCalculatorClient() {
                     >
                       {item.options.map((serviceOption) => (
                         <option key={serviceOption.id} value={serviceOption.id}>
-                          {serviceOption.name} — {serviceOption.currency} {serviceOption.monthlyCost}/mo
+                          {serviceOption.name} - {serviceOption.currency} {serviceOption.monthlyCost}/mo
                         </option>
                       ))}
                     </select>
@@ -323,7 +271,7 @@ export default function StreamingCostCalculatorClient() {
                         />
                       </div>
                       {!isCustom ? (
-                        <span className="mt-1 block text-xs text-neutral-500">Auto-filled from selected service</span>
+                        <span className="mt-1 block text-xs text-neutral-500">Auto-filled from broadcaster database</span>
                       ) : (
                         <span className="mt-1 block text-xs text-neutral-500">Editable custom estimate</span>
                       )}

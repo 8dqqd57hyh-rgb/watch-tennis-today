@@ -23,19 +23,24 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
-    question: "Can one tennis streaming service show every match?",
+    question: "Why do tennis broadcast rights differ by country?",
     answer:
-      "Usually no. Tennis rights are split by country, tournament and tour, so a legal setup may need a tour service, a broadcaster app or a Grand Slam-specific option.",
+      "Tennis rights are sold by territory, tournament and media package. A broadcaster that shows a match in one country may have no rights in another country.",
   },
   {
-    question: "What should I check before buying a tennis subscription?",
+    question: "Are Grand Slam rights separate from ATP and WTA rights?",
     answer:
-      "Check the exact tournament, your country, the court coverage, replay access, cancellation terms and whether the service covers ATP, WTA or the specific Grand Slam you want.",
+      "Yes. Australian Open, Roland Garros, Wimbledon and US Open rights are usually separate from weekly ATP Tour and WTA Tour rights.",
   },
   {
-    question: "Is the cheapest tennis streaming setup always the best?",
+    question: "Should I verify the official broadcaster before subscribing?",
     answer:
-      "Not always. The cheapest option may miss your favorite player, Grand Slam matches or replay access. It is better to match the service to the tournaments you actually watch.",
+      "Yes. Broadcast rights, app packages, court coverage and prices can change. Use the official tournament, tour or broadcaster source as the final check before paying.",
+  },
+  {
+    question: "Can one streaming service show every tennis tournament?",
+    answer:
+      "Usually no. A fan may need different official services for Grand Slams, ATP Tour events, WTA Tour events and local TV-only matches.",
   },
 ];
 
@@ -65,7 +70,23 @@ export default function TennisStreamingServicePickerPage() {
       priceCurrency: "USD",
     },
     description:
-      "Interactive tool for choosing a legal tennis streaming setup by country, exact Grand Slam and budget.",
+      "Interactive tennis broadcaster picker using country and tournament rights data with official verification sources.",
+  };
+
+  const webApplicationSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Tennis Streaming Service Picker",
+    applicationCategory: "SportsApplication",
+    operatingSystem: "Web",
+    url: "https://watchtennistoday.com/tennis-streaming-service-picker",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "Country and tournament picker for finding official tennis broadcasters, streaming services, price notes and verification links.",
   };
 
   const articleSchema = {
@@ -83,6 +104,7 @@ export default function TennisStreamingServicePickerPage() {
     <main className="min-h-screen bg-black text-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 
       <section className="border-b border-zinc-800 bg-gradient-to-br from-neutral-950 via-slate-950 to-emerald-950">
@@ -93,7 +115,7 @@ export default function TennisStreamingServicePickerPage() {
           <p className="mt-8 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">Interactive streaming tool</p>
           <h1 className="mt-3 max-w-4xl text-4xl font-black md:text-6xl">Pick the right tennis streaming service before you pay</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
-            Tennis streaming is confusing because ATP, WTA, Grand Slams and local broadcasters are split by country and by tournament. Use this picker to narrow the decision before opening a wallet.
+            Tennis streaming is confusing because ATP, WTA, Grand Slams and local broadcasters are split by country and by tournament. Use this picker to find the official broadcaster route, price notes when known and source links to verify before opening a wallet.
           </p>
           <div className="mt-6 flex flex-wrap gap-3 text-sm font-black">
             <Link href="/tennis-streaming-cost-calculator" className="rounded-full bg-emerald-400 px-5 py-3 text-black hover:bg-emerald-300">
@@ -112,8 +134,8 @@ export default function TennisStreamingServicePickerPage() {
         <section className="mt-10 grid gap-5 md:grid-cols-3">
           {[
             ["1", "Choose your country", "Rights are local, so start with the country where you actually watch."],
-            ["2", "Choose your tennis goal", "A Grand Slam fan and weekly ATP fan often need different services."],
-            ["3", "Check cost and overlap", "Avoid paying for two services that cover the same matches you care about."],
+            ["2", "Choose a tournament group", "Grand Slams, ATP Tour and WTA Tour can have different official broadcasters."],
+            ["3", "Open the official source", "Avoid paying until the broadcaster, app package, court coverage and price all match your needs."],
           ].map(([step, title, copy]) => (
             <div key={step} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
               <p className="text-sm font-black text-emerald-300">Step {step}</p>
@@ -140,8 +162,8 @@ export default function TennisStreamingServicePickerPage() {
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             {[
               ["/tennis-streaming-cost-calculator", "Streaming cost calculator"],
-              ["/tennis-tv-broadcast-finder", "Broadcast finder"],
-              ["/tennis-on-tv-today", "Tennis on TV today"],
+              ["/tennis-streaming-checklist", "Streaming checklist"],
+              ["/tennis-streaming-services", "Streaming services"],
             ].map(([href, label]) => (
               <Link key={href} href={href} className="rounded-2xl border border-zinc-700 bg-black/40 p-4 font-black text-zinc-100 hover:border-emerald-300">
                 {label} →
