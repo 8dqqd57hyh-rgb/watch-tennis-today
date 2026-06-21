@@ -71,6 +71,7 @@ export default function GuidesPage() {
               ["/tennis-tournament-levels-guide", "Tournament levels guide"],
               ["/official-tennis-broadcasters-guide", "Official broadcasters guide"],
               ["/tennis-streaming-cost-calculator", "Streaming cost calculator"],
+              ["/tennis-streaming-service-picker", "Streaming service picker"],
             ].map(([href, label]) => (
               <Link key={href} href={href} className="rounded-2xl border border-zinc-700 bg-black/30 p-4 font-black text-zinc-100 hover:border-emerald-300">
                 {label} →
