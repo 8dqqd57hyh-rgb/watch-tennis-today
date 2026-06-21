@@ -146,6 +146,7 @@ export default function RootLayout({
             <Link href="/media-kit">Media Kit</Link>
             <Link href="/how-to-watch-tennis-legally">Legal Streaming Guide</Link>
             <Link href="/tennis-streaming-checklist">Streaming Checklist</Link>
+            <Link href="/tennis-streaming-cost-calculator">Streaming Cost Calculator</Link>
             <Link href="/tournament">Grand Slams</Link>
             <Link href="/tennis-tv-broadcast-finder">Where to Watch</Link>
             <Link href="/tennis-on-tv-today">Tennis on TV Today</Link>
@@ -211,6 +212,7 @@ export default function RootLayout({
           <Link href="/watch-tennis-abroad" className="block hover:text-white">Watch Abroad</Link>
           <Link href="/tennis-streaming-services" className="block hover:text-white">Streaming Services</Link>
           <Link href="/tennis-streaming-checklist" className="block hover:text-white">Streaming Checklist</Link>
+          <Link href="/tennis-streaming-cost-calculator" className="block hover:text-white">Streaming Cost Calculator</Link>
           <Link href="/tennis-tv-broadcast-finder" className="block hover:text-white">Broadcast Finder</Link>
           <Link href="/how-to-watch-tennis-legally" className="block hover:text-white">Legal Guide</Link>
           <Link href="/tennis-live-alerts" className="block hover:text-white">Tennis Alerts</Link>

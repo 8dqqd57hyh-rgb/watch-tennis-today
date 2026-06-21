@@ -175,6 +175,9 @@ export default function TennisStreamingServicesPage() {
             <a href="/tennis-streaming-checklist" className="rounded-full border border-white/20 px-6 py-3 font-black text-white hover:bg-white/10">
               Use the checklist →
             </a>
+            <a href="/tennis-streaming-cost-calculator" className="rounded-full border border-white/20 px-6 py-3 font-black text-white hover:bg-white/10">
+              Estimate costs →
+            </a>
           </div>
         </div>
       </section>

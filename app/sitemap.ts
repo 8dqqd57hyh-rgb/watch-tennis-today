@@ -224,6 +224,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-tv-not-working",
     "/tennis-streaming-services",
     "/tennis-streaming-checklist",
+    "/tennis-streaming-cost-calculator",
     "/tennis-live-alerts",
     "/watch-tennis-abroad",
     "/where-to-watch-wimbledon",
