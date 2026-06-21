@@ -1726,6 +1726,8 @@ const playerMatches = allMatches
           <Link href={`/watch-player-live/${pageSlug}`} className="rounded-xl bg-black px-3 py-2 text-sm font-bold text-white">Player live guide</Link>
           <Link href="/tennis-on-tv-today" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Tennis on TV today</Link>
           <Link href="/watch-tennis-in" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Country guides</Link>
+          <Link href="/watch-tennis-in/usa" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">USA broadcasters</Link>
+          <Link href="/watch-tennis-in/uk" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">UK broadcasters</Link>
           <Link href="/best-ways-to-watch-tennis-online" className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900">Streaming guide</Link>
         </div>
       </section>

@@ -37,10 +37,10 @@ const faqs = [
 ];
 
 const countryGuides = [
-  ["United States", "/watch-tennis-in-usa"],
-  ["United Kingdom", "/watch-tennis-in-uk"],
-  ["Canada", "/watch-tennis-in-canada"],
-  ["Australia", "/watch-tennis-in-australia"],
+  ["United States", "/watch-tennis-in/usa"],
+  ["United Kingdom", "/watch-tennis-in/uk"],
+  ["Canada", "/watch-tennis-in/canada"],
+  ["Australia", "/watch-tennis-in/australia"],
 ];
 
 const relatedGuides = [

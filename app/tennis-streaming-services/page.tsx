@@ -242,6 +242,29 @@ export default function TennisStreamingServicesPage() {
           </ol>
         </section>
 
+        <section className="mt-10 rounded-3xl border border-neutral-200 bg-white p-6">
+          <h2 className="text-2xl font-black">Reviewed country broadcaster guides</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-neutral-700">
+            Use these pages when choosing between Tennis TV, a local sports package and Grand Slam-specific coverage.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["United States", "/watch-tennis-in/usa"],
+              ["United Kingdom", "/watch-tennis-in/uk"],
+              ["Poland", "/watch-tennis-in/poland"],
+              ["Germany", "/watch-tennis-in/germany"],
+              ["France", "/watch-tennis-in/france"],
+              ["Spain", "/watch-tennis-in/spain"],
+              ["Italy", "/watch-tennis-in/italy"],
+              ["All countries", "/watch-tennis-in"],
+            ].map(([label, href]) => (
+              <a key={href} href={href} className="rounded-2xl border border-neutral-200 p-4 font-black hover:border-emerald-500 hover:bg-emerald-50">
+                {label}
+              </a>
+            ))}
+          </div>
+        </section>
+
         <section className="mt-10 rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
           <h2 className="text-2xl font-black">Travel viewing note</h2>
           <p className="mt-3 max-w-3xl leading-7 text-neutral-700">

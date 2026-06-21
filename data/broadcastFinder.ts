@@ -1,5 +1,6 @@
 export type BroadcastCountry = {
   slug: string;
+  countryCode?: string;
   country: string;
   primaryBroadcasters: string[];
   grandSlamBroadcasters: string[];
@@ -18,6 +19,7 @@ export type BroadcastCountry = {
 export const broadcastCountries: BroadcastCountry[] = [
   {
     slug: "poland",
+    countryCode: "PL",
     country: "Poland",
     primaryBroadcasters: ["CANAL+", "Eurosport", "Tennis TV"],
     grandSlamBroadcasters: ["Eurosport", "Max / Eurosport packages", "official tournament broadcaster lists"],
@@ -35,6 +37,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "usa",
+    countryCode: "US",
     country: "United States",
     primaryBroadcasters: ["Tennis Channel", "ESPN / ESPN+", "Tennis TV"],
     grandSlamBroadcasters: ["ESPN / ESPN+", "Tennis Channel", "official tournament broadcaster lists"],
@@ -52,6 +55,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "uk",
+    countryCode: "GB",
     country: "United Kingdom",
     primaryBroadcasters: ["Sky Sports", "TNT Sports", "BBC", "Tennis TV"],
     grandSlamBroadcasters: ["BBC", "TNT Sports", "Eurosport / discovery+", "official tournament broadcaster lists"],
@@ -69,6 +73,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "germany",
+    countryCode: "DE",
     country: "Germany",
     primaryBroadcasters: ["Sky Deutschland", "Eurosport", "Tennis TV"],
     grandSlamBroadcasters: ["Eurosport", "discovery+", "official tournament broadcaster lists"],
@@ -86,6 +91,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "france",
+    countryCode: "FR",
     country: "France",
     primaryBroadcasters: ["France Télévisions", "Eurosport", "Tennis TV"],
     grandSlamBroadcasters: ["France Télévisions", "Eurosport", "official tournament broadcaster lists"],
@@ -104,6 +110,7 @@ export const broadcastCountries: BroadcastCountry[] = [
 
   {
     slug: "spain",
+    countryCode: "ES",
     country: "Spain",
     primaryBroadcasters: ["Movistar Plus+", "Eurosport", "Tennis TV"],
     grandSlamBroadcasters: ["Eurosport", "Movistar Plus+", "official tournament broadcaster lists"],
@@ -121,6 +128,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "italy",
+    countryCode: "IT",
     country: "Italy",
     primaryBroadcasters: ["Sky Italia", "SuperTennis", "Tennis TV"],
     grandSlamBroadcasters: ["Eurosport", "Sky Italia", "official tournament broadcaster lists"],
@@ -138,6 +146,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "canada",
+    countryCode: "CA",
     country: "Canada",
     primaryBroadcasters: ["TSN", "Sportsnet", "Tennis TV"],
     grandSlamBroadcasters: ["TSN", "RDS", "official tournament broadcaster lists"],
@@ -155,6 +164,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "australia",
+    countryCode: "AU",
     country: "Australia",
     primaryBroadcasters: ["Nine", "Stan Sport", "beIN Sports", "Tennis TV"],
     grandSlamBroadcasters: ["Nine", "Stan Sport", "official tournament broadcaster lists"],
@@ -172,6 +182,7 @@ export const broadcastCountries: BroadcastCountry[] = [
   },
   {
     slug: "india",
+    countryCode: "IN",
     country: "India",
     primaryBroadcasters: ["Sony Sports Network", "SonyLIV", "Tennis TV"],
     grandSlamBroadcasters: ["Sony Sports Network", "SonyLIV", "official tournament broadcaster lists"],
@@ -199,9 +210,6 @@ export const ADSENSE_INDEXABLE_BROADCAST_COUNTRIES = new Set([
   "france",
   "spain",
   "italy",
-  "canada",
-  "australia",
-  "india",
 ]);
 
 export function shouldIndexBroadcastCountry(slug: string) {

@@ -1175,10 +1175,10 @@ export default async function Page({ params }: PageProps) {
             </Link>
           </div>
           <div className="mt-4 flex flex-wrap gap-2 text-sm font-black">
-            <Link href="/watch-tennis-in-usa" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">USA</Link>
-            <Link href="/watch-tennis-in-uk" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">UK</Link>
-            <Link href="/watch-tennis-in-canada" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Canada</Link>
-            <Link href="/watch-tennis-in-australia" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Australia</Link>
+            <Link href="/watch-tennis-in/usa" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">USA</Link>
+            <Link href="/watch-tennis-in/uk" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">UK</Link>
+            <Link href="/watch-tennis-in/canada" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Canada</Link>
+            <Link href="/watch-tennis-in/australia" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Australia</Link>
           </div>
         </section>
 
