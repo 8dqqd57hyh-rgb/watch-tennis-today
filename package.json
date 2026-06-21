@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:predeploy": "npm run lint && npm run typecheck && npm run build && playwright test",
+    "test:predeploy:local": "npm run build && npm run start & wait-on http://localhost:3000 && playwright test"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.6",
@@ -20,6 +24,8 @@
     "resend": "^6.12.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -27,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^9.0.10"
   }
 }

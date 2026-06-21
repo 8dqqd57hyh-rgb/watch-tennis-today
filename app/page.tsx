@@ -898,7 +898,7 @@ tennis viewing information.
     ● Live updates
   </div>
 
-  <p className="text-zinc-500 text-sm">
+  <p className="text-zinc-500 text-sm" suppressHydrationWarning>
     Last updated: {new Date().toLocaleString("en-US", {
       dateStyle: "medium",
       timeStyle: "short",
