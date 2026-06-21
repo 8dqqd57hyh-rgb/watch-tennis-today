@@ -172,6 +172,9 @@ export default function TennisStreamingServicesPage() {
             <a href="/tennis-tv-not-working" className="rounded-full border border-white/20 px-6 py-3 font-black text-white hover:bg-white/10">
               Fix stream issues →
             </a>
+            <a href="/tennis-streaming-checklist" className="rounded-full border border-white/20 px-6 py-3 font-black text-white hover:bg-white/10">
+              Use the checklist →
+            </a>
           </div>
         </div>
       </section>

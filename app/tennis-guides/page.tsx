@@ -137,6 +137,11 @@ const guideCategories = [
         title: "Tennis streaming rights explained",
         description: "Why rights differ by event, tour and region.",
       },
+      {
+        href: "/tennis-streaming-checklist",
+        title: "Tennis streaming checklist",
+        description: "A pre-subscription checklist for choosing the right legal tennis service.",
+      },
     ],
   },
   {
