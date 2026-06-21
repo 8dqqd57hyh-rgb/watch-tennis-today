@@ -98,11 +98,11 @@ export default function MatchReminderPanel({
     ? "This match is finished — follow the next tennis matches"
     : normalizedStatus === "LIVE"
       ? "Match is live — keep this page open"
-      : "Get reminded before this match starts";
+      : "Remind me before this match starts";
 
   const description = finished
     ? "Use the schedule and player links below to continue to today’s live and upcoming tennis coverage."
-    : "Save this match, add it to your calendar, or leave your email for useful tennis alerts without popups or unsafe streams.";
+    : "Save this match, add it to your calendar, or leave your email for useful tennis alerts without popups or unofficial stream links.";
 
   return (
     <section className="mb-12 rounded-[2rem] border border-green-500/30 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.18),_transparent_38%),#09090b] p-6">
@@ -149,7 +149,7 @@ export default function MatchReminderPanel({
                 onClick={saveLocalReminder}
                 className="rounded-2xl border border-zinc-700 bg-zinc-900 px-5 py-3 font-black text-white transition hover:border-green-500"
               >
-                Save alert
+                Remind me before this match starts
               </button>
             </div>
 

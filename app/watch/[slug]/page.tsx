@@ -19,6 +19,7 @@ import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
+import { broadcastCountries } from "@/data/broadcastFinder";
 
 export const dynamic = "force-dynamic";
 
@@ -32,14 +33,14 @@ function titleCaseMatchName(value: string) {
 
 function buildWatchSeoTitle(matchTitle: string, isLiveMatch: boolean) {
   return isLiveMatch
-    ? `🔴 ${matchTitle} Live Score, Stream Info & Match Time`
-    : `${matchTitle} Match Time, Score Updates & TV Info`;
+    ? `${matchTitle} Live Score, Match Time & Official TV Info`
+    : `${matchTitle} Match Time & Official TV Info`;
 }
 
 function buildWatchSeoDescription(matchTitle: string, isLiveMatch: boolean) {
   return isLiveMatch
-    ? `Follow ${matchTitle} live score context, match time, tournament details and legal tennis TV or streaming information.`
-    : `Find ${matchTitle} match time, score updates, tournament details and legal tennis TV or streaming information.`;
+    ? `Follow ${matchTitle} live score context, match time, tournament details and legal broadcaster guidance. Watch Tennis Today does not host streams.`
+    : `Find ${matchTitle} match time, score updates, tournament details and legal broadcaster guidance. Watch Tennis Today does not host streams.`;
 }
 
 type WatchProvider = {
@@ -385,39 +386,26 @@ function getWatchability(match: Match, matches: Match[]) {
 }
 
 function buildCountryWatchLinks(match: Match) {
-  const tournament = match.tournament.toLowerCase();
   const category = match.category.toUpperCase();
-  const isGrandSlam =
-    tournament.includes("roland") ||
-    tournament.includes("french open") ||
-    tournament.includes("wimbledon") ||
-    tournament.includes("us open") ||
-    tournament.includes("australian open");
+  const priorityCountries = ["usa", "uk", "canada", "australia", "poland", "germany", "france", "spain", "italy"];
 
-  const links = [
-    {
-      country: "United States",
-      label: isGrandSlam ? "ESPN / Tennis Channel" : "Tennis Channel / Tennis TV",
-      href: "/watch-tennis-in/usa",
-    },
-    {
-      country: "United Kingdom",
-      label: isGrandSlam ? "Eurosport / Discovery+ / BBC where available" : "Sky Sports / Tennis TV",
-      href: "/watch-tennis-in/uk",
-    },
-    {
-      country: "Poland",
-      label: isGrandSlam ? "Eurosport / Canal+ where available" : "Canal+ / Tennis TV",
-      href: "/watch-tennis-in/poland",
-    },
-    {
-      country: "Germany",
-      label: isGrandSlam ? "Eurosport / Discovery+ where available" : category === "WTA" ? "WTA broadcasters / Tennis Channel" : "Sky / Tennis TV",
-      href: "/watch-tennis-in/germany",
-    },
-  ];
+  return priorityCountries
+    .map((slug) => broadcastCountries.find((country) => country.slug === slug))
+    .filter((country): country is NonNullable<typeof country> => Boolean(country))
+    .map((country) => {
+      const options = isGrandSlamTournament(match.tournament)
+        ? country.grandSlamBroadcasters
+        : category === "WTA"
+          ? country.wtaOptions
+          : country.atpOptions;
 
-  return links;
+      return {
+        country: country.country,
+        label: options.slice(0, 3).join(" / "),
+        href: `/watch-tennis-in/${country.slug}`,
+        note: country.notes,
+      };
+    });
 }
 
 function getRelatedMatchStatusScore(status: string) {
@@ -531,6 +519,11 @@ function buildMoreTennisCoverageLinks({
       priority: 80,
     },
     {
+      label: "Today's tennis hub",
+      href: "/today",
+      priority: 78,
+    },
+    {
       label: "Tennis schedule today",
       href: "/tennis-schedule-today",
       priority: 75,
@@ -541,6 +534,16 @@ function buildMoreTennisCoverageLinks({
       priority: 70,
     },
     {
+      label: "Streaming service picker",
+      href: "/tennis-streaming-service-picker",
+      priority: 68,
+    },
+    {
+      label: "Streaming cost calculator",
+      href: "/tennis-streaming-cost-calculator",
+      priority: 67,
+    },
+    {
       label: "Best ways to watch tennis online",
       href: "/best-ways-to-watch-tennis-online",
       priority: 65,
@@ -549,11 +552,6 @@ function buildMoreTennisCoverageLinks({
       label: "How we verify tennis streams",
       href: "/how-we-verify-streams",
       priority: 60,
-    },
-    {
-      label: "Today's tennis hub",
-      href: "/today",
-      priority: 55,
     },
   ];
 
@@ -592,6 +590,27 @@ function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
       description: "Compare official ways to watch tennis online without using unsafe or unauthorized streams.",
       href: "/best-ways-to-watch-tennis-online",
       priority: 35,
+    },
+    {
+      title: "Broadcaster finder",
+      eyebrow: "Country rights",
+      description: "Check official broadcaster guidance by country before choosing a paid tennis service.",
+      href: "/tennis-tv-broadcast-finder",
+      priority: 34,
+    },
+    {
+      title: "Streaming service picker",
+      eyebrow: "Subscription help",
+      description: "Compare legal tennis streaming services by tournament needs, country and budget.",
+      href: "/tennis-streaming-service-picker",
+      priority: 33,
+    },
+    {
+      title: "Streaming cost calculator",
+      eyebrow: "Costs",
+      description: "Estimate monthly tennis viewing costs before subscribing for one match or tournament.",
+      href: "/tennis-streaming-cost-calculator",
+      priority: 32,
     },
   ];
 
@@ -964,31 +983,47 @@ function CurrentMatchPage({
     mainEntity: [
       {
         "@type": "Question",
-        name: `Where can I find official viewing information for ${matchTitle}?`,
+        name: "Where can I watch this tennis match?",
         acceptedAnswer: {
           "@type": "Answer",
           text:
             safeWatchProviders.length > 0
-              ? `${matchTitle} viewing information can be checked through official tennis broadcasters and licensed platforms such as ${safeWatchProviders
+              ? `${matchTitle} viewing information should be checked through official tennis broadcasters and licensed platforms such as ${safeWatchProviders
                   .map((provider) => provider.name)
-                  .join(", ")}.`
-              : `Official viewing information for ${matchTitle} may depend on your country, tournament rights and broadcaster availability.`,
+                  .join(", ")}. Availability depends on your country and the tournament's rights.`
+              : `${matchTitle} viewing information depends on your country, tournament rights and broadcaster availability. Use the country guide and official broadcaster finder before paying.`,
         },
       },
       {
         "@type": "Question",
-        name: `What time does ${matchTitle} start?`,
+        name: "Does Watch Tennis Today show live streams?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${matchTitle} is scheduled for ${formatDateTime(match.startTime)}.`,
+          text: "No. Watch Tennis Today does not host, embed or restream live tennis. We link to legal broadcaster guidance, official tournament sources and schedule information.",
         },
       },
       {
         "@type": "Question",
-        name: `What tournament is ${matchTitle} part of?`,
+        name: "How do I find the official broadcaster?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${matchTitle} is listed as part of ${match.tournament}.`,
+          text: `Start with the tournament name, ${match.tournament}, then check the country broadcaster guide, ATP or WTA directories, tournament broadcaster pages and your local broadcaster schedule.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I watch the match while traveling?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Possibly, but streaming access can change when you travel. Check your broadcaster's roaming rules, subscription terms and local rights before match time.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What should I check before buying a subscription?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Confirm tournament rights, court coverage, live versus replay access, travel restrictions and cancellation rules before paying for a tennis streaming service.",
         },
       },
     ],
@@ -1341,11 +1376,53 @@ function CurrentMatchPage({
               <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Official viewing</p>
-                  <h2 className="text-3xl font-black">Where to watch {matchTitle}</h2>
+                  <h2 className="text-3xl font-black">How to watch this match</h2>
                 </div>
                 <a href="/how-we-verify-streams" className="text-sm font-bold text-green-400 hover:text-green-300">
                   How we verify streams →
                 </a>
+              </div>
+
+              <div className="mb-5 grid gap-4 md:grid-cols-3">
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Tournament</p>
+                  <Link href={`/tournament/${tournamentSlug}`} className="text-lg font-black hover:text-green-400">
+                    {match.tournament}
+                  </Link>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Match time</p>
+                  <p className="text-lg font-black">{formatLocalDateTime(match.startTime)}</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+                  <p className="mb-2 text-sm text-zinc-500">Viewing rule</p>
+                  <p className="text-sm font-bold leading-6 text-zinc-300">
+                    Use licensed broadcasters only; rights can change by country, court and tournament.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-5 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
+                <p>
+                  Watch Tennis Today does not host, embed or restream tennis matches. Use this page to find official broadcaster guidance, then confirm the final listing with the tournament or licensed provider before match time.
+                </p>
+                <Link href="/how-we-verify-streams" className="mt-3 inline-block font-black text-yellow-50 underline decoration-yellow-300/60 underline-offset-4 hover:text-white">
+                  How we verify viewing info
+                </Link>
+              </div>
+
+              <div className="mb-6 flex flex-wrap gap-3 text-sm font-black">
+                <Link href="/watch-tennis-in" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+                  Browse countries
+                </Link>
+                <Link href="/tennis-tv-broadcast-finder" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+                  Broadcaster finder
+                </Link>
+                {countryLinks.slice(0, 4).map((country) => (
+                  <Link key={`quick-${country.country}`} href={country.href} className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+                    {country.country}
+                  </Link>
+                ))}
               </div>
 
               {safeWatchProviders.length > 0 ? (
@@ -1382,17 +1459,46 @@ function CurrentMatchPage({
             </section>
 
             <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
-              <h2 className="mb-5 text-3xl font-black">Viewing options by country</h2>
+              <h2 className="mb-5 text-3xl font-black">Check official broadcaster by country</h2>
               <p className="mb-6 max-w-3xl leading-7 text-zinc-400">
-                Tennis rights vary by country. These country guides help users check legal broadcasters and streaming platforms instead of relying on unsafe stream links.
+                Tennis rights vary by country. These compact country guides reuse our broadcaster database and help users verify legal platforms instead of relying on unsafe stream links.
               </p>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {countryLinks.map((item) => (
-                  <a key={item.country} href={item.href} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
+                  <Link key={item.country} href={item.href} className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500">
                     <p className="mb-2 text-lg font-black">{item.country}</p>
                     <p className="text-sm leading-6 text-zinc-400">{item.label}</p>
-                  </a>
+                  </Link>
                 ))}
+              </div>
+            </section>
+
+            <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-black p-6">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Before you pay</p>
+              <h2 className="mb-5 text-3xl font-black">Before you pay for a streaming service</h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {[
+                  "Confirm this tournament is included in the service's tennis rights.",
+                  "Confirm whether the court or session for this match is covered.",
+                  "Confirm whether you need live access, replay access, or both.",
+                  "Confirm travel and location restrictions if you are away from home.",
+                  "Check cancellation rules before starting a monthly or annual plan.",
+                ].map((item) => (
+                  <div key={item} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 text-sm font-bold leading-7 text-zinc-300">
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+                <Link href="/tennis-streaming-service-picker" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">
+                  Use the service picker
+                </Link>
+                <Link href="/tennis-streaming-cost-calculator" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">
+                  Estimate streaming costs
+                </Link>
+                <Link href="/affiliate-disclosure" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">
+                  Affiliate disclosure
+                </Link>
               </div>
             </section>
 
@@ -1444,7 +1550,7 @@ function CurrentMatchPage({
                 title="Get tennis viewing updates without searching every day"
                 description={`Optional email updates for ${matchTitle}: schedule changes, match status and official viewing guidance only.`}
                 placeholder="Email for match alerts"
-                buttonText="Notify me"
+                buttonText="Remind me before this match starts"
                 contextType="watch"
                 contextValue={matchTitle}
                 dark
@@ -1455,20 +1561,24 @@ function CurrentMatchPage({
               <h2 className="mb-6 text-3xl font-black">FAQ</h2>
               <div className="space-y-4">
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">Where can I find official viewing information for {matchTitle}?</h3>
-                  <p className="text-zinc-400">Check the official viewing options listed above. Availability may depend on your country, tournament rights and licensed broadcasters.</p>
+                  <h3 className="mb-2 text-xl font-black">Where can I watch this tennis match?</h3>
+                  <p className="text-zinc-400">Check the official viewing options and country broadcaster links above. Availability may depend on your country, tournament rights and licensed broadcasters.</p>
                 </div>
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">What time does {matchTitle} start?</h3>
-                  <p className="text-zinc-400">The match is scheduled for {formatDateTime(match.startTime)}. Tennis start times can move, so confirm close to match time.</p>
+                  <h3 className="mb-2 text-xl font-black">Does Watch Tennis Today show live streams?</h3>
+                  <p className="text-zinc-400">No. Watch Tennis Today does not host, embed or restream live tennis. We point fans to legal broadcaster guidance and official schedule sources.</p>
                 </div>
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">What tournament is this match from?</h3>
-                  <p className="text-zinc-400">This match is listed under {match.tournament}.</p>
+                  <h3 className="mb-2 text-xl font-black">How do I find the official broadcaster?</h3>
+                  <p className="text-zinc-400">Start with {match.tournament}, then check the broadcaster finder, country guide, ATP or WTA directories, tournament broadcaster pages and your local broadcaster schedule.</p>
                 </div>
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">Can I watch {matchTitle} online?</h3>
-                  <p className="text-zinc-400">Yes, if the match is covered by an official broadcaster or licensed viewing platform in your country. Availability can vary by tournament and region.</p>
+                  <h3 className="mb-2 text-xl font-black">Can I watch the match while traveling?</h3>
+                  <p className="text-zinc-400">Possibly, but streaming access can change when you travel. Check your broadcaster&apos;s roaming rules, subscription terms and local rights before match time.</p>
+                </div>
+                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                  <h3 className="mb-2 text-xl font-black">What should I check before buying a subscription?</h3>
+                  <p className="text-zinc-400">Confirm tournament rights, court coverage, live versus replay access, travel restrictions and cancellation rules before paying for a tennis streaming service.</p>
                 </div>
               </div>
             </section>
