@@ -210,6 +210,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-resources",
     "/newsletter",
     "/advertise",
+    "/media-kit",
     "/watch-tennis-in",
     "/french-open",
     "/french-open-guide",

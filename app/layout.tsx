@@ -143,6 +143,7 @@ export default function RootLayout({
             <Link href="/tennis-resources">Tennis Resources</Link>
             <Link href="/newsletter">Newsletter</Link>
             <Link href="/advertise">Advertise</Link>
+            <Link href="/media-kit">Media Kit</Link>
             <Link href="/how-to-watch-tennis-legally">Legal Streaming Guide</Link>
             <Link href="/tournament">Grand Slams</Link>
             <Link href="/tennis-tv-broadcast-finder">Where to Watch</Link>
@@ -215,6 +216,7 @@ export default function RootLayout({
           <Link href="/atp-wta-rankings-explained" className="block hover:text-white">Rankings Guide</Link>
           <Link href="/official-tennis-broadcasters-guide" className="block hover:text-white">Official Broadcasters</Link>
           <Link href="/advertise" className="block hover:text-white">Advertise</Link>
+          <Link href="/media-kit" className="block hover:text-white">Media Kit</Link>
         </div>
       </div>
     </div>
@@ -227,6 +229,7 @@ export default function RootLayout({
       <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
       <Link href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</Link>
       <Link href="/advertise" className="hover:text-white">Advertise</Link>
+      <Link href="/media-kit" className="hover:text-white">Media Kit</Link>
       <Link href="/editorial-policy" className="hover:text-white">Editorial Policy</Link>
       <Link href="/content-guidelines" className="hover:text-white">Content Guidelines</Link>
       <Link href="/how-we-source-data" className="hover:text-white">How We Source Data</Link>

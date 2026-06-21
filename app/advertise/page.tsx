@@ -148,7 +148,10 @@ export default function AdvertisePage() {
             <Link href="/contact" className="rounded-2xl bg-emerald-300 px-5 py-3 font-black text-black hover:bg-emerald-200">
               Contact Watch Tennis Today
             </Link>
-            <Link href="/affiliate-disclosure" className="rounded-2xl border border-emerald-800 px-5 py-3 font-black text-emerald-200 hover:border-emerald-300">
+            <Link href="/media-kit" className="rounded-2xl border border-emerald-800 px-5 py-3 font-black text-emerald-200 hover:border-emerald-300">
+              View media kit
+            </Link>
+            <Link href="/affiliate-disclosure" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-zinc-200 hover:border-emerald-300">
               Read affiliate disclosure
             </Link>
           </div>
