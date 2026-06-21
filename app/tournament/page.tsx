@@ -1,6 +1,6 @@
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
-import { getTournamentCalendarEntries } from "@/app/lib/tournamentCalendar";
+import { getTournamentCalendarEntries, getTournamentCalendarSlugs } from "@/app/lib/tournamentCalendar";
 import { stableTournamentHubs } from "@/data/tournamentHubs";
 
 export const revalidate = 60;
@@ -82,6 +82,11 @@ export default async function TournamentsPage() {
   ]);
 
   const tournamentGroups = new Map<string, Match[]>();
+  const calendarEntryBySlug = new Map(
+    calendarEntries.flatMap((entry) =>
+      getTournamentCalendarSlugs(entry.slug).map((slug) => [slug, entry] as const)
+    )
+  );
 
   matches.forEach((match) => {
     const slug = slugify(match.tournament);
@@ -92,13 +97,17 @@ export default async function TournamentsPage() {
 
   const tournamentsFromMatches = Array.from(tournamentGroups.entries()).map(([slug, tournamentMatches]) => {
     const firstMatch = tournamentMatches[0];
+    const calendarEntry = calendarEntryBySlug.get(slug);
+    const calendarDateRange = calendarEntry ? formatDateRange(calendarEntry.startDate, calendarEntry.endDate) : null;
+    const matchFeedDateRange = getTournamentDateRange(tournamentMatches);
 
     return {
       name: firstMatch.tournament,
       slug,
       category: firstMatch.category,
-      dateRange: getTournamentDateRange(tournamentMatches),
-      dateSource: "match feed",
+      dateRange: calendarDateRange || matchFeedDateRange,
+      dateLabel: calendarDateRange ? "Dates" : "Feed coverage",
+      dateSource: calendarEntry?.sourceName || "match feed",
       summary: null as string | null,
       surface: null as string | null,
       location: null as string | null,
@@ -113,6 +122,7 @@ export default async function TournamentsPage() {
       slug: entry.slug,
       category: "Grand Slam",
       dateRange: formatDateRange(entry.startDate, entry.endDate),
+      dateLabel: "Dates",
       dateSource: entry.sourceName || "tournament calendar",
       summary: null as string | null,
       surface: null as string | null,
@@ -131,6 +141,7 @@ export default async function TournamentsPage() {
       slug: hub.slug,
       category: hub.level,
       dateRange: hub.seasonWindow,
+      dateLabel: "Season window",
       dateSource: "editorial tournament hub",
       summary: hub.summary,
       surface: hub.surface,
@@ -220,11 +231,11 @@ export default async function TournamentsPage() {
 
               {tournament.dateRange ? (
                 <p className="mb-3 text-sm font-bold text-green-400">
-                  Dates: {tournament.dateRange}
+                  {tournament.dateLabel}: {tournament.dateRange}
                 </p>
               ) : (
                 <p className="mb-3 text-sm font-bold text-zinc-500">
-                  Dates: TBA from match feed
+                  Dates: TBA from tournament calendar
                 </p>
               )}
 

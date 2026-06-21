@@ -32,6 +32,8 @@ const TOURNAMENT_ALIASES: Record<string, string[]> = {
 };
 
 const ADDITIONAL_TOURNAMENT_ALIASES: Record<string, string[]> = {
+  "bad-homburg": ["bad-homburg", "bad-homburg-open", "wta-bad-homburg"],
+  "bad-homburg-open": ["bad-homburg", "bad-homburg-open", "wta-bad-homburg"],
   hertogenbosch: ["hertogenbosch", "s-hertogenbosch", "libema-open"],
   "s-hertogenbosch": ["hertogenbosch", "s-hertogenbosch", "libema-open"],
   "libema-open": ["hertogenbosch", "s-hertogenbosch", "libema-open"],

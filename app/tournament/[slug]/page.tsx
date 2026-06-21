@@ -432,15 +432,13 @@ export default async function Page({ params }: PageProps) {
   const apiFixtureDateRange = formatApiTournamentDateRange(apiTournamentDateRange);
   const estimatedItfWeek = getItfEstimatedTournamentWeek(slug, tournamentDateWindow);
   const estimatedItfWeekRange = formatEstimatedTournamentWeek(estimatedItfWeek);
-  const hasFixtureRangeTournamentDates = apiTournamentDateRange?.confidence === "fixture-range";
-  const verifiedTournamentDateRange = calendarDateRange || (hasFixtureRangeTournamentDates ? apiFixtureDateRange : null);
-  const matchCoverageDateRange = matchFeedDateRange || (!hasFixtureRangeTournamentDates ? apiFixtureDateRange : null);
+  const isApiFixtureRange = apiTournamentDateRange?.confidence === "fixture-range";
+  const verifiedTournamentDateRange = calendarDateRange;
+  const matchCoverageDateRange = matchFeedDateRange || (isApiFixtureRange ? apiFixtureDateRange : null);
   const visibleTournamentDateRange = verifiedTournamentDateRange || estimatedItfWeekRange;
   const tournamentDateConfidence = calendarDateRange
     ? "official"
-    : hasFixtureRangeTournamentDates
-      ? "fixture-range"
-      : estimatedItfWeekRange
+    : estimatedItfWeekRange
         ? "estimated-itf-week"
         : "unknown";
   const hasAuthoritativeTournamentDates = tournamentDateConfidence === "official";
@@ -448,12 +446,12 @@ export default async function Page({ params }: PageProps) {
     ? "Tournament dates"
     : tournamentDateConfidence === "estimated-itf-week"
       ? "Estimated ITF tournament week"
-      : "Tournament dates from fixture range";
+      : "Tournament dates";
   const tournamentDateNote = hasAuthoritativeTournamentDates
     ? "These dates come from a verified tournament calendar. Match times and court assignments can still change during the event."
     : tournamentDateConfidence === "estimated-itf-week"
       ? "This week is calculated from the first published ITF fixture date for this tournament slug. Confirm the official tournament dates with ITF before relying on them."
-      : "These dates are inferred from a multi-day fixture range. Check the official tournament schedule for final dates.";
+      : "Tournament dates are not verified in the local calendar yet.";
 
   const suspendedCount = tournamentMatches.filter(
     (match) => match.status === "SUSPENDED"

@@ -23,6 +23,26 @@ type CalendarUpsert = {
   updated_at: string;
 };
 
+type JsonLdNode = {
+  "@type"?: string | string[];
+  "@id"?: string;
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  item?: JsonLdNode;
+  itemListElement?: JsonLdNode[];
+  mainEntity?: JsonLdNode;
+};
+
+type OfficialCalendarEvent = {
+  slug: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  sourceUrl: string;
+  sourceName: string;
+};
+
 const MONTHS: Record<string, number> = {
   jan: 0,
   january: 0,
@@ -85,6 +105,8 @@ const CALENDAR_SOURCES: CalendarSource[] = [
   },
 ];
 
+const WTA_TOURNAMENT_CALENDAR_URL = "https://www.wtatennis.com/tournaments";
+
 function isBrowserProbe(request: Request) {
   const userAgent = request.headers.get("user-agent") || "";
   const accept = request.headers.get("accept") || "";
@@ -115,6 +137,148 @@ function stripHtml(html: string) {
     .replace(/&amp;/g, "&")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function slugify(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function isSportsEvent(node: JsonLdNode) {
+  const type = node["@type"];
+
+  return Array.isArray(type) ? type.includes("SportsEvent") : type === "SportsEvent";
+}
+
+function normalizeIsoDate(value: string | undefined) {
+  if (!value) return null;
+
+  const date = new Date(value.includes("T") ? value : `${value}T00:00:00Z`);
+
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toISOString().slice(0, 10);
+}
+
+function getSlugFromEventId(eventId: string | undefined, fallbackName: string) {
+  if (!eventId) return slugify(fallbackName);
+
+  try {
+    const pathname = new URL(eventId).pathname;
+    const segments = pathname.split("/").filter(Boolean);
+    const yearIndex = segments.findLastIndex((segment) => /^20\d{2}$/.test(segment));
+    const candidateSegments = yearIndex > 0 ? segments.slice(0, yearIndex) : segments;
+    const slugCandidate = [...candidateSegments].reverse().find((segment) =>
+      !/^\d+$/.test(segment) &&
+      !["tournaments", "id", "season"].includes(segment)
+    );
+
+    return slugify(slugCandidate || fallbackName);
+  } catch {
+    return slugify(fallbackName);
+  }
+}
+
+function extractJsonLdScripts(html: string) {
+  return Array.from(
+    html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)
+  ).map((match) => decodeHtmlEntities(match[1].trim()));
+}
+
+function collectSportsEvents(node: unknown, seen = new WeakSet<object>()): JsonLdNode[] {
+  if (!node || typeof node !== "object") return [];
+
+  if (Array.isArray(node)) {
+    return node.flatMap((item) => collectSportsEvents(item, seen));
+  }
+
+  if (seen.has(node)) return [];
+  seen.add(node);
+
+  const jsonNode = node as JsonLdNode;
+  const directEvents = isSportsEvent(jsonNode) ? [jsonNode] : [];
+  const nestedEvents = Object.values(jsonNode).flatMap((value) =>
+    collectSportsEvents(value, seen)
+  );
+
+  return [...directEvents, ...nestedEvents];
+}
+
+function extractWtaCalendarEvents(html: string): OfficialCalendarEvent[] {
+  const events = extractJsonLdScripts(html).flatMap((script) => {
+    try {
+      return collectSportsEvents(JSON.parse(script));
+    } catch {
+      return [];
+    }
+  });
+
+  const calendarEvents = events
+    .map((event) => {
+      const name = event.name?.trim();
+      const eventId = event["@id"];
+      const startDate = normalizeIsoDate(event.startDate);
+      const endDate = normalizeIsoDate(event.endDate);
+
+      if (!name || !eventId?.includes("/tournaments/") || !startDate || !endDate) return null;
+
+      const sourceUrl = eventId.startsWith("http")
+        ? eventId
+        : WTA_TOURNAMENT_CALENDAR_URL;
+
+      return {
+        slug: getSlugFromEventId(eventId, name),
+        name,
+        startDate,
+        endDate,
+        sourceUrl,
+        sourceName: "WTA official tournament calendar",
+      };
+    })
+    .filter((event): event is OfficialCalendarEvent => Boolean(event));
+
+  return Array.from(
+    new Map(calendarEvents.map((event) => [event.slug, event])).values()
+  );
+}
+
+async function fetchWtaTournamentCalendar() {
+  const response = await fetch(WTA_TOURNAMENT_CALENDAR_URL, {
+    cache: "no-store",
+    headers: {
+      "user-agent": "WatchTennisTodayBot/1.0 (+https://watchtennistoday.com)",
+      accept: "text/html,application/xhtml+xml",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`WTA calendar HTTP ${response.status}`);
+  }
+
+  const html = await response.text();
+  const events = extractWtaCalendarEvents(html);
+
+  if (events.length === 0) {
+    throw new Error("No WTA calendar SportsEvent JSON-LD found");
+  }
+
+  return events;
 }
 
 function extractDateRangeFromText(text: string, fallbackYear: number) {
@@ -221,18 +385,27 @@ export async function GET(request: Request) {
   }
 
   const checkedAt = new Date().toISOString();
-  const resolvedSources = await Promise.all(
-    CALENDAR_SOURCES.map(async (source) => {
-      const resolved = await resolveCalendarDates(source);
+  const [resolvedSources, wtaCalendarResult] = await Promise.all([
+    Promise.all(
+      CALENDAR_SOURCES.map(async (source) => {
+        const resolved = await resolveCalendarDates(source);
 
-      return {
-        source,
-        ...resolved,
-      };
-    })
-  );
+        return {
+          source,
+          ...resolved,
+        };
+      })
+    ),
+    fetchWtaTournamentCalendar()
+      .then((events) => ({ ok: true as const, events }))
+      .catch((error) => ({
+        ok: false as const,
+        events: [] as OfficialCalendarEvent[],
+        error: error instanceof Error ? error.message : "Unknown WTA calendar error",
+      })),
+  ]);
 
-  const rows: CalendarUpsert[] = resolvedSources.map(({ source, startDate, endDate }) => ({
+  const fallbackRows: CalendarUpsert[] = resolvedSources.map(({ source, startDate, endDate }) => ({
     slug: source.slug,
     name: source.name,
     start_date: startDate,
@@ -241,6 +414,20 @@ export async function GET(request: Request) {
     source_name: source.sourceName,
     updated_at: checkedAt,
   }));
+
+  const wtaRows: CalendarUpsert[] = wtaCalendarResult.events.map((event) => ({
+    slug: event.slug,
+    name: event.name,
+    start_date: event.startDate,
+    end_date: event.endDate,
+    source_url: event.sourceUrl,
+    source_name: event.sourceName,
+    updated_at: checkedAt,
+  }));
+
+  const rows = Array.from(
+    new Map([...fallbackRows, ...wtaRows].map((row) => [row.slug, row])).values()
+  );
 
   const { error } = await supabase
     .from("tournament_calendar")
@@ -260,6 +447,24 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ok: true,
     updated: rows.length,
+    officialCalendars: {
+      wta: {
+        ok: wtaCalendarResult.ok,
+        updated: wtaRows.length,
+        sourceUrl: WTA_TOURNAMENT_CALENDAR_URL,
+        warning: wtaCalendarResult.ok ? null : wtaCalendarResult.error,
+      },
+      atp: {
+        ok: false,
+        updated: 0,
+        warning: "ATP is not imported yet. The public official source is a calendar page/PDF, not a documented API.",
+      },
+      itf: {
+        ok: false,
+        updated: 0,
+        warning: "ITF is not imported yet. Public calendar pages need a separate parser per tour.",
+      },
+    },
     sources: resolvedSources.map(({ source, startDate, endDate, detected, error }) => ({
       slug: source.slug,
       startDate,
