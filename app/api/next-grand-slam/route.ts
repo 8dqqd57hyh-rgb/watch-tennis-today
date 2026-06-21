@@ -160,7 +160,7 @@ export async function GET() {
       menSeason: true,
       womenSeason: true,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch next Grand Slam" },
       { status: 500 }

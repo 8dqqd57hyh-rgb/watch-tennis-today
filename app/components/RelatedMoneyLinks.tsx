@@ -4,13 +4,11 @@ import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 type RelatedMoneyLinksProps = {
   playerName?: string;
   player2Name?: string;
-  tournament?: string;
 };
 
 export default function RelatedMoneyLinks({
   playerName,
   player2Name,
-  tournament,
 }: RelatedMoneyLinksProps) {
   return (
     <section

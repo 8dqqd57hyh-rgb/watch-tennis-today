@@ -1,7 +1,4 @@
-import VpnPromo from "@/app/components/VpnPromo";
-import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import JsonLd from "@/app/components/JsonLd";
-import EmailCapture from "@/components/EmailCapture";
 import { getLiveTennisPageMatches, type ServerMatch } from "@/app/lib/serverMatches";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import Link from "next/link";
@@ -448,29 +445,6 @@ function EmptyState() {
   );
 }
 
-const faqs = [
-  {
-    question: "How can I watch today’s tennis matches?",
-    answer:
-      "Use the match cards to check the tournament, start time and official viewing guide. Watch Tennis Today does not host streams and points users toward legal broadcaster information.",
-  },
-  {
-    question: "Where can I watch ATP live?",
-    answer:
-      "ATP coverage depends on your country and tournament rights. Start with the TV guide and official broadcaster pages linked from each match page.",
-  },
-  {
-    question: "Where can I watch WTA live?",
-    answer:
-      "WTA streaming and TV rights vary by region. Use the daily schedule, country guides and official broadcaster references to verify availability.",
-  },
-  {
-    question: "When are today’s matches updated?",
-    answer:
-      "The live tennis page is configured to refresh frequently during active tennis windows. Match availability still depends on the schedule data returned by connected sources.",
-  },
-];
-
 export const metadata = {
   title: "Live Tennis Today | ATP & WTA Matches, Scores and TV Schedule",
   description:
@@ -532,18 +506,6 @@ export default async function LiveTennisPage() {
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: "Live Tennis", item: `${SITE_URL}/live-tennis` },
       ],
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqs.map((faq) => ({
-        "@type": "Question",
-        name: faq.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faq.answer,
-        },
-      })),
     },
     ...matches.slice(0, 10).map((match) => ({
       "@context": "https://schema.org",
@@ -641,10 +603,7 @@ export default async function LiveTennisPage() {
         </div>
 
         <section id="tv-schedule" className="mt-10 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
-          <h2 className="text-3xl font-black">How to watch live tennis legally</h2>
-          <p className="mt-3 max-w-3xl leading-7 text-zinc-400">
-            Watch Tennis Today does not host, embed or restream tennis broadcasts. We organize schedules, match pages and links to official broadcaster resources so fans can verify legal viewing options in their country.
-          </p>
+          <h2 className="text-3xl font-black">Useful next steps</h2>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400">
               Tennis on TV today
@@ -657,57 +616,6 @@ export default async function LiveTennisPage() {
             </Link>
           </div>
         </section>
-
-        <section className="mt-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
-          <h2 className="text-3xl font-black">Data sources and editorial checks</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="font-black">Schedule data</h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">Match listings are refreshed from connected tennis schedule data and may change when tournaments update courts or start times.</p>
-            </div>
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="font-black">Viewing guidance</h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">Streaming information is written as guidance only. Always confirm availability with official broadcasters in your region.</p>
-            </div>
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="font-black">Corrections</h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">Found outdated match or TV information? Use the contact page and we will review it.</p>
-            </div>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/editorial-policy" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">Editorial Policy</Link>
-            <Link href="/how-we-source-data" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">How we source data</Link>
-            <Link href="/about" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">About</Link>
-            <Link href="/contact" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">Contact</Link>
-          </div>
-        </section>
-
-        <section id="faq" className="mt-10 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
-          <h2 className="text-3xl font-black">Live tennis FAQ</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {faqs.map((faq) => (
-              <div key={faq.question} className="rounded-2xl border border-zinc-800 bg-black p-5">
-                <h3 className="text-lg font-black">{faq.question}</h3>
-                <p className="mt-3 leading-7 text-zinc-400">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div className="my-10">
-          <EmailCapture
-            title="Get useful live tennis alerts"
-            description="Get quiet updates when important tennis windows, live schedules or official viewing guides need checking."
-            placeholder="Email for live tennis alerts"
-            buttonText="Get alerts"
-            contextType="daily"
-            contextValue="live-tennis-page"
-            dark
-          />
-        </div>
-
-        <VpnPromo />
-        <RelatedMoneyLinks />
       </div>
     </main>
   );

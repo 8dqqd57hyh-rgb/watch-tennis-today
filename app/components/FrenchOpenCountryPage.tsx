@@ -11,7 +11,6 @@ type CountryPageProps = {
 
 export default function FrenchOpenCountryPage({
   country,
-  slug,
   broadcasters,
   streaming,
   timezone,

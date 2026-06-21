@@ -109,7 +109,7 @@ export async function GET() {
     }
 
     return NextResponse.json(allPrograms);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch TV programs" },
       { status: 500 }

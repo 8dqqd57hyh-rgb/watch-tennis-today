@@ -71,7 +71,7 @@ export default function FrenchOpenSurvivorsBoard({ compact = false }: { compact?
     };
   }, []);
 
-  const activePlayers = data?.activePlayers || [];
+  const activePlayers = useMemo(() => data?.activePlayers || [], [data?.activePlayers]);
 
   const visiblePlayers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

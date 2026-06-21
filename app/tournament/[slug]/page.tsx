@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
-import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
-import EmailCapture from "@/components/EmailCapture";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
 import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
@@ -570,37 +568,6 @@ export default async function Page({ params }: PageProps) {
     ],
     url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
   }));
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `How can I watch ${tournamentName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Legal viewing options for ${tournamentName} depend on the event rights in your country. Confirm coverage with official tournament and broadcaster sources before match time.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Where is the ${tournamentName} schedule?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `This page lists available ${tournamentName} matches from the current feed and links to live tennis, today's matches and TV schedule pages for updated viewing checks.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Why can ${tournamentName} match times change?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Tennis match times can move when earlier matches run long, weather interrupts play, courts change or players withdraw.",
-        },
-      },
-    ],
-  };
-
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
@@ -1130,18 +1097,6 @@ export default async function Page({ params }: PageProps) {
         </section>
         ) : null}
 
-        <div className="mt-12">
-          <EmailCapture
-            title={`Get ${tournamentName} schedule and viewing updates`}
-            description="Get tournament schedule and viewing updates without relying on unsafe stream pages or noisy notifications."
-            placeholder="Email for tournament alerts"
-            buttonText="Get tournament updates"
-            contextType="tournament"
-            contextValue={tournamentName}
-            dark
-          />
-        </div>
-
         <section id="how-to-watch" className="mt-12 scroll-mt-24 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
           <h2 className="text-3xl font-black mb-4">
             📺 Where to Watch {tournamentName}
@@ -1181,73 +1136,7 @@ export default async function Page({ params }: PageProps) {
             <Link href="/watch-tennis-in/australia" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Australia</Link>
           </div>
         </section>
-
-        <section className="mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-          <h2 className="text-3xl font-black mb-4">
-            🌍 Watching {tournamentName} abroad?
-          </h2>
-
-          <p className="text-zinc-300 leading-8 mb-5">
-            If you are traveling, your usual tennis streaming service may not
-            work the same way abroad. Check official streaming options and learn
-            how to watch tennis safely while traveling.
-          </p>
-
-          <a
-            href="/how-to-watch-tennis-safely-abroad"
-            className="inline-block border border-zinc-700 px-6 py-4 rounded-2xl font-black hover:border-green-500 hover:text-green-400 transition-all"
-          >
-            How to Watch Tennis Safely Abroad
-          </a>
-        </section>
-
-        <section id="faq" className="mt-12 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-5 text-3xl font-black">{tournamentName} FAQ</h2>
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="text-xl font-black">How can I watch {tournamentName}?</h3>
-              <p className="mt-3 leading-8 text-zinc-300">
-                Legal viewing options depend on the event rights in your country. Check the tournament site, official tour pages and licensed broadcaster listings before match time.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="text-xl font-black">Where is the {tournamentName} schedule?</h3>
-              <p className="mt-3 leading-8 text-zinc-300">
-                This page separates available matches into today, upcoming and completed sections. The full daily tennis hub and TV schedule links above help verify late court or time changes.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <h3 className="text-xl font-black">Why do match times change?</h3>
-              <p className="mt-3 leading-8 text-zinc-300">
-                Tennis start times can move when earlier matches run long, weather interrupts play, players withdraw or organizers reassign courts.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-12 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-3xl font-black">Sources for {tournamentName}</h2>
-          <p className="leading-8 text-zinc-300">
-            Tournament pages combine available match-feed data, stored calendar entries and editorial context. Match times, court assignments, withdrawals and broadcaster rights can change, so fans should confirm final details with official tournament and broadcaster sources.
-          </p>
-          <ul className="mt-5 grid gap-3 text-sm text-zinc-300 md:grid-cols-2">
-            <li className="rounded-2xl border border-zinc-800 bg-black p-4">Official tournament website and order of play</li>
-            <li className="rounded-2xl border border-zinc-800 bg-black p-4">ATP Tour and WTA official tournament information</li>
-            <li className="rounded-2xl border border-zinc-800 bg-black p-4">ITF rules and event-format references where relevant</li>
-            <li className="rounded-2xl border border-zinc-800 bg-black p-4">Licensed broadcaster and streaming provider pages</li>
-          </ul>
-          <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
-            <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we source data</Link>
-            <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we verify streams</Link>
-            <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Editorial policy</Link>
-            <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
-            <Link href="/tennis-guides" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Tennis guides hub</Link>
-          </div>
-        </section>
-
-        <AuthorBox />
-        
-      </div>
+</div>
       {sportsEventSchema ? (
         <script
           type="application/ld+json"
@@ -1266,10 +1155,6 @@ export default async function Page({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(matchSportsEventSchema) }}
         />
       ) : null}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
       <BreadcrumbSchema
   items={[
     {

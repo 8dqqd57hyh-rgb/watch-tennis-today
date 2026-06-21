@@ -2,21 +2,13 @@ import type { Metadata } from "next";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
 import { headers } from "next/headers";
-import VpnPromo from "@/app/components/VpnPromo";
-import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
-import PlayerFollowCTA from "@/components/PlayerFollowCTA";
-import EmailCapture from "@/components/EmailCapture";
-import ContentQualityNotice from "@/app/components/ContentQualityNotice";
-import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { supabase } from "@/app/lib/supabase";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 
 export const dynamic = "force-dynamic";
-
-const CURRENT_SEASON = new Date().getFullYear();
 
 type PlayerEditorialProfile = {
   nationality: string;
@@ -417,11 +409,6 @@ function getRelatedPlayers(
     ...sameTourFallback,
     ...otherPopularPlayers,
   ]).slice(0, 8);
-}
-
-function formatPlayerName(slug?: string) {
-  const canonicalSlug = getCanonicalPlayerSlug(slug || "");
-  return canonicalSlug ? players[canonicalSlug].name : playerNameFromSlug(slug || "");
 }
 
 function isIndexablePlayerSlug(slug: string) {
@@ -948,11 +935,6 @@ function MatchSummaryCard({
 
 function isLiveMatch(match: Match) {
   return match.status?.toUpperCase() === "LIVE" && !isFinishedMatch(match);
-}
-
-function hasUsableScore(match: Match) {
-  const score = String(match.score || "").trim();
-  return Boolean(score && score !== "-" && score !== "0-0" && score !== "0 - 0");
 }
 
 function isFinishedMatch(match: Match) {
@@ -1751,15 +1733,6 @@ const playerMatches = allMatches
           playerSlug={pageSlug}
         />
       </div>
-      <div className="mb-8">
-        <PlayerFollowCTA
-          playerName={playerName}
-          playerSlug={pageSlug}
-          source="player-page-revenue-cta"
-        />
-      </div>
-
-
       {playerMatches.some(isLiveMatch) ? (
   <section className="mb-8 rounded-2xl border border-red-500 bg-red-500/10 p-6">
     <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -2062,20 +2035,6 @@ const playerMatches = allMatches
           </div>
         </section>
       ) : null}
-
-      <div className="mb-10">
-        <EmailCapture
-          title={`Get notified when ${playerName} appears in today’s tennis schedule`}
-          description="Get useful player alerts for next match windows, live status and official viewing checks. No spam and no unofficial stream links."
-          placeholder="Email for player alerts"
-          buttonText="Follow player"
-          contextType="player"
-          contextValue={playerName}
-        />
-      </div>
-
-      <RevenueConversionPanel context="player" playerName={playerName} />
-
 
       <section className="mb-10">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

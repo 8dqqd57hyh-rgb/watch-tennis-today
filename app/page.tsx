@@ -1,24 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import nextDynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
-
-const TodaysTennisHub = nextDynamic(() => import("@/app/components/TodaysTennisHub"));
-const RevenueConversionPanel = nextDynamic(() => import("@/app/components/RevenueConversionPanel"));
-const BestMatchesTodayEngine = nextDynamic(() => import("@/app/components/BestMatchesTodayEngine"));
-const BroadcastFinder = nextDynamic(() => import("@/app/components/BroadcastFinder"));
-const HomepageGrowthEngine = nextDynamic(() => import("@/app/components/HomepageGrowthEngine"));
-const EmailSignup = nextDynamic(() => import("@/app/components/EmailSignup"));
-const MatchImportanceHub = nextDynamic(() => import("@/app/components/MatchImportanceHub"));
-const TennisWatchlistHub = nextDynamic(() => import("@/app/components/TennisWatchlistHub"), {
-  ssr: false,
-});
 type WatchProvider = {
   name: string;
   url: string;
@@ -259,7 +247,6 @@ export default function Home() {
   const [finalsEmail, setFinalsEmail] = useState("");
 const [finalsLoading, setFinalsLoading] = useState(false);
 const [finalsMessage, setFinalsMessage] = useState("");
-const [showHeavyHomeSections, setShowHeavyHomeSections] = useState(false);
 async function subscribeToFinals(
   event: React.FormEvent<HTMLFormElement>
 ) {
@@ -346,16 +333,6 @@ async function subscribeToFinals(
 
     loadMatches();
   }, []);
-
-  useEffect(() => {
-    if (loading) return;
-
-    const timer = window.setTimeout(() => {
-      setShowHeavyHomeSections(true);
-    }, 700);
-
-    return () => window.clearTimeout(timer);
-  }, [loading]);
 
   const homepageMatches = getHomepageMatches(matches);
   const seoPlayers = uniquePlayers(homepageMatches);
@@ -540,13 +517,6 @@ async function subscribeToFinals(
   </section>
 ) : null}
 
-{showHeavyHomeSections ? (
-  <>
-    <MatchImportanceHub matches={homepageMatches} compact />
-    <TennisWatchlistHub matches={homepageMatches} />
-  </>
-) : null}
-
             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
               Watch Tennis Today: Live Tennis Matches, TV Channels & Streaming Schedule
             </h1>
@@ -712,185 +682,21 @@ tennis viewing information.
   </div>
 </section>
 
-{showHeavyHomeSections ? (
-  <>
-    <HomepageGrowthEngine matches={homepageMatches} />
-    <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm text-zinc-900">
-      <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Grand Slam hubs</p>
-      <h2 className="text-2xl font-black">Plan legal tennis viewing by tournament</h2>
-      <p className="mt-3 text-sm leading-7 text-zinc-600">Start with the tournament hub, then confirm country-specific coverage before paying for any streaming service.</p>
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Link href="/wimbledon" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">Wimbledon hub</Link>
-        <Link href="/us-open" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">US Open hub</Link>
-        <Link href="/australian-open" className="rounded-2xl bg-zinc-100 px-4 py-3 font-bold hover:bg-zinc-200">Australian Open hub</Link>
-        <Link href="/watch-tennis-online" className="rounded-2xl bg-green-600 px-4 py-3 font-bold text-white hover:bg-green-700">Legal streaming guide</Link>
-      </div>
-    </section>
-
-    <TodaysTennisHub matches={homepageMatches} />
-    <BestMatchesTodayEngine matches={homepageMatches} />
-    <BroadcastFinder />
-  </>
-) : (
-  <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 text-zinc-400">
-    Preparing today&apos;s tennis picks...
-  </section>
-)}
-
-        <RevenueConversionPanel context="homepage" />
-
-<section className="mb-12 rounded-[2.5rem] border border-cyan-400/40 bg-gradient-to-br from-cyan-950/30 to-black p-8">
-  <div className="flex flex-wrap items-center gap-3 mb-5">
-    <span className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-black text-black">
-      📺 Streaming decision guide
-    </span>
-
-    <span className="text-sm text-zinc-400">
-      Compare legal services before subscribing
-    </span>
-  </div>
-
-  <h2 className="text-4xl font-black mb-4">
-    Not sure which service shows tennis today?
-  </h2>
-
-  <p className="max-w-3xl text-zinc-300 leading-7 mb-6">
-    Tennis coverage is split between ATP, WTA, Grand Slam and country-specific broadcasters. Use the streaming services guide to choose the right legal option and avoid paying for the wrong platform.
-  </p>
-
-  <a
-    href="/tennis-streaming-services"
-    className="inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black hover:bg-cyan-300"
-  >
-    Compare tennis streaming services →
-  </a>
-</section>
-
-<section className="mb-12 rounded-[2.5rem] border border-lime-400/40 bg-gradient-to-br from-lime-950/30 to-black p-8">
-  <div className="flex flex-wrap items-center gap-3 mb-5">
-    <span className="rounded-full bg-lime-400 px-4 py-2 text-sm font-black text-black">
-      🔔 Free tennis alerts
-    </span>
-
-    <span className="text-sm text-zinc-400">
-      Turn daily traffic into returning visitors
-    </span>
-  </div>
-
-  <h2 className="text-4xl font-black mb-4">
-    Get tennis match alerts before the best matches start
-  </h2>
-
-  <p className="max-w-3xl text-zinc-300 leading-7 mb-6">
-    Subscribe for practical schedule reminders, TV channel checks and Grand Slam
-    viewing notes. No illegal streams — just legal tennis viewing guidance.
-  </p>
-
-  <a
-    href="/tennis-live-alerts"
-    className="inline-flex rounded-2xl bg-lime-400 px-6 py-4 font-black text-black hover:bg-lime-300"
-  >
-    Set up tennis alerts →
-  </a>
-</section>
-<section className="max-w-4xl mb-10 text-zinc-300 leading-relaxed">
-  <h2 className="text-3xl font-black text-white mb-5">
-    What Watch Tennis Today Does
-  </h2>
-
-  <p className="mb-4">
-    Watch Tennis Today is designed to help tennis fans follow ATP, WTA,
-    Challenger and Grand Slam tennis more easily.
-  </p>
-
-  <p className="mb-4">
-    The site combines live tennis matches, TV schedules, broadcaster guides,
-    player pages and tournament coverage in one place.
-  </p>
-
-  <p>
-    Because tennis broadcast rights vary between countries and tournaments,
-    many fans struggle to find official viewing information quickly. This site
-    aims to simplify that process with structured tennis viewing guides and
-    live match pages.
-  </p>
-</section>
-
-<section className="mb-12 grid grid-cols-1 lg:grid-cols-3 gap-5">
-  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
-    <h2 className="text-2xl font-black mb-4">
-      How We Choose Tennis Viewing Options
-    </h2>
-
-    <p className="text-zinc-300 leading-7 mb-4">
-      Tennis broadcast rights change by country, tournament and platform.
-      Watch Tennis Today prioritizes official broadcasters, tournament pages,
-      recognized streaming services and clearly labelled partner offers.
-    </p>
-
-    <p className="text-zinc-400 leading-7">
-      We avoid promoting unofficial streams. When a viewing option cannot be
-      confirmed, we label it carefully instead of presenting it as guaranteed.
-    </p>
-  </div>
-
-  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
-    <h2 className="text-2xl font-black mb-4">
-      What You Can Check Here
-    </h2>
-
-    <ul className="space-y-3 text-zinc-300 leading-7">
-      <li>• Which tennis matches are live or starting soon.</li>
-      <li>• Which tournament a match belongs to.</li>
-      <li>• Where official TV or streaming coverage may be available.</li>
-      <li>• Player pages for popular ATP and WTA names.</li>
-      <li>• Country guides for legal tennis streaming options.</li>
-    </ul>
-  </div>
-
-  <div className="rounded-[2rem] border border-zinc-800 bg-zinc-900 p-6">
-    <h2 className="text-2xl font-black mb-4">
-      Why This Matters For Tennis Fans
-    </h2>
-
-    <p className="text-zinc-300 leading-7 mb-4">
-      A match that is easy to watch in one country may be locked behind a
-      different broadcaster somewhere else. Grand Slams, ATP, WTA and smaller
-      events often have separate rights agreements.
-    </p>
-
-    <p className="text-zinc-400 leading-7">
-      This site brings the key information into one tennis-focused hub so fans
-      can compare routes before searching across multiple apps and TV guides.
-    </p>
-  </div>
-</section>
-
-<section className="mb-12 rounded-[2.5rem] border border-zinc-800 bg-zinc-950 p-8">
-  <div className="max-w-4xl">
-    <p className="text-sm font-black uppercase tracking-[0.2em] text-green-400 mb-4">
-      Editorial note
-    </p>
-
-    <h2 className="text-3xl md:text-4xl font-black mb-5">
-      We Focus On Legal Tennis Streaming Information
-    </h2>
-
-    <div className="space-y-5 text-zinc-300 leading-8">
-      <p>
-        Watch Tennis Today is an informational tennis guide. The site does not
-        provide pirated streams, hidden video embeds, illegal IPTV links or
-        access to copyrighted broadcasts without permission.
-      </p>
-
-      <p>
-        Our goal is to help fans understand where tennis is usually shown,
-        which official services may carry a match, and how viewing options can
-        differ between countries. For final confirmation, users should always
-        check the official broadcaster or tournament source before purchasing a
-        subscription or planning to watch a specific match.
-      </p>
-    </div>
+<section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+  <h2 className="text-2xl font-black text-white">Quick tennis links</h2>
+  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <Link href="/live-tennis" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-500">
+      Live tennis
+    </Link>
+    <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-500">
+      TV schedule
+    </Link>
+    <Link href="/tournament" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-500">
+      Tournaments
+    </Link>
+    <Link href="/watch-tennis-in" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-500">
+      Country guides
+    </Link>
   </div>
 </section>
             <div className="flex flex-wrap items-center gap-3 mb-10">
@@ -1394,14 +1200,6 @@ tennis viewing information.
               Live and upcoming tennis matches
             </p>
 
-            <div className="mb-12 mt-10">
-              <EmailSignup
-                title="Get tennis match alerts without the noise"
-                description="A quiet optional signup for useful tennis schedule changes, Grand Slam reminders and official viewing updates. No popup interruption while users browse matches."
-                source="homepage-email-signup"
-                buttonLabel="Get alerts"
-              />
-            </div>
           </div>
 
           <input

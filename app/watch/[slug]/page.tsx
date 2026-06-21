@@ -2,21 +2,13 @@ import Link from "next/link";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import AdSlot from "@/app/components/AdSlot";
 import { isDoublesTeam, safePlayerUrl } from "@/data/playerSlugs";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
-import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
-import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
-import ContentQualityNotice from "@/app/components/ContentQualityNotice";
 import { getArchivedMatch, getArchivedMatchFromDatabase } from "@/app/lib/matchArchive";
 import LiveMatchScore from "./LiveMatchScore";
-import EmailCapture from "@/components/EmailCapture";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
-import MatchEdgePredictor from "@/app/components/MatchEdgePredictor";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
-import PlayerFollowCTA from "@/components/PlayerFollowCTA";
-import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
 import { broadcastCountries } from "@/data/broadcastFinder";
@@ -478,91 +470,6 @@ type RelatedCoverageLink = {
   priority: number;
 };
 
-type MoreTennisCoverageLink = {
-  label: string;
-  href: string | null;
-  priority: number;
-};
-
-function buildMoreTennisCoverageLinks({
-  match,
-  currentPath,
-  tournamentSlug,
-  player1Url,
-  player2Url,
-}: {
-  match: Match;
-  currentPath: string;
-  tournamentSlug: string;
-  player1Url: string | null;
-  player2Url: string | null;
-}) {
-  const links: MoreTennisCoverageLink[] = [
-    {
-      label: `${match.player1} player profile`,
-      href: player1Url,
-      priority: 100,
-    },
-    {
-      label: `${match.player2} player profile`,
-      href: player2Url,
-      priority: 95,
-    },
-    {
-      label: `${match.tournament} tournament page`,
-      href: tournamentSlug ? `/tournament/${tournamentSlug}` : null,
-      priority: 90,
-    },
-    {
-      label: "Live tennis matches today",
-      href: "/live-tennis",
-      priority: 80,
-    },
-    {
-      label: "Today's tennis hub",
-      href: "/today",
-      priority: 78,
-    },
-    {
-      label: "Tennis schedule today",
-      href: "/tennis-schedule-today",
-      priority: 75,
-    },
-    {
-      label: "Tennis TV broadcast finder",
-      href: "/tennis-tv-broadcast-finder",
-      priority: 70,
-    },
-    {
-      label: "Streaming service picker",
-      href: "/tennis-streaming-service-picker",
-      priority: 68,
-    },
-    {
-      label: "Streaming cost calculator",
-      href: "/tennis-streaming-cost-calculator",
-      priority: 67,
-    },
-    {
-      label: "Best ways to watch tennis online",
-      href: "/best-ways-to-watch-tennis-online",
-      priority: 65,
-    },
-    {
-      label: "How we verify tennis streams",
-      href: "/how-we-verify-streams",
-      priority: 60,
-    },
-  ];
-
-  return links
-    .filter((link): link is MoreTennisCoverageLink & { href: string } => Boolean(link.href))
-    .filter((link) => link.href.startsWith("/") && link.href !== currentPath)
-    .filter((link, index, list) => list.findIndex((item) => item.href === link.href) === index)
-    .sort((a, b) => b.priority - a.priority)
-    .slice(0, 8);
-}
-
 function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
@@ -916,13 +823,6 @@ function CurrentMatchPage({
   const safeWatchProviders = getSafeWatchProviders(match);
   const player1Url = isDoublesTeam(match.player1) ? null : safePlayerUrl(match.player1);
   const player2Url = isDoublesTeam(match.player2) ? null : safePlayerUrl(match.player2);
-  const moreTennisCoverageLinks = buildMoreTennisCoverageLinks({
-    match,
-    currentPath: `/watch/${slug}`,
-    tournamentSlug,
-    player1Url,
-    player2Url,
-  });
   const round = getOptionalMatchDetail(match, "round");
   const court = getOptionalMatchDetail(match, "court");
   const surface = getOptionalMatchDetail(match, "surface");
@@ -1215,19 +1115,6 @@ function CurrentMatchPage({
               startTime={match.startTime}
               matchUrl={currentUrl}
             />
-
-            <div className="mb-8 text-zinc-950">
-              <PlayerFollowCTA
-                playerName={match.player1}
-                source="match-page-player-follow-cta"
-              />
-            </div>
-
-            <div className="mb-8 text-zinc-950">
-              <LegalStreamingOptions title={`Legal streaming options for ${matchTitle}`} />
-            </div>
-
-            <MatchEdgePredictor match={match} matches={matches} />
 
             <section className="mb-12 rounded-[2rem] border border-green-500/30 bg-green-500/10 p-6">
               <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">
@@ -1545,44 +1432,6 @@ function CurrentMatchPage({
               </div>
             </section>
 
-            <div className="mb-12">
-              <EmailCapture
-                title="Get tennis viewing updates without searching every day"
-                description={`Optional email updates for ${matchTitle}: schedule changes, match status and official viewing guidance only.`}
-                placeholder="Email for match alerts"
-                buttonText="Remind me before this match starts"
-                contextType="watch"
-                contextValue={matchTitle}
-                dark
-              />
-            </div>
-
-            <section className="mb-12">
-              <h2 className="mb-6 text-3xl font-black">FAQ</h2>
-              <div className="space-y-4">
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">Where can I watch this tennis match?</h3>
-                  <p className="text-zinc-400">Check the official viewing options and country broadcaster links above. Availability may depend on your country, tournament rights and licensed broadcasters.</p>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">Does Watch Tennis Today show live streams?</h3>
-                  <p className="text-zinc-400">No. Watch Tennis Today does not host, embed or restream live tennis. We point fans to legal broadcaster guidance and official schedule sources.</p>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">How do I find the official broadcaster?</h3>
-                  <p className="text-zinc-400">Start with {match.tournament}, then check the broadcaster finder, country guide, ATP or WTA directories, tournament broadcaster pages and your local broadcaster schedule.</p>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">Can I watch the match while traveling?</h3>
-                  <p className="text-zinc-400">Possibly, but streaming access can change when you travel. Check your broadcaster&apos;s roaming rules, subscription terms and local rights before match time.</p>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-                  <h3 className="mb-2 text-xl font-black">What should I check before buying a subscription?</h3>
-                  <p className="text-zinc-400">Confirm tournament rights, court coverage, live versus replay access, travel restrictions and cancellation rules before paying for a tennis streaming service.</p>
-                </div>
-              </div>
-            </section>
-
             {relatedMatches.length > 0 ? (
               <section className="mb-12">
                 <h2 className="mb-6 text-3xl font-black">🎾 Related matches</h2>
@@ -1624,33 +1473,12 @@ function CurrentMatchPage({
               </section>
             ) : null}
 
-            <AdSlot label="Advertisement" />
-            <ContentQualityNotice pageType="match page" />
-            <RelatedMoneyLinks playerName={match.player1} player2Name={match.player2} />
-
             <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
-              <h2 className="mb-4 text-3xl font-black">Sources and Verification</h2>
-              <p className="max-w-3xl leading-8 text-zinc-300">
-                Match pages combine current tennis feed data, archived match records, official broadcaster checks and editorial review. Start times, scores, courts and availability can change, so verify final details with the tournament or licensed broadcaster before match time.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+              <h2 className="mb-4 text-2xl font-black">Verify before match time</h2>
+              <div className="flex flex-wrap gap-3 text-sm font-black">
                 <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we source data</Link>
                 <Link href="/how-we-verify-streams" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">How we verify streams</Link>
-                <Link href="/editorial-policy" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Editorial policy</Link>
                 <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Report outdated info</Link>
-              </div>
-            </section>
-
-            <AuthorBox />
-
-            <section className="mt-16 border-t border-zinc-800 pt-8">
-              <h2 className="mb-5 text-2xl font-black">More tennis coverage</h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                {moreTennisCoverageLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className="rounded-2xl bg-zinc-800 p-5 font-bold hover:bg-zinc-700">
-                    {link.label}
-                  </Link>
-                ))}
               </div>
             </section>
           </div>

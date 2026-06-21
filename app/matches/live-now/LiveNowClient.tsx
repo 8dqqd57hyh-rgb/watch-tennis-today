@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import AdSlot from "@/app/components/AdSlot";
-import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import AdSenseEditorialBlock from "@/app/components/AdSenseEditorialBlock";
-import { matchContainsExactPlayer, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
+import { safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 
 type Match = {
   id: string;
