@@ -106,6 +106,11 @@ const CALENDAR_SOURCES: CalendarSource[] = [
 ];
 
 const WTA_TOURNAMENT_CALENDAR_URL = "https://www.wtatennis.com/tournaments";
+const OFFICIAL_SOURCE_FETCH_TIMEOUT_MS = 10_000;
+
+function getFetchSignal() {
+  return AbortSignal.timeout(OFFICIAL_SOURCE_FETCH_TIMEOUT_MS);
+}
 
 function isBrowserProbe(request: Request) {
   const userAgent = request.headers.get("user-agent") || "";
@@ -261,6 +266,7 @@ function extractWtaCalendarEvents(html: string): OfficialCalendarEvent[] {
 async function fetchWtaTournamentCalendar() {
   const response = await fetch(WTA_TOURNAMENT_CALENDAR_URL, {
     cache: "no-store",
+    signal: getFetchSignal(),
     headers: {
       "user-agent": "WatchTennisTodayBot/1.0 (+https://watchtennistoday.com)",
       accept: "text/html,application/xhtml+xml",
@@ -318,6 +324,7 @@ async function resolveCalendarDates(source: CalendarSource) {
   try {
     const response = await fetch(source.sourceUrl, {
       cache: "no-store",
+      signal: getFetchSignal(),
       headers: {
         "user-agent": "WatchTennisTodayBot/1.0 (+https://watchtennistoday.com)",
       },
