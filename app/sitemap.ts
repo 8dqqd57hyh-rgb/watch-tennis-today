@@ -229,6 +229,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-live-alerts",
     "/watch-tennis-abroad",
     "/where-to-watch-wimbledon",
+    "/wimbledon-qualifying",
     "/tennis-on-tv-today",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",

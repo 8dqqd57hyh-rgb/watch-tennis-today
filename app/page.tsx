@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { withTracking } from "@/app/lib/tracking";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
+import {
+  getGrandSlamQualifyingBadge,
+  isDuringWimbledonQualifyingWindow,
+  isWimbledonQualifyingMatch,
+} from "@/app/lib/grandSlamQualifying";
 import { displayPlayerName, safePlayerUrl, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
@@ -175,8 +180,21 @@ function getHomepageMatches(matches: Match[]) {
   );
 }
 
+function isFinishedStatus(status: string) {
+  const value = status.toLowerCase().replace(/[\s_-]+/g, "");
+
+  return (
+    value.includes("finished") ||
+    value.includes("completed") ||
+    value.includes("ended") ||
+    value.includes("retired") ||
+    value.includes("walkover")
+  );
+}
+
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [wimbledonQualifyingFeed, setWimbledonQualifyingFeed] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -216,6 +234,17 @@ export default function Home() {
         setMatches([]);
       }
 
+      try {
+        const qualifyingMatches = await fetchClientMatches("/api/wimbledon-qualifying", {
+          ttlMs: 60_000,
+          timeoutMs: 8000,
+        });
+        setWimbledonQualifyingFeed(qualifyingMatches as Match[]);
+      } catch (err) {
+        console.warn("Failed to load Wimbledon qualifying matches:", err);
+        setWimbledonQualifyingFeed([]);
+      }
+
       setLoading(false);
     }
 
@@ -223,6 +252,13 @@ export default function Home() {
   }, []);
 
   const homepageMatches = getHomepageMatches(matches);
+  const wimbledonQualifyingMatches = wimbledonQualifyingFeed.length > 0
+    ? wimbledonQualifyingFeed
+    : homepageMatches.filter(isWimbledonQualifyingMatch);
+  const showWimbledonQualifyingBlock =
+    wimbledonQualifyingMatches.length > 0 || isDuringWimbledonQualifyingWindow();
+  const wimbledonQualifyingLive = wimbledonQualifyingMatches.filter((match) => match.status === "LIVE").length;
+  const wimbledonQualifyingResults = wimbledonQualifyingMatches.filter((match) => isFinishedStatus(match.status)).length;
 
   const filteredMatches = homepageMatches.filter((match) => {
     const matchesFilter =
@@ -290,6 +326,35 @@ export default function Home() {
           </div>
         </section>
 
+        {showWimbledonQualifyingBlock ? (
+          <section className="mb-6 rounded-3xl border border-green-500/50 bg-zinc-950 p-5 shadow-2xl shadow-black/30">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-green-400">Wimbledon Qualifying</p>
+                <h2 className="mt-2 text-2xl font-black md:text-3xl">Today&apos;s matches / Live now / Results</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+                  Follow Wimbledon qualifying schedule, live matches, results and official streaming links in one focused hub.
+                </p>
+              </div>
+              <Link href="/wimbledon-qualifying" className="rounded-2xl bg-green-500 px-5 py-3 text-center font-black text-black hover:bg-green-400">
+                Open qualifying hub
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                ["Today matches", wimbledonQualifyingMatches.length],
+                ["Live now", wimbledonQualifyingLive],
+                ["Results", wimbledonQualifyingResults],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-zinc-500">{label}</p>
+                  <p className="mt-1 text-3xl font-black text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {loading ? (
           <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8 text-xl font-bold text-zinc-400">Loading matches...</div>
         ) : visibleFilteredMatches.length === 0 ? (
@@ -303,6 +368,7 @@ export default function Home() {
               const primaryProvider = providers[0];
               const player1 = displayablePlayers(match.player1);
               const player2 = displayablePlayers(match.player2);
+              const qualifyingBadge = getGrandSlamQualifyingBadge(match);
 
               return (
                 <article key={match.id} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition hover:border-green-500">
@@ -312,6 +378,12 @@ export default function Home() {
                     </span>
                     <span className="text-xs font-black uppercase text-zinc-500">{match.category}</span>
                   </div>
+
+                  {qualifyingBadge ? (
+                    <div className="mb-3 inline-flex rounded-full border border-green-500/40 bg-green-500/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-green-300">
+                      {qualifyingBadge}
+                    </div>
+                  ) : null}
 
                   <h2 className="text-2xl font-black leading-tight">
                     {player1.map((player, index) => {
