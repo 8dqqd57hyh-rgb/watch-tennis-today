@@ -10,6 +10,35 @@ type MoneyGuidePageProps = {
   sections: string[];
 };
 
+const sectionGuidance: Record<string, string> = {
+  "Official broadcaster check":
+    "Start with the tournament website and the recognized broadcaster for your country. Match coverage can differ by court, session and subscription tier, so verify the exact match page before paying.",
+  "Schedule and time zones":
+    "Tennis start times are often approximate because earlier matches, weather and court changes can move the session. Compare the order of play with your local time zone before setting reminders.",
+  "Safe streaming workflow":
+    "Use licensed apps, official tournament links and your existing subscription first. Treat mirror sites, forced downloads and fake play buttons as risk signals.",
+  "Travel viewing":
+    "If you already pay for a service and travel during the event, check the provider terms before relying on a VPN or public Wi-Fi connection.",
+  "Subscription decision":
+    "Buy for the tournament you need, not for a generic promise of tennis coverage. Grand Slams, ATP and WTA rights often sit in different packages.",
+  "Device readiness":
+    "Install the provider app, sign in and test playback before the match window. This prevents missed first sets caused by app updates, device limits or location checks.",
+};
+
+function getSectionBody(section: string, eventName: string) {
+  return sectionGuidance[section] ??
+    `Use this step to verify how ${eventName} coverage works for the match you want: tournament source first, local broadcaster second, privacy or travel tools only when they solve a real viewing problem.`;
+}
+
+const relatedGuides = [
+  { href: "/tennis-schedule-today", label: "Today's tennis schedule" },
+  { href: "/live-tennis", label: "Live tennis" },
+  { href: "/tennis-tv-broadcast-finder", label: "Broadcast finder" },
+  { href: "/watch-tennis-abroad", label: "Watch tennis abroad" },
+  { href: "/tennis-spoiler-free-scores", label: "Spoiler-free scores" },
+  { href: "/how-we-verify-streams", label: "How we verify streams" },
+];
+
 
 const vpnComparison = [
   {
@@ -80,6 +109,17 @@ export default function MoneyGuidePage({
       },
     })),
   };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    about: [
+      { "@type": "SportsEvent", name: eventName },
+      { "@type": "Thing", name: "Legal tennis streaming" },
+      { "@type": "Thing", name: "Travel streaming privacy" },
+    ],
+  };
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -94,9 +134,10 @@ export default function MoneyGuidePage({
       </p>
 
       <section className="mb-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-neutral-950">
-          Best use case
-        </h2>
+        <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-700">
+          Quick answer
+        </p>
+        <h2 className="mb-3 text-2xl font-bold text-neutral-950">Best use case for {eventName}</h2>
         <p className="text-base leading-7 text-neutral-700">{primaryUseCase}</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -121,9 +162,7 @@ export default function MoneyGuidePage({
           <div key={section} className="rounded-3xl border bg-white p-6 shadow-sm">
             <h2 className="mb-3 text-xl font-bold text-neutral-950">{section}</h2>
             <p className="text-base leading-7 text-neutral-700">
-              Use this step to compare legal viewing routes, check official schedule changes,
-              and decide whether a paid streaming service or your existing account is enough
-              before looking at privacy tools for travel.
+              {getSectionBody(section, eventName)}
             </p>
           </div>
         ))}
@@ -182,10 +221,25 @@ export default function MoneyGuidePage({
         <ul className="space-y-3">
           {checklist.map((item) => (
             <li key={item} className="rounded-2xl border bg-white p-4 text-base leading-7 text-neutral-700">
-              <span className="font-bold text-emerald-700">✓</span> {item}
+              <span className="font-bold text-emerald-700">Check:</span> {item}
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-2xl font-bold text-neutral-950">Related tennis viewing pages</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {relatedGuides.map((guide) => (
+            <a
+              key={guide.href}
+              href={guide.href}
+              className="rounded-2xl border bg-neutral-50 p-4 text-sm font-bold text-neutral-900 hover:border-emerald-300 hover:bg-emerald-50"
+            >
+              {guide.label}
+            </a>
+          ))}
+        </div>
       </section>
 
       <section className="mb-8 rounded-3xl border bg-white p-6">
@@ -204,7 +258,7 @@ export default function MoneyGuidePage({
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }}
       />
     </main>
   );

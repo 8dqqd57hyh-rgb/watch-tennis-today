@@ -65,6 +65,21 @@ const focusCopy = {
   },
 };
 
+const scheduleChecks = [
+  {
+    title: "Before the first match",
+    body: "Read the official order of play, convert the session to your local time and check whether the court is covered by your broadcaster or app package.",
+  },
+  {
+    title: "During the day",
+    body: "Expect movement. Earlier matches, rain, roof decisions and court reassignment can change the real start time without changing the headline session.",
+  },
+  {
+    title: "After the match",
+    body: "Use results and draw pages to understand who advances, then move to the next round schedule instead of relying on expired live links.",
+  },
+];
+
 export default function WimbledonGuidePage({
   eyebrow,
   title,
@@ -102,6 +117,17 @@ export default function WimbledonGuidePage({
       },
     })),
   };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    about: [
+      { "@type": "SportsEvent", name: "Wimbledon" },
+      { "@type": "Thing", name: "Wimbledon order of play" },
+      { "@type": "Thing", name: "Legal tennis streaming" },
+    ],
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -130,10 +156,27 @@ export default function WimbledonGuidePage({
       <section className="mb-8 grid gap-4 md:grid-cols-2">
         {officialChecks.map((item) => (
           <div key={item} className="rounded-3xl border bg-white p-6 shadow-sm">
-            <span className="text-lg font-bold text-emerald-700">✓</span>
+            <span className="text-sm font-bold uppercase tracking-wide text-emerald-700">Check</span>
             <p className="mt-2 text-base leading-7 text-neutral-700">{item}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-2xl font-bold text-neutral-950">Schedule, spoilers and next-round planning</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {scheduleChecks.map((item) => (
+            <article key={item.title} className="rounded-2xl bg-neutral-50 p-4">
+              <h3 className="font-bold text-neutral-950">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-700">{item.body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <a href="/wimbledon-results" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Results</a>
+          <a href="/tennis-spoiler-free-scores" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Spoiler-free scores</a>
+          <a href="/tennis-time-zone-converter" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Time zone planner</a>
+        </div>
       </section>
 
       <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
@@ -206,7 +249,7 @@ export default function WimbledonGuidePage({
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }}
       />
     </main>
   );

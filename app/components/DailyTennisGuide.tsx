@@ -207,6 +207,17 @@ export default async function DailyTennisGuide({
       },
     })),
   };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    about: [
+      { "@type": "Thing", name: "Tennis schedule" },
+      { "@type": "Thing", name: "Live tennis" },
+      { "@type": "Thing", name: "Legal tennis streaming" },
+    ],
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -223,14 +234,14 @@ export default async function DailyTennisGuide({
       <section className="mb-8 rounded-[2rem] bg-neutral-950 p-6 text-white md:p-8">
         <div className="mb-5 flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-red-500 px-4 py-2 text-sm font-black text-white">
-            🔴 Real match data
+            Real match data
           </span>
           <span className="text-sm text-neutral-300">
             Pulled from the tennis match API. No invented matchups.
           </span>
         </div>
 
-        <h2 className="mb-3 text-2xl font-black md:text-3xl">Today’s tennis schedule dashboard</h2>
+        <h2 className="mb-3 text-2xl font-black md:text-3xl">Today&apos;s tennis schedule dashboard</h2>
 
         <p className="max-w-3xl leading-7 text-neutral-300">{intent}</p>
 
@@ -268,7 +279,7 @@ export default async function DailyTennisGuide({
       <section className="mb-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-black uppercase tracking-wide text-sky-700">Today’s matches</p>
+            <p className="text-sm font-black uppercase tracking-wide text-sky-700">Today&apos;s matches</p>
             <h2 className="text-3xl font-black text-neutral-950">
               {mode === "results" ? "Latest live or completed match updates" : "Live and upcoming tennis matches"}
             </h2>
@@ -330,7 +341,7 @@ export default async function DailyTennisGuide({
       {tournaments.length > 0 ? (
         <section className="mb-8 rounded-3xl border bg-neutral-50 p-6">
           <p className="mb-2 text-sm font-black uppercase tracking-wide text-sky-700">Tournament context</p>
-          <h2 className="mb-4 text-2xl font-black text-neutral-950">Tournaments appearing in today’s data</h2>
+          <h2 className="mb-4 text-2xl font-black text-neutral-950">Tournaments appearing in today&apos;s data</h2>
           <div className="flex flex-wrap gap-2">
             {tournaments.map((tournament) => (
               <span key={tournament} className="rounded-full border bg-white px-4 py-2 text-sm font-bold text-neutral-800">
@@ -388,7 +399,7 @@ export default async function DailyTennisGuide({
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }} />
     </main>
   );
 }

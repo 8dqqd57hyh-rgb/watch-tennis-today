@@ -9,6 +9,19 @@ export const metadata = {
   alternates: {
     canonical: "https://watchtennistoday.com/best-vpn-for-roland-garros",
   },
+  openGraph: {
+    title: "Best VPN for Roland Garros Streaming",
+    description:
+      "Safe French Open travel viewing guidance with official broadcaster checks.",
+    url: "https://watchtennistoday.com/best-vpn-for-roland-garros",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Best VPN for Roland Garros Streaming",
+    description:
+      "Safe French Open travel viewing guidance with official broadcaster checks.",
+  },
 };
 
 export default function BestVpnForRolandGarrosPage() {

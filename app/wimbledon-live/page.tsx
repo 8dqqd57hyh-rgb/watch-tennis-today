@@ -6,6 +6,19 @@ export const metadata = {
   description:
     "Follow Wimbledon live with legal broadcaster checks, daily schedule planning, TV options, travel viewing tips and safe VPN guidance.",
   alternates: { canonical: "https://watchtennistoday.com/wimbledon-live" },
+  openGraph: {
+    title: "Wimbledon Live Stream Guide",
+    description:
+      "Legal broadcaster checks, daily schedule planning and safe travel viewing guidance for Wimbledon.",
+    url: "https://watchtennistoday.com/wimbledon-live",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wimbledon Live Stream Guide",
+    description:
+      "Legal broadcaster checks, daily schedule planning and safe travel viewing guidance for Wimbledon.",
+  },
 };
 
 export default function WimbledonLivePage() {

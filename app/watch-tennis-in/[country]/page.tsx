@@ -73,6 +73,11 @@ export async function generateMetadata({
       url: canonicalUrl(`/watch-tennis-in/${broadcastCountry.slug}`),
       type: "article",
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -254,6 +259,27 @@ export default async function CountryPage({
     publisher: buildOrganizationSchema(),
   };
 
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `Where to Watch Tennis in ${broadcastCountry.country}`,
+    description: `Legal broadcaster and streaming checks for tennis fans in ${broadcastCountry.country}.`,
+    url: pageUrl,
+    about: [
+      { "@type": "SportsOrganization", name: "ATP Tour" },
+      { "@type": "SportsOrganization", name: "WTA Tour" },
+      { "@type": "SportsEvent", name: "Australian Open" },
+      { "@type": "SportsEvent", name: "Roland Garros" },
+      { "@type": "SportsEvent", name: "Wimbledon" },
+      { "@type": "SportsEvent", name: "US Open" },
+    ],
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Watch Tennis Today",
+      url: canonicalUrl("/"),
+    },
+  };
+
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
       <BreadcrumbSchema
@@ -265,6 +291,7 @@ export default async function CountryPage({
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
 
       <div className="mx-auto max-w-6xl">
         <Link href="/tennis-tv-broadcast-finder" className="text-sm font-bold text-zinc-400 hover:text-white">
@@ -284,6 +311,37 @@ export default async function CountryPage({
           <div className="mt-5 flex flex-wrap gap-3 text-sm text-zinc-400">
             <span>Broadcast rows verified: {TENNIS_BROADCAST_LAST_VERIFIED}</span>
             <span>Rights may change by event, court and territory.</span>
+          </div>
+        </section>
+
+        <section className="mt-8 grid gap-4 md:grid-cols-4">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Quick answer</p>
+            <h2 className="mt-2 text-xl font-black text-white">Check the event first</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              A player name is not enough. The tournament decides whether you need a Grand Slam broadcaster, ATP option or WTA option.
+            </p>
+          </div>
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Official sources</p>
+            <h2 className="mt-2 text-xl font-black text-white">{broadcastCountry.officialDirectories.length} directories</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              Use the linked ATP, WTA and tournament directories as the final check before paying for coverage.
+            </p>
+          </div>
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Spoilers</p>
+            <h2 className="mt-2 text-xl font-black text-white">Plan replays carefully</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              If you cannot watch live, open provider replay pages directly and avoid score feeds until you are ready.
+            </p>
+          </div>
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Data note</p>
+            <h2 className="mt-2 text-xl font-black text-white">Reviewed rows only</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              This page uses stored broadcaster rows and official links; missing rows are shown as checks, not invented claims.
+            </p>
           </div>
         </section>
 
@@ -337,6 +395,30 @@ export default async function CountryPage({
           <p className="mt-3 max-w-4xl leading-7 text-zinc-400">
             No reviewed country-specific Davis Cup or Billie Jean King Cup broadcaster row is stored for {broadcastCountry.country} yet. Treat team competitions as separate rights and verify them from the competition or local broadcaster site before match time.
           </p>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">How to avoid spoilers in {broadcastCountry.country}</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <article className="rounded-2xl bg-black p-4">
+              <h3 className="font-black text-white">Before the match</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-400">
+                Save the provider app or official match page before play starts so you do not need to search through score-heavy pages later.
+              </p>
+            </article>
+            <article className="rounded-2xl bg-black p-4">
+              <h3 className="font-black text-white">During live play</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-400">
+                Use <Link href="/tennis-spoiler-free-scores" className="font-bold text-emerald-300">spoiler-free scores</Link> if you need status without seeing the result.
+              </p>
+            </article>
+            <article className="rounded-2xl bg-black p-4">
+              <h3 className="font-black text-white">After the match</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-400">
+                Check replay availability inside the licensed service. Some providers keep full replays, while others only show highlights or limited court archives.
+              </p>
+            </article>
+          </div>
         </section>
 
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
@@ -413,6 +495,20 @@ export default async function CountryPage({
             <p className="mt-4 leading-8 text-zinc-400">
               Rights can change by event, court, session and territory. Confirm availability with official broadcasters before paying for, renewing or relying on a streaming service.
             </p>
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">Related pages for {broadcastCountry.country} tennis fans</h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Today&apos;s schedule</Link>
+            <Link href="/live-tennis" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Live tennis</Link>
+            <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Tennis on TV today</Link>
+            <Link href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Official broadcasters guide</Link>
+            <Link href="/wimbledon" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Wimbledon hub</Link>
+            <Link href="/french-open" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">French Open hub</Link>
+            <Link href="/australian-open" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Australian Open hub</Link>
+            <Link href="/us-open" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">US Open hub</Link>
           </div>
         </section>
 

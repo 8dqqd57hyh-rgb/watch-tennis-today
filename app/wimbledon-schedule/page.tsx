@@ -6,6 +6,19 @@ export const metadata = {
   description:
     "Check how to use the Wimbledon schedule, order of play and court assignments to plan legal live tennis viewing.",
   alternates: { canonical: "https://watchtennistoday.com/wimbledon-schedule" },
+  openGraph: {
+    title: "Wimbledon Schedule Today",
+    description:
+      "Order of play, court assignment and legal TV planning context for Wimbledon.",
+    url: "https://watchtennistoday.com/wimbledon-schedule",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wimbledon Schedule Today",
+    description:
+      "Order of play, court assignment and legal TV planning context for Wimbledon.",
+  },
 };
 
 export default function WimbledonSchedulePage() {

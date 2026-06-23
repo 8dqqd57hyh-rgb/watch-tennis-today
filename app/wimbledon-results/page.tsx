@@ -6,6 +6,19 @@ export const metadata = {
   description:
     "Track Wimbledon results with draw context, next-match planning, TV implications and legal viewing links.",
   alternates: { canonical: "https://watchtennistoday.com/wimbledon-results" },
+  openGraph: {
+    title: "Wimbledon Results Today",
+    description:
+      "Wimbledon result context, next-match planning and legal viewing links.",
+    url: "https://watchtennistoday.com/wimbledon-results",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wimbledon Results Today",
+    description:
+      "Wimbledon result context, next-match planning and legal viewing links.",
+  },
 };
 
 export default function WimbledonResultsPage() {

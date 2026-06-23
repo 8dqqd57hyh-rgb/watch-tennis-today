@@ -9,6 +9,19 @@ export const metadata = {
   alternates: {
     canonical: "https://watchtennistoday.com/best-vpn-for-wimbledon",
   },
+  openGraph: {
+    title: "Best VPN for Wimbledon Streaming",
+    description:
+      "Safe Wimbledon streaming checks, official broadcaster guidance and travel viewing notes.",
+    url: "https://watchtennistoday.com/best-vpn-for-wimbledon",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Best VPN for Wimbledon Streaming",
+    description:
+      "Safe Wimbledon streaming checks, official broadcaster guidance and travel viewing notes.",
+  },
 };
 
 export default function BestVpnForWimbledonPage() {

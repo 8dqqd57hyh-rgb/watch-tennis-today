@@ -25,13 +25,13 @@ export const metadata: Metadata = {
 
 const quickRoutes = [
   {
-    title: "Today’s matches",
+    title: "Today's matches",
     description: "Check the current live and upcoming schedule before choosing a broadcaster.",
     href: "/today",
   },
   {
-    title: "Tomorrow’s schedule",
-    description: "Plan ahead for tomorrow’s ATP, WTA and Grand Slam matches.",
+    title: "Tomorrow's schedule",
+    description: "Plan ahead for tomorrow's ATP, WTA and Grand Slam matches.",
     href: "/tomorrow",
   },
   {
@@ -78,7 +78,7 @@ export default function WatchTennisInHubPage() {
             href="/tennis-tv-broadcast-finder"
             className="rounded-2xl bg-emerald-400 px-6 py-4 font-black text-black hover:bg-emerald-300"
           >
-            Open broadcast finder →
+            Open broadcast finder
           </a>
           <a
             href="/tennis-streaming-services"

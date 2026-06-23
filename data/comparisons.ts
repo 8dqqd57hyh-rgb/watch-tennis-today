@@ -78,7 +78,7 @@ export const comparisons: StreamingComparison[] = [
       href: "/watch-tennis-in/uk",
     },
     secondaryCta: {
-      label: "See today’s TV schedule",
+      label: "See today's TV schedule",
       href: "/tv-schedule",
     },
   },
@@ -110,10 +110,10 @@ export const comparisons: StreamingComparison[] = [
       "Compare ESPN+ and Tennis Channel for ATP, WTA and Grand Slam streaming.",
     left: "ESPN+",
     right: "Tennis Channel",
-    bestForLeft: "Best for viewers already using ESPN’s sports ecosystem and looking for selected major event coverage.",
+    bestForLeft: "Best for viewers already using ESPN's sports ecosystem and looking for selected major event coverage.",
     bestForRight: "Best for dedicated tennis coverage in the USA, including more tennis-specific programming.",
     verdict:
-      "Tennis Channel is usually stronger for regular tennis coverage, while ESPN+ can be useful for viewers already using ESPN’s sports ecosystem.",
+      "Tennis Channel is usually stronger for regular tennis coverage, while ESPN+ can be useful for viewers already using ESPN's sports ecosystem.",
     audience: "US tennis fans comparing two common paid sports options.",
     primaryCta: {
       label: "Open USA tennis guide",
