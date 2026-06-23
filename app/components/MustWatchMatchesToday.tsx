@@ -150,7 +150,48 @@ export default function MustWatchMatchesToday({ matches, compact = false }: Prop
     .sort((a, b) => matchPriority(b) - matchPriority(a))
     .slice(0, compact ? 3 : 5);
 
-  if (!picks.length) return null;
+  if (!picks.length) {
+    return (
+      <section className="mb-12 rounded-[2.5rem] border border-amber-400/40 bg-gradient-to-br from-amber-950/25 via-zinc-950 to-black p-6 md:p-8">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-amber-300">
+              Today&apos;s watchlist
+            </p>
+            <h2 className="text-3xl font-black text-white md:text-5xl">
+              No must-watch match is confirmed right now
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-400 md:text-base">
+              The live feed may be between sessions, delayed, or missing reliable player and tournament data. Use the schedule hubs below to find live, upcoming and completed tennis without guessing.
+            </p>
+          </div>
+          <a
+            href="/tennis-schedule-today"
+            className="rounded-full border border-amber-300/50 px-5 py-3 text-sm font-black text-amber-200 hover:border-amber-200"
+          >
+            Open today&apos;s schedule
+          </a>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-4">
+          {[
+            { href: "/live-tennis", label: "Live tennis" },
+            { href: "/today", label: "Today hub" },
+            { href: "/tennis-order-of-play-today", label: "Order of play" },
+            { href: "/tournament", label: "Tournament hubs" },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-2xl border border-zinc-800 bg-black/45 p-4 text-center font-black text-zinc-200 hover:border-amber-300"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   const heroPick = picks[0];
   const heroProvider = providerFor(heroPick);

@@ -10,6 +10,7 @@ import LiveMatchScore from "./LiveMatchScore";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
+import { getMatchLifecycle, type MatchLifecycle } from "@/app/lib/matchLifecycle";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
 import { broadcastCountries } from "@/data/broadcastFinder";
 
@@ -490,6 +491,96 @@ function BasicRelatedLinks({
   );
 }
 
+function MatchLifecyclePanel({
+  lifecycle,
+  match,
+}: {
+  lifecycle: MatchLifecycle;
+  match: Pick<Match, "status" | "score" | "startTime">;
+}) {
+  const isLiveMatch = lifecycle.state === "live";
+  const isFinishedMatch = lifecycle.state === "finished";
+  const isScheduledMatch = lifecycle.state === "scheduled";
+
+  return (
+    <aside className="rounded-[2rem] border border-white/10 bg-black p-5 shadow-2xl sm:p-6">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-black uppercase tracking-wide text-zinc-500">
+          Match status
+        </p>
+        <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusStyles(match.status)}`}>
+          {lifecycle.statusText}
+        </span>
+      </div>
+
+      <div className="grid gap-4">
+        <section className={`rounded-3xl border p-5 ${
+          isLiveMatch
+            ? "border-red-400/40 bg-red-500/10"
+            : isFinishedMatch
+              ? "border-zinc-700 bg-zinc-950"
+              : "border-green-400/30 bg-green-500/10"
+        }`}>
+          <p className={`text-3xl font-black ${isLiveMatch ? "text-red-200" : "text-white"}`}>
+            {lifecycle.statusText}
+          </p>
+          {isScheduledMatch && lifecycle.countdownText ? (
+            <p className="mt-2 text-lg font-black text-green-300">{lifecycle.countdownText}</p>
+          ) : null}
+          {isScheduledMatch && !lifecycle.countdownText ? (
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              Start time is not confirmed enough for a countdown yet.
+            </p>
+          ) : null}
+          {isLiveMatch ? (
+            <p className="mt-2 text-sm leading-6 text-zinc-300">
+              This match is marked live in the current feed. Keep the official scoreboard or broadcaster page open for point-by-point confirmation.
+            </p>
+          ) : null}
+          {isFinishedMatch ? (
+            <p className="mt-2 text-sm leading-6 text-zinc-300">
+              This match has finished. Use the player and tournament links below to keep following the draw.
+            </p>
+          ) : null}
+        </section>
+
+        {lifecycle.hasReliableScore && lifecycle.scoreText ? (
+          <section className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
+            <p className="mb-2 text-xs font-black uppercase tracking-wide text-zinc-500">
+              {isFinishedMatch ? "Final score" : "Current score"}
+            </p>
+            <p className="break-words text-3xl font-black text-white" aria-live="polite">
+              {lifecycle.scoreText}
+            </p>
+          </section>
+        ) : null}
+
+        <div className="grid gap-3 text-sm">
+          <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
+            <span className="text-zinc-500">Scheduled start</span>
+            <span className="text-right font-bold text-zinc-200">{formatLocalDateTime(match.startTime)}</span>
+          </div>
+          <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
+            <span className="text-zinc-500">Feed status</span>
+            <span className="font-bold text-zinc-200">{match.status || "Unknown"}</span>
+          </div>
+        </div>
+
+        {isLiveMatch ? (
+          <div className="flex flex-wrap gap-2 text-sm font-black">
+            <Link href="/live-tennis" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+              Live tennis
+            </Link>
+            <Link href="/today" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+              Today
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    </aside>
+  );
+}
+
 function getWatchability(match: Match, matches: Match[]) {
   const round = getOptionalMatchDetail(match, "round") || "";
   const sameTournamentCount = matches.filter((item) => item.tournament === match.tournament).length;
@@ -821,6 +912,7 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
   const tournamentName = getOptionalText(archivedMatch.tournament);
   const statusLabel = getMatchStatusLabel(archivedMatch.status);
   const safeWatchProviders = archivedMatch.watchProviders || [];
+  const lifecycle = getMatchLifecycle(archivedMatch);
 
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
@@ -860,10 +952,12 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
               <p className="text-lg font-bold">{getArchivedDisplayStatus(archivedMatch)}</p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <p className="mb-2 text-sm text-zinc-500">Score</p>
-              <p className="text-lg font-bold">{getArchivedDisplayScore(archivedMatch)}</p>
-            </div>
+            {lifecycle.hasReliableScore ? (
+              <div className="rounded-2xl border border-zinc-800 bg-black p-5">
+                <p className="mb-2 text-sm text-zinc-500">Final score</p>
+                <p className="text-lg font-bold">{getArchivedDisplayScore(archivedMatch)}</p>
+              </div>
+            ) : null}
 
           </div>
 
@@ -1018,6 +1112,7 @@ function CurrentMatchPage({
   const round = getOptionalMatchDetail(match, "round");
   const court = getOptionalMatchDetail(match, "court");
   const surface = getOptionalMatchDetail(match, "surface");
+  const lifecycle = getMatchLifecycle(match);
   const lastUpdated = getLastUpdatedLabel();
   const watchability = getWatchability(match, matches);
   const playerDescription =
@@ -1098,14 +1193,7 @@ function CurrentMatchPage({
                   </div>
                 </div>
 
-                <LiveMatchScore
-                  initialMatch={{
-                    id: match.id,
-                    status: match.status,
-                    score: match.score,
-                    startTime: match.startTime,
-                  }}
-                />
+                <MatchLifecyclePanel lifecycle={lifecycle} match={match} />
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -1133,6 +1221,16 @@ function CurrentMatchPage({
 
             <div className="p-5 md:p-8">
               <MatchDetailsCard match={match} />
+
+              {lifecycle.state === "scheduled" && lifecycle.hasReliableStartTime ? (
+                <MatchReminderPanel
+                  matchTitle={matchTitle}
+                  tournament={match.tournament}
+                  status={match.status}
+                  startTime={match.startTime}
+                  matchUrl={currentUrl}
+                />
+              ) : null}
 
               <section id="where-to-watch" className="mb-10 rounded-[2rem] border border-zinc-800 bg-black p-6">
                 <div className="mb-5">

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { getMatchLifecycle } from "@/app/lib/matchLifecycle";
 
 const indexablePages = ["/", "/today", "/live-tennis", "/players", "/tournament", "/about"];
 const intentionallyNoindexPages = new Set(["/tennis-schedule-today"]);
@@ -169,6 +170,8 @@ test.describe("SEO-critical page basics", () => {
     expect(html).toContain("Tennis order of play page");
     expect(html).not.toContain("<p class=\"mb-2 text-sm text-zinc-500\">Court</p>");
     expect(html).not.toContain("<p class=\"mb-2 text-sm text-zinc-500\">Surface</p>");
+    expect(html).not.toContain("Final score unavailable");
+    expect(html).not.toContain("Add to calendar");
     expect(html).not.toContain("Fake");
   });
 
@@ -186,5 +189,66 @@ test.describe("SEO-critical page basics", () => {
     });
 
     expect(response.status()).toBe(200);
+  });
+});
+
+test.describe("watch match lifecycle helpers", () => {
+  const now = new Date("2026-06-23T12:00:00.000Z");
+
+  test("scheduled match shows countdown and enables calendar only with reliable start time", () => {
+    const lifecycle = getMatchLifecycle({
+      status: "UPCOMING",
+      startTime: "2026-06-23T14:30:00.000Z",
+      score: "",
+    }, now);
+
+    expect(lifecycle.state).toBe("scheduled");
+    expect(lifecycle.statusText).toBe("Scheduled");
+    expect(lifecycle.countdownText).toBe("Starts in 2 hours 30 minutes");
+    expect(lifecycle.hasReliableStartTime).toBe(true);
+    expect(lifecycle.hasReliableScore).toBe(false);
+  });
+
+  test("live match shows live state and score only when reliable", () => {
+    const withScore = getMatchLifecycle({
+      status: "LIVE",
+      startTime: "2026-06-23T11:00:00.000Z",
+      score: "6-4, 2-1",
+    }, now);
+    const withoutScore = getMatchLifecycle({
+      status: "LIVE",
+      startTime: "2026-06-23T11:00:00.000Z",
+      score: "0-0",
+    }, now);
+
+    expect(withScore.state).toBe("live");
+    expect(withScore.statusText).toBe("Live now");
+    expect(withScore.scoreText).toBe("6-4, 2-1");
+    expect(withoutScore.hasReliableScore).toBe(false);
+    expect(withoutScore.scoreText).toBeNull();
+  });
+
+  test("finished match shows finished state and final score when available", () => {
+    const lifecycle = getMatchLifecycle({
+      status: "FINISHED",
+      startTime: "2026-06-23T10:00:00.000Z",
+      score: "7-6, 6-3",
+    }, now);
+
+    expect(lifecycle.state).toBe("finished");
+    expect(lifecycle.statusText).toBe("Match finished");
+    expect(lifecycle.scoreText).toBe("7-6, 6-3");
+  });
+
+  test("missing start time does not create countdown or calendar eligibility", () => {
+    const lifecycle = getMatchLifecycle({
+      status: "SCHEDULED",
+      startTime: null,
+      score: "",
+    }, now);
+
+    expect(lifecycle.state).toBe("scheduled");
+    expect(lifecycle.countdownText).toBeNull();
+    expect(lifecycle.hasReliableStartTime).toBe(false);
   });
 });

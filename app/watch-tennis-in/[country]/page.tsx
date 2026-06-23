@@ -16,7 +16,8 @@ import {
 import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 import {
   TENNIS_BROADCAST_LAST_VERIFIED,
-  tennisBroadcasts,
+  formatBroadcastPrice,
+  getCountryBroadcastEntries,
   type TennisBroadcastEntry,
   type TennisTournamentId,
 } from "@/src/data/tennisBroadcasts";
@@ -78,25 +79,41 @@ export async function generateMetadata({
 function getEntries(countryCode: string | undefined, tournamentIds: TennisTournamentId[]) {
   if (!countryCode) return [];
 
-  return tennisBroadcasts.filter(
-    (entry) => entry.countryCode === countryCode && tournamentIds.includes(entry.tournamentId),
-  );
+  return getCountryBroadcastEntries(countryCode, tournamentIds);
 }
 
-function SourceLinks({ urls }: { urls: string[] }) {
+function SourceLinks({ entry }: { entry: TennisBroadcastEntry }) {
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      {urls.map((url, index) => (
-        <a
-          key={url}
-          href={url}
-          target="_blank"
-          rel="nofollow noopener noreferrer"
-          className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-300 hover:border-emerald-400 hover:text-emerald-300"
-        >
-          Official source {index + 1}
-        </a>
-      ))}
+    <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Sources used for this row</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {entry.officialLinks.map((link) => (
+          <span
+            key={link.url}
+            className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-300"
+          >
+            {link.label}
+          </span>
+        ))}
+      </div>
+      <details className="mt-3">
+        <summary className="cursor-pointer text-xs font-black uppercase tracking-[0.14em] text-emerald-300">
+          Reference links
+        </summary>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {entry.officialLinks.map((link) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-300 hover:border-emerald-400 hover:text-emerald-300"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }
@@ -121,8 +138,11 @@ function BroadcastEntryCard({ entry }: { entry: TennisBroadcastEntry }) {
           <dd className="mt-1">{entry.streamingServiceName}</dd>
         </div>
         <div>
-          <dt className="font-black text-zinc-500">Cost note</dt>
-          <dd className="mt-1">{entry.priceNote}</dd>
+          <dt className="font-black text-zinc-500">Price/month</dt>
+          <dd className="mt-1">
+            <span className="font-black text-white">{formatBroadcastPrice(entry.price)}</span>
+            <span className="mt-1 block text-xs text-zinc-500">{entry.priceNote}</span>
+          </dd>
         </div>
         <div>
           <dt className="font-black text-zinc-500">Subscription</dt>
@@ -134,7 +154,10 @@ function BroadcastEntryCard({ entry }: { entry: TennisBroadcastEntry }) {
         </div>
       </dl>
       <p className="mt-4 leading-7 text-zinc-400">{entry.coverageNotes}</p>
-      <SourceLinks urls={entry.officialSourceUrls} />
+      <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
+        Last verified: {entry.lastVerified}
+      </p>
+      <SourceLinks entry={entry} />
     </article>
   );
 }
@@ -172,13 +195,28 @@ export default async function CountryPage({
   const atpEntry = tourEntries.find((entry) => entry.tournamentId === "atp-tour");
   const wtaEntry = tourEntries.find((entry) => entry.tournamentId === "wta-tour");
   const hasStructuredBroadcastRows = grandSlamEntries.length > 0 || tourEntries.length > 0;
+  const slamSummary = grandSlamEntries
+    .map((entry) => `${entry.tournamentName}: ${entry.broadcasterName}`)
+    .join("; ");
 
   const faqItems = [
     {
-      question: `Where can I watch tennis in ${broadcastCountry.country}?`,
+      question: `Where can I watch ATP tennis in ${broadcastCountry.country}?`,
       answer: hasStructuredBroadcastRows
-        ? `Start with the official broadcaster rows on this page, then confirm the selected match with the linked tournament, ATP or WTA source before paying.`
+        ? `${atpEntry?.broadcasterName ?? "Check the ATP TV schedule"} is the ATP route stored for ${broadcastCountry.country}. Confirm the selected tournament with the ATP TV schedule and the linked provider before paying.`
         : `Use the official ATP, WTA and tournament broadcaster directories linked on this page. This country needs more reviewed broadcaster rows before it should be treated as a complete guide.`,
+    },
+    {
+      question: `Where can I watch WTA tennis in ${broadcastCountry.country}?`,
+      answer: hasStructuredBroadcastRows
+        ? `${wtaEntry?.broadcasterName ?? "Check the WTA where-to-watch directory"} is the WTA route stored for ${broadcastCountry.country}. WTA rights are separate from ATP and Grand Slams, so verify the tournament week.`
+        : `Use the WTA where-to-watch directory and local broadcaster schedules before subscribing in ${broadcastCountry.country}.`,
+    },
+    {
+      question: `Who shows the Grand Slams in ${broadcastCountry.country}?`,
+      answer: slamSummary
+        ? `${slamSummary}. These are stored as separate event rows because Australian Open, Roland Garros, Wimbledon and US Open rights do not automatically match ATP or WTA tour rights.`
+        : `Use the four official Grand Slam broadcaster directories for ${broadcastCountry.country}; this page does not yet have enough reviewed Slam rows.`,
     },
     {
       question: `Does one service show every tennis match in ${broadcastCountry.country}?`,

@@ -8,6 +8,7 @@ import {
 const htmlPages = [
   "/",
   "/live-tennis",
+  "/best-tennis-matches-today",
   "/tennis-schedule-today",
   "/players",
   "/about",
@@ -42,4 +43,18 @@ test.describe("smoke checks", () => {
       expect(body.trim().length).toBeGreaterThan(0);
     });
   }
+
+  test("/best-tennis-matches-today shows today's match groups", async ({ request }) => {
+    const response = await request.get("/best-tennis-matches-today", {
+      failOnStatusCode: false,
+    });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Today&#x27;s match center");
+    expect(html).toContain("All tennis matches today");
+    expect(html).toContain("Live matches");
+    expect(html).toContain("Scheduled matches");
+    expect(html).toContain("Finished matches");
+  });
 });
