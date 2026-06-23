@@ -125,6 +125,33 @@ const playerDescriptions: Record<string, string> = {
     "Iga Swiatek is known for dominant clay-court performances, heavy spin and aggressive all-court tennis.",
 };
 
+const INDEXABLE_WATCH_PLAYER_SLUGS = new Set([
+  "jannik-sinner",
+  "carlos-alcaraz",
+  "novak-djokovic",
+  "iga-swiatek",
+  "aryna-sabalenka",
+  "coco-gauff",
+]);
+
+function isIndexableWatchMatch(match: ArchivedStatusInput & {
+  player1?: string | null;
+  player2?: string | null;
+  tournament?: string | null;
+  category?: string | null;
+}) {
+  if (isActiveMatchStatus(match.status)) return false;
+  if (isCancelledOrPostponed(match.status || "")) return false;
+
+  const playerSlugs = [match.player1, match.player2].map((player) => slugify(player || ""));
+  const hasIndexablePlayer = playerSlugs.some((playerSlug) =>
+    INDEXABLE_WATCH_PLAYER_SLUGS.has(playerSlug)
+  );
+  const isTourLevel = ["ATP", "WTA"].includes(String(match.category || "").toUpperCase());
+
+  return isGrandSlamTournament(match.tournament || "") && hasIndexablePlayer && isTourLevel;
+}
+
 
 function isCrawlerUserAgent(userAgent: string) {
   const value = userAgent.toLowerCase();
@@ -627,7 +654,7 @@ export async function generateMetadata({
   const archivedMatch = matchId
     ? liveMatch || getArchivedMatch(matchId) || await getArchivedMatchFromDatabase(matchId)
     : null;
-  const indexableArchivedMatch = archivedMatch && !isActiveMatchStatus(archivedMatch.status)
+  const indexableArchivedMatch = archivedMatch && isIndexableWatchMatch(archivedMatch)
     ? archivedMatch
     : null;
   const readableTitle = archivedMatch

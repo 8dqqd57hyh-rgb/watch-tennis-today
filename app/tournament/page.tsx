@@ -73,6 +73,10 @@ export const metadata = {
   title: "Tennis Tournaments & Live Streams | Watch Tennis Today",
   description:
     "Browse ATP, WTA, Challenger and Grand Slam tennis tournaments, live streams and TV schedule information.",
+  robots: { index: true, follow: true },
+  alternates: {
+    canonical: "https://watchtennistoday.com/tournament",
+  },
 };
 
 export default async function TournamentsPage() {

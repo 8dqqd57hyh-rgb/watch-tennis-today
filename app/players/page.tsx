@@ -5,6 +5,10 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Players Directory",
   description: "Browse ATP and WTA player profiles, schedules, rankings and live match information.",
+  robots: { index: true, follow: true },
+  alternates: {
+    canonical: "https://watchtennistoday.com/players",
+  },
 };
 const players = [
   "Jannik Sinner",
