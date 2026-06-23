@@ -129,4 +129,46 @@ test.describe("SEO-critical page basics", () => {
       expect(robots).toContain("noindex");
     }
   });
+
+  test("watch match fallback renders a basic match hub without fake broadcaster data", async ({ request }) => {
+    const response = await request.get("/watch/carlos-alcaraz-vs-jannik-sinner-999999999", {
+      failOnStatusCode: false,
+      headers: {
+        "user-agent": "Googlebot",
+      },
+    });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Carlos Alcaraz");
+    expect(html).toContain("Jannik Sinner");
+    expect(html).toContain("Match hub");
+    expect(html).toContain("Match Details");
+    expect(html).toContain("How to watch this match");
+    expect(html).toContain("Check the official tournament broadcaster page or your local rights holder.");
+    expect(html).toContain("Carlos Alcaraz page");
+    expect(html).toContain("Jannik Sinner page");
+    expect(html).toContain("Today&#x27;s tennis schedule");
+    expect(html).toContain("Live tennis page");
+    expect(html).toContain("Tennis order of play page");
+    expect(html).not.toContain("<p class=\"mb-2 text-sm text-zinc-500\">Court</p>");
+    expect(html).not.toContain("<p class=\"mb-2 text-sm text-zinc-500\">Surface</p>");
+    expect(html).not.toContain("Fake");
+  });
+
+  test("non-match dynamic watch slugs still return not found", async ({ request }) => {
+    const response = await request.get("/watch/not-a-match-page", {
+      failOnStatusCode: false,
+    });
+
+    expect(response.status()).toBe(404);
+  });
+
+  test("static non-match watch child route still works", async ({ request }) => {
+    const response = await request.get("/watch/tennis-spoiler-free-scores", {
+      failOnStatusCode: false,
+    });
+
+    expect(response.status()).toBe(200);
+  });
 });

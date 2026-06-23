@@ -61,8 +61,12 @@ type Match = {
   round?: string | null;
   court?: string | null;
   surface?: string | null;
+  location?: string | null;
   watchProviders: WatchProvider[];
 };
+
+const SAFE_WATCH_FALLBACK =
+  "Check the official tournament broadcaster page or your local rights holder.";
 
 
 function isGrandSlamTournament(tournament: string) {
@@ -334,6 +338,20 @@ function getMatchPhase(match: Match) {
   return "Match status";
 }
 
+function getMatchStatusLabel(status?: string | null) {
+  const normalized = normalizeStatus(status || "");
+
+  if (["UPCOMING", "SCHEDULED", "NOTSTARTED", "NOT_STARTED"].includes(normalized)) {
+    return "Scheduled";
+  }
+
+  if (normalized === "LIVE") return "Live";
+  if (["FINISHED", "COMPLETED", "RETIRED"].includes(normalized)) return "Finished";
+  if (["CANCELLED", "CANCELED", "POSTPONED"].includes(normalized)) return "Cancelled";
+
+  return "Unknown";
+}
+
 function getScoreDisplay(match: Match) {
   const score = String(match.score || "").trim();
 
@@ -376,6 +394,100 @@ function getLastUpdatedLabel() {
 function getOptionalMatchDetail(match: Match, key: "round" | "court" | "surface") {
   const value = match[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function getOptionalText(value?: string | null) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+type MatchDetailsInput = {
+  startTime?: string | null;
+  tournament?: string | null;
+  round?: string | null;
+  court?: string | null;
+  surface?: string | null;
+  location?: string | null;
+};
+
+function buildMatchDetails(match: MatchDetailsInput) {
+  return [
+    match.startTime
+      ? { label: "Start time", value: formatLocalDateTime(match.startTime) }
+      : null,
+    getOptionalText(match.tournament)
+      ? { label: "Tournament", value: getOptionalText(match.tournament) as string }
+      : null,
+    getOptionalText(match.round)
+      ? { label: "Round", value: getOptionalText(match.round) as string }
+      : null,
+    getOptionalText(match.court)
+      ? { label: "Court", value: getOptionalText(match.court) as string }
+      : null,
+    getOptionalText(match.surface)
+      ? { label: "Surface", value: getOptionalText(match.surface) as string }
+      : null,
+    getOptionalText(match.location)
+      ? { label: "Location", value: getOptionalText(match.location) as string }
+      : null,
+  ].filter((item): item is { label: string; value: string } => Boolean(item));
+}
+
+function MatchDetailsCard({ match }: { match: MatchDetailsInput }) {
+  const details = buildMatchDetails(match);
+
+  if (details.length === 0) return null;
+
+  return (
+    <section className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+      <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match details</p>
+      <h2 className="mb-5 text-3xl font-black">Match Details</h2>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {details.map((detail) => (
+          <div key={detail.label} className="rounded-3xl border border-zinc-800 bg-black p-5">
+            <p className="mb-2 text-sm text-zinc-500">{detail.label}</p>
+            <p className="text-lg font-black">{detail.value}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BasicRelatedLinks({
+  player1,
+  player2,
+  tournament,
+}: {
+  player1: string;
+  player2: string;
+  tournament?: string | null;
+}) {
+  const player1Url = isDoublesTeam(player1) ? null : safePlayerUrl(player1);
+  const player2Url = isDoublesTeam(player2) ? null : safePlayerUrl(player2);
+  const tournamentName = getOptionalText(tournament);
+  const tournamentUrl = tournamentName ? `/tournament/${slugify(tournamentName)}` : null;
+  const links = [
+    player1Url ? { label: `${player1} page`, href: player1Url } : null,
+    player2Url ? { label: `${player2} page`, href: player2Url } : null,
+    tournamentName && tournamentUrl ? { label: `${tournamentName} page`, href: tournamentUrl } : null,
+    { label: "Today's tennis schedule", href: "/tennis-schedule-today" },
+    { label: "Live tennis page", href: "/live-tennis" },
+    { label: "Tennis order of play page", href: "/tennis-order-of-play-today" },
+  ].filter((link): link is { label: string; href: string } => Boolean(link));
+
+  return (
+    <section className="mb-10 rounded-[2rem] border border-zinc-800 bg-black p-6">
+      <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Related links</p>
+      <h2 className="mb-5 text-3xl font-black">Useful next pages</h2>
+      <div className="flex flex-wrap gap-3 text-sm font-black">
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400 hover:text-white">
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function getWatchability(match: Match, matches: Match[]) {
@@ -638,6 +750,10 @@ function RelatedCoverageEngine({
   );
 }
 
+function shouldRenderCompactMatchHub() {
+  return true;
+}
+
 export async function generateStaticParams() {
   return [];
 }
@@ -694,10 +810,18 @@ type ArchivedMatchLike = {
   status?: string | null;
   score?: string;
   startTime?: string | null;
+  round?: string | null;
+  court?: string | null;
+  surface?: string | null;
+  location?: string | null;
   watchProviders?: WatchProvider[];
 };
 
 function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike }) {
+  const tournamentName = getOptionalText(archivedMatch.tournament);
+  const statusLabel = getMatchStatusLabel(archivedMatch.status);
+  const safeWatchProviders = archivedMatch.watchProviders || [];
+
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
       <div className="mx-auto max-w-4xl">
@@ -706,10 +830,22 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
         </Link>
 
         <div className="mt-10 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
-          <div className="mb-5 inline-flex items-center rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400">
-            📁 Archived match
+          <div className="mb-5 flex flex-wrap items-center gap-3">
+            <span className={`rounded-full px-4 py-2 text-sm font-black ${getStatusStyles(archivedMatch.status || "")}`}>
+              {statusLabel}
+            </span>
+            <span className="rounded-full bg-yellow-500/20 px-4 py-2 text-sm font-bold text-yellow-400">
+              Archived match
+            </span>
+            {tournamentName ? (
+              <span className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-zinc-300">
+                {tournamentName}
+              </span>
+            ) : null}
           </div>
-
+          <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-green-400">
+            Match hub
+          </p>
           <h1 className="mb-6 text-5xl font-black leading-tight">
             {archivedMatch.player1}
             <br />
@@ -720,11 +856,6 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
 
           <div className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2">
             <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <p className="mb-2 text-sm text-zinc-500">Tournament</p>
-              <p className="text-lg font-bold">{archivedMatch.tournament || "Unknown"}</p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
               <p className="mb-2 text-sm text-zinc-500">Last known status</p>
               <p className="text-lg font-bold">{getArchivedDisplayStatus(archivedMatch)}</p>
             </div>
@@ -734,11 +865,44 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
               <p className="text-lg font-bold">{getArchivedDisplayScore(archivedMatch)}</p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-black p-5">
-              <p className="mb-2 text-sm text-zinc-500">Match date</p>
-              <p className="text-lg font-bold">{formatDateTime(archivedMatch.startTime ?? null)}</p>
-            </div>
           </div>
+
+          <MatchDetailsCard match={archivedMatch} />
+
+          <section id="where-to-watch" className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Official viewing</p>
+            <h2 className="mb-5 text-3xl font-black">How to watch this match</h2>
+            {safeWatchProviders.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {safeWatchProviders.map((provider) => (
+                  <a
+                    key={`${provider.name}-${provider.url}`}
+                    href={provider.url}
+                    target="_blank"
+                    rel="nofollow sponsored noopener noreferrer"
+                    className="block rounded-3xl border border-zinc-700 bg-black p-5 transition-all hover:border-green-500 hover:text-green-400"
+                  >
+                    <span className="text-xl font-black">{provider.name}</span>
+                    {provider.note ? (
+                      <span className="mt-2 block text-sm font-semibold leading-6 text-zinc-400">
+                        {provider.note}
+                      </span>
+                    ) : null}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-3xl border border-zinc-800 bg-black p-5 text-zinc-300">
+                {SAFE_WATCH_FALLBACK}
+              </p>
+            )}
+          </section>
+
+          <BasicRelatedLinks
+            player1={archivedMatch.player1}
+            player2={archivedMatch.player2}
+            tournament={archivedMatch.tournament}
+          />
 
           <section className="mb-10 space-y-5 leading-8 text-zinc-300">
             <h2 className="text-3xl font-black text-white">Archived match information</h2>
@@ -845,6 +1009,7 @@ function CurrentMatchPage({
   const currentUrl = `https://watchtennistoday.com/watch/${slug}`;
   const matchTitle = `${match.player1} vs ${match.player2}`;
   const scoreDisplay = getScoreDisplay(match);
+  const statusLabel = getMatchStatusLabel(match.status);
   const countryLinks = buildCountryWatchLinks(match);
   const relatedMatches = getRelatedMatches(match, matches);
   const safeWatchProviders = getSafeWatchProviders(match);
@@ -860,6 +1025,206 @@ function CurrentMatchPage({
     playerDescriptions[match.player2.toLowerCase()] ||
     "Follow tennis match schedules, score context, tournament details and official broadcaster information.";
   const matchEditorialContext = buildMatchEditorialContext(match);
+
+  if (shouldRenderCompactMatchHub()) {
+    return (
+      <main className="min-h-screen bg-black p-5 text-white md:p-8">
+        <div className="mx-auto max-w-5xl">
+          <nav className="mb-6 text-sm text-zinc-400">
+            <Link href="/" className="hover:text-white">Home</Link> /{" "}
+            <Link href="/watch" className="hover:text-white">Watch</Link> /{" "}
+            <Link href={`/tournament/${tournamentSlug}`} className="hover:text-white">{match.tournament}</Link>
+          </nav>
+
+          <article className="overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950">
+            <section className="border-b border-zinc-800 bg-black p-5 md:p-8">
+              <div className="mb-5 flex flex-wrap items-center gap-3">
+                <span className={`rounded-full px-4 py-2 text-sm font-black ${getStatusStyles(match.status)}`}>
+                  {statusLabel}
+                </span>
+                <span className="rounded-full border border-white/10 bg-zinc-900 px-4 py-2 text-sm font-bold text-zinc-300">
+                  {match.tournament}
+                </span>
+                {round ? (
+                  <span className="rounded-full border border-white/10 bg-zinc-900 px-4 py-2 text-sm font-bold text-zinc-300">
+                    {round}
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+                <div>
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">
+                    Match hub
+                  </p>
+                  <h1 className="mb-5 text-4xl font-black leading-tight md:text-6xl">
+                    {player1Url ? (
+                      <Link href={player1Url} className="hover:text-green-400">
+                        {match.player1}
+                      </Link>
+                    ) : (
+                      <span>{match.player1}</span>
+                    )}
+                    <span className="block text-zinc-500">vs</span>
+                    {player2Url ? (
+                      <Link href={player2Url} className="hover:text-green-400">
+                        {match.player2}
+                      </Link>
+                    ) : (
+                      <span>{match.player2}</span>
+                    )}
+                  </h1>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                      <p className="text-xs font-black uppercase text-zinc-500">Start time</p>
+                      <p className="mt-1 font-black">{formatLocalDateTime(match.startTime)}</p>
+                    </div>
+                    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                      <p className="text-xs font-black uppercase text-zinc-500">Status</p>
+                      <p className="mt-1 font-black">{getMatchPhase(match)}</p>
+                    </div>
+                    {court ? (
+                      <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                        <p className="text-xs font-black uppercase text-zinc-500">Court</p>
+                        <p className="mt-1 font-black">{court}</p>
+                      </div>
+                    ) : null}
+                    {surface ? (
+                      <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                        <p className="text-xs font-black uppercase text-zinc-500">Surface</p>
+                        <p className="mt-1 font-black">{surface}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <LiveMatchScore
+                  initialMatch={{
+                    id: match.id,
+                    status: match.status,
+                    score: match.score,
+                    startTime: match.startTime,
+                  }}
+                />
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href="#where-to-watch" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black transition hover:bg-green-400">
+                  Where to watch
+                </Link>
+                <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white transition hover:border-green-400">
+                  Today&apos;s schedule
+                </Link>
+                <LocalMatchFollowButton
+                  match={{
+                    id: match.id,
+                    player1: match.player1,
+                    player2: match.player2,
+                    tournament: match.tournament,
+                    category: match.category,
+                    status: match.status,
+                    score: match.score,
+                    startTime: match.startTime,
+                    slug: getMatchSlug(match),
+                  }}
+                />
+              </div>
+            </section>
+
+            <div className="p-5 md:p-8">
+              <MatchDetailsCard match={match} />
+
+              <section id="where-to-watch" className="mb-10 rounded-[2rem] border border-zinc-800 bg-black p-6">
+                <div className="mb-5">
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Official viewing</p>
+                  <h2 className="text-3xl font-black">Where to watch</h2>
+                </div>
+
+                <p className="mb-5 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
+                  Watch Tennis Today does not host or embed streams. Confirm the final listing with the tournament or licensed broadcaster before match time.
+                </p>
+
+                {safeWatchProviders.length > 0 ? (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {safeWatchProviders.map((provider) => (
+                      <a
+                        key={`${provider.name}-${provider.url}`}
+                        href={provider.url}
+                        target="_blank"
+                        rel="nofollow sponsored noopener noreferrer"
+                        className="block rounded-3xl border border-zinc-700 bg-zinc-950 p-5 transition hover:border-green-500 hover:text-green-400"
+                      >
+                        <span className="text-xl font-black">{provider.name}</span>
+                        {provider.note ? (
+                          <span className="mt-2 block text-sm font-semibold leading-6 text-zinc-400">
+                            {provider.note}
+                          </span>
+                        ) : null}
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 text-zinc-300">
+                    {SAFE_WATCH_FALLBACK}
+                  </p>
+                )}
+
+                <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+                  <Link href="/tennis-tv-broadcast-finder" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+                    Broadcaster finder
+                  </Link>
+                  {countryLinks.slice(0, 4).map((country) => (
+                    <Link key={country.country} href={country.href} className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
+                      {country.country}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <BasicRelatedLinks
+                player1={match.player1}
+                player2={match.player2}
+                tournament={match.tournament}
+              />
+
+              {relatedMatches.length > 0 ? (
+                <section className="mb-10">
+                  <h2 className="mb-5 text-3xl font-black">Related matches</h2>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {relatedMatches.slice(0, 3).map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/watch/${getMatchSlug(item)}`}
+                        className="rounded-3xl border border-zinc-800 bg-black p-5 transition hover:border-green-500"
+                      >
+                        <div className="mb-3 flex justify-between gap-3">
+                          <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusStyles(item.status)}`}>
+                            {getMatchStatusLabel(item.status)}
+                          </span>
+                          <span className="text-sm text-zinc-500">{formatShortTime(item.startTime)}</span>
+                        </div>
+                        <h3 className="mb-2 text-xl font-black">{item.player1} vs {item.player2}</h3>
+                        <p className="text-sm text-zinc-400">{item.tournament}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+            </div>
+          </article>
+        </div>
+
+        <BreadcrumbSchema
+          items={[
+            { name: "Home", url: "https://watchtennistoday.com" },
+            { name: "Watch", url: "https://watchtennistoday.com/watch" },
+            { name: match.tournament, url: `https://watchtennistoday.com/tournament/${tournamentSlug}` },
+            { name: `${match.player1} vs ${match.player2}`, url: currentUrl },
+          ]}
+        />
+      </main>
+    );
+  }
 
   const eventStatus = isLive(match.status)
     ? "https://schema.org/EventInProgress"
@@ -969,7 +1334,7 @@ function CurrentMatchPage({
           <section className="relative border-b border-zinc-800 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.22),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.18),_transparent_32%)] p-6 md:p-10">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className={`rounded-full px-4 py-2 text-sm font-black ${getStatusStyles(match.status)}`}>
-                {getMatchPhase(match)}
+                {statusLabel}
               </span>
               <span className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-zinc-300">
                 {match.category || "Tennis"}
@@ -1079,42 +1444,13 @@ function CurrentMatchPage({
               <strong>Legal streaming notice:</strong> Watch Tennis Today does not host or embed live streams. We help users find official and legal broadcasters and streaming options.
             </section>
 
-            <section className="mb-10 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
-              <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-green-400">Match details</p>
-              <h2 className="mb-5 text-3xl font-black">Match Details</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                  <p className="mb-2 text-sm text-zinc-500">Players</p>
-                  <p className="text-lg font-black">{match.player1} vs {match.player2}</p>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                  <p className="mb-2 text-sm text-zinc-500">Tournament</p>
-                  <Link href={`/tournament/${tournamentSlug}`} className="text-lg font-black hover:text-green-400">{match.tournament}</Link>
-                </div>
-                <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                  <p className="mb-2 text-sm text-zinc-500">Local start time</p>
-                  <p className="text-lg font-black">{formatLocalDateTime(match.startTime)}</p>
-                </div>
-                {round ? (
-                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                    <p className="mb-2 text-sm text-zinc-500">Round</p>
-                    <p className="text-lg font-black">{round}</p>
-                  </div>
-                ) : null}
-                {court ? (
-                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                    <p className="mb-2 text-sm text-zinc-500">Court</p>
-                    <p className="text-lg font-black">{court}</p>
-                  </div>
-                ) : null}
-                {surface ? (
-                  <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-                    <p className="mb-2 text-sm text-zinc-500">Surface</p>
-                    <p className="text-lg font-black">{surface}</p>
-                  </div>
-                ) : null}
-              </div>
-            </section>
+            <MatchDetailsCard match={match} />
+
+            <BasicRelatedLinks
+              player1={match.player1}
+              player2={match.player2}
+              tournament={match.tournament}
+            />
 
             <section className="mb-10 grid gap-4 md:grid-cols-4">
               <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
@@ -1367,7 +1703,7 @@ function CurrentMatchPage({
                 </div>
               ) : (
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-400">
-                  No trusted watch source is attached to this match yet. Check official tournament, ATP, WTA or local broadcaster listings before using any stream.
+                  {SAFE_WATCH_FALLBACK}
                 </div>
               )}
             </section>

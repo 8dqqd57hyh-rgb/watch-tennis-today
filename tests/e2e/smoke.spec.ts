@@ -13,6 +13,9 @@ const htmlPages = [
   "/about",
   "/privacy-policy",
   "/disclaimer",
+  "/watch-alcaraz-live",
+  "/watch-djokovic-live",
+  "/watch-sinner-live",
 ];
 
 const documentPages = ["/robots.txt", "/sitemap.xml", "/ads.txt"];
