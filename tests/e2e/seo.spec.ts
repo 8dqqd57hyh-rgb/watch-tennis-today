@@ -87,8 +87,20 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).toContain("https://watchtennistoday.com");
     expect(urls).toContain("https://watchtennistoday.com/today");
     expect(urls).toContain("https://watchtennistoday.com/live-tennis");
+    expect(urls).toContain("https://watchtennistoday.com/who-plays-tennis-today");
+    expect(urls).toContain("https://watchtennistoday.com/tennis-watchlist-today");
+    expect(urls).toContain("https://watchtennistoday.com/tennis-spoiler-free-scores");
+    expect(urls).toContain("https://watchtennistoday.com/tennis-court-surfaces");
     expect(urls).toContain("https://watchtennistoday.com/players");
     expect(urls).toContain("https://watchtennistoday.com/tournament");
+    expect(urls).toContain("https://watchtennistoday.com/grand-slam-live");
+    expect(urls).toContain("https://watchtennistoday.com/wimbledon-live");
+    expect(urls).toContain("https://watchtennistoday.com/french-open-schedule");
+    expect(urls).toContain("https://watchtennistoday.com/watch-sinner-live");
+    expect(urls).toContain("https://watchtennistoday.com/watch-alcaraz-live");
+    expect(urls).toContain("https://watchtennistoday.com/watch-djokovic-live");
+    expect(urls).not.toContain("https://watchtennistoday.com/watch-player-live/iga-swiatek");
+    expect(urls).not.toContain("https://watchtennistoday.com/watch-swiatek-live");
     expect(urls.some((url) => url.includes("/watch/"))).toBe(false);
   });
 
