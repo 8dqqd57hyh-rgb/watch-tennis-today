@@ -116,6 +116,22 @@ test.describe("SEO-critical page basics", () => {
     });
   }
 
+  test("player page renders a compact useful profile instead of an SEO-heavy long page", async ({ request }) => {
+    const response = await request.get("/player/jannik-sinner", {
+      failOnStatusCode: false,
+    });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Jannik Sinner");
+    expect(html).toContain("Match center");
+    expect(html).toMatch(/Where to watch\s*(?:<!-- -->)?\s*Jannik Sinner/);
+    expect(html).toContain("Related players");
+    expect(html).not.toContain("Sources for this player page");
+    expect(html).not.toContain("About Jannik Sinner Matches and Coverage");
+    expect(html).not.toContain("live stream and schedule FAQ");
+  });
+
   test("expired watch match pages do not get sitemap-style index signals", async ({ request }) => {
     const response = await request.get("/watch/i-jovic-vs-a-eala-12129955", {
       failOnStatusCode: false,
