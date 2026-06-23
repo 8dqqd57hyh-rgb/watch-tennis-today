@@ -237,6 +237,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/wimbledon-schedule",
     "/wimbledon-results",
     "/wimbledon-qualifying",
+    "/wimbledon-qualifying-live",
     "/tennis-on-tv-today",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",
