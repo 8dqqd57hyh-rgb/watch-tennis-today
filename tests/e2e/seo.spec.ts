@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { getMatchLifecycle } from "@/app/lib/matchLifecycle";
 
-const indexablePages = ["/", "/today", "/live-tennis", "/players", "/tournament", "/about"];
+const indexablePages = ["/", "/today", "/live-tennis", "/players", "/tournament", "/about", "/wimbledon-order-of-play"];
 const intentionallyNoindexPages = new Set(["/tennis-schedule-today"]);
 
 const expectedCanonicals: Record<string, string> = {
@@ -11,6 +11,7 @@ const expectedCanonicals: Record<string, string> = {
   "/players": "https://watchtennistoday.com/players",
   "/tournament": "https://watchtennistoday.com/tournament",
   "/about": "https://watchtennistoday.com/about",
+  "/wimbledon-order-of-play": "https://watchtennistoday.com/wimbledon-order-of-play",
 };
 
 const canonicalPlayerSlugCases = [
@@ -96,6 +97,7 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).toContain("https://watchtennistoday.com/tournament");
     expect(urls).toContain("https://watchtennistoday.com/grand-slam-live");
     expect(urls).toContain("https://watchtennistoday.com/wimbledon-live");
+    expect(urls).toContain("https://watchtennistoday.com/wimbledon-order-of-play");
     expect(urls).toContain("https://watchtennistoday.com/french-open-schedule");
     expect(urls).toContain("https://watchtennistoday.com/watch-sinner-live");
     expect(urls).toContain("https://watchtennistoday.com/watch-alcaraz-live");
@@ -103,6 +105,25 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).not.toContain("https://watchtennistoday.com/watch-player-live/iga-swiatek");
     expect(urls).not.toContain("https://watchtennistoday.com/watch-swiatek-live");
     expect(urls.some((url) => url.includes("/watch/"))).toBe(false);
+  });
+
+  test("Wimbledon order of play page renders key SEO content and links", async ({ request }) => {
+    const response = await request.get("/wimbledon-order-of-play", {
+      failOnStatusCode: false,
+    });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Wimbledon Order of Play Today");
+    expect(html).toContain("Today&#x27;s Wimbledon matches");
+    expect(html).toContain("/wimbledon-live");
+    expect(html).toContain("/wimbledon-schedule");
+    expect(html).toContain("/wimbledon-results");
+    expect(html).toContain("/live-tennis");
+    expect(html).toContain("/today");
+    expect(html).toContain("/players");
+    expect(html).toContain("FAQPage");
+    expect(html).toContain("BreadcrumbList");
   });
 
   for (const { path, canonical } of canonicalPlayerSlugCases) {

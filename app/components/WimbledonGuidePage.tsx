@@ -118,9 +118,10 @@ export default function WimbledonGuidePage({
       <section className="mb-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
         <h2 className="mb-3 text-2xl font-bold text-neutral-950">{selected.heading}</h2>
         <p className="text-base leading-7 text-neutral-700">{selected.body}</p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <a href="/wimbledon-live" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Live hub</a>
           <a href="/wimbledon-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Schedule</a>
+          <a href="/wimbledon-order-of-play" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Order of play</a>
           <a href="/where-to-watch-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
           <a href="/best-vpn-for-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">VPN guide</a>
         </div>

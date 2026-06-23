@@ -235,6 +235,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/where-to-watch-wimbledon",
     "/wimbledon-live",
     "/wimbledon-schedule",
+    "/wimbledon-order-of-play",
     "/wimbledon-results",
     "/wimbledon-qualifying",
     "/wimbledon-qualifying-live",

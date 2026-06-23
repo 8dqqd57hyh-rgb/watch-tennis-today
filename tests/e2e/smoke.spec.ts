@@ -17,6 +17,7 @@ const htmlPages = [
   "/watch-alcaraz-live",
   "/watch-djokovic-live",
   "/watch-sinner-live",
+  "/wimbledon-order-of-play",
 ];
 
 const documentPages = ["/robots.txt", "/sitemap.xml", "/ads.txt"];
