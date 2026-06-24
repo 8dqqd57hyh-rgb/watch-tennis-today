@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     "Check today's tennis schedule with live, upcoming and completed match context, tournament details and legal viewing routes.",
   robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://watchtennistoday.com/tennis-schedule-today",
+  },
 };
 
 export default function Page() {

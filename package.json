@@ -11,7 +11,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:predeploy": "npm run lint && npm run typecheck && npm run build && playwright test",
-    "test:predeploy:local": "npm run build && npm run start & wait-on http://localhost:3000 && playwright test"
+    "test:predeploy:local": "npm run build && npm run start & wait-on http://localhost:3000 && playwright test",
+    "cy:open": "cypress open",
+    "cy:run": "node scripts/run-cypress.mjs",
+    "cy:run:chrome": "node scripts/run-cypress.mjs --browser chrome",
+    "cy:predeploy": "npm run build && npm run start & wait-on http://localhost:3000 && cypress run"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.6",
@@ -30,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cypress": "^15.18.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
