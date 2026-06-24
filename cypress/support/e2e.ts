@@ -1,5 +1,7 @@
 // Cypress support file for shared e2e setup.
 // Keep this lightweight so tests remain easy to debug locally and in CI.
+import "./commands";
+import "cypress-axe";
 
 Cypress.on("uncaught:exception", (error) => {
   const ignoredThirdPartyErrors = [

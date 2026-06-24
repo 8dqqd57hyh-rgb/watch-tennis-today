@@ -1,0 +1,44 @@
+[
+  {
+    "id": "live:2001",
+    "player1": "Novak Djokovic",
+    "player2": "Taylor Fritz",
+    "tournament": "ATP Halle",
+    "category": "ATP",
+    "status": "LIVE",
+    "score": "6-4 2-3",
+    "pointScore": "30-15",
+    "startTime": "2026-06-24T12:00:00.000Z",
+    "round": "Round of 16",
+    "watchProviders": [
+      {
+        "name": "Tennis TV",
+        "url": "https://www.tennistv.com/",
+        "accessType": "SUBSCRIPTION",
+        "verificationStatus": "TOUR_VERIFIED",
+        "note": "Official ATP streaming service where rights apply."
+      }
+    ]
+  },
+  {
+    "id": "live:2002",
+    "player1": "Aryna Sabalenka",
+    "player2": "Elena Rybakina",
+    "tournament": "WTA Berlin",
+    "category": "WTA",
+    "status": "LIVE",
+    "score": "4-4",
+    "pointScore": "40-40",
+    "startTime": "2026-06-24T12:15:00.000Z",
+    "round": "Quarterfinal",
+    "watchProviders": [
+      {
+        "name": "WTA Where to Watch",
+        "url": "https://www.wtatennis.com/where-to-watch-tennis",
+        "accessType": "REGION_DEPENDENT",
+        "verificationStatus": "TOUR_VERIFIED",
+        "note": "Official WTA broadcaster directory."
+      }
+    ]
+  }
+]

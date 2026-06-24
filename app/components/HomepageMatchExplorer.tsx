@@ -356,8 +356,8 @@ export default function HomepageMatchExplorer() {
           <div className="mt-4 flex flex-wrap gap-3 text-sm font-bold text-zinc-400" role="status" aria-live="polite">
             <span>{filteredMatches.length} matches found</span>
             <span>{homepageMatches.filter((match) => match.status === "LIVE").length} live now</span>
-            <Link href="/live-tennis" className="text-green-400 hover:text-green-300">Live page</Link>
-            <Link href="/tennis-on-tv-today" className="text-green-400 hover:text-green-300">TV schedule</Link>
+            <Link href="/live-tennis" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">Live page</Link>
+            <Link href="/tennis-on-tv-today" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">TV schedule</Link>
           </div>
         </section>
 
@@ -393,22 +393,22 @@ export default function HomepageMatchExplorer() {
         {loading ? (
           <MatchLoadingSkeleton />
         ) : loadError ? (
-          <div className="rounded-3xl border border-amber-500/40 bg-zinc-950 p-8">
+          <div className="rounded-3xl border border-amber-500/40 bg-zinc-950 p-8" data-testid="empty-state">
             <p className="text-xl font-black text-white">Match feed is temporarily unavailable.</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
               You can still use the live page, TV schedule and tournament pages while the live feed recovers.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/live-tennis" className="rounded-2xl bg-green-500 px-4 py-3 text-sm font-black text-black hover:bg-green-400">
+              <Link href="/live-tennis" className="rounded-2xl bg-green-500 px-4 py-3 text-sm font-black text-black hover:bg-green-400" data-testid="guide-streaming-link">
                 Open live tennis
               </Link>
-              <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500">
+              <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500" data-testid="guide-streaming-link">
                 Check TV schedule
               </Link>
             </div>
           </div>
         ) : visibleFilteredMatches.length === 0 ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8" data-testid="empty-state">
             <p className="text-xl font-black text-white">No matches found.</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
               Try a different player, tournament or tour filter. If you are looking for a daily overview, the schedule pages are often faster.
@@ -426,7 +426,7 @@ export default function HomepageMatchExplorer() {
                   Clear filters
                 </button>
               ) : null}
-              <Link href="/today" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500">
+              <Link href="/today" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500" data-testid="guide-streaming-link">
                 Today schedule
               </Link>
             </div>
@@ -441,7 +441,7 @@ export default function HomepageMatchExplorer() {
               const qualifyingBadge = getGrandSlamQualifyingBadge(match);
 
               return (
-                <article key={match.id} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition hover:border-green-500">
+                <article key={match.id} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 transition hover:border-green-500" data-testid="match-card">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <span className={`rounded-full px-3 py-1 text-xs font-black ${match.status === "LIVE" ? "bg-red-500 text-white" : "bg-zinc-800 text-zinc-200"}`}>
                       {match.status}
@@ -460,7 +460,7 @@ export default function HomepageMatchExplorer() {
                       const href = playerUrl(player);
                       return (
                         <span key={`${match.id}-p1-${player}`}>
-                          {href ? <Link href={href} className="hover:text-green-400">{player}</Link> : player}
+                          {href ? <Link href={href} className="hover:text-green-400" data-testid="player-link">{player}</Link> : player}
                           {index < player1.length - 1 ? <span className="text-zinc-500"> / </span> : null}
                         </span>
                       );
@@ -470,7 +470,7 @@ export default function HomepageMatchExplorer() {
                       const href = playerUrl(player);
                       return (
                         <span key={`${match.id}-p2-${player}`}>
-                          {href ? <Link href={href} className="hover:text-green-400">{player}</Link> : player}
+                          {href ? <Link href={href} className="hover:text-green-400" data-testid="player-link">{player}</Link> : player}
                           {index < player2.length - 1 ? <span className="text-zinc-500"> / </span> : null}
                         </span>
                       );
@@ -495,7 +495,7 @@ export default function HomepageMatchExplorer() {
                   </div>
 
                   <div className="mt-5 grid gap-2">
-                    <Link href={`/watch/${matchSlug(match)}`} className="rounded-2xl bg-green-500 px-4 py-3 text-center font-black text-black hover:bg-green-400">
+                    <Link href={`/watch/${matchSlug(match)}`} className="rounded-2xl bg-green-500 px-4 py-3 text-center font-black text-black hover:bg-green-400" data-testid="guide-streaming-link">
                       Match details
                     </Link>
                     {primaryProvider ? (
@@ -504,6 +504,7 @@ export default function HomepageMatchExplorer() {
                         target="_blank"
                         rel="nofollow sponsored noopener noreferrer"
                         className="rounded-2xl border border-zinc-800 px-4 py-3 text-center text-sm font-black text-zinc-200 hover:border-green-500"
+                        data-testid="guide-streaming-link"
                       >
                         {primaryProvider.name}
                       </a>

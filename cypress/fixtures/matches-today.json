@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fixture:1001",
+    "player1": "Jannik Sinner",
+    "player2": "Carlos Alcaraz",
+    "tournament": "Wimbledon",
+    "category": "ATP",
+    "status": "UPCOMING",
+    "score": "",
+    "pointScore": null,
+    "startTime": "2026-06-24T14:30:00.000Z",
+    "round": "Semifinal",
+    "watchProviders": [
+      {
+        "name": "Official Wimbledon broadcasters",
+        "url": "/where-to-watch-wimbledon",
+        "accessType": "REGION_DEPENDENT",
+        "verificationStatus": "TOURNAMENT_VERIFIED",
+        "note": "Check official country coverage before match time."
+      }
+    ]
+  },
+  {
+    "id": "fixture:1002",
+    "player1": "Iga Swiatek",
+    "player2": "Coco Gauff",
+    "tournament": "WTA Berlin",
+    "category": "WTA",
+    "status": "UPCOMING",
+    "score": "",
+    "pointScore": null,
+    "startTime": "2026-06-24T16:00:00.000Z",
+    "round": "Quarterfinal",
+    "watchProviders": [
+      {
+        "name": "WTA Where to Watch",
+        "url": "https://www.wtatennis.com/where-to-watch-tennis",
+        "accessType": "REGION_DEPENDENT",
+        "verificationStatus": "TOUR_VERIFIED",
+        "note": "Official WTA broadcaster directory."
+      }
+    ]
+  }
+]

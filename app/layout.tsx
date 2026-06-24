@@ -117,21 +117,22 @@ export default function RootLayout({
 
       <nav
         aria-label="Primary navigation"
+        data-testid="primary-navigation"
         className="site-nav text-sm font-semibold"
       >
-        <Link href="/live-tennis" className="site-nav-link">
+        <Link href="/live-tennis" className="site-nav-link" data-testid="primary-nav-link">
           Live Tennis
         </Link>
-        <Link href="/best-tennis-matches-today" className="site-nav-link">
+        <Link href="/best-tennis-matches-today" className="site-nav-link" data-testid="primary-nav-link">
           Matches Today
         </Link>
-        <Link href="/players" className="site-nav-link">
+        <Link href="/players" className="site-nav-link" data-testid="primary-nav-link">
           Players
         </Link>
-        <Link href="/tennis-calendar" className="site-nav-link">
+        <Link href="/tennis-calendar" className="site-nav-link" data-testid="primary-nav-link">
           Calendar
         </Link>
-        <Link href="/tennis-guides" className="site-nav-link site-nav-link-highlight">
+        <Link href="/tennis-guides" className="site-nav-link site-nav-link-highlight" data-testid="primary-nav-link">
           Guides
         </Link>
 

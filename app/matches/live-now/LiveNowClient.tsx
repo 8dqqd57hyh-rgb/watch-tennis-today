@@ -139,7 +139,7 @@ export default function LiveMatchesNowPage() {
             Loading live tennis matches now...
           </p>
         ) : liveMatches.length === 0 ? (
-         <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8">
+         <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8" data-testid="empty-state">
   <h2 className="text-3xl font-black mb-4">
     No live tennis matches right now
   </h2>
@@ -174,6 +174,7 @@ export default function LiveMatchesNowPage() {
                   key={match.id}
                   href={`/watch/${matchSlug(match)}`}
                   className="block rounded-[2rem] border border-red-500 bg-zinc-900 p-6 hover:scale-[1.01] transition-all"
+                  data-testid="match-card"
                 >
                   <div className="flex items-center justify-between mb-5">
                     <span className="bg-red-500 text-white text-xs font-black px-3 py-1 rounded-full animate-pulse">
@@ -228,6 +229,7 @@ export default function LiveMatchesNowPage() {
                   key={player}
                   href={href}
                   className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-3 font-bold hover:border-yellow-500 hover:text-yellow-400 transition-all"
+                  data-testid="player-link"
                 >
                   ⭐ {player}
                 </a>
@@ -276,6 +278,7 @@ export default function LiveMatchesNowPage() {
               <a
                 href="/best-vpn-for-tennis-streaming"
                 className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
+                data-testid="guide-streaming-link"
               >
                 Best VPN for Tennis Streaming
               </a>
@@ -283,6 +286,7 @@ export default function LiveMatchesNowPage() {
               <a
                 href="/how-to-watch-tennis-safely-abroad"
                 className="inline-flex items-center rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold hover:border-zinc-500 transition-all"
+                data-testid="guide-streaming-link"
               >
                 Learn More
               </a>

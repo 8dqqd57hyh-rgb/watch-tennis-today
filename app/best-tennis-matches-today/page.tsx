@@ -41,6 +41,8 @@ type Match = {
 };
 
 const MATCH_DAY_TIME_ZONE = "Europe/Warsaw";
+const MATCH_SECTION_DISPLAY_LIMIT = 24;
+const RANKED_MATCH_DISPLAY_LIMIT = 36;
 
 async function getMatches(): Promise<Match[]> {
   return (await getServerMatchesWindow({
@@ -48,7 +50,7 @@ async function getMatches(): Promise<Match[]> {
     includeFinished: true,
     daysBack: 0,
     daysForward: 1,
-    timeoutMs: 15000,
+    timeoutMs: 5000,
   })) as Match[];
 }
 
@@ -157,7 +159,7 @@ function PlayerName({ name }: { name: string }) {
   if (!href) return <>{name}</>;
 
   return (
-    <Link href={href} className="hover:text-green-400">
+    <Link href={href} className="hover:text-green-400" data-testid="player-link">
       {name}
     </Link>
   );
@@ -179,7 +181,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function TodayMatchCard({ match }: { match: Match }) {
   return (
-    <article className="rounded-2xl border border-zinc-800 bg-black p-4 transition hover:border-green-400">
+    <article className="rounded-2xl border border-zinc-800 bg-black p-4 transition hover:border-green-400" data-testid="match-card">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <StatusBadge status={match.status} />
         <span className="text-xs font-bold text-zinc-500">{match.category || "Tennis"}</span>
@@ -208,6 +210,7 @@ function TodayMatchCard({ match }: { match: Match }) {
       <Link
         href={`/watch/${matchSlug(match)}`}
         className="mt-4 inline-flex rounded-xl bg-green-500 px-4 py-2 text-sm font-black text-black hover:bg-green-400"
+        data-testid="guide-streaming-link"
       >
         Match hub
       </Link>
@@ -243,7 +246,7 @@ function TodayMatchSection({
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-zinc-800 bg-black p-5 text-sm leading-6 text-zinc-400">
+        <div className="rounded-2xl border border-zinc-800 bg-black p-5 text-sm leading-6 text-zinc-400" data-testid="empty-state">
           No matches in this group right now.
         </div>
       )}
@@ -258,6 +261,9 @@ function TodayMatchesBoard({ matches }: { matches: Match[] }) {
   const liveMatches = todayMatches.filter((match) => isLiveStatus(match.status));
   const scheduledMatches = todayMatches.filter((match) => isScheduledStatus(match.status));
   const finishedMatches = todayMatches.filter((match) => isFinishedStatus(match.status));
+  const displayedLiveMatches = liveMatches.slice(0, MATCH_SECTION_DISPLAY_LIMIT);
+  const displayedScheduledMatches = scheduledMatches.slice(0, MATCH_SECTION_DISPLAY_LIMIT);
+  const displayedFinishedMatches = finishedMatches.slice(0, MATCH_SECTION_DISPLAY_LIMIT);
   const counts = getTodayMatchCounts(todayMatches);
 
   return (
@@ -294,7 +300,7 @@ function TodayMatchesBoard({ matches }: { matches: Match[] }) {
           </div>
 
           {!todayMatches.length ? (
-            <p className="mt-4 rounded-2xl border border-yellow-500/25 bg-yellow-500/10 p-4 text-sm leading-6 text-yellow-100">
+            <p className="mt-4 rounded-2xl border border-yellow-500/25 bg-yellow-500/10 p-4 text-sm leading-6 text-yellow-100" data-testid="empty-state">
               No matches are available from the feed for today yet. That usually means the external tennis feed is delayed, between sessions, or has not published the current order of play.
             </p>
           ) : null}
@@ -305,17 +311,17 @@ function TodayMatchesBoard({ matches }: { matches: Match[] }) {
         <TodayMatchSection
           title="Live matches"
           description="Matches currently marked live in the feed. Scores are shown only when the feed provides a reliable score."
-          matches={liveMatches}
+          matches={displayedLiveMatches}
         />
         <TodayMatchSection
           title="Scheduled matches"
           description="Matches still to come today. Start times can move when earlier matches run long or courts change."
-          matches={scheduledMatches}
+          matches={displayedScheduledMatches}
         />
         <TodayMatchSection
           title="Finished matches"
           description="Completed matches from today, useful for results, replays and catching up on tournament context."
-          matches={finishedMatches}
+          matches={displayedFinishedMatches}
         />
       </div>
     </section>
@@ -325,10 +331,12 @@ function TodayMatchesBoard({ matches }: { matches: Match[] }) {
 export default async function BestTennisMatchesTodayPage() {
   const matches = await getMatches();
   const todayMatches = matches.filter(isTodayMatch);
-  const rankedTodayMatches = todayMatches.map((match) => ({
-    ...match,
-    startTime: match.startTime || undefined,
-  }));
+  const rankedTodayMatches = todayMatches
+    .slice(0, RANKED_MATCH_DISPLAY_LIMIT)
+    .map((match) => ({
+      ...match,
+      startTime: match.startTime || undefined,
+    }));
   const hasCurrentCandidates = todayMatches.some(isCurrentCandidate);
 
   return (

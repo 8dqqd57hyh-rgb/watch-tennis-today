@@ -27,7 +27,7 @@ const links = [
 
 export default function StreamingLinksGrid() {
   return (
-    <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8">
+    <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-8" data-testid="streaming-links">
       <h2 className="text-3xl font-black mb-5">
         More Tennis Streaming Guides
       </h2>
@@ -43,6 +43,7 @@ export default function StreamingLinksGrid() {
             key={link.href}
             href={link.href}
             className="bg-black border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition-all"
+            data-testid="guide-streaming-link"
           >
             <h3 className="text-xl font-black">
               {link.title}

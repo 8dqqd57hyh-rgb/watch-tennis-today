@@ -54,8 +54,8 @@ export default function PlayersPage() {
             schedules, tournament coverage and player match pages. Use this directory as a practical entry point, then open the player authority guide when you want playing-style context rather than only a live schedule.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href="/best-tennis-players" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400">Best players guide</a>
-            <a href="/analysis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500">Tennis analysis</a>
+            <a href="/best-tennis-players" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400" data-testid="guide-streaming-link">Best players guide</a>
+            <a href="/analysis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500" data-testid="guide-streaming-link">Tennis analysis</a>
           </div>
         </section>
         <section className="mb-14 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
@@ -67,6 +67,7 @@ export default function PlayersPage() {
     <Link
       href="/players/atp"
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-green-500 transition-all"
+      data-testid="player-card"
     >
       ATP Tennis Players
     </Link>
@@ -74,6 +75,7 @@ export default function PlayersPage() {
     <Link
       href="/players/wta"
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-purple-500 transition-all"
+      data-testid="player-card"
     >
       WTA Tennis Players
     </Link>
@@ -81,6 +83,7 @@ export default function PlayersPage() {
     <a
       href="/best-tennis-players"
       className="bg-black border border-zinc-800 rounded-2xl p-6 font-black hover:border-green-500 transition-all md:col-span-2"
+      data-testid="player-card"
     >
       Best Tennis Players to Follow
       <span className="mt-2 block text-sm font-normal leading-6 text-zinc-400">
@@ -101,6 +104,7 @@ export default function PlayersPage() {
   key={player}
   href={safePlayerUrl(player) || "/players"}
   className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
+  data-testid="player-card"
 >
   <h3 className="text-2xl font-black mb-3">
     {player}
@@ -133,6 +137,7 @@ export default function PlayersPage() {
             <a
               href="/live-tennis"
               className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-red-500 transition-all"
+              data-testid="guide-streaming-link"
             >
               Live Tennis Today
             </a>
@@ -140,6 +145,7 @@ export default function PlayersPage() {
             <Link
               href="/players/live-now"
               className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-red-500 transition-all"
+              data-testid="guide-streaming-link"
             >
               Live Players Now
             </Link>
@@ -147,6 +153,7 @@ export default function PlayersPage() {
             <a
               href="/tennis-trending-now"
               className="bg-black border border-zinc-800 rounded-2xl p-5 font-bold hover:border-red-500 transition-all"
+              data-testid="guide-streaming-link"
             >
               Tennis Trending Now
             </a>

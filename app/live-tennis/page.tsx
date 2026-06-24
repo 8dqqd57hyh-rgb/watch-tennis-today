@@ -6,6 +6,7 @@ import Link from "next/link";
 export const revalidate = 60;
 
 const SITE_URL = "https://watchtennistoday.com";
+const MATCH_SECTION_DISPLAY_LIMIT = 24;
 
 type Match = ServerMatch & {
   court?: string | null;
@@ -299,28 +300,28 @@ function buildSections(matches: Match[], now: Date): MatchSection[] {
       title: "Live Now",
       description: "Matches currently in progress.",
       tone: "live",
-      matches: buckets.live,
+      matches: buckets.live.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "starting-soon",
       title: "Starting Soon",
       description: "Matches scheduled to begin within the next two hours.",
       tone: "soon",
-      matches: buckets.soon,
+      matches: buckets.soon.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "later-today",
       title: "Later Today",
       description: "More tennis still scheduled for today.",
       tone: "later",
-      matches: buckets.later,
+      matches: buckets.later.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "completed-today",
       title: "Completed Today",
       description: "Recent results from today’s schedule.",
       tone: "done",
-      matches: buckets.completed,
+      matches: buckets.completed.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
   ];
 
@@ -351,7 +352,7 @@ function PlayerLink({ name }: { name: string }) {
   if (!href) return <span>{name}</span>;
 
   return (
-    <Link href={href} className="hover:text-emerald-300">
+    <Link href={href} className="hover:text-emerald-300" data-testid="player-link">
       {name}
     </Link>
   );
@@ -370,7 +371,7 @@ function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }
   const category = getCategoryLabel(match.category);
 
   return (
-    <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 shadow-lg shadow-black/20">
+    <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 shadow-lg shadow-black/20" data-testid="match-card">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wide ${badgeClass(tone)}`}>
           {tone === "live" ? "Live" : tone === "soon" ? "Starting soon" : tone === "done" ? "Result" : "Today"}
@@ -406,16 +407,16 @@ function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
-        <Link href={matchInfoHref} className="rounded-2xl bg-emerald-400 px-4 py-3 text-center font-black text-black hover:bg-emerald-300">
+        <Link href={matchInfoHref} className="rounded-2xl bg-emerald-400 px-4 py-3 text-center font-black text-black hover:bg-emerald-300" data-testid="guide-streaming-link">
           Match info
         </Link>
-        <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400">
+        <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
           TV guide
         </Link>
-        <Link href={tournamentUrl(match.tournament)} className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400">
+        <Link href={tournamentUrl(match.tournament)} className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
           Tournament
         </Link>
-        <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400">
+        <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
           How to watch
         </Link>
       </div>
@@ -425,19 +426,19 @@ function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }
 
 function EmptyState() {
   return (
-    <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
+    <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8" data-testid="empty-state">
       <h2 className="text-3xl font-black text-white">No live matches found right now</h2>
       <p className="mt-3 max-w-3xl text-zinc-400">
         Tennis schedules change throughout the day. Check today’s schedule, TV guide and player pages for upcoming ATP and WTA windows.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/tennis-schedule-today" className="rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black">
+        <Link href="/tennis-schedule-today" className="rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black" data-testid="guide-streaming-link">
           Today’s schedule
         </Link>
-        <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white">
+        <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white" data-testid="guide-streaming-link">
           TV schedule
         </Link>
-        <Link href="/players" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white">
+        <Link href="/players" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white" data-testid="guide-streaming-link">
           Player pages
         </Link>
       </div>
@@ -605,13 +606,13 @@ export default async function LiveTennisPage() {
         <section id="tv-schedule" className="mt-10 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
           <h2 className="text-3xl font-black">Useful next steps</h2>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
-            <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400">
+            <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
               Tennis on TV today
             </Link>
-            <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400">
+            <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
               Best ways to watch online
             </Link>
-            <Link href="/watch-tennis-in/usa" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400">
+            <Link href="/watch-tennis-in/usa" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
               Country streaming guides
             </Link>
           </div>

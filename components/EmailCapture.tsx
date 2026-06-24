@@ -119,7 +119,7 @@ export default function EmailCapture({
     : "border-zinc-300 bg-white text-zinc-950 placeholder:text-zinc-500 focus:border-green-500";
 
   return (
-    <section className={`${wrapperClass} rounded-[2rem] p-5 shadow-sm md:p-6`}>
+    <section className={`${wrapperClass} rounded-[2rem] p-5 shadow-sm md:p-6`} data-testid="email-signup">
       <div className={compact ? "mb-4" : "mb-5"}>
         <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-500">
           Optional tennis alerts
@@ -135,7 +135,7 @@ export default function EmailCapture({
           You are signed up for useful tennis updates. No illegal streams, no noisy inbox. 🎾
         </div>
       ) : (
-        <form onSubmit={subscribe} className="grid gap-3 md:grid-cols-[1fr_auto]">
+        <form onSubmit={subscribe} className="grid gap-3 md:grid-cols-[1fr_auto]" data-testid="email-signup-form">
           <input
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -143,11 +143,13 @@ export default function EmailCapture({
             required
             placeholder={placeholder}
             className={`${inputClass} rounded-2xl border px-5 py-4 outline-none`}
+            data-testid="email-signup-input"
           />
           <button
             type="submit"
             disabled={loading}
             className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400 disabled:opacity-60"
+            data-testid="email-signup-submit"
           >
             {loading ? "Saving..." : buttonText}
           </button>
