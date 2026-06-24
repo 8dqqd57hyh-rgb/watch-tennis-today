@@ -1,6 +1,6 @@
-describe("tennis fan user journey", () => {
+describe("tennis fan user journey", { tags: ["@journey", "@critical"] }, () => {
   beforeEach(() => {
-    cy.intercept("GET", "/api/matches*", { fixture: "live-matches.json" }).as("liveMatches");
+    cy.mockMatches({ fixture: "live-matches.json" }, "liveMatches");
     cy.intercept("GET", "/api/wimbledon-qualifying*", []);
   });
 

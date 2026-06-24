@@ -85,7 +85,7 @@ export default function TennisNavigationHub({
   const labelClass = dark ? "text-zinc-500" : "text-zinc-500";
 
   return (
-    <section className={`rounded-3xl border p-6 md:p-8 ${shellClass} ${className}`}>
+    <section className={`rounded-3xl border p-6 md:p-8 ${shellClass} ${className}`} data-testid="tennis-navigation-hub">
       <p className={`text-xs font-black uppercase tracking-[0.2em] ${eyebrowClass}`}>{eyebrow}</p>
       <h2 className="mt-2 text-2xl font-black md:text-3xl">{title}</h2>
       <p className={`mt-3 max-w-3xl leading-7 ${descriptionClass}`}>{description}</p>
@@ -96,6 +96,7 @@ export default function TennisNavigationHub({
             key={link.href}
             href={link.href}
             className={`rounded-2xl border p-4 transition ${cardClass}`}
+            data-testid="navigation-hub-link"
           >
             {link.label ? (
               <span className={`mb-2 block text-xs font-black uppercase tracking-[0.18em] ${labelClass}`}>

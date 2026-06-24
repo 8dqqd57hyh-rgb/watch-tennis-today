@@ -2,6 +2,13 @@
 // Keep this lightweight so tests remain easy to debug locally and in CI.
 import "./commands";
 import "cypress-axe";
+import { register as registerCypressGrep } from "@cypress/grep";
+
+registerCypressGrep();
+
+beforeEach(() => {
+  cy.checkNoConsoleErrors();
+});
 
 Cypress.on("uncaught:exception", (error) => {
   const ignoredThirdPartyErrors = [

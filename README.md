@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Watch Tennis Today
+
+Next.js app for tennis schedules, player pages, live match discovery and legal viewing guides.
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
+```shell
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The project keeps the existing Playwright tests and adds a Cypress suite shaped like a senior QA automation project: reusable commands, deterministic fixtures, component tests, network failure coverage, tagged execution and CI reporting.
 
-## Learn More
+### Cypress Layout
 
-To learn more about Next.js, take a look at the following resources:
+- `cypress/e2e/smoke` - homepage and key page smoke checks.
+- `cypress/e2e/api` - API route health checks.
+- `cypress/e2e/seo` - metadata, robots and sitemap checks.
+- `cypress/e2e/accessibility` - axe checks for critical and serious violations.
+- `cypress/e2e/journeys` - user flows through discovery, live tennis and players.
+- `cypress/e2e/mocked` - intercepted success, empty, delayed and failure responses.
+- `cypress/component` - focused component tests for reusable UI.
+- `cypress/fixtures` - stable match and player fixtures.
+- `cypress/support` - commands, helpers and shared assertions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Useful Commands
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```shell
+npm run lint
+npm run typecheck
+npm run build
+npm run test:e2e
+npm run cy:run
+npm run cy:run:component
+npm run cy:run:all
+```
 
-## Deploy on Vercel
+Tagged Cypress subsets:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```shell
+npm run cy:run:smoke
+npm run cy:run:seo
+npm run cy:run:critical
+npm run cy:run:api
+npm run cy:run:journey
+npm run cy:run:accessibility
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Custom Commands
+
+The Cypress command layer keeps specs readable and reduces duplicated setup:
+
+- `cy.visitHome()` and `cy.visitLiveTennis()` visit core routes and wait for the app shell.
+- `cy.mockMatches()` and `cy.mockPlayers()` centralize API mocking.
+- `cy.waitForAppReady()` replaces arbitrary waits with DOM readiness assertions.
+- `cy.checkSeoMeta()` validates title, description and canonical metadata.
+- `cy.checkNoConsoleErrors()` fails tests on unexpected browser console errors.
+- `cy.getByTestId()` encourages stable selectors.
+
+### Reporting And CI
+
+Cypress uses JUnit and mochawesome reporters. Reports are written to `cypress/reports`, and HTML reports can be generated with:
+
+```shell
+npm run cy:report
+```
+
+GitHub Actions caches npm and the Cypress binary, then runs lint, typecheck, build, Cypress e2e, Cypress component tests, and uploads screenshots, videos, JUnit XML and mochawesome reports.
+
+See [CYPRESS_TESTS_README.md](./CYPRESS_TESTS_README.md) for the detailed QA testing guide.

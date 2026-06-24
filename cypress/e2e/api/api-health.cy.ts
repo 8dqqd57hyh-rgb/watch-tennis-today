@@ -4,7 +4,7 @@ const apiRoutes = [
   { path: "/api/tv-channels", type: "json", optional: true },
 ] as const;
 
-describe("API route health", () => {
+describe("API route health", { tags: ["@api", "@critical"] }, () => {
   apiRoutes.forEach((route) => {
     it(`${route.path} does not crash`, () => {
       cy.request({ url: route.path, failOnStatusCode: false }).then((response) => {

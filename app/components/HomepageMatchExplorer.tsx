@@ -193,7 +193,7 @@ function isFinishedStatus(status: string) {
 
 function MatchLoadingSkeleton() {
   return (
-    <div role="status" aria-label="Loading match cards" className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div role="status" aria-label="Loading match cards" className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-testid="match-loading-skeleton">
       {Array.from({ length: 6 }).map((_, index) => (
         <div key={index} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
           <div className="mb-4 flex items-center justify-between gap-3">

@@ -1,4 +1,4 @@
-describe("primary navigation", () => {
+describe("primary navigation", { tags: ["@journey", "@critical"] }, () => {
   const links = [
     { label: "Live Tennis", path: "/live-tennis" },
     { label: "Matches Today", path: "/best-tennis-matches-today" },
@@ -8,11 +8,11 @@ describe("primary navigation", () => {
   ];
 
   beforeEach(() => {
-    cy.visit("/");
+    cy.visitHome();
   });
 
   it("shows the main navigation links", () => {
-    cy.get('nav[aria-label="Primary navigation"]').as("primaryNav").should("be.visible");
+    cy.getByTestId("primary-navigation").as("primaryNav").should("be.visible");
 
     links.forEach(({ label, path }) => {
       cy.get("@primaryNav")
@@ -24,7 +24,7 @@ describe("primary navigation", () => {
 
   links.forEach(({ label, path }) => {
     it(`navigates to ${label}`, () => {
-      cy.get('nav[aria-label="Primary navigation"]').contains("a", label).click();
+      cy.getByTestId("primary-navigation").contains("a", label).click();
       cy.location("pathname").should("eq", path);
       cy.get("h1").first().should("be.visible");
       cy.get("body").should("contain.text", "Tennis");

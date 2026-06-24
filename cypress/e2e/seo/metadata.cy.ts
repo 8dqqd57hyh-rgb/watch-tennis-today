@@ -43,17 +43,11 @@ const seoPages = [
   },
 ];
 
-describe("SEO basics", () => {
+describe("SEO basics", { tags: ["@seo", "@critical"] }, () => {
   seoPages.forEach(({ path, title, descriptionIncludes, canonical }) => {
     it(`${path} has title, meta description and canonical link`, () => {
       cy.visit(path);
-
-      cy.title().should("contain", title);
-      cy.get('meta[name="description"]')
-        .should("have.attr", "content")
-        .and("include", descriptionIncludes)
-        .and("have.length.greaterThan", 40);
-      cy.get('link[rel="canonical"]').should("have.attr", "href", canonical);
+      cy.checkSeoMeta({ title, descriptionIncludes, canonical });
     });
   });
 });

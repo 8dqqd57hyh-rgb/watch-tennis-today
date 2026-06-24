@@ -19,6 +19,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+
       - name: Install dependencies
         run: npm ci
 
@@ -37,11 +45,23 @@ jobs:
       - name: Wait for app
         run: npx wait-on http://localhost:3000
 
-      - name: Run Cypress
+      - name: Run Cypress e2e
         run: npx cypress run
 
+      - name: Run Cypress component tests
+        run: npx cypress run --component
+
+      - name: Generate mochawesome HTML report
+        if: always()
+        run: |
+          if compgen -G "cypress/reports/mochawesome/*.json" > /dev/null; then
+            npm run cy:report
+          else
+            echo "No mochawesome JSON files found."
+          fi
+
       - name: Upload Cypress screenshots
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
@@ -49,9 +69,28 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Cypress videos
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: cypress/videos
+          if-no-files-found: ignore
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-junit
+          path: cypress/reports/junit
+          if-no-files-found: ignore
+
+      - name: Upload mochawesome report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-mochawesome
+          path: |
+            cypress/reports/mochawesome
+            cypress/reports/html
+            cypress/reports/mochawesome.json
           if-no-files-found: ignore

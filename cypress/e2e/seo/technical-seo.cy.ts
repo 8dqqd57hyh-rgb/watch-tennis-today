@@ -6,7 +6,7 @@ const expectedSitemapUrls = [
   "https://watchtennistoday.com/watch-sinner-live",
 ];
 
-describe("technical SEO files", () => {
+describe("technical SEO files", { tags: ["@seo", "@critical"] }, () => {
   it("robots.txt allows public pages, blocks technical paths and points to the sitemap", () => {
     cy.request("/robots.txt").then((response) => {
       expect(response.status).to.eq(200);

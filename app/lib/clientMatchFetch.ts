@@ -18,6 +18,10 @@ type CacheEntry = {
 const DEFAULT_TTL_MS = 60_000;
 const cache = new Map<string, CacheEntry>();
 
+export function clearClientMatchCache() {
+  cache.clear();
+}
+
 function normalizeMatches(data: unknown): ClientMatch[] {
   if (Array.isArray(data)) return data as ClientMatch[];
 

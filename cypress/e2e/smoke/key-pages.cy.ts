@@ -31,11 +31,12 @@ const keyPages = [
   },
 ];
 
-describe("key page coverage", () => {
+describe("key page coverage", { tags: ["@smoke"] }, () => {
   keyPages.forEach(({ path, h1, stableText }) => {
     it(`${path} renders stable editorial and navigation content`, () => {
       cy.request(path).its("status").should("eq", 200);
       cy.visit(path);
+      cy.waitForAppReady();
 
       cy.get("h1").first().should("be.visible").and("contain.text", h1);
       cy.get("main").should("be.visible");
