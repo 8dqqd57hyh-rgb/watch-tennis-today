@@ -1,4 +1,7 @@
+import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type MoneyGuidePageProps = {
@@ -8,6 +11,8 @@ type MoneyGuidePageProps = {
   eventName: string;
   primaryUseCase: string;
   sections: string[];
+  currentPath?: string;
+  currentPageName?: string;
 };
 
 const sectionGuidance: Record<string, string> = {
@@ -78,7 +83,10 @@ export default function MoneyGuidePage({
   eventName,
   primaryUseCase,
   sections,
+  currentPath,
+  currentPageName,
 }: MoneyGuidePageProps) {
+  const isWimbledonPage = eventName === "Wimbledon" && currentPath && currentPageName;
   const faq = [
     {
       question: `Do I need a VPN to watch ${eventName}?`,
@@ -114,6 +122,7 @@ export default function MoneyGuidePage({
     "@type": "WebPage",
     name: title,
     description,
+    url: currentPath ? `https://watchtennistoday.com${currentPath}` : undefined,
     about: [
       { "@type": "SportsEvent", name: eventName },
       { "@type": "Thing", name: "Legal tennis streaming" },
@@ -123,6 +132,18 @@ export default function MoneyGuidePage({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
+      {isWimbledonPage ? (
+        <nav className="mb-6 flex flex-wrap gap-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-emerald-700">Home</Link>
+          <span>/</span>
+          <Link href="/grand-slams" className="hover:text-emerald-700">Grand Slams</Link>
+          <span>/</span>
+          <Link href="/wimbledon" className="hover:text-emerald-700">Wimbledon</Link>
+          <span>/</span>
+          <span>{currentPageName}</span>
+        </nav>
+      ) : null}
+
       <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-700">
         {eyebrow}
       </p>
@@ -256,10 +277,26 @@ export default function MoneyGuidePage({
 
       <EmailSignup />
 
+      {isWimbledonPage ? (
+        <div className="mt-8">
+          <RelatedWimbledonGuides currentPath={currentPath} />
+        </div>
+      ) : null}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }}
       />
+      {isWimbledonPage ? (
+        <BreadcrumbSchema
+          items={[
+            { name: "Home", url: "https://watchtennistoday.com" },
+            { name: "Grand Slams", url: "https://watchtennistoday.com/grand-slams" },
+            { name: "Wimbledon", url: "https://watchtennistoday.com/wimbledon" },
+            { name: currentPageName, url: `https://watchtennistoday.com${currentPath}` },
+          ]}
+        />
+      ) : null}
     </main>
   );
 }

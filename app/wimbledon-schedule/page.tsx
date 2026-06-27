@@ -28,6 +28,8 @@ export default function WimbledonSchedulePage() {
       title="Wimbledon Schedule Today: Order of Play and TV Planning Guide"
       description="Use this page to understand Wimbledon session timing, order of play changes, court moves and how to match the schedule with legal broadcasters."
       focus="schedule"
+      currentPath="/wimbledon-schedule"
+      currentPageName="Wimbledon Schedule"
     />
   );
 }

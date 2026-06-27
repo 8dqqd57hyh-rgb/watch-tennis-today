@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { type ServerMatch } from "@/app/lib/serverMatches";
 import {
   wimbledonQualifyingWindowLabel,
@@ -285,16 +286,27 @@ export default async function WimbledonQualifyingPage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Wimbledon Qualifying", item: `${SITE_URL}/wimbledon-qualifying` },
+      { "@type": "ListItem", position: 2, name: "Grand Slams", item: `${SITE_URL}/grand-slams` },
+      { "@type": "ListItem", position: 3, name: "Wimbledon", item: `${SITE_URL}/wimbledon` },
+      { "@type": "ListItem", position: 4, name: "Wimbledon Qualifying", item: `${SITE_URL}/wimbledon-qualifying` },
     ],
+  };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    url: `${SITE_URL}/wimbledon-qualifying`,
   };
 
   return (
     <main className="min-h-screen bg-black px-4 py-8 text-white md:px-8">
-      <JsonLd data={[breadcrumb, faqSchema]} />
+      <JsonLd data={[breadcrumb, webPageSchema, faqSchema]} />
       <div className="mx-auto max-w-7xl">
         <nav className="mb-6 flex flex-wrap gap-2 text-sm font-bold text-zinc-500">
           <Link href="/" className="hover:text-green-400">Home</Link>
+          <span>/</span>
+          <Link href="/grand-slams" className="hover:text-green-400">Grand Slams</Link>
           <span>/</span>
           <Link href="/wimbledon" className="hover:text-green-400">Wimbledon</Link>
           <span>/</span>
@@ -344,23 +356,7 @@ export default async function WimbledonQualifyingPage() {
             </div>
           </article>
 
-          <aside className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-            <h2 className="text-2xl font-black">Related Wimbledon links</h2>
-            <div className="mt-4 grid gap-3">
-              {[
-                ["Wimbledon hub", "/wimbledon"],
-                ["Wimbledon live stream", "/wimbledon-live-stream"],
-                ["Where to watch Wimbledon", "/where-to-watch-wimbledon"],
-                ["Wimbledon schedule", "/wimbledon-schedule"],
-                ["Wimbledon results", "/wimbledon-results"],
-                ["Live tennis", "/live-tennis"],
-              ].map(([label, href]) => (
-                <Link key={href} href={href} className="rounded-2xl border border-zinc-800 bg-black px-4 py-3 font-black hover:border-green-500">
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </aside>
+          <RelatedWimbledonGuides currentPath="/wimbledon-qualifying" theme="dark" />
         </section>
 
         <section id="faq" className="mt-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">

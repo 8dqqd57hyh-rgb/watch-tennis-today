@@ -1,5 +1,6 @@
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { canonicalUrl } from "@/app/lib/technicalSeo";
 import {
   getWimbledonCountryGuide,
@@ -43,8 +44,9 @@ export default function WimbledonCountryLandingPage({
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: canonicalUrl("/") },
-      { "@type": "ListItem", position: 2, name: "Wimbledon", item: canonicalUrl("/wimbledon") },
-      { "@type": "ListItem", position: 3, name: `How to Watch Wimbledon in ${guide.country}`, item: pageUrl },
+      { "@type": "ListItem", position: 2, name: "Grand Slams", item: canonicalUrl("/grand-slams") },
+      { "@type": "ListItem", position: 3, name: "Wimbledon", item: canonicalUrl("/wimbledon") },
+      { "@type": "ListItem", position: 4, name: `How to Watch Wimbledon in ${guide.country}`, item: pageUrl },
     ],
   };
 
@@ -73,6 +75,8 @@ export default function WimbledonCountryLandingPage({
 
       <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-500">
         <Link href="/">Home</Link>
+        <span>/</span>
+        <Link href="/grand-slams">Grand Slams</Link>
         <span>/</span>
         <Link href="/wimbledon">Wimbledon</Link>
         <span>/</span>
@@ -165,6 +169,10 @@ export default function WimbledonCountryLandingPage({
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="mt-8">
+        <RelatedWimbledonGuides currentPath={guide.canonicalPath} />
       </section>
 
       <section className="mt-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">

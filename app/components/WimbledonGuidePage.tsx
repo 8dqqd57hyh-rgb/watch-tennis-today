@@ -1,4 +1,7 @@
+import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 type WimbledonGuidePageProps = {
@@ -6,6 +9,8 @@ type WimbledonGuidePageProps = {
   title: string;
   description: string;
   focus: "live" | "schedule" | "results" | "tv" | "where";
+  currentPath: string;
+  currentPageName: string;
 };
 
 const officialChecks = [
@@ -149,6 +154,8 @@ export default function WimbledonGuidePage({
   title,
   description,
   focus,
+  currentPath,
+  currentPageName,
 }: WimbledonGuidePageProps) {
   const selected = focusCopy[focus];
   const faq = [
@@ -186,6 +193,7 @@ export default function WimbledonGuidePage({
     "@type": "WebPage",
     name: title,
     description,
+    url: `https://watchtennistoday.com${currentPath}`,
     about: [
       { "@type": "SportsEvent", name: "Wimbledon" },
       { "@type": "Thing", name: "Wimbledon order of play" },
@@ -195,6 +203,16 @@ export default function WimbledonGuidePage({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
+      <nav className="mb-6 flex flex-wrap gap-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-emerald-700">Home</Link>
+        <span>/</span>
+        <Link href="/grand-slams" className="hover:text-emerald-700">Grand Slams</Link>
+        <span>/</span>
+        <Link href="/wimbledon" className="hover:text-emerald-700">Wimbledon</Link>
+        <span>/</span>
+        <span>{currentPageName}</span>
+      </nav>
+
       <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-700">
         {eyebrow}
       </p>
@@ -335,9 +353,21 @@ export default function WimbledonGuidePage({
 
       <EmailSignup />
 
+      <div className="mt-8">
+        <RelatedWimbledonGuides currentPath={currentPath} />
+      </div>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "Grand Slams", url: "https://watchtennistoday.com/grand-slams" },
+          { name: "Wimbledon", url: "https://watchtennistoday.com/wimbledon" },
+          { name: currentPageName, url: `https://watchtennistoday.com${currentPath}` },
+        ]}
       />
     </main>
   );

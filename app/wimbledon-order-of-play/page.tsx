@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import JsonLd from "@/app/components/JsonLd";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import {
   getCanonicalPlayerSlug,
   safePlayerUrl,
@@ -257,36 +259,6 @@ function EmptyState() {
   );
 }
 
-function RelatedLinks() {
-  const links = [
-    { href: "/wimbledon-live", label: "Wimbledon live" },
-    { href: "/wimbledon-schedule", label: "Wimbledon schedule" },
-    { href: "/wimbledon-results", label: "Wimbledon results" },
-    { href: "/live-tennis", label: "Live tennis" },
-    { href: "/today", label: "Today" },
-    { href: "/players", label: "Players" },
-  ];
-
-  return (
-    <section className="rounded-3xl border bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-2xl font-bold text-neutral-950">
-        Wimbledon links
-      </h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {links.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
-            className="rounded-2xl border bg-neutral-50 p-4 font-semibold text-neutral-900 hover:border-emerald-500 hover:bg-white"
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export default async function WimbledonOrderOfPlayPage() {
   const matches = await getServerMatchesWindow({
     includeFinished: true,
@@ -323,9 +295,26 @@ export default async function WimbledonOrderOfPlayPage() {
       },
     })),
   };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: pageTitle,
+    description: pageDescription,
+    url: pageUrl,
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
+      <nav className="mb-6 flex flex-wrap gap-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-emerald-700">Home</Link>
+        <span>/</span>
+        <Link href="/grand-slams" className="hover:text-emerald-700">Grand Slams</Link>
+        <span>/</span>
+        <Link href="/wimbledon" className="hover:text-emerald-700">Wimbledon</Link>
+        <span>/</span>
+        <span>Wimbledon Order of Play</span>
+      </nav>
+
       <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-700">
         Wimbledon order of play
       </p>
@@ -397,7 +386,7 @@ export default async function WimbledonOrderOfPlayPage() {
       </section>
 
       <div className="mb-8">
-        <RelatedLinks />
+        <RelatedWimbledonGuides currentPath="/wimbledon-order-of-play" />
       </div>
 
       <section className="rounded-3xl border bg-white p-6 shadow-sm">
@@ -416,11 +405,12 @@ export default async function WimbledonOrderOfPlayPage() {
         </div>
       </section>
 
-      <JsonLd data={faqSchema} />
+      <JsonLd data={[webPageSchema, faqSchema]} />
       <BreadcrumbSchema
         items={[
           { name: "Home", url: "https://watchtennistoday.com" },
-          { name: "Wimbledon", url: "https://watchtennistoday.com/wimbledon-live" },
+          { name: "Grand Slams", url: "https://watchtennistoday.com/grand-slams" },
+          { name: "Wimbledon", url: "https://watchtennistoday.com/wimbledon" },
           { name: "Wimbledon Order of Play", url: pageUrl },
         ]}
       />
