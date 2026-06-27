@@ -7,7 +7,7 @@ import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
-import { getCanIWatchQueryOptions, getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
+import { getBroadcastCountryOptions, getCanIWatchQueryOptions, getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
 export const revalidate = 3600;
 
 type Match = {
@@ -249,6 +249,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/wimbledon-qualifying",
     "/wimbledon-qualifying-live",
     "/tennis-on-tv-today",
+    "/tennis-tv-schedule-today",
+    "/coverage-graph",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",
     "/how-to-watch-tennis-legally",
@@ -319,8 +321,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const canIWatchPages: MetadataRoute.Sitemap = getCanIWatchQueryOptions()
     .filter((option) => option.type === "tournament")
     .flatMap((option) =>
-      Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
-        url: `https://watchtennistoday.com/can-i-watch/${option.slug}/${country}`,
+      getBroadcastCountryOptions().map((country) => ({
+        url: `https://watchtennistoday.com/can-i-watch/${option.slug}/${country.slug}`,
         lastModified: now,
         changeFrequency: "monthly" as const,
         priority: 0.83,

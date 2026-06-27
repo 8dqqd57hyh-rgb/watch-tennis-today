@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import { canonicalUrl } from "@/app/lib/technicalSeo";
-import { broadcastCountries } from "@/data/broadcastFinder";
+import { getBroadcastCountryOptions } from "@/src/data/tennisBroadcasts";
 import CanIWatchClient from "./CanIWatchClient";
 
 export const metadata: Metadata = {
@@ -34,6 +34,7 @@ const faqItems = [
 
 export default function CanIWatchPage() {
   const pageUrl = canonicalUrl("/can-i-watch");
+  const countries = getBroadcastCountryOptions();
   const searchSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -77,7 +78,7 @@ export default function CanIWatchPage() {
         </section>
 
         <div className="mt-8">
-          <CanIWatchClient countries={broadcastCountries.map(({ slug, countryCode, country }) => ({ slug, countryCode, country }))} />
+          <CanIWatchClient countries={countries} />
         </div>
 
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">

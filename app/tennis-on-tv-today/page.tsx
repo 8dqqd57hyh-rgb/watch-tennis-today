@@ -53,6 +53,8 @@ export default function TennisOnTvTodayPage() {
         },
       ]}
       links={[
+        { href: "/tennis-tv-schedule-today", label: "Today's match-first TV schedule" },
+        { href: "/coverage-graph", label: "Coverage Graph engine" },
         { href: "/watch-tennis-live-today", label: "Legal tennis streams today" },
         { href: "/tennis-schedule-today", label: "Complete tennis schedule today" },
         { href: "/tennis-order-of-play-today", label: "Order of play today" },

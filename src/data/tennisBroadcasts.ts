@@ -14,6 +14,11 @@ export type TennisBroadcastCountry = {
   countryCode: string;
 };
 
+export type TennisBroadcastCountryOption = TennisBroadcastCountry & {
+  slug: string;
+  country: string;
+};
+
 export type TennisTournamentGroup = {
   tournamentId: TennisTournamentId;
   tournamentName: string;
@@ -643,6 +648,24 @@ export type CanIWatchCoverageSummary = {
   warning?: string;
 };
 
+const countrySlugOverrides: Record<string, string> = {
+  GB: "uk",
+  US: "usa",
+};
+
+const countryAliases: Record<string, string> = {
+  uk: "uk",
+  "united-kingdom": "uk",
+  britain: "uk",
+  "great-britain": "uk",
+  gb: "uk",
+  usa: "usa",
+  us: "usa",
+  "u-s-a": "usa",
+  "united-states": "usa",
+  "united-states-of-america": "usa",
+};
+
 const popularPlayerTourMap: Record<string, TennisTournamentId[]> = {
   "alcaraz": ["atp-tour"],
   "carlos-alcaraz": ["atp-tour"],
@@ -678,41 +701,82 @@ function normalizeCoverageQuery(value: string) {
     .replace(/^-|-$/g, "");
 }
 
+export function normalizeCountry(value: string) {
+  const normalized = normalizeCoverageQuery(value);
+  const codeMatch = tennisBroadcastDatabase.find((countryItem) => countryItem.countryCode.toLowerCase() === value.toLowerCase());
+  if (codeMatch) return countrySlugOverrides[codeMatch.countryCode] ?? normalizeCoverageQuery(codeMatch.countryName);
+
+  const alias = countryAliases[normalized];
+  if (alias) return alias;
+
+  const nameMatch = tennisBroadcastDatabase.find((countryItem) => normalizeCoverageQuery(countryItem.countryName) === normalized);
+  if (nameMatch) return countrySlugOverrides[nameMatch.countryCode] ?? normalizeCoverageQuery(nameMatch.countryName);
+
+  return normalized;
+}
+
+export function normalizeTournament(value: string): TennisTournamentId | undefined {
+  const normalized = normalizeCoverageQuery(value);
+  const aliases: Record<string, TennisTournamentId> = {
+    "australian-open": "australian-open",
+    "french-open": "roland-garros",
+    "roland-garros": "roland-garros",
+    "roland-garros-french-open": "roland-garros",
+    wimbledon: "wimbledon",
+    "us-open": "us-open",
+    "u-s-open": "us-open",
+    atp: "atp-tour",
+    "atp-tour": "atp-tour",
+    wta: "wta-tour",
+    "wta-tour": "wta-tour",
+  };
+
+  return aliases[normalized] ?? tennisTournamentGroups.find((group) => normalizeCoverageQuery(group.tournamentName) === normalized)?.tournamentId;
+}
+
+export function normalizePlayerName(value: string) {
+  const normalized = normalizeCoverageQuery(value);
+  return popularPlayerTourMap[normalized] ? normalized : normalized;
+}
+
+export function getBroadcastCountryOptions(): TennisBroadcastCountryOption[] {
+  return tennisBroadcastDatabase.map(({ countryName, countryCode }) => ({
+    countryName,
+    countryCode,
+    country: countryName,
+    slug: countrySlugOverrides[countryCode] ?? normalizeCoverageQuery(countryName),
+  }));
+}
+
+export function getBroadcastCountryBySlug(slug: string) {
+  const normalized = normalizeCountry(slug);
+
+  return getBroadcastCountryOptions().find((country) => country.slug === normalized);
+}
+
 function countryMatches(entry: TennisBroadcastEntry, country: string) {
-  const normalized = normalizeCoverageQuery(country);
+  const normalized = normalizeCountry(country);
 
   return (
     entry.countryCode.toLowerCase() === country.toLowerCase() ||
-    normalizeCoverageQuery(entry.countryName) === normalized
+    normalizeCountry(entry.countryName) === normalized
   );
 }
 
 function tournamentMatchesQuery(entry: TennisBroadcastEntry, query: string) {
-  const normalized = normalizeCoverageQuery(query);
+  const normalized = normalizeTournament(query);
   const tournamentSlug = normalizeCoverageQuery(entry.tournamentName);
 
-  const aliases: Record<string, TennisTournamentId[]> = {
-    "french-open": ["roland-garros"],
-    "roland-garros": ["roland-garros"],
-    "wimbledon": ["wimbledon"],
-    "us-open": ["us-open"],
-    "australian-open": ["australian-open"],
-    "atp": ["atp-tour"],
-    "atp-tour": ["atp-tour"],
-    "wta": ["wta-tour"],
-    "wta-tour": ["wta-tour"],
-  };
+  if (normalized) return entry.tournamentId === normalized;
 
   return (
-    entry.tournamentId === normalized ||
-    aliases[normalized]?.includes(entry.tournamentId) ||
-    tournamentSlug.includes(normalized) ||
-    normalized.includes(tournamentSlug)
+    tournamentSlug.includes(normalizeCoverageQuery(query)) ||
+    normalizeCoverageQuery(query).includes(tournamentSlug)
   );
 }
 
 function playerTourIds(query: string) {
-  return popularPlayerTourMap[normalizeCoverageQuery(query)] ?? [];
+  return popularPlayerTourMap[normalizePlayerName(query)] ?? [];
 }
 
 export function findBroadcasts(country: string, query: string) {
