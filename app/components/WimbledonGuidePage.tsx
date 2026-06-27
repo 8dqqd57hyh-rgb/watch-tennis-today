@@ -21,24 +21,42 @@ const countryOptions = [
     services: "BBC, BBC iPlayer and official Wimbledon coverage",
     note: "Best starting point for UK viewers during the Championships.",
     href: affiliateLinks.bbc,
+    guideHref: "/how-to-watch-wimbledon-in-uk",
   },
   {
     country: "United States",
     services: "ESPN / ESPN+ depending on session and rights package",
     note: "Check the daily match window and court before subscribing.",
     href: affiliateLinks.espn,
+    guideHref: "/how-to-watch-wimbledon-in-usa",
   },
   {
-    country: "Europe",
-    services: "Eurosport / Discovery platforms in many markets",
-    note: "Availability can vary by country, language feed and package.",
-    href: affiliateLinks.eurosport,
+    country: "Canada",
+    services: "TSN / RDS checks and official Wimbledon listings",
+    note: "English and French-language access may differ by package.",
+    href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
+    guideHref: "/how-to-watch-wimbledon-in-canada",
+  },
+  {
+    country: "Australia",
+    services: "Official Wimbledon partner checks",
+    note: "Convert London sessions carefully because many matches fall overnight.",
+    href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
+    guideHref: "/how-to-watch-wimbledon-in-australia",
+  },
+  {
+    country: "Poland",
+    services: "Polsat / current Polsat sports access checks",
+    note: "Confirm court coverage and app access close to match day.",
+    href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
+    guideHref: "/how-to-watch-wimbledon-in-poland",
   },
   {
     country: "Traveling abroad",
     services: "Your existing legal account + safe connection tools",
     note: "A VPN is mainly useful for privacy and access to your normal account where allowed.",
     href: affiliateLinks.nordvpn,
+    guideHref: "/best-vpn-for-wimbledon",
   },
 ];
 
@@ -148,8 +166,26 @@ export default function WimbledonGuidePage({
           <a href="/wimbledon-live" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Live hub</a>
           <a href="/wimbledon-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Schedule</a>
           <a href="/wimbledon-order-of-play" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Order of play</a>
-          <a href="/where-to-watch-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
+          <a href="/wimbledon-tv-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
           <a href="/best-vpn-for-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">VPN guide</a>
+        </div>
+      </section>
+
+      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-2xl font-bold text-neutral-950">How to watch Wimbledon by country</h2>
+        <p className="max-w-3xl text-base leading-7 text-neutral-700">
+          Start with the country guide for your location, then verify the live court and app package with the official broadcaster before match time.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {countryOptions.filter((option) => option.country !== "Traveling abroad").map((option) => (
+            <a
+              key={option.country}
+              href={option.guideHref}
+              className="rounded-2xl border bg-neutral-50 p-4 font-bold text-neutral-950 hover:bg-white"
+            >
+              {option.country}
+            </a>
+          ))}
         </div>
       </section>
 
@@ -202,6 +238,12 @@ export default function WimbledonGuidePage({
                       className="text-emerald-700 underline-offset-4 hover:underline"
                     >
                       {option.services}
+                    </a>
+                    <a
+                      href={option.guideHref}
+                      className="mt-2 block text-xs font-black uppercase tracking-[0.12em] text-neutral-500 underline-offset-4 hover:text-emerald-700 hover:underline"
+                    >
+                      View Wimbledon guide
                     </a>
                   </td>
                   <td className="p-3 text-neutral-600">{option.note}</td>
