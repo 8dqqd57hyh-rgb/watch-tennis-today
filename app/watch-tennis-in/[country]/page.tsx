@@ -202,6 +202,7 @@ export default async function CountryPage({
 
   const countryPath = `/watch-tennis-in/${broadcastCountry.slug}`;
   const pageUrl = canonicalUrl(countryPath);
+  const canIWatchPath = `/can-i-watch/wimbledon/${broadcastCountry.slug}`;
   const grandSlamEntries = getEntries(broadcastCountry.countryCode, grandSlamIds);
   const tourEntries = getEntries(broadcastCountry.countryCode, tourIds);
   const atpEntry = tourEntries.find((entry) => entry.tournamentId === "atp-tour");
@@ -584,6 +585,11 @@ export default async function CountryPage({
 
         <ContentQualityNotice pageType={`country broadcaster guide for ${broadcastCountry.country}`} />
         <AuthorBox />
+        <div className="mt-6">
+          <Link href={canIWatchPath} className="inline-flex rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black hover:bg-emerald-300">
+            Can I watch tennis in {broadcastCountry.country}?
+          </Link>
+        </div>
         <EmailSignup />
       </div>
     </main>

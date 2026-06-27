@@ -626,3 +626,161 @@ export function getCountriesForBroadcaster(slug: string) {
 export function getTournamentGroupsForBroadcaster(slug: string) {
   return uniqueSorted(getBroadcastsByBroadcasterSlug(slug).map((entry) => entry.tournamentName));
 }
+
+export type CanIWatchResultType = "tournament" | "player" | "general";
+
+export type CanIWatchCoverageSummary = {
+  countryName?: string;
+  countryCode?: string;
+  query: string;
+  resultType: CanIWatchResultType;
+  entries: TennisBroadcastEntry[];
+  broadcasterCount: number;
+  freeRouteCount: number;
+  subscriptionRouteCount: number;
+  confidenceLevels: TennisBroadcastConfidence[];
+  lastVerified?: string;
+  warning?: string;
+};
+
+const popularPlayerTourMap: Record<string, TennisTournamentId[]> = {
+  "alcaraz": ["atp-tour"],
+  "carlos-alcaraz": ["atp-tour"],
+  "sinner": ["atp-tour"],
+  "jannik-sinner": ["atp-tour"],
+  "djokovic": ["atp-tour"],
+  "novak-djokovic": ["atp-tour"],
+  "medvedev": ["atp-tour"],
+  "daniil-medvedev": ["atp-tour"],
+  "zverev": ["atp-tour"],
+  "alexander-zverev": ["atp-tour"],
+  "rune": ["atp-tour"],
+  "holger-rune": ["atp-tour"],
+  "swiatek": ["wta-tour"],
+  "iga-swiatek": ["wta-tour"],
+  "sabalenka": ["wta-tour"],
+  "aryna-sabalenka": ["wta-tour"],
+  "gauff": ["wta-tour"],
+  "coco-gauff": ["wta-tour"],
+  "pegula": ["wta-tour"],
+  "jessica-pegula": ["wta-tour"],
+  "rybakina": ["wta-tour"],
+  "elena-rybakina": ["wta-tour"],
+};
+
+function normalizeCoverageQuery(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\//g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function countryMatches(entry: TennisBroadcastEntry, country: string) {
+  const normalized = normalizeCoverageQuery(country);
+
+  return (
+    entry.countryCode.toLowerCase() === country.toLowerCase() ||
+    normalizeCoverageQuery(entry.countryName) === normalized
+  );
+}
+
+function tournamentMatchesQuery(entry: TennisBroadcastEntry, query: string) {
+  const normalized = normalizeCoverageQuery(query);
+  const tournamentSlug = normalizeCoverageQuery(entry.tournamentName);
+
+  const aliases: Record<string, TennisTournamentId[]> = {
+    "french-open": ["roland-garros"],
+    "roland-garros": ["roland-garros"],
+    "wimbledon": ["wimbledon"],
+    "us-open": ["us-open"],
+    "australian-open": ["australian-open"],
+    "atp": ["atp-tour"],
+    "atp-tour": ["atp-tour"],
+    "wta": ["wta-tour"],
+    "wta-tour": ["wta-tour"],
+  };
+
+  return (
+    entry.tournamentId === normalized ||
+    aliases[normalized]?.includes(entry.tournamentId) ||
+    tournamentSlug.includes(normalized) ||
+    normalized.includes(tournamentSlug)
+  );
+}
+
+function playerTourIds(query: string) {
+  return popularPlayerTourMap[normalizeCoverageQuery(query)] ?? [];
+}
+
+export function findBroadcasts(country: string, query: string) {
+  const playerTours = playerTourIds(query);
+
+  return tennisBroadcasts.filter((entry) => {
+    if (!countryMatches(entry, country)) return false;
+    if (tournamentMatchesQuery(entry, query)) return true;
+
+    return playerTours.includes(entry.tournamentId);
+  });
+}
+
+export function findBroadcastsForPlayer(country: string, player: string) {
+  const playerTours = playerTourIds(player);
+
+  return tennisBroadcasts.filter((entry) => countryMatches(entry, country) && playerTours.includes(entry.tournamentId));
+}
+
+export function getCoverageSummary(country: string, query: string): CanIWatchCoverageSummary {
+  const entries = findBroadcasts(country, query);
+  const firstEntry = entries[0];
+  const confidenceLevels = Array.from(new Set(entries.map((entry) => entry.confidenceLevel)));
+  const resultType: CanIWatchResultType = playerTourIds(query).length > 0 ? "player" : entries.some((entry) => tournamentMatchesQuery(entry, query)) ? "tournament" : "general";
+
+  return {
+    countryName: firstEntry?.countryName,
+    countryCode: firstEntry?.countryCode,
+    query,
+    resultType,
+    entries,
+    broadcasterCount: new Set(entries.map((entry) => entry.broadcasterName)).size,
+    freeRouteCount: entries.filter((entry) => entry.isFree || entry.price.status === "free").length,
+    subscriptionRouteCount: entries.filter((entry) => entry.requiresSubscription).length,
+    confidenceLevels,
+    lastVerified: entries.reduce<string | undefined>((latest, entry) => {
+      if (!latest) return entry.lastVerified;
+      return entry.lastVerified > latest ? entry.lastVerified : latest;
+    }, undefined),
+    warning: entries.some((entry) => entry.confidenceLevel === "needs_check" || entry.confidenceLevel === "partial")
+      ? "Some coverage rows are partial or need match-week verification. Check official broadcaster and tournament pages before paying."
+      : undefined,
+  };
+}
+
+export function getCanIWatchQueryOptions() {
+  const tournamentOptions = tennisTournamentGroups.map((group) => ({
+    label: group.tournamentName,
+    slug: group.tournamentId,
+    type: "tournament" as const,
+  }));
+
+  const playerOptions = [
+    "Carlos Alcaraz",
+    "Iga Swiatek",
+    "Jannik Sinner",
+    "Novak Djokovic",
+    "Coco Gauff",
+    "Aryna Sabalenka",
+    "Daniil Medvedev",
+    "Alexander Zverev",
+    "Holger Rune",
+    "Jessica Pegula",
+  ].map((label) => ({
+    label,
+    slug: normalizeCoverageQuery(label),
+    type: "player" as const,
+  }));
+
+  return [...tournamentOptions, ...playerOptions];
+}

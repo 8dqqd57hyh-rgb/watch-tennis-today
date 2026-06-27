@@ -150,6 +150,9 @@ export default async function BroadcasterPage({ params }: { params: Promise<{ sl
         <Link href="/broadcasters" className="text-sm font-bold text-zinc-400 hover:text-white">
           ← All tennis broadcasters
         </Link>
+        <Link href="/can-i-watch" className="ml-4 text-sm font-bold text-emerald-300 hover:text-emerald-200">
+          Can I watch? finder →
+        </Link>
 
         <section className="mt-8 rounded-[2.5rem] border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 to-black p-8 md:p-10">
           <p className="mb-4 inline-flex rounded-full bg-emerald-400/15 px-4 py-2 text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
