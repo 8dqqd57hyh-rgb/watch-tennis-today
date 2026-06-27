@@ -64,6 +64,7 @@ export const players = {
   "qinwen-zheng": { name: "Qinwen Zheng", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "marketa-vondrousova": { name: "Marketa Vondrousova", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "daria-kasatkina": { name: "Daria Kasatkina", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
+  "ha-eum-lee": { name: "Ha Eum Lee", tour: "WTA", tournaments: ["ITF women's tournaments", "Junior Grand Slam tournaments", "WTA qualifying draws"] },
 } as const;
 
 export type PlayerSlug = keyof typeof players;

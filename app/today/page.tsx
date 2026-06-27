@@ -1,5 +1,6 @@
 import TodayClient from "./TodayClient";
 import EmailCapture from "@/components/EmailCapture";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -44,6 +45,21 @@ export default function Page() {
           <h2 className="text-xl font-bold text-slate-950">Finished matches</h2>
           <p className="mt-2 leading-7 text-slate-700">Finished rows help you catch up on results and find replays. Spoiler-sensitive fans should avoid score-heavy pages and go directly to a licensed replay library when available.</p>
         </article>
+      </section>
+
+      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-950">Useful viewing guides from today&apos;s schedule</h2>
+        <p className="mt-3 max-w-3xl leading-7 text-slate-700">
+          After you identify the match and tournament, use these pages to verify country rights, player-specific schedule context and official broadcaster routes.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <Link href="/watch-tennis-in/france" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in France</Link>
+          <Link href="/watch-tennis-in/germany" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in Germany</Link>
+          <Link href="/watch-tennis-in/spain" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in Spain</Link>
+          <Link href="/tv-schedule/iga-swiatek" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Iga Swiatek TV schedule</Link>
+          <Link href="/player/jesper-de-jong" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Jesper de Jong profile</Link>
+          <Link href="/player/ha-eum-lee" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Ha Eum Lee profile</Link>
+        </div>
       </section>
 
       <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">

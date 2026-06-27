@@ -343,6 +343,37 @@ export default async function GrandSlamLivePage() {
 
         <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
           <h2 className="text-4xl font-black mb-5">
+            Grand Slam TV rights by country
+          </h2>
+
+          <p className="text-zinc-300 leading-8 mb-6">
+            Grand Slam rights do not automatically match ATP or WTA tour coverage. Use these country guides to verify the licensed broadcaster before assuming a major match is available in your location.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link
+              href="/watch-tennis-in/france"
+              className="bg-black border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Watch Grand Slam tennis in France
+            </Link>
+            <Link
+              href="/watch-tennis-in/germany"
+              className="bg-black border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Watch Grand Slam tennis in Germany
+            </Link>
+            <Link
+              href="/watch-tennis-in/spain"
+              className="bg-black border border-zinc-800 rounded-2xl p-5 font-black hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Watch Grand Slam tennis in Spain
+            </Link>
+          </div>
+        </section>
+
+        <section className="mb-14 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+          <h2 className="text-4xl font-black mb-5">
             🌍 Watching Grand Slam tennis abroad?
           </h2>
 

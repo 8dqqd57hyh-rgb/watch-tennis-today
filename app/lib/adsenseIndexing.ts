@@ -29,6 +29,8 @@ export const ADSENSE_INDEXABLE_PLAYER_SLUGS = new Set([
   "jessica-pegula",
   "elena-rybakina",
   "mirra-andreeva",
+  "jesper-de-jong",
+  "ha-eum-lee",
 ]);
 
 export type IndexablePlayerInput = {

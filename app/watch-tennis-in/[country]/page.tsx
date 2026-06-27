@@ -308,6 +308,11 @@ export default async function CountryPage({
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
             Use this guide to separate Grand Slam, ATP Tour and WTA Tour rights in {broadcastCountry.country}, then verify the match on official broadcaster sources before subscribing.
           </p>
+          {broadcastCountry.seoIntro ? (
+            <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-400">
+              {broadcastCountry.seoIntro}
+            </p>
+          ) : null}
           <div className="mt-5 flex flex-wrap gap-3 text-sm text-zinc-400">
             <span>Broadcast rows verified: {TENNIS_BROADCAST_LAST_VERIFIED}</span>
             <span>Rights may change by event, court and territory.</span>
@@ -498,13 +503,59 @@ export default async function CountryPage({
           </div>
         </section>
 
+        {broadcastCountry.localViewingTips?.length || broadcastCountry.majorEventNotes?.length ? (
+          <section className="mt-8 grid gap-6 lg:grid-cols-2">
+            {broadcastCountry.localViewingTips?.length ? (
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+                <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
+                  Local viewing workflow
+                </p>
+                <h2 className="mt-3 text-3xl font-black">
+                  How to check tennis TV in {broadcastCountry.country}
+                </h2>
+                <ul className="mt-5 space-y-3 text-zinc-300">
+                  {broadcastCountry.localViewingTips.map((tip) => (
+                    <li key={tip} className="flex gap-3 leading-7">
+                      <span className="mt-3 h-2 w-2 flex-none rounded-full bg-emerald-400" />
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {broadcastCountry.majorEventNotes?.length ? (
+              <div className="rounded-3xl border border-zinc-800 bg-black p-6">
+                <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
+                  Event-specific notes
+                </p>
+                <h2 className="mt-3 text-3xl font-black">
+                  Tournaments to verify separately
+                </h2>
+                <ul className="mt-5 space-y-3 text-zinc-300">
+                  {broadcastCountry.majorEventNotes.map((note) => (
+                    <li key={note} className="flex gap-3 leading-7">
+                      <span className="mt-3 h-2 w-2 flex-none rounded-full bg-emerald-400" />
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <h2 className="text-3xl font-black">Related pages for {broadcastCountry.country} tennis fans</h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Link href="/today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Today&apos;s tennis hub</Link>
             <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Today&apos;s schedule</Link>
             <Link href="/live-tennis" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Live tennis</Link>
             <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Tennis on TV today</Link>
             <Link href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Official broadcasters guide</Link>
+            <Link href="/players" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Player pages</Link>
+            <Link href="/grand-slam-live" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Grand Slam live</Link>
+            <Link href="/watch-tennis-in" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">All country guides</Link>
             <Link href="/wimbledon" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Wimbledon hub</Link>
             <Link href="/french-open" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">French Open hub</Link>
             <Link href="/australian-open" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Australian Open hub</Link>

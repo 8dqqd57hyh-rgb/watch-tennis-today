@@ -18,6 +18,7 @@ const players = [
   "Alexander Zverev",
   "Holger Rune",
   "Taylor Fritz",
+  "Jesper de Jong",
   "Andrey Rublev",
   "Stefanos Tsitsipas",
   "Casper Ruud",
@@ -30,6 +31,7 @@ const players = [
   "Ons Jabeur",
   "Maria Sakkari",
   "Jasmine Paolini",
+  "Ha Eum Lee",
 ];
 
 export default function PlayersPage() {
@@ -55,6 +57,7 @@ export default function PlayersPage() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a href="/best-tennis-players" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400" data-testid="guide-streaming-link">Best players guide</a>
+            <Link href="/tv-schedule/iga-swiatek" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500" data-testid="guide-streaming-link">Iga Swiatek TV schedule</Link>
             <a href="/analysis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500" data-testid="guide-streaming-link">Tennis analysis</a>
           </div>
         </section>
@@ -125,6 +128,24 @@ export default function PlayersPage() {
   </div>
 </a>
             ))}
+          </div>
+        </section>
+
+        <section className="mb-14 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
+          <h2 className="mb-5 text-3xl font-black">Player pages to watch next</h2>
+          <p className="mb-5 max-w-3xl leading-7 text-zinc-400">
+            These lower-impression pages now include fuller editorial context, schedule checks and official-source viewing guidance.
+          </p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <Link href="/tv-schedule/iga-swiatek" className="rounded-2xl border border-zinc-800 bg-black p-5 font-black hover:border-green-500">
+              Iga Swiatek TV schedule
+            </Link>
+            <Link href="/player/jesper-de-jong" className="rounded-2xl border border-zinc-800 bg-black p-5 font-black hover:border-green-500">
+              Jesper de Jong profile
+            </Link>
+            <Link href="/player/ha-eum-lee" className="rounded-2xl border border-zinc-800 bg-black p-5 font-black hover:border-green-500">
+              Ha Eum Lee profile
+            </Link>
           </div>
         </section>
 

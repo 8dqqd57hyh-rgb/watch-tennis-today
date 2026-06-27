@@ -30,6 +30,7 @@ const TOP_PLAYERS = new Set([
   "stefanos-tsitsipas",
   "casper-ruud",
   "jack-draper",
+  "jesper-de-jong",
   "matteo-berrettini",
   "holger-rune",
   "iga-swiatek",
@@ -44,6 +45,7 @@ const TOP_PLAYERS = new Set([
   "naomi-osaka",
   "jelena-ostapenko",
   "elina-svitolina",
+  "ha-eum-lee",
 ]);
 
 const IMPORTANT_TOURNAMENT_KEYWORDS = [
@@ -206,6 +208,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/players",
     "/players/atp",
     "/players/wta",
+    "/tv-schedule/iga-swiatek",
     "/best-tennis-players",
     "/tennis-calendar",
     "/tennis-tournaments",

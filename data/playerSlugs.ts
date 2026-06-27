@@ -51,6 +51,9 @@ function playerLookupAliases(name: string, slug: string) {
 
 const legacyPlayerSlugAliases: Record<string, PlayerSlug> = {
   "h alexandrova": "ekaterina-alexandrova",
+  "h e lee": "ha-eum-lee",
+  "h. e. lee": "ha-eum-lee",
+  "h-e-lee": "ha-eum-lee",
 };
 
 const canonicalNameToSlug = new Map<string, PlayerSlug>(
