@@ -7,6 +7,7 @@ import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
+import { getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
 export const revalidate = 3600;
 
 type Match = {
@@ -229,6 +230,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-glossary",
     "/tennis-court-surfaces",
     "/tennis-tv-broadcast-finder",
+    "/broadcasters",
     "/tennis-tv-not-working",
     "/tennis-streaming-services",
     "/tennis-streaming-checklist",
@@ -298,6 +300,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 
   // AdSense quality: include only manually reviewed country guides.
+  const broadcasterPages: MetadataRoute.Sitemap = getUniqueBroadcasters().map((broadcaster) => ({
+    url: `https://watchtennistoday.com/broadcaster/${broadcaster.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
+
   const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
     url: `https://watchtennistoday.com/watch-tennis-in/${country}`,
     lastModified: now,
@@ -393,6 +402,7 @@ const frenchOpenPages = [
  return uniqueSitemapEntries([
   ...staticPages,
   ...countryPages,
+  ...broadcasterPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,

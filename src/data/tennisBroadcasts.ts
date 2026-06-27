@@ -514,3 +514,115 @@ export function getKnownBroadcastPriceOptions(): TennisServicePriceOption[] {
     return options;
   }, []);
 }
+
+
+export type TennisBroadcasterSummary = {
+  name: string;
+  slug: string;
+  countryCodes: string[];
+  countryNames: string[];
+  tournamentIds: TennisTournamentId[];
+  tournamentNames: string[];
+  entries: TennisBroadcastEntry[];
+  isFree: boolean;
+  requiresSubscription: boolean;
+  priceStatuses: TennisPriceStatus[];
+  priceSummary: string;
+  officialLinks: TennisOfficialLink[];
+  lastVerified: string;
+  confidenceLevels: TennisBroadcastConfidence[];
+};
+
+function uniqueSorted(items: string[]) {
+  return Array.from(new Set(items)).sort((a, b) => a.localeCompare(b));
+}
+
+export function getBroadcasterSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\+/g, "plus")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function broadcasterNameMatches(entry: TennisBroadcastEntry, slug: string) {
+  const names = [entry.broadcasterName, entry.streamingServiceName];
+
+  return names.some((name) => getBroadcasterSlug(name) === slug);
+}
+
+function buildBroadcasterSummary(name: string, entries: TennisBroadcastEntry[]): TennisBroadcasterSummary {
+  const priceStatuses = Array.from(new Set(entries.map((entry) => entry.price.status)));
+  const hasFree = entries.some((entry) => entry.isFree || entry.price.status === "free");
+  const requiresSubscription = entries.some((entry) => entry.requiresSubscription);
+  const knownPrices = entries
+    .filter((entry) => entry.monthlyPrice !== undefined && entry.currency)
+    .map((entry) => formatBroadcastPrice(entry.price));
+
+  const priceSummary = hasFree && requiresSubscription
+    ? "Free and paid routes vary by event or territory"
+    : hasFree
+      ? "Free route listed for at least one territory"
+      : knownPrices.length
+        ? `Known price examples: ${uniqueSorted(knownPrices).join(", ")}`
+        : "Check official site before paying";
+
+  return {
+    name,
+    slug: getBroadcasterSlug(name),
+    countryCodes: uniqueSorted(entries.map((entry) => entry.countryCode)),
+    countryNames: uniqueSorted(entries.map((entry) => entry.countryName)),
+    tournamentIds: Array.from(new Set(entries.map((entry) => entry.tournamentId))),
+    tournamentNames: uniqueSorted(entries.map((entry) => entry.tournamentName)),
+    entries,
+    isFree: hasFree,
+    requiresSubscription,
+    priceStatuses,
+    priceSummary,
+    officialLinks: links(...entries.flatMap((entry) => entry.officialLinks)),
+    lastVerified: entries.reduce((latest, entry) => entry.lastVerified > latest ? entry.lastVerified : latest, entries[0]?.lastVerified ?? TENNIS_BROADCAST_LAST_VERIFIED),
+    confidenceLevels: Array.from(new Set(entries.map((entry) => entry.confidenceLevel))),
+  };
+}
+
+export function getUniqueBroadcasters(): TennisBroadcasterSummary[] {
+  const grouped = new Map<string, { name: string; entries: TennisBroadcastEntry[] }>();
+
+  for (const entry of tennisBroadcasts) {
+    const names = [entry.broadcasterName, entry.streamingServiceName];
+
+    for (const name of names) {
+      const slug = getBroadcasterSlug(name);
+      if (!slug) continue;
+
+      const group = grouped.get(slug);
+      if (group) {
+        group.entries.push(entry);
+      } else {
+        grouped.set(slug, { name, entries: [entry] });
+      }
+    }
+  }
+
+  return Array.from(grouped.values())
+    .map(({ name, entries }) => buildBroadcasterSummary(name, entries))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function getBroadcasterBySlug(slug: string) {
+  return getUniqueBroadcasters().find((broadcaster) => broadcaster.slug === slug);
+}
+
+export function getBroadcastsByBroadcasterSlug(slug: string) {
+  return tennisBroadcasts.filter((entry) => broadcasterNameMatches(entry, slug));
+}
+
+export function getCountriesForBroadcaster(slug: string) {
+  return uniqueSorted(getBroadcastsByBroadcasterSlug(slug).map((entry) => entry.countryName));
+}
+
+export function getTournamentGroupsForBroadcaster(slug: string) {
+  return uniqueSorted(getBroadcastsByBroadcasterSlug(slug).map((entry) => entry.tournamentName));
+}

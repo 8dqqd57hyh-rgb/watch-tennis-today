@@ -17,6 +17,7 @@ import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/author
 import {
   TENNIS_BROADCAST_LAST_VERIFIED,
   formatBroadcastPrice,
+  getBroadcasterSlug,
   getCountryBroadcastEntries,
   type TennisBroadcastEntry,
   type TennisTournamentId,
@@ -159,6 +160,12 @@ function BroadcastEntryCard({ entry }: { entry: TennisBroadcastEntry }) {
         </div>
       </dl>
       <p className="mt-4 leading-7 text-zinc-400">{entry.coverageNotes}</p>
+      <Link
+        href={`/broadcaster/${getBroadcasterSlug(entry.broadcasterName)}`}
+        className="mt-4 inline-flex rounded-2xl border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-emerald-400 hover:text-emerald-300"
+      >
+        View broadcaster profile
+      </Link>
       <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
         Last verified: {entry.lastVerified}
       </p>
