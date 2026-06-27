@@ -8,15 +8,25 @@ describe("HomepageMatchExplorer component", { tags: ["@component", "@api"] }, ()
   });
 
   it("renders loading state and then match cards from props returned by the API", () => {
-    cy.mockMatches({ fixture: "matches-today.json", delay: 300 }, "matchesToday");
+    let releaseMatches: (matches: unknown) => void = () => {};
+    const matchesPromise = new Promise((resolve) => {
+      releaseMatches = resolve;
+    });
 
-    cy.mount(<HomepageMatchExplorer />);
+    cy.fixture("matches-today.json").then((matches) => {
+      cy.intercept("GET", "/api/matches*", (req) => {
+        return matchesPromise.then((body) => req.reply({ body }));
+      }).as("matchesToday");
 
-    cy.getByTestId("match-loading-skeleton").should("be.visible");
-    cy.wait("@matchesToday");
-    cy.getByTestId("match-card").should("have.length", 2);
-    cy.contains("Jannik Sinner").should("be.visible");
-    cy.contains("Carlos Alcaraz").should("be.visible");
+      cy.mount(<HomepageMatchExplorer />);
+
+      cy.getByTestId("match-loading-skeleton").should("be.visible");
+      cy.then(() => releaseMatches(matches));
+      cy.wait("@matchesToday");
+      cy.getByTestId("match-card").should("have.length", 2);
+      cy.contains("Jannik Sinner").should("be.visible");
+      cy.contains("Carlos Alcaraz").should("be.visible");
+    });
   });
 
   it("renders an empty state and lets the user clear restrictive filters", () => {

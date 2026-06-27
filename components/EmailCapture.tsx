@@ -135,11 +135,13 @@ export default function EmailCapture({
           You are signed up for useful tennis updates. No illegal streams, no noisy inbox. 🎾
         </div>
       ) : (
-        <form onSubmit={subscribe} className="grid gap-3 md:grid-cols-[1fr_auto]" data-testid="email-signup-form">
+        <form onSubmit={subscribe} noValidate className="grid gap-3 md:grid-cols-[1fr_auto]" data-testid="email-signup-form">
           <input
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            type="email"
+            type="text"
+            inputMode="email"
+            autoComplete="email"
             required
             placeholder={placeholder}
             className={`${inputClass} rounded-2xl border px-5 py-4 outline-none`}
