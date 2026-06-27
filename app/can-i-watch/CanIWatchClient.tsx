@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   findBroadcasts,
   formatBroadcastPrice,
+  normalizePlayerName,
+  normalizeTournament,
   getBroadcasterSlug,
   getCanIWatchQueryOptions,
   getCoverageSummary,
@@ -29,10 +31,12 @@ function resultKey(entry: TennisBroadcastEntry) {
 
 export default function CanIWatchClient({ countries }: { countries: CountryOption[] }) {
   const queryOptions = useMemo(() => getCanIWatchQueryOptions(), []);
-  const [countrySlug, setCountrySlug] = useState(countries[0]?.slug ?? "poland");
+  const defaultCountrySlug = countries.some((country) => country.slug === "poland") ? "poland" : countries[0]?.slug ?? "poland";
+  const [countrySlug, setCountrySlug] = useState(defaultCountrySlug);
   const [query, setQuery] = useState("Wimbledon");
   const selectedCountry = countries.find((country) => country.slug === countrySlug) ?? countries[0];
   const countryKey = selectedCountry?.countryCode ?? selectedCountry?.country ?? countrySlug;
+  const querySlug = (normalizeTournament(query) ?? normalizePlayerName(query)) || "wimbledon";
   const entries = selectedCountry ? findBroadcasts(countryKey, query) : [];
   const summary = selectedCountry ? getCoverageSummary(countryKey, query) : null;
   const dedupedEntries = entries.filter((entry, index, all) => all.findIndex((item) => resultKey(item) === resultKey(entry)) === index);
@@ -71,7 +75,7 @@ export default function CanIWatchClient({ countries }: { countries: CountryOptio
 
         <div className="flex items-end">
           <Link
-            href={`/can-i-watch/${query.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wimbledon"}/${countrySlug}`}
+            href={`/can-i-watch/${querySlug}/${selectedCountry?.slug ?? countrySlug}`}
             className="w-full rounded-2xl bg-emerald-400 px-5 py-3 text-center font-black text-black hover:bg-emerald-300"
           >
             Open SEO page

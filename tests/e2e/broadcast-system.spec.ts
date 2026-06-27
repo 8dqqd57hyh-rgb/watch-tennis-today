@@ -1,8 +1,14 @@
 import { expect, test } from "@playwright/test";
 import {
   calculateKnownMonthlyTotal,
+  findBroadcasts,
+  findBroadcastsForPlayer,
+  getBroadcastCountryBySlug,
+  getBroadcastCountryOptions,
+  getCoverageSummary,
   getCountryBroadcastEntries,
   getCountryServiceOptions,
+  tennisBroadcastDatabase,
   tennisBroadcastCountries,
   tennisTournamentGroups,
 } from "../../src/data/tennisBroadcasts";
@@ -63,6 +69,61 @@ test.describe("tennis broadcaster database", () => {
       "Wimbledon",
       "US Open",
     ]);
+  });
+
+  test("derives Can I Watch country options from the broadcast database", () => {
+    const options = getBroadcastCountryOptions();
+
+    expect(options).toHaveLength(tennisBroadcastDatabase.length);
+    expect(options.map((country) => country.countryCode).sort()).toEqual(
+      tennisBroadcastDatabase.map((country) => country.countryCode).sort(),
+    );
+    expect(options.find((country) => country.countryCode === "US")?.slug).toBe("usa");
+    expect(options.find((country) => country.countryCode === "GB")?.slug).toBe("uk");
+  });
+
+  test("matches broadcast countries by slug, code and country name", () => {
+    expect(getBroadcastCountryBySlug("poland")?.countryCode).toBe("PL");
+    expect(getBroadcastCountryBySlug("PL")?.slug).toBe("poland");
+    expect(getBroadcastCountryBySlug("Poland")?.slug).toBe("poland");
+    expect(getBroadcastCountryBySlug("united-states")?.slug).toBe("usa");
+  });
+
+  test("finds the same Wimbledon rows for Poland by slug, code and name", () => {
+    const bySlug = findBroadcasts("poland", "wimbledon");
+    const byCode = findBroadcasts("PL", "wimbledon");
+    const byName = findBroadcasts("Poland", "Wimbledon");
+
+    expect(bySlug).toHaveLength(1);
+    expect(bySlug.map((entry) => entry.tournamentId)).toEqual(["wimbledon"]);
+    expect(byCode).toEqual(bySlug);
+    expect(byName).toEqual(bySlug);
+  });
+
+  test("maps French Open queries to Roland Garros rows", () => {
+    const rows = findBroadcasts("usa", "french open");
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.countryCode).toBe("US");
+    expect(rows[0]?.tournamentId).toBe("roland-garros");
+  });
+
+  test("maps popular player aliases to tour coverage", () => {
+    const rows = findBroadcastsForPlayer("GB", "Carlos Alcaraz");
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.countryCode).toBe("GB");
+    expect(rows[0]?.tournamentId).toBe("atp-tour");
+  });
+
+  test("summarizes Can I Watch coverage fields", () => {
+    const summary = getCoverageSummary("PL", "wimbledon");
+
+    expect(summary.broadcasterCount).toBe(1);
+    expect(summary.freeRouteCount).toBe(0);
+    expect(summary.subscriptionRouteCount).toBe(1);
+    expect(summary.lastVerified).toBe("2026-06-21");
+    expect(summary.confidenceLevels).toEqual(["partial"]);
   });
 });
 

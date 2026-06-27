@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
-import { broadcastCountries } from "@/data/broadcastFinder";
 import {
   findBroadcasts,
   formatBroadcastPrice,
+  getBroadcastCountryBySlug,
+  getBroadcastCountryOptions,
   getBroadcasterSlug,
   getCanIWatchQueryOptions,
   getCoverageSummary,
@@ -31,17 +32,17 @@ function resultKey(entry: TennisBroadcastEntry) {
 }
 
 export function generateStaticParams() {
-  const indexableCountries = broadcastCountries.filter((country) => country.countryCode);
   const options = getCanIWatchQueryOptions().filter((option) => option.type === "tournament");
+  const countries = getBroadcastCountryOptions();
 
   return options.flatMap((option) =>
-    indexableCountries.map((country) => ({ tournament: option.slug, country: country.slug })),
+    countries.map((country) => ({ tournament: option.slug, country: country.slug })),
   );
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ tournament: string; country: string }> }): Promise<Metadata> {
   const { tournament, country } = await params;
-  const broadcastCountry = broadcastCountries.find((item) => item.slug === country);
+  const broadcastCountry = getBroadcastCountryBySlug(country);
   const queryName = titleize(tournament);
 
   if (!broadcastCountry) {
@@ -67,11 +68,11 @@ export async function generateMetadata({ params }: { params: Promise<{ tournamen
 
 export default async function CanIWatchDetailPage({ params }: { params: Promise<{ tournament: string; country: string }> }) {
   const { tournament, country } = await params;
-  const broadcastCountry = broadcastCountries.find((item) => item.slug === country);
+  const broadcastCountry = getBroadcastCountryBySlug(country);
   if (!broadcastCountry) notFound();
 
   const queryName = titleize(tournament);
-  const countryKey = broadcastCountry.countryCode ?? broadcastCountry.country;
+  const countryKey = broadcastCountry.countryCode;
   const summary = getCoverageSummary(countryKey, tournament);
   const entries = findBroadcasts(countryKey, tournament).filter((entry, index, all) => all.findIndex((item) => resultKey(item) === resultKey(entry)) === index);
   const pageUrl = canonicalUrl(`/can-i-watch/${tournament}/${country}`);
