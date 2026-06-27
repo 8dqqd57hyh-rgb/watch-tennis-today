@@ -3,7 +3,6 @@
 import { mount } from "cypress/react";
 import "./commands";
 import { register as registerCypressGrep } from "@cypress/grep";
-import "@/app/globals.css";
 
 Cypress.Commands.add("mount", mount);
 registerCypressGrep();
