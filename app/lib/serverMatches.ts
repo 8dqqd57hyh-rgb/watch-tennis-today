@@ -90,7 +90,7 @@ export async function getServerMatches(revalidateSeconds = 60): Promise<ServerMa
 
 export async function getLiveTennisPageMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
   return fetchServerMatches("/api/matches?includeFinished=1&daysBack=1&daysForward=1", revalidateSeconds, {
-    timeoutMs: 15000,
+    timeoutMs: 5000,
   });
 }
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import FreeVsPaidWimbledonViewing from "@/app/components/FreeVsPaidWimbledonViewing";
 import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
@@ -234,6 +235,10 @@ export default function WimbledonGuidePage({
           <a href="/best-vpn-for-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">VPN guide</a>
         </div>
       </section>
+
+      {(focus === "where" || focus === "live" || focus === "tv") ? (
+        <FreeVsPaidWimbledonViewing variant={focus} />
+      ) : null}
 
       <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-2xl font-bold text-neutral-950">How to watch Wimbledon by country</h2>
