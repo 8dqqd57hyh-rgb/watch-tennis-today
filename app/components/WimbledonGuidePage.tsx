@@ -18,6 +18,7 @@ const officialChecks = [
 const countryOptions = [
   {
     country: "United Kingdom",
+    guideLabel: "Wimbledon TV and streaming in the UK",
     services: "BBC, BBC iPlayer and official Wimbledon coverage",
     note: "Best starting point for UK viewers during the Championships.",
     href: affiliateLinks.bbc,
@@ -25,6 +26,7 @@ const countryOptions = [
   },
   {
     country: "United States",
+    guideLabel: "How to watch Wimbledon in the USA",
     services: "ESPN / ESPN+ depending on session and rights package",
     note: "Check the daily match window and court before subscribing.",
     href: affiliateLinks.espn,
@@ -32,6 +34,7 @@ const countryOptions = [
   },
   {
     country: "Canada",
+    guideLabel: "How to watch Wimbledon in Canada",
     services: "TSN / RDS checks and official Wimbledon listings",
     note: "English and French-language access may differ by package.",
     href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
@@ -39,6 +42,7 @@ const countryOptions = [
   },
   {
     country: "Australia",
+    guideLabel: "Wimbledon TV and streaming in Australia",
     services: "Official Wimbledon partner checks",
     note: "Convert London sessions carefully because many matches fall overnight.",
     href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
@@ -46,6 +50,7 @@ const countryOptions = [
   },
   {
     country: "Poland",
+    guideLabel: "How to watch Wimbledon in Poland",
     services: "Polsat / current Polsat sports access checks",
     note: "Confirm court coverage and app access close to match day.",
     href: "https://www.wimbledon.com/en_GB/about/tv_coverage.html",
@@ -53,6 +58,7 @@ const countryOptions = [
   },
   {
     country: "Traveling abroad",
+    guideLabel: "Best VPN for Wimbledon travel viewing",
     services: "Your existing legal account + safe connection tools",
     note: "A VPN is mainly useful for privacy and access to your normal account where allowed.",
     href: affiliateLinks.nordvpn,
@@ -183,7 +189,7 @@ export default function WimbledonGuidePage({
               href={option.guideHref}
               className="rounded-2xl border bg-neutral-50 p-4 font-bold text-neutral-950 hover:bg-white"
             >
-              {option.country}
+              {option.guideLabel}
             </a>
           ))}
         </div>
@@ -243,7 +249,7 @@ export default function WimbledonGuidePage({
                       href={option.guideHref}
                       className="mt-2 block text-xs font-black uppercase tracking-[0.12em] text-neutral-500 underline-offset-4 hover:text-emerald-700 hover:underline"
                     >
-                      View Wimbledon guide
+                      {option.guideLabel}
                     </a>
                   </td>
                   <td className="p-3 text-neutral-600">{option.note}</td>

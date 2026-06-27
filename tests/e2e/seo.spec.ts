@@ -56,6 +56,45 @@ const dailyLandingPages = [
   },
 ];
 
+const wimbledonCountryLandingPages = [
+  {
+    path: "/how-to-watch-wimbledon-in-usa",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-usa",
+    h1: "How to Watch Wimbledon in USA",
+    anchorText: "How to watch Wimbledon in the USA",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-uk",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-uk",
+    h1: "How to Watch Wimbledon in UK",
+    anchorText: "Wimbledon TV and streaming in the UK",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-canada",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-canada",
+    h1: "How to Watch Wimbledon in Canada",
+    anchorText: "How to watch Wimbledon in Canada",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-australia",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-australia",
+    h1: "How to Watch Wimbledon in Australia",
+    anchorText: "Wimbledon TV and streaming in Australia",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-poland",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-poland",
+    h1: "How to Watch Wimbledon in Poland",
+    anchorText: "How to watch Wimbledon in Poland",
+  },
+];
+
+const wimbledonCountryLinkSources = [
+  "/wimbledon",
+  "/where-to-watch-wimbledon",
+  "/wimbledon-tv-schedule",
+];
+
 function canonicalHref(html: string) {
   for (const [, tag] of html.matchAll(/<link\b([^>]*)>/gi)) {
     if (!/\brel=["']canonical["']/i.test(tag)) continue;
@@ -170,6 +209,58 @@ test.describe("SEO-critical page basics", () => {
 
     expect(layoutSource).not.toMatch(/alternates\s*:\s*\{[\s\S]*canonical\s*:\s*["']https:\/\/watchtennistoday\.com["']/);
   });
+
+  for (const { path, canonical, h1 } of wimbledonCountryLandingPages) {
+    test(`${path} is indexable with self-referencing Wimbledon metadata`, async ({ request }) => {
+      const response = await request.get(path, { failOnStatusCode: false });
+      const html = await response.text();
+
+      expect(response.status()).toBe(200);
+      expect(canonicalHref(html)).toBe(canonical);
+      expect(h1Text(html)).toContain(h1);
+      expect(metaContent(html, "description")?.length || 0).toBeGreaterThan(80);
+      expect(html).toContain("Official TV and streaming options");
+      expect(html).toContain("Time zone note");
+      expect(html).toContain("FAQPage");
+      expect(html).toContain("/wimbledon-schedule");
+      expect(html).toContain("/wimbledon-order-of-play");
+      expect(html).toContain("/wimbledon-tv-schedule");
+      expect(html).toContain("/where-to-watch-wimbledon");
+
+      const robots = metaContent(html, "robots")?.toLowerCase();
+      expect(robots ?? "").not.toContain("noindex");
+    });
+  }
+
+  test("Wimbledon country landing pages are listed in sitemap source and output", async ({ request }) => {
+    const sitemapSource = fs.readFileSync(path.join(process.cwd(), "app", "sitemap.ts"), "utf8");
+    const response = await request.get("/sitemap.xml", { failOnStatusCode: false });
+    const xml = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(sitemapSource).toContain("WIMBLEDON_COUNTRY_SLUGS");
+
+    for (const { path, canonical } of wimbledonCountryLandingPages) {
+      expect(sitemapSource).toContain("how-to-watch-wimbledon-in-${country}");
+      expect(xml).toContain(`<loc>${canonical}</loc>`);
+      expect(path).toMatch(/^\/how-to-watch-wimbledon-in-/);
+    }
+  });
+
+  for (const sourcePath of wimbledonCountryLinkSources) {
+    test(`${sourcePath} links to Wimbledon country guides with descriptive anchors`, async ({ request }) => {
+      const response = await request.get(sourcePath, { failOnStatusCode: false });
+      const html = await response.text();
+
+      expect(response.status()).toBe(200);
+      expect(html).toContain("How to watch Wimbledon by country");
+
+      for (const { path, anchorText } of wimbledonCountryLandingPages) {
+        expect(html).toContain(`href="${path}"`);
+        expect(html).toContain(anchorText);
+      }
+    });
+  }
 
   for (const { path, canonical, h1 } of dailyLandingPages) {
     test(`${path} has improved SEO landing-page signals`, async ({ request }) => {
