@@ -20,7 +20,7 @@ describe("HomepageMatchExplorer component", { tags: ["@component", "@api"] }, ()
 
       cy.mount(<HomepageMatchExplorer />);
 
-      cy.getByTestId("match-loading-skeleton").should("be.visible");
+      cy.getByTestId("match-loading-card").should("have.length", 6);
       cy.then(() => releaseMatches(matches));
       cy.wait("@matchesToday");
       cy.getByTestId("match-card").should("have.length", 2);
