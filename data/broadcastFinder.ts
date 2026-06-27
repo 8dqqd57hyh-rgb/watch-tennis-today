@@ -14,6 +14,9 @@ export type BroadcastCountry = {
   travelTip: string;
   localContext: string;
   verificationAdvice: string;
+  seoIntro?: string;
+  localViewingTips?: string[];
+  majorEventNotes?: string[];
 };
 
 export const broadcastCountries: BroadcastCountry[] = [
@@ -88,6 +91,16 @@ export const broadcastCountries: BroadcastCountry[] = [
     travelTip: "If you travel outside Germany, verify roaming and streaming restrictions for your existing subscription.",
     localContext: "In Germany, Grand Slam viewing can differ from weekly tour coverage, so Eurosport/discovery+ checks are often separate from Sky Deutschland or Tennis TV checks. ATP matches may be easier to trace through Tennis TV and ATP listings, while WTA and major-event coverage should be verified from official broadcaster directories before relying on a service.",
     verificationAdvice: "Confirm the event category first, then compare ATP, WTA, Eurosport/discovery+ and Sky Deutschland listings. Tournament pages are especially useful when a match moves courts or starts later than the original order of play.",
+    seoIntro: "German tennis fans usually need to make two checks: whether the match is part of an ATP/WTA tour week or a Grand Slam, and whether the chosen provider includes the live court rather than only highlights or delayed coverage.",
+    localViewingTips: [
+      "For ATP weeks, compare Tennis TV and the ATP TV schedule with Sky Deutschland listings before assuming a court is included.",
+      "For Grand Slams, check Eurosport/discovery+ and the tournament broadcaster page because those rights can sit outside normal ATP coverage.",
+      "For German player matches, still verify the tournament owner first; player nationality does not guarantee one broadcaster covers every match.",
+    ],
+    majorEventNotes: [
+      "Hamburg, Halle and Stuttgart can create extra local interest, but international rights still depend on the event contract.",
+      "Wimbledon, Roland Garros, the Australian Open and US Open should each be checked as separate rights windows.",
+    ],
   },
   {
     slug: "france",
@@ -106,6 +119,16 @@ export const broadcastCountries: BroadcastCountry[] = [
     travelTip: "French residents traveling abroad should confirm whether their normal broadcaster supports access outside France.",
     localContext: "In France, Roland Garros has a special local profile and should be checked separately from normal tour coverage. France Televisions and Eurosport are frequent starting points for major-event checks, while Tennis TV applies to ATP events inside its package. WTA and smaller events may require a separate official directory check.",
     verificationAdvice: "For Roland Garros, start with the tournament broadcaster page and local channel listings. For other events, match the tournament category to ATP, WTA or Grand Slam directories before choosing a viewing option.",
+    seoIntro: "France is one of the clearest examples of why tennis fans should not use one generic streaming answer. Roland Garros, weekly ATP events, WTA events and other Grand Slams can lead to different official viewing checks.",
+    localViewingTips: [
+      "For Roland Garros, start with the tournament broadcaster page and local France Televisions or Eurosport listings.",
+      "For ATP matches outside the majors, compare Tennis TV availability with the ATP TV schedule and any local broadcaster listing.",
+      "For WTA matches, use the WTA where-to-watch directory before relying on a general sports package.",
+    ],
+    majorEventNotes: [
+      "Roland Garros is the priority local-rights check for French viewers and should be treated separately from other clay events.",
+      "Paris indoor, Marseille, Montpellier and other French events can have local schedule nuances even when the tour category looks familiar.",
+    ],
   },
 
   {
@@ -125,6 +148,16 @@ export const broadcastCountries: BroadcastCountry[] = [
     travelTip: "If you normally watch from Spain while traveling, verify whether your broadcaster account supports international streaming.",
     localContext: "In Spain, Movistar Plus+, Eurosport and Tennis TV may each be relevant depending on whether the match is a tour event, a Grand Slam or a combined tournament. Spanish players often receive prominent local coverage, but court-by-court availability can still depend on the rights package and app access.",
     verificationAdvice: "Check the ATP or WTA schedule, then verify the event on Movistar Plus+, Eurosport or the tournament's broadcaster page. For Grand Slams, avoid assuming Tennis TV coverage because majors use separate rights.",
+    seoIntro: "Spain has high tennis demand because of major Spanish players and clay-season events, but the correct viewing route still starts with the tournament rights holder, not the player name alone.",
+    localViewingTips: [
+      "For ATP matches, check Tennis TV and the ATP TV schedule, then compare against Movistar Plus+ listings for Spain.",
+      "For WTA matches, use the WTA official directory and the tournament schedule before choosing a package.",
+      "For Grand Slams, check Eurosport, Movistar Plus+ and the official tournament broadcaster list because majors do not follow normal ATP or WTA rights.",
+    ],
+    majorEventNotes: [
+      "Madrid and Barcelona can be especially important for Spanish fans, but court coverage can still differ between main feeds and app feeds.",
+      "Alcaraz, Sorribes Tormo, Badosa and other Spanish player matches may get extra attention without changing the underlying rights owner.",
+    ],
   },
   {
     slug: "italy",

@@ -612,8 +612,17 @@ export default async function LiveTennisPage() {
             <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
               Best ways to watch online
             </Link>
-            <Link href="/watch-tennis-in/usa" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
-              Country streaming guides
+            <Link href="/watch-tennis-in/france" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
+              Watch tennis in France
+            </Link>
+            <Link href="/watch-tennis-in/germany" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
+              Watch tennis in Germany
+            </Link>
+            <Link href="/watch-tennis-in/spain" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
+              Watch tennis in Spain
+            </Link>
+            <Link href="/tv-schedule/iga-swiatek" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
+              Iga Swiatek TV schedule
             </Link>
           </div>
         </section>

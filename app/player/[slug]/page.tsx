@@ -243,6 +243,28 @@ const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfi
     surfacePreferences: "Clay gives Andreeva time to use angles, height and patient point construction. Medium hard courts are an important test because they reward players who can defend and attack in the same rally. Grass remains more matchup-dependent because the lower bounce demands quicker serve and return decisions.",
     watchReasons: ["A young contender whose tactical maturity is visible point by point", "High-interest matches against established champions", "Variety and direction changes rather than one-note power", "A useful page for fans tracking the future of the WTA"],
   },
+  "jesper-de-jong": {
+    nationality: "Netherlands",
+    biography: "Jesper de Jong is a useful ATP profile for fans who follow the space between Challenger momentum and main-tour opportunity. His matches often matter because they sit in qualifying draws, early Grand Slam rounds, ATP 250 weeks and Dutch-interest windows where a schedule page needs more context than a simple start time. De Jong is not a generic player listing: he is the kind of opponent who can make higher-ranked players work through long rallies, changing conditions and awkward first-round pressure. A helpful page for him should explain why the tournament category matters, how his matches can move between Challenger, ATP and Grand Slam coverage, and why fans should verify the official broadcaster before assuming every court is available.",
+    playingStyle: "De Jong plays right-handed baseline tennis built around rally tolerance, movement and enough variety to keep opponents from settling into one attacking rhythm. He is most interesting when he can extend rallies without becoming passive, then use depth or a direction change to earn a shorter reply. Against elite first-strike players, the key viewing question is whether he can protect enough service games to make return pressure count. Against other grinders, watch whether he creates court position rather than only trading neutral balls.",
+    careerContext: "For fans tracking De Jong, the event level is the first practical check. Grand Slam qualifying and main-draw appearances can place him on official tournament streams or broadcaster overflow feeds, while Challenger weeks may use a different viewing route entirely. ATP Tour matches can be easier to find through ATP schedules, but not every country or court has the same video access. Confirm the draw, court assignment and tournament category first, then open the local country broadcaster guide rather than relying on a generic stream claim.",
+    recentForm: "De Jong's form is best read through service-game stability, rally depth and how often he turns extended exchanges into attacking chances. If he is holding serve without constant pressure, he can make higher-ranked opponents uncomfortable because return games become longer. If the first serve drops or depth lands short, stronger ATP opponents can take the court away quickly.",
+    strengths: ["Rally tolerance", "Main-tour qualifying experience", "Dutch fan interest", "Adaptable baseline patterns"],
+    surfaceContext: "Clay and outdoor hard courts are useful contexts for De Jong because they give fans a clear look at his movement, patience and ability to build points before taking risk.",
+    surfacePreferences: "Slower hard courts and clay can help De Jong extend rallies and make opponents earn attacking positions. Faster indoor courts put more pressure on first-serve percentage and early depth, while grass makes return games and low-bounce movement more important.",
+    watchReasons: ["A Dutch ATP profile with Challenger-to-tour context", "Matches where court assignment and official streaming routes matter", "Tactical baseline rallies against bigger-name opponents", "Useful Grand Slam qualifying and early-round schedule interest"],
+  },
+  "ha-eum-lee": {
+    nationality: "South Korea",
+    biography: "Ha Eum Lee is a developing South Korean player whose page needs careful wording because her schedule can include junior Grand Slam, ITF and qualifying-level contexts rather than a stable week-to-week WTA main-tour pattern. That makes the page valuable in a different way from a superstar profile. Fans who search for H. E. Lee often need help identifying the player, understanding why the route may canonicalize to Ha Eum Lee, and checking whether the match belongs to a junior, ITF or professional draw. The right SEO treatment is not to overstate streaming availability. It is to explain the match context, point users toward official tournament information and avoid pretending that every lower-court or junior match has licensed video coverage.",
+    playingStyle: "At this stage, Lee's matches are best evaluated through fundamentals rather than fixed tour-level labels. Watch serve protection, first-ball depth, return position and how she handles longer rallies against older or more experienced opponents. Junior and ITF matches can change quickly because momentum, physical recovery and pressure management are still developing. A useful viewing page should help fans read those clues without making unsupported claims about ranking, titles or broadcast status.",
+    careerContext: "Lee is most relevant to Watch Tennis Today when she appears in official tournament feeds, junior Grand Slam draws, ITF events or qualifying pages that create search demand around abbreviated names such as H. E. Lee. The main user task is identity and verification: confirm the full player name, confirm the draw category, then check whether the tournament provides live scores, video, highlights or no official video at all. Country broadcast guides are helpful only after the event category is clear.",
+    recentForm: "Because Lee's match data can come from junior and ITF contexts, recent form should be treated cautiously. A single live-score result is less useful than repeated signs: holding serve under pressure, keeping return games competitive and adapting when rallies lengthen.",
+    strengths: ["Developing match experience", "Junior and ITF schedule interest", "Identity clarification for H. E. Lee searches", "Official-source verification"],
+    surfaceContext: "Surface context depends on the tournament draw. Junior and ITF events can use different conditions, so court speed, weather and draw format should be checked from the event page.",
+    surfacePreferences: "It is too early to state a durable surface preference from this page alone. Fans should read each Lee match through the event surface and opponent profile instead of assuming a fixed pattern.",
+    watchReasons: ["Helps clarify H. E. Lee as Ha Eum Lee", "Useful for junior, ITF and qualifying search demand", "Avoids unsupported streaming claims while guiding fans to official sources", "Connects lower-impression player searches to broader live tennis and country-rights pages"],
+  },
   "jasmine-paolini": {
     nationality: "Italy",
     biography: "Jasmine Paolini is an Italian WTA player whose rise made her matches increasingly popular with fans following energetic baseline tennis and deep tournament runs.",
@@ -326,6 +348,7 @@ const PRIORITY_PLAYERS: PlayerSlug[] = [
   "taylor-fritz",
   "jack-draper",
   "tommy-paul",
+  "jesper-de-jong",
   "iga-swiatek",
   "aryna-sabalenka",
   "coco-gauff",
@@ -333,6 +356,7 @@ const PRIORITY_PLAYERS: PlayerSlug[] = [
   "jessica-pegula",
   "naomi-osaka",
   "mirra-andreeva",
+  "ha-eum-lee",
 ];
 
 function getStatusPriority(status: string) {

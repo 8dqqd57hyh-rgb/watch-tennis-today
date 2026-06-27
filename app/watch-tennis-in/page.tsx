@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { broadcastCountries } from "@/data/broadcastFinder";
@@ -122,6 +123,18 @@ export default function WatchTennisInHubPage() {
               </div>
             </a>
           ))}
+        </section>
+
+        <section className="mb-12 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-3xl font-black">Popular European tennis TV guides</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-zinc-400">
+            France, Germany and Spain have separate Grand Slam, ATP and WTA viewing checks, so they are useful starting points during busy European tennis weeks.
+          </p>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            <Link href="/watch-tennis-in/france" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Watch tennis in France</Link>
+            <Link href="/watch-tennis-in/germany" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Watch tennis in Germany</Link>
+            <Link href="/watch-tennis-in/spain" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Watch tennis in Spain</Link>
+          </div>
         </section>
 
         <section className="mb-12 grid gap-5 md:grid-cols-3">
