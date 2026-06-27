@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import AuthorBox from "@/app/components/AuthorBox";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 import { type ServerMatch } from "@/app/lib/serverMatches";
@@ -325,15 +326,24 @@ export default async function WimbledonQualifyingLivePage() {
       },
     })),
   };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    url: PAGE_URL,
+  };
 
   return (
     <main className="min-h-screen bg-zinc-50 text-zinc-950">
-      <JsonLd data={[articleSchema, faqSchema]} />
+      <JsonLd data={[webPageSchema, articleSchema, faqSchema]} />
 
       <section className="bg-zinc-950 text-white">
         <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
           <nav className="flex flex-wrap gap-2 text-sm font-semibold text-zinc-400" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-white">Home</Link>
+            <span>/</span>
+            <Link href="/grand-slams" className="hover:text-white">Grand Slams</Link>
             <span>/</span>
             <Link href="/wimbledon" className="hover:text-white">Wimbledon</Link>
             <span>/</span>
@@ -394,23 +404,7 @@ export default async function WimbledonQualifyingLivePage() {
             </div>
           </article>
 
-          <aside className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-black">Fast Wimbledon links</h2>
-            <div className="mt-4 grid gap-3">
-              {[
-                ["Wimbledon live", "/wimbledon-live"],
-                ["Wimbledon schedule", "/wimbledon-schedule"],
-                ["Wimbledon results", "/wimbledon-results"],
-                ["Live tennis", "/live-tennis"],
-                ["Tennis today", "/today"],
-                ["Players", "/players"],
-              ].map(([label, href]) => (
-                <Link key={href} href={href} className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 font-black hover:border-green-500">
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </aside>
+          <RelatedWimbledonGuides currentPath="/wimbledon-qualifying-live" />
         </section>
 
         <section className="mt-12">
@@ -535,6 +529,7 @@ export default async function WimbledonQualifyingLivePage() {
       <BreadcrumbSchema
         items={[
           { name: "Home", url: SITE_URL },
+          { name: "Grand Slams", url: `${SITE_URL}/grand-slams` },
           { name: "Wimbledon", url: `${SITE_URL}/wimbledon` },
           { name: "Wimbledon Qualifying Live", url: PAGE_URL },
         ]}

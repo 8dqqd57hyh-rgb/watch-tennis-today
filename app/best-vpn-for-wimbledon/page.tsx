@@ -32,6 +32,8 @@ export default function BestVpnForWimbledonPage() {
       description="Wimbledon attracts huge global streaming demand. This page explains how to check official broadcasters, avoid risky stream sites and use a VPN responsibly when traveling."
       eventName="Wimbledon"
       primaryUseCase="Most useful for privacy on public Wi-Fi, hotel networks or travel days when you already have a legal streaming account and need to check whether it works abroad under the service rules."
+      currentPath="/best-vpn-for-wimbledon"
+      currentPageName="Best VPN for Wimbledon"
       sections={[
         "Confirm Wimbledon broadcasters first",
         "Prepare for Centre Court sessions",

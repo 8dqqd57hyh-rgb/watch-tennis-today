@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/app/components/JsonLd";
+import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import PlayerFollowCTA from "@/components/PlayerFollowCTA";
 import LegalStreamingOptions from "@/components/LegalStreamingOptions";
 
@@ -19,12 +20,20 @@ const faq = [
 export default function Page() {
   const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://watchtennistoday.com" },
-    { "@type": "ListItem", position: 2, name: "Wimbledon", item: "https://watchtennistoday.com/wimbledon" },
+    { "@type": "ListItem", position: 2, name: "Grand Slams", item: "https://watchtennistoday.com/grand-slams" },
+    { "@type": "ListItem", position: 3, name: "Wimbledon", item: "https://watchtennistoday.com/wimbledon" },
   ] };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })) };
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Wimbledon live stream, schedule and legal TV guide",
+    description: metadata.description,
+    url: "https://watchtennistoday.com/wimbledon",
+  };
   return <main className="mx-auto max-w-5xl p-4 text-zinc-900">
-    <JsonLd data={[breadcrumb, faqSchema]} />
-    <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-500"><Link href="/">Home</Link><span>/</span><span>Wimbledon</span></nav>
+    <JsonLd data={[breadcrumb, webPageSchema, faqSchema]} />
+    <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-500"><Link href="/">Home</Link><span>/</span><Link href="/grand-slams">Grand Slams</Link><span>/</span><span>Wimbledon</span></nav>
     <section className="rounded-3xl bg-zinc-950 p-8 text-white">
       <p className="text-xs font-black uppercase tracking-[0.25em] text-green-400">Grand Slam hub</p>
       <h1 className="mt-3 text-4xl font-black md:text-6xl">Wimbledon live stream, schedule and legal TV guide</h1>
@@ -60,5 +69,6 @@ export default function Page() {
       <p className="mt-3 text-sm leading-7 text-zinc-700">The best viewing pages connect tournament context to players. Follow top profiles such as <Link href="/player/carlos-alcaraz" className="font-bold text-green-700">Carlos Alcaraz</Link>, <Link href="/player/jannik-sinner" className="font-bold text-green-700">Jannik Sinner</Link>, <Link href="/player/novak-djokovic" className="font-bold text-green-700">Novak Djokovic</Link>, <Link href="/player/iga-swiatek" className="font-bold text-green-700">Iga Swiatek</Link> and <Link href="/player/aryna-sabalenka" className="font-bold text-green-700">Aryna Sabalenka</Link> when they are in the draw.</p>
     </section>
     <section id="faq" className="mt-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm"><h2 className="text-2xl font-black">FAQ</h2><div className="mt-4 space-y-4">{faq.map((item) => <div key={item.q}><h3 className="font-black">{item.q}</h3><p className="mt-1 text-sm leading-7 text-zinc-700">{item.a}</p></div>)}</div></section>
+    <section className="mt-8"><RelatedWimbledonGuides currentPath="/wimbledon" /></section>
   </main>;
 }

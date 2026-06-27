@@ -28,6 +28,8 @@ export default function WhereToWatchWimbledonPage() {
       title="Where to Watch Wimbledon: Official Broadcasters and Safe Streaming Guide"
       description="A country-aware Wimbledon viewing guide that keeps readers focused on official broadcasters, recognized streaming services and safe travel viewing."
       focus="where"
+      currentPath="/where-to-watch-wimbledon"
+      currentPageName="Where to Watch Wimbledon"
     />
   );
 }

@@ -28,6 +28,8 @@ export default function WimbledonLivePage() {
       title="Wimbledon Live Stream Guide: Legal TV, Schedule and Safe Ways to Watch"
       description="A practical Wimbledon hub for finding legal viewing options, checking the order of play and preparing for Centre Court, No.1 Court and outside-court sessions."
       focus="live"
+      currentPath="/wimbledon-live"
+      currentPageName="Wimbledon Live"
     />
   );
 }
