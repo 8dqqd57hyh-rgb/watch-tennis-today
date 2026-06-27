@@ -1446,6 +1446,12 @@ const playerMatches = allMatches
                 <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300 md:text-lg">
                   {editorialProfile.playingStyle}
                 </p>
+                <Link
+                  href={`/can-i-watch/${slug}/poland`}
+                  className="mt-5 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black hover:bg-emerald-300"
+                >
+                  Can I watch {playerName}?
+                </Link>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">

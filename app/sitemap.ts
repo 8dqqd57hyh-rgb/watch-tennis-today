@@ -7,6 +7,7 @@ import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
+import { getCanIWatchQueryOptions, getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
 export const revalidate = 3600;
 
 type Match = {
@@ -229,6 +230,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-glossary",
     "/tennis-court-surfaces",
     "/tennis-tv-broadcast-finder",
+    "/broadcasters",
     "/tennis-tv-not-working",
     "/tennis-streaming-services",
     "/tennis-streaming-checklist",
@@ -282,6 +284,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/watch-sinner-live",
     "/why-trust-watch-tennis-today",
     "/tennis-streaming",
+    "/can-i-watch",
     "/start-here",
     "/best-ways-to-watch-tennis-online",
     ...WIMBLEDON_COUNTRY_SLUGS.map((country) => `/how-to-watch-wimbledon-in-${country}`),
@@ -298,12 +301,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 
   // AdSense quality: include only manually reviewed country guides.
+  const broadcasterPages: MetadataRoute.Sitemap = getUniqueBroadcasters().map((broadcaster) => ({
+    url: `https://watchtennistoday.com/broadcaster/${broadcaster.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
+
   const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
     url: `https://watchtennistoday.com/watch-tennis-in/${country}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
+
+
+  const canIWatchPages: MetadataRoute.Sitemap = getCanIWatchQueryOptions()
+    .filter((option) => option.type === "tournament")
+    .flatMap((option) =>
+      Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
+        url: `https://watchtennistoday.com/can-i-watch/${option.slug}/${country}`,
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.83,
+      })),
+    );
 
   const importantMatches = matches.filter(isImportantMatch);
 
@@ -393,6 +415,8 @@ const frenchOpenPages = [
  return uniqueSitemapEntries([
   ...staticPages,
   ...countryPages,
+  ...broadcasterPages,
+  ...canIWatchPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,

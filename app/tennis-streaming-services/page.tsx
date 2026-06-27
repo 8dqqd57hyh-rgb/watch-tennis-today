@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
@@ -212,6 +213,13 @@ export default function TennisStreamingServicesPage() {
               <p className="leading-7 text-neutral-600">{service.watchOutFor}</p>
             </article>
           ))}
+        </section>
+
+        <section className="mt-10 rounded-3xl border border-emerald-500/30 bg-emerald-950/20 p-6">
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Broadcaster database</p>
+          <h2 className="mt-3 text-3xl font-black text-white">Compare tennis broadcasters by country</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-zinc-300">Use the broadcaster directory to check which services appear for Grand Slams, ATP and WTA events before choosing a streaming package.</p>
+          <Link href="/broadcasters" className="mt-5 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black">Open tennis broadcasters</Link>
         </section>
 
         <RevenueConversionPanel context="article" />

@@ -17,6 +17,7 @@ import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/author
 import {
   TENNIS_BROADCAST_LAST_VERIFIED,
   formatBroadcastPrice,
+  getBroadcasterSlug,
   getCountryBroadcastEntries,
   type TennisBroadcastEntry,
   type TennisTournamentId,
@@ -159,6 +160,12 @@ function BroadcastEntryCard({ entry }: { entry: TennisBroadcastEntry }) {
         </div>
       </dl>
       <p className="mt-4 leading-7 text-zinc-400">{entry.coverageNotes}</p>
+      <Link
+        href={`/broadcaster/${getBroadcasterSlug(entry.broadcasterName)}`}
+        className="mt-4 inline-flex rounded-2xl border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-emerald-400 hover:text-emerald-300"
+      >
+        View broadcaster profile
+      </Link>
       <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
         Last verified: {entry.lastVerified}
       </p>
@@ -195,6 +202,7 @@ export default async function CountryPage({
 
   const countryPath = `/watch-tennis-in/${broadcastCountry.slug}`;
   const pageUrl = canonicalUrl(countryPath);
+  const canIWatchPath = `/can-i-watch/wimbledon/${broadcastCountry.slug}`;
   const grandSlamEntries = getEntries(broadcastCountry.countryCode, grandSlamIds);
   const tourEntries = getEntries(broadcastCountry.countryCode, tourIds);
   const atpEntry = tourEntries.find((entry) => entry.tournamentId === "atp-tour");
@@ -577,6 +585,11 @@ export default async function CountryPage({
 
         <ContentQualityNotice pageType={`country broadcaster guide for ${broadcastCountry.country}`} />
         <AuthorBox />
+        <div className="mt-6">
+          <Link href={canIWatchPath} className="inline-flex rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black hover:bg-emerald-300">
+            Can I watch tennis in {broadcastCountry.country}?
+          </Link>
+        </div>
         <EmailSignup />
       </div>
     </main>

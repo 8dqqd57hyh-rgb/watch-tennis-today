@@ -76,6 +76,13 @@ export default function TennisTvBroadcastFinderPage() {
 
         <BroadcastFinder />
 
+        <section className="mt-10 rounded-3xl border border-emerald-500/30 bg-emerald-950/20 p-6">
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">New</p>
+          <h2 className="mt-3 text-3xl font-black text-white">Browse the tennis broadcaster database</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-zinc-300">Use the broadcaster hub for country counts, tournament coverage, free or paid status, official links and verification notes for each service.</p>
+          <Link href="/broadcasters" className="mt-5 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black">Open broadcasters</Link>
+        </section>
+
         <section className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {broadcastCountries.map((country) => (
             <Link
