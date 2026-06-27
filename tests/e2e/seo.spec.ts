@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
 import { getMatchLifecycle } from "@/app/lib/matchLifecycle";
+import { NOINDEX_ONLY_PATHS, REDIRECT_ONLY_PATHS, SITE_URL } from "@/app/lib/technicalSeo";
 
 const indexablePages = ["/", "/today", "/live-tennis", "/players", "/tournament", "/about", "/wimbledon-order-of-play"];
 const intentionallyNoindexPages = new Set(["/tennis-schedule-today"]);
@@ -98,13 +101,35 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).toContain("https://watchtennistoday.com/grand-slam-live");
     expect(urls).toContain("https://watchtennistoday.com/wimbledon-live");
     expect(urls).toContain("https://watchtennistoday.com/wimbledon-order-of-play");
-    expect(urls).toContain("https://watchtennistoday.com/french-open-schedule");
+    expect(urls).not.toContain("https://watchtennistoday.com/french-open-schedule");
     expect(urls).toContain("https://watchtennistoday.com/watch-sinner-live");
     expect(urls).toContain("https://watchtennistoday.com/watch-alcaraz-live");
     expect(urls).toContain("https://watchtennistoday.com/watch-djokovic-live");
     expect(urls).not.toContain("https://watchtennistoday.com/watch-player-live/iga-swiatek");
     expect(urls).not.toContain("https://watchtennistoday.com/watch-swiatek-live");
     expect(urls.some((url) => url.includes("/watch/"))).toBe(false);
+  });
+
+  test("sitemap excludes redirect-only and noindex-only paths", async ({ request }) => {
+    const response = await request.get("/sitemap.xml", { failOnStatusCode: false });
+    const xml = await response.text();
+    const urls = Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g), (match) => match[1]);
+
+    expect(response.status()).toBe(200);
+
+    for (const redirectOnlyPath of REDIRECT_ONLY_PATHS) {
+      expect(urls).not.toContain(`${SITE_URL}${redirectOnlyPath}`);
+    }
+
+    for (const noindexOnlyPath of NOINDEX_ONLY_PATHS) {
+      expect(urls).not.toContain(`${SITE_URL}${noindexOnlyPath}`);
+    }
+  });
+
+  test("root layout does not define a homepage canonical for all pages", () => {
+    const layoutSource = fs.readFileSync(path.join(process.cwd(), "app", "layout.tsx"), "utf8");
+
+    expect(layoutSource).not.toMatch(/alternates\s*:\s*\{[\s\S]*canonical\s*:\s*["']https:\/\/watchtennistoday\.com["']/);
   });
 
   test("Wimbledon order of play page renders key SEO content and links", async ({ request }) => {

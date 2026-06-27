@@ -2,6 +2,7 @@ export const metadata = {
   title: "Affiliate Disclosure | Watch Tennis Today",
   description:
     "Affiliate disclosure for Watch Tennis Today. Learn how we may earn commissions from links on our website.",
+  alternates: { canonical: "https://watchtennistoday.com/affiliate-disclosure" },
 };
 
 export const dynamic = "force-dynamic";

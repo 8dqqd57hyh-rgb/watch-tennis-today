@@ -6,6 +6,7 @@ export const metadata = {
   title: "How to Watch Tennis Safely Abroad | Tennis Streaming Guide",
   description:
     "Learn how to watch tennis safely while traveling abroad using official streaming services, secure connections and a VPN for privacy.",
+  alternates: { canonical: "https://watchtennistoday.com/how-to-watch-tennis-safely-abroad" },
 };
 
 export default function HowToWatchTennisSafelyAbroadPage() {

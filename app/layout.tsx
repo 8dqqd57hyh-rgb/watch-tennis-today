@@ -21,10 +21,6 @@ export const metadata: Metadata = {
   description:
     "Live tennis matches, schedules, broadcasters and where to watch ATP, WTA and Grand Slam tournaments.",
 
-  alternates: {
-    canonical: "https://watchtennistoday.com",
-  },
-
   openGraph: {
     title: "Watch Tennis Today",
 

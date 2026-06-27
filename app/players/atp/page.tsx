@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "ATP Players",
   description: "ATP tennis players, live schedules, rankings and tournament coverage.",
+  alternates: { canonical: "https://watchtennistoday.com/players/atp" },
 };
 const atpPlayers = [
   "Jannik Sinner",

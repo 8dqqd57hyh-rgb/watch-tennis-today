@@ -267,7 +267,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/wimbledon",
     "/us-open",
     "/australian-open",
-    "/french-open-schedule",
     "/french-open-order-of-play",
     "/watch-tennis-online",
     "/watch-alcaraz-live",

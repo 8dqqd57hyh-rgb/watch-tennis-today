@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "WTA Players",
   description: "WTA tennis players, schedules, rankings and match coverage.",
+  alternates: { canonical: "https://watchtennistoday.com/players/wta" },
 };
 const wtaPlayers = [
   "Iga Swiatek",

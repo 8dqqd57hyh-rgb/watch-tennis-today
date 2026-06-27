@@ -15,23 +15,27 @@ export type SitemapEntryInput = {
   priority?: number;
 };
 
-const REDIRECT_ONLY_PATHS = new Set([
-  "/french-open-draw",
-  "/french-open-survivors",
-  "/french-open-upsets",
-  "/french-open-live-stream",
-  "/french-open-streaming-countries",
-  "/french-open-tv-schedule",
+export const REDIRECT_ONLY_PATHS = new Set([
   "/french-open-live",
+  "/french-open-live-stream",
+  "/french-open-schedule",
+  "/french-open-streaming-countries",
+  "/french-open-today",
+  "/french-open-tv-schedule",
+  "/guides/how-tennis-draws-work",
+  "/guides/how-to-watch-tennis-online-legally",
+  "/guides/roland-garros-guide",
+  "/guides/tennis-order-of-play-guide",
+  "/guides/tennis-qualifying-explained",
+  "/guides/watch-tennis-online-legally",
   "/privacy-policy",
   "/roland-garros-draw",
   "/roland-garros-live",
   "/roland-garros-live-stream",
-  "/roland-garros-pulse",
-  "/roland-garros-predictions",
   "/roland-garros-results",
   "/roland-garros-tv-schedule",
   "/tennis-schedule-tomorrow",
+  "/watch-roland-garros-online",
   "/watch-french-open-in-australia",
   "/watch-french-open-in-canada",
   "/watch-french-open-in-uk",
@@ -40,11 +44,44 @@ const REDIRECT_ONLY_PATHS = new Set([
   "/watch-tennis-in-canada",
   "/watch-tennis-in-uk",
   "/watch-tennis-in-usa",
-  "/watch-sabalenka-live",
-  "/watch-swiatek-live",
   "/watch/tennis-spoiler-free-scores",
   "/wimbledon-live-stream",
   "/wimbledon-tv-schedule",
+]);
+
+export const NOINDEX_ONLY_PATHS = new Set([
+  "/atp-live-today",
+  "/best-tennis-matches-today",
+  "/best-vpn-for-roland-garros",
+  "/best-vpn-for-tennis-streaming",
+  "/best-vpn-for-wimbledon",
+  "/compare",
+  "/compare/tennis-tv-vs-espn",
+  "/french-open-draw",
+  "/french-open-results",
+  "/french-open-survivors",
+  "/french-open-upsets",
+  "/how-to-watch-french-open-in-usa",
+  "/matches/live-now",
+  "/my-dashboard",
+  "/my-feed",
+  "/my-tournament",
+  "/next-match",
+  "/rivalries",
+  "/roland-garros-pulse",
+  "/roland-garros-predictions",
+  "/roland-garros-recap",
+  "/rome-open-final-live",
+  "/tennis-order-of-play-today",
+  "/tennis-results-today",
+  "/tennis-schedule-today",
+  "/tennis-trending-now",
+  "/tomorrow",
+  "/tv-schedule",
+  "/watch-sabalenka-live",
+  "/watch-swiatek-live",
+  "/watch-tennis-live-today",
+  "/wta-live-today",
 ]);
 
 const ALWAYS_NOINDEX_PATH_PREFIXES = [
@@ -76,6 +113,10 @@ export function isRedirectOnlyPath(path: string) {
   return REDIRECT_ONLY_PATHS.has(normalizePath(path));
 }
 
+export function isNoindexOnlyPath(path: string) {
+  return NOINDEX_ONLY_PATHS.has(normalizePath(path));
+}
+
 export function isTechnicalPath(path: string) {
   const normalized = normalizePath(path);
 
@@ -88,6 +129,7 @@ export function shouldIncludeInSitemap(path: string) {
   const normalized = normalizePath(path);
 
   if (isRedirectOnlyPath(normalized)) return false;
+  if (isNoindexOnlyPath(normalized)) return false;
   if (isTechnicalPath(normalized)) return false;
 
   return true;

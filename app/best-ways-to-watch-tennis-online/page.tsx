@@ -2,6 +2,7 @@ export const metadata = {
   title: "Best Ways to Watch Tennis Online | ATP, WTA & Grand Slam Streams",
   description:
     "Best legal ways to watch tennis online, including ATP, WTA, Grand Slam broadcasters, tennis streaming services and country-based TV coverage.",
+  alternates: { canonical: "https://watchtennistoday.com/best-ways-to-watch-tennis-online" },
 };
 
 import EmailSignup from "@/app/components/EmailSignup";

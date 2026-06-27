@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Content Guidelines",
   description: "Editorial and content quality standards for Watch Tennis Today.",
+  alternates: { canonical: "https://watchtennistoday.com/content-guidelines" },
 };
 
 export default function ContentGuidelinesPage() {

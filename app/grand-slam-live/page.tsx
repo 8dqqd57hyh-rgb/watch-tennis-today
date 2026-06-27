@@ -28,6 +28,7 @@ export const metadata = {
   title: "Grand Slam Tennis Live Today | Schedule, Streams & TV",
   description:
     "Watch Grand Slam tennis live today. Find Australian Open, French Open, Wimbledon and US Open matches, schedules, scores and streaming options.",
+  alternates: { canonical: "https://watchtennistoday.com/grand-slam-live" },
 };
 
 async function getMatches(): Promise<Match[]> {
