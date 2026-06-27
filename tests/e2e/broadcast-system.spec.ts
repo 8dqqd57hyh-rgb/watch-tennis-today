@@ -8,9 +8,14 @@ import {
   getCoverageSummary,
   getCountryBroadcastEntries,
   getCountryServiceOptions,
+  getNormalizedBroadcastRecords,
+  normalizeCountry,
+  normalizeTournament,
   tennisBroadcastDatabase,
   tennisBroadcastCountries,
   tennisTournamentGroups,
+  validateBroadcastDatabase,
+  type TennisCountryBroadcastDatabase,
 } from "../../src/data/tennisBroadcasts";
 
 const grandSlamIds = ["australian-open", "roland-garros", "wimbledon", "us-open"];
@@ -89,6 +94,35 @@ test.describe("tennis broadcaster database", () => {
     expect(getBroadcastCountryBySlug("united-states")?.slug).toBe("usa");
   });
 
+  test("normalizes country aliases", () => {
+    expect(normalizeCountry("UK")).toBe("uk");
+    expect(normalizeCountry("Great Britain")).toBe("uk");
+    expect(normalizeCountry("Britain")).toBe("uk");
+    expect(normalizeCountry("GB")).toBe("uk");
+    expect(normalizeCountry("United Kingdom")).toBe("uk");
+    expect(normalizeCountry("USA")).toBe("usa");
+    expect(normalizeCountry("US")).toBe("usa");
+    expect(normalizeCountry("United States")).toBe("usa");
+    expect(normalizeCountry("America")).toBe("usa");
+    expect(normalizeCountry("Czechia")).toBe("czechia");
+    expect(normalizeCountry("Czech Republic")).toBe("czechia");
+  });
+
+  test("normalizes tournament aliases", () => {
+    expect(normalizeTournament("French Open")).toBe("roland-garros");
+    expect(normalizeTournament("Roland Garros")).toBe("roland-garros");
+    expect(normalizeTournament("Roland-Garros")).toBe("roland-garros");
+    expect(normalizeTournament("RG")).toBe("roland-garros");
+    expect(normalizeTournament("US Open")).toBe("us-open");
+    expect(normalizeTournament("U.S. Open")).toBe("us-open");
+    expect(normalizeTournament("Australian Open")).toBe("australian-open");
+    expect(normalizeTournament("AO")).toBe("australian-open");
+    expect(normalizeTournament("Wimbledon Championships")).toBe("wimbledon");
+    expect(normalizeTournament("ATP Finals")).toBe("atp-tour");
+    expect(normalizeTournament("Nitto Finals")).toBe("atp-tour");
+    expect(normalizeTournament("WTA Finals")).toBe("wta-tour");
+  });
+
   test("finds the same Wimbledon rows for Poland by slug, code and name", () => {
     const bySlug = findBroadcasts("poland", "wimbledon");
     const byCode = findBroadcasts("PL", "wimbledon");
@@ -108,6 +142,12 @@ test.describe("tennis broadcaster database", () => {
     expect(rows[0]?.tournamentId).toBe("roland-garros");
   });
 
+  test("matches aliases case, accent, hyphen and space insensitively", () => {
+    expect(findBroadcasts("America", "U.S. Open").map((entry) => entry.tournamentId)).toEqual(["us-open"]);
+    expect(findBroadcasts("great britain", "Roland-Garros").map((entry) => entry.tournamentId)).toEqual(["roland-garros"]);
+    expect(findBroadcasts("GB", "roland garros").map((entry) => entry.tournamentId)).toEqual(["roland-garros"]);
+  });
+
   test("maps popular player aliases to tour coverage", () => {
     const rows = findBroadcastsForPlayer("GB", "Carlos Alcaraz");
 
@@ -124,6 +164,59 @@ test.describe("tennis broadcaster database", () => {
     expect(summary.subscriptionRouteCount).toBe(1);
     expect(summary.lastVerified).toBe("2026-06-21");
     expect(summary.confidenceLevels).toEqual(["partial"]);
+  });
+
+  test("exposes normalized broadcast records with required fields", () => {
+    const records = getNormalizedBroadcastRecords();
+    const polandWimbledon = records.find((record) => record.countrySlug === "poland" && record.tournamentSlug === "wimbledon");
+
+    expect(records).toHaveLength(72);
+    expect(polandWimbledon).toMatchObject({
+      countryCode: "PL",
+      countryName: "Poland",
+      countrySlug: "poland",
+      tournamentSlug: "wimbledon",
+      tournamentName: "Wimbledon",
+      broadcasterName: "Polsat",
+      officialUrl: "https://www.wimbledon.com/en_GB/about/tv_coverage",
+      streamingService: "Polsat Box Go or current Polsat sports access",
+      free: false,
+      subscriptionRequired: true,
+      confidence: "partial",
+      lastVerified: "2026-06-21",
+    });
+    expect(polandWimbledon?.id).toBe("poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access");
+  });
+
+  test("validates the broadcaster database", () => {
+    const result = validateBroadcastDatabase();
+
+    expect(result.isValid).toBe(true);
+    expect(result.recordCount).toBe(72);
+    expect(result.errors).toEqual([]);
+  });
+
+  test("detects duplicate mappings and invalid fields", () => {
+    const invalidDatabase = structuredClone(tennisBroadcastDatabase) as TennisCountryBroadcastDatabase[];
+    const duplicateService = structuredClone(invalidDatabase[0].groups[0].services[0]);
+    invalidDatabase[0].groups[0].services.push(duplicateService);
+    invalidDatabase[0].groups[1].services[0].officialWebsiteUrl = "not-a-url";
+    invalidDatabase[0].groups[2].services[0].broadcasterName = "";
+    invalidDatabase[0].groups[3].services[0].isFree = "sometimes" as unknown as boolean;
+    invalidDatabase[0].groups[4].services[0].confidenceLevel = "maybe" as never;
+
+    const result = validateBroadcastDatabase(invalidDatabase);
+    const codes = result.errors.map((error) => error.code);
+
+    expect(result.isValid).toBe(false);
+    expect(codes).toEqual(expect.arrayContaining([
+      "duplicate_id",
+      "duplicate_mapping",
+      "invalid_url",
+      "missing_required_field",
+      "invalid_boolean",
+      "invalid_confidence",
+    ]));
   });
 });
 

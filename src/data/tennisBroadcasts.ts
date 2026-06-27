@@ -64,6 +64,14 @@ export type TennisCountryBroadcastDatabase = TennisBroadcastCountry & {
 export type TennisBroadcastEntry = TennisBroadcastCountry &
   TennisTournamentGroup &
   TennisBroadcastService & {
+    countrySlug: string;
+    tournamentSlug: TennisTournamentId;
+    officialUrl: string;
+    streamingService: string;
+    free: boolean;
+    subscriptionRequired: boolean;
+    confidence: TennisBroadcastConfidence;
+    notes?: string;
     officialSourceUrls: string[];
     priceNote: string;
     monthlyPrice?: number;
@@ -100,6 +108,17 @@ export type TennisCountryServiceOption = {
 };
 
 export const TENNIS_BROADCAST_LAST_VERIFIED = "2026-06-21";
+
+const VALID_TENNIS_TOURNAMENT_IDS: TennisTournamentId[] = [
+  "australian-open",
+  "roland-garros",
+  "wimbledon",
+  "us-open",
+  "atp-tour",
+  "wta-tour",
+];
+
+const VALID_TENNIS_BROADCAST_CONFIDENCE: TennisBroadcastConfidence[] = ["confirmed", "needs_check", "partial"];
 
 export const tennisTournamentGroups: TennisTournamentGroup[] = [
   { tournamentId: "australian-open", tournamentName: "Australian Open", eventType: "grand_slam" },
@@ -248,6 +267,11 @@ const nowIeLink = { label: "NOW Ireland Sports membership price", url: officialS
 const tennisChannelLink = { label: "Tennis Channel", url: officialSources.tennisChannel };
 const tennisChannelPriceLink = { label: "Tennis Channel subscription price", url: officialSources.tennisChannelPrice };
 
+const countrySlugOverrides: Record<string, string> = {
+  GB: "uk",
+  US: "usa",
+};
+
 export const tennisBroadcastDatabase: TennisCountryBroadcastDatabase[] = [
   country("Poland", "PL", [
     slamService("australian-open", { broadcasterName: "Eurosport", streamingServiceName: "Max / Eurosport sports access", extraLinks: [eurosportLink], coverageNotes: "Confirm Poland in the Australian Open directory, then check the local Max or Eurosport sports package.", confidenceLevel: "needs_check", isFree: false, requiresSubscription: true, replaysAvailable: "unknown", englishCommentary: "unknown", supportedDevices: defaultDevices }),
@@ -352,15 +376,27 @@ export const tennisBroadcastCountries: TennisBroadcastCountry[] = tennisBroadcas
   countryCode,
 }));
 
+function countrySlugFor(country: TennisBroadcastCountry) {
+  return countrySlugOverrides[country.countryCode] ?? normalizeCoverageQuery(country.countryName);
+}
+
 export const tennisBroadcasts: TennisBroadcastEntry[] = tennisBroadcastDatabase.flatMap((countryItem) =>
   countryItem.groups.flatMap((group) =>
     group.services.map((serviceItem) => ({
       countryName: countryItem.countryName,
       countryCode: countryItem.countryCode,
+      countrySlug: countrySlugFor(countryItem),
       tournamentId: group.tournamentId,
+      tournamentSlug: group.tournamentId,
       tournamentName: group.tournamentName,
       eventType: group.eventType,
       ...serviceItem,
+      officialUrl: serviceItem.officialWebsiteUrl,
+      streamingService: serviceItem.streamingServiceName,
+      free: serviceItem.isFree,
+      subscriptionRequired: serviceItem.requiresSubscription,
+      confidence: serviceItem.confidenceLevel,
+      notes: serviceItem.coverageNotes,
       officialSourceUrls: serviceItem.officialLinks.map((link) => link.url),
       priceNote: serviceItem.price.label,
       monthlyPrice: serviceItem.price.monthlyPrice,
@@ -368,6 +404,201 @@ export const tennisBroadcasts: TennisBroadcastEntry[] = tennisBroadcastDatabase.
     })),
   ),
 );
+
+export type NormalizedBroadcastRecord = {
+  id: string;
+  countryCode: string;
+  countryName: string;
+  countrySlug: string;
+  tournamentSlug: TennisTournamentId;
+  tournamentName: string;
+  broadcasterName: string;
+  officialUrl: string;
+  streamingService: string;
+  free: boolean;
+  subscriptionRequired: boolean;
+  confidence: TennisBroadcastConfidence;
+  lastVerified: string;
+  notes?: string;
+};
+
+export type BroadcastValidationErrorCode =
+  | "duplicate_country"
+  | "duplicate_id"
+  | "duplicate_mapping"
+  | "invalid_boolean"
+  | "invalid_confidence"
+  | "invalid_country_code"
+  | "invalid_slug"
+  | "invalid_tournament_slug"
+  | "invalid_url"
+  | "missing_required_field";
+
+export type BroadcastValidationError = {
+  code: BroadcastValidationErrorCode;
+  path: string;
+  message: string;
+  value?: unknown;
+};
+
+export type BroadcastValidationResult = {
+  isValid: boolean;
+  errors: BroadcastValidationError[];
+  warnings: BroadcastValidationError[];
+  recordCount: number;
+};
+
+function normalizedRecordId(record: Omit<NormalizedBroadcastRecord, "id">) {
+  return [
+    record.countrySlug,
+    record.tournamentSlug,
+    getBroadcasterSlug(record.broadcasterName),
+    getBroadcasterSlug(record.streamingService),
+  ].join(":");
+}
+
+export function getNormalizedBroadcastRecords(database: TennisCountryBroadcastDatabase[] = tennisBroadcastDatabase): NormalizedBroadcastRecord[] {
+  return database.flatMap((countryItem) =>
+    countryItem.groups.flatMap((group) =>
+      group.services.map((serviceItem) => {
+        const record = {
+          countryCode: countryItem.countryCode,
+          countryName: countryItem.countryName,
+          countrySlug: countrySlugFor(countryItem),
+          tournamentSlug: group.tournamentId,
+          tournamentName: group.tournamentName,
+          broadcasterName: serviceItem.broadcasterName,
+          officialUrl: serviceItem.officialWebsiteUrl,
+          streamingService: serviceItem.streamingServiceName,
+          free: serviceItem.isFree,
+          subscriptionRequired: serviceItem.requiresSubscription,
+          confidence: serviceItem.confidenceLevel,
+          lastVerified: serviceItem.lastVerified,
+          notes: serviceItem.coverageNotes || undefined,
+        };
+
+        return { id: normalizedRecordId(record), ...record };
+      }),
+    ),
+  );
+}
+
+function isValidUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function pushValidationError(errors: BroadcastValidationError[], code: BroadcastValidationErrorCode, path: string, message: string, value?: unknown) {
+  errors.push({ code, path, message, value });
+}
+
+export function validateBroadcastDatabase(database: TennisCountryBroadcastDatabase[] = tennisBroadcastDatabase): BroadcastValidationResult {
+  const errors: BroadcastValidationError[] = [];
+  const warnings: BroadcastValidationError[] = [];
+  const countryKeys = new Set<string>();
+  const ids = new Set<string>();
+  const mappings = new Set<string>();
+  let recordCount = 0;
+
+  database.forEach((countryItem, countryIndex) => {
+    const countryPath = `countries[${countryIndex}]`;
+    const countrySlug = countrySlugFor(countryItem);
+    const countryKey = `${countryItem.countryCode}:${countrySlug}`;
+
+    if (!countryItem.countryCode) pushValidationError(errors, "missing_required_field", `${countryPath}.countryCode`, "Country code is required.");
+    if (!countryItem.countryName) pushValidationError(errors, "missing_required_field", `${countryPath}.countryName`, "Country name is required.");
+    if (countryItem.countryCode && !/^[A-Z]{2}$/.test(countryItem.countryCode)) {
+      pushValidationError(errors, "invalid_country_code", `${countryPath}.countryCode`, "Country code must be a two-letter uppercase ISO-style code.", countryItem.countryCode);
+    }
+    if (countrySlug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(countrySlug)) {
+      pushValidationError(errors, "invalid_slug", `${countryPath}.countrySlug`, "Country slug must be lowercase kebab case.", countrySlug);
+    }
+    if (countryKeys.has(countryKey)) {
+      pushValidationError(errors, "duplicate_country", countryPath, "Duplicate country code and slug combination.", countryKey);
+    }
+    countryKeys.add(countryKey);
+
+    countryItem.groups.forEach((group, groupIndex) => {
+      const groupPath = `${countryPath}.groups[${groupIndex}]`;
+
+      if (!VALID_TENNIS_TOURNAMENT_IDS.includes(group.tournamentId)) {
+        pushValidationError(errors, "invalid_tournament_slug", `${groupPath}.tournamentId`, "Tournament slug is not supported.", group.tournamentId);
+      }
+      if (!group.tournamentName) pushValidationError(errors, "missing_required_field", `${groupPath}.tournamentName`, "Tournament name is required.");
+
+      group.services.forEach((serviceItem, serviceIndex) => {
+        const servicePath = `${groupPath}.services[${serviceIndex}]`;
+        const record = {
+          countryCode: countryItem.countryCode,
+          countryName: countryItem.countryName,
+          countrySlug,
+          tournamentSlug: group.tournamentId,
+          tournamentName: group.tournamentName,
+          broadcasterName: serviceItem.broadcasterName,
+          officialUrl: serviceItem.officialWebsiteUrl,
+          streamingService: serviceItem.streamingServiceName,
+          free: serviceItem.isFree,
+          subscriptionRequired: serviceItem.requiresSubscription,
+          confidence: serviceItem.confidenceLevel,
+          lastVerified: serviceItem.lastVerified,
+          notes: serviceItem.coverageNotes || undefined,
+        };
+        const id = normalizedRecordId(record);
+        const mapping = `${countrySlug}:${group.tournamentId}:${getBroadcasterSlug(serviceItem.broadcasterName)}:${getBroadcasterSlug(serviceItem.streamingServiceName)}`;
+        recordCount += 1;
+
+        if (ids.has(id)) pushValidationError(errors, "duplicate_id", servicePath, "Duplicate normalized broadcast record ID.", id);
+        ids.add(id);
+        if (mappings.has(mapping)) pushValidationError(errors, "duplicate_mapping", servicePath, "Duplicate country/tournament/broadcaster/streaming mapping.", mapping);
+        mappings.add(mapping);
+
+        if (!record.countryCode) pushValidationError(errors, "missing_required_field", `${servicePath}.countryCode`, "Normalized countryCode is required.");
+        if (!record.countryName) pushValidationError(errors, "missing_required_field", `${servicePath}.countryName`, "Normalized countryName is required.");
+        if (!record.countrySlug) pushValidationError(errors, "missing_required_field", `${servicePath}.countrySlug`, "Normalized countrySlug is required.");
+        if (!record.tournamentSlug) pushValidationError(errors, "missing_required_field", `${servicePath}.tournamentSlug`, "Normalized tournamentSlug is required.");
+        if (!record.tournamentName) pushValidationError(errors, "missing_required_field", `${servicePath}.tournamentName`, "Normalized tournamentName is required.");
+        if (!record.broadcasterName) pushValidationError(errors, "missing_required_field", `${servicePath}.broadcasterName`, "Broadcaster name is required.");
+        if (!record.officialUrl) pushValidationError(errors, "missing_required_field", `${servicePath}.officialUrl`, "Official URL is required.");
+        if (!record.streamingService) pushValidationError(errors, "missing_required_field", `${servicePath}.streamingService`, "Streaming service is required.");
+        if (!record.confidence) pushValidationError(errors, "missing_required_field", `${servicePath}.confidence`, "Confidence is required.");
+        if (!record.lastVerified) pushValidationError(errors, "missing_required_field", `${servicePath}.lastVerified`, "Last verified date is required.");
+
+        if (record.officialUrl && !isValidUrl(record.officialUrl)) {
+          pushValidationError(errors, "invalid_url", `${servicePath}.officialUrl`, "Official URL must be a valid HTTP or HTTPS URL.", record.officialUrl);
+        }
+        const officialLinks = Array.isArray(serviceItem.officialLinks) ? serviceItem.officialLinks : [];
+        if (!officialLinks.length) {
+          pushValidationError(errors, "missing_required_field", `${servicePath}.officialLinks`, "At least one official link is required.");
+        }
+        officialLinks.forEach((link, linkIndex) => {
+          if (!link.url || !isValidUrl(link.url)) {
+            pushValidationError(errors, "invalid_url", `${servicePath}.officialLinks[${linkIndex}].url`, "Official link URL must be valid.", link.url);
+          }
+        });
+        if (!VALID_TENNIS_BROADCAST_CONFIDENCE.includes(record.confidence)) {
+          pushValidationError(errors, "invalid_confidence", `${servicePath}.confidence`, "Confidence is not supported.", record.confidence);
+        }
+        if (typeof record.free !== "boolean") {
+          pushValidationError(errors, "invalid_boolean", `${servicePath}.free`, "Free flag must be boolean.", record.free);
+        }
+        if (typeof record.subscriptionRequired !== "boolean") {
+          pushValidationError(errors, "invalid_boolean", `${servicePath}.subscriptionRequired`, "Subscription-required flag must be boolean.", record.subscriptionRequired);
+        }
+      });
+    });
+  });
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    recordCount,
+  };
+}
 
 export function getCountryBroadcastData(countryCode: string) {
   return tennisBroadcastDatabase.find((countryItem) => countryItem.countryCode === countryCode);
@@ -648,11 +879,6 @@ export type CanIWatchCoverageSummary = {
   warning?: string;
 };
 
-const countrySlugOverrides: Record<string, string> = {
-  GB: "uk",
-  US: "usa",
-};
-
 const countryAliases: Record<string, string> = {
   uk: "uk",
   "united-kingdom": "uk",
@@ -664,6 +890,9 @@ const countryAliases: Record<string, string> = {
   "u-s-a": "usa",
   "united-states": "usa",
   "united-states-of-america": "usa",
+  america: "usa",
+  czechia: "czechia",
+  "czech-republic": "czechia",
 };
 
 const popularPlayerTourMap: Record<string, TennisTournamentId[]> = {
@@ -694,7 +923,10 @@ const popularPlayerTourMap: Record<string, TennisTournamentId[]> = {
 function normalizeCoverageQuery(value: string) {
   return value
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/,/g, "")
+    .replace(/\./g, "")
     .replace(/\//g, "-")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
@@ -718,17 +950,24 @@ export function normalizeCountry(value: string) {
 export function normalizeTournament(value: string): TennisTournamentId | undefined {
   const normalized = normalizeCoverageQuery(value);
   const aliases: Record<string, TennisTournamentId> = {
+    ao: "australian-open",
     "australian-open": "australian-open",
     "french-open": "roland-garros",
+    rg: "roland-garros",
     "roland-garros": "roland-garros",
     "roland-garros-french-open": "roland-garros",
     wimbledon: "wimbledon",
+    "wimbledon-championships": "wimbledon",
     "us-open": "us-open",
     "u-s-open": "us-open",
     atp: "atp-tour",
     "atp-tour": "atp-tour",
+    "atp-finals": "atp-tour",
+    "nitto-finals": "atp-tour",
+    "nitto-atp-finals": "atp-tour",
     wta: "wta-tour",
     "wta-tour": "wta-tour",
+    "wta-finals": "wta-tour",
   };
 
   return aliases[normalized] ?? tennisTournamentGroups.find((group) => normalizeCoverageQuery(group.tournamentName) === normalized)?.tournamentId;
@@ -847,4 +1086,16 @@ export function getCanIWatchQueryOptions() {
   }));
 
   return [...tournamentOptions, ...playerOptions];
+}
+
+if (typeof process !== "undefined" && process.env.NODE_ENV !== "production") {
+  const validation = validateBroadcastDatabase();
+
+  if (!validation.isValid || validation.warnings.length > 0) {
+    const issues = [...validation.errors, ...validation.warnings]
+      .map((issue) => `${issue.code} at ${issue.path}: ${issue.message}`)
+      .join("\n");
+
+    console.warn(`[tennisBroadcasts] Broadcast database validation found ${validation.errors.length} error(s) and ${validation.warnings.length} warning(s).\n${issues}`);
+  }
 }
