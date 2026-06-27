@@ -6,6 +6,7 @@ import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
+import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
 export const revalidate = 3600;
 
 type Match = {
@@ -279,6 +280,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-streaming",
     "/start-here",
     "/best-ways-to-watch-tennis-online",
+    ...WIMBLEDON_COUNTRY_SLUGS.map((country) => `/how-to-watch-wimbledon-in-${country}`),
   ].map((path) => {
     const livePages = ["", "/live-tennis", "/today"];
 
