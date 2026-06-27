@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabase } from "@/app/lib/supabase";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const dynamic = "force-dynamic";
 
 type Subscription = {
@@ -30,6 +28,16 @@ type PlayerDigest = {
   upcoming: Match[];
   results: Match[];
 };
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured. Digest was not sent.");
+  }
+
+  return new Resend(apiKey);
+}
 
 function isBrowserProbe(request: Request) {
   const userAgent = request.headers.get("user-agent") || "";
@@ -273,6 +281,8 @@ export async function GET(request: Request) {
 
       return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
     }
+
+    const resend = getResendClient();
 
     const { data: subscriptions, error } = await supabase
       .from("player_subscriptions")
