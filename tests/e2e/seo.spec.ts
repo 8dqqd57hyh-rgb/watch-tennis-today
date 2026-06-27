@@ -87,6 +87,36 @@ const wimbledonCountryLandingPages = [
     h1: "How to Watch Wimbledon in Poland",
     anchorText: "How to watch Wimbledon in Poland",
   },
+  {
+    path: "/how-to-watch-wimbledon-in-germany",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-germany",
+    h1: "How to Watch Wimbledon in Germany",
+    anchorText: "How to watch Wimbledon in Germany",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-france",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-france",
+    h1: "How to Watch Wimbledon in France",
+    anchorText: "Wimbledon TV and streaming in France",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-spain",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-spain",
+    h1: "How to Watch Wimbledon in Spain",
+    anchorText: "How to watch Wimbledon in Spain",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-italy",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-italy",
+    h1: "How to Watch Wimbledon in Italy",
+    anchorText: "Wimbledon TV and streaming in Italy",
+  },
+  {
+    path: "/how-to-watch-wimbledon-in-india",
+    canonical: "https://watchtennistoday.com/how-to-watch-wimbledon-in-india",
+    h1: "How to Watch Wimbledon in India",
+    anchorText: "How to watch Wimbledon in India",
+  },
 ];
 
 const wimbledonCountryLinkSources = [

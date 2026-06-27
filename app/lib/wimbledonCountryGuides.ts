@@ -13,6 +13,11 @@ export const WIMBLEDON_COUNTRY_SLUGS = [
   "canada",
   "australia",
   "poland",
+  "germany",
+  "france",
+  "spain",
+  "italy",
+  "india",
 ] as const;
 
 export type WimbledonCountrySlug = (typeof WIMBLEDON_COUNTRY_SLUGS)[number];
@@ -232,6 +237,186 @@ const countryCopy: Record<WimbledonCountrySlug, CountryCopy> = {
         question: "What time is Wimbledon on in Poland?",
         answer:
           "Poland is normally one hour ahead of London during Wimbledon. Convert the official order of play and re-check if earlier matches run long.",
+      },
+    ],
+  },
+  germany: {
+    displayCountry: "Germany",
+    title: "How to Watch Wimbledon in Germany | TV and Streaming Guide",
+    description:
+      "How to watch Wimbledon in Germany with Prime Video checks, German streaming notes, schedule links and time zone planning.",
+    ogTitle: "How to Watch Wimbledon in Germany",
+    ogDescription:
+      "Germany-specific Wimbledon viewing notes for Prime Video, official broadcaster checks and order-of-play planning.",
+    intro:
+      "German viewers should treat Wimbledon as a separate Grand Slam rights window. Start with Prime Video and the official Wimbledon coverage page, then confirm whether the selected court, replay option and subscription terms fit the match you want.",
+    primaryViewingNote:
+      "The stored Germany Wimbledon row points to Prime Video. Sky Deutschland and Tennis TV can matter for other tennis weeks, but Wimbledon video rights should be checked separately.",
+    timezoneNote:
+      "Germany is one hour ahead of London during Wimbledon, so add one hour to the UK order of play as a quick planning check. Long matches and weather can still shift the real start.",
+    broadcasterSummary:
+      "For Germany, the reviewed Wimbledon row points to Prime Video, while Eurosport/discovery+ is more relevant to other Grand Slam checks and Sky Deutschland to tour-level coverage.",
+    verificationNote:
+      "Compare the Wimbledon order of play with Prime Video listings before match time. If a match changes courts, re-check whether the new court is included in the available feed.",
+    faq: [
+      {
+        question: "Who shows Wimbledon in Germany?",
+        answer:
+          "The stored broadcaster data points German viewers to Prime Video for Wimbledon. Confirm the current Prime Video listing and official Wimbledon broadcaster page before match week.",
+      },
+      {
+        question: "Does Tennis TV show Wimbledon in Germany?",
+        answer:
+          "No. Tennis TV is for ATP Tour coverage and Grand Slam rights such as Wimbledon are separate in Germany.",
+      },
+      {
+        question: "What time is Wimbledon on in Germany?",
+        answer:
+          "Germany is normally one hour ahead of London during Wimbledon. Convert the official order of play and re-check if earlier matches run long.",
+      },
+    ],
+  },
+  france: {
+    displayCountry: "France",
+    title: "How to Watch Wimbledon in France | TV and Streaming Guide",
+    description:
+      "How to watch Wimbledon in France with beIN Sports checks, French streaming notes, schedule links and official broadcaster guidance.",
+    ogTitle: "How to Watch Wimbledon in France",
+    ogDescription:
+      "France-specific Wimbledon broadcaster checks, beIN Sports streaming notes and order-of-play planning links.",
+    intro:
+      "French viewers should separate Wimbledon from Roland Garros and weekly tour coverage. Start with beIN Sports France and the official Wimbledon broadcaster list, then verify the live court and app access.",
+    primaryViewingNote:
+      "The stored France Wimbledon row points to beIN Sports France and beIN Sports Connect or TV-provider access. Confirm the current package before relying on it for a specific court.",
+    timezoneNote:
+      "France is one hour ahead of London during Wimbledon, so the UK order of play usually converts by adding one hour. Tennis delays can still move the actual start.",
+    broadcasterSummary:
+      "For France, Wimbledon is stored as a beIN Sports France check. France Televisions and Prime Video are more relevant to Roland Garros, while Tennis TV remains separate ATP coverage.",
+    verificationNote:
+      "Check the Wimbledon order of play, then compare it with beIN Sports France listings and your provider access. Re-check close to start time if court assignments change.",
+    faq: [
+      {
+        question: "Who shows Wimbledon in France?",
+        answer:
+          "The stored Wimbledon broadcaster row points to beIN Sports France. Verify current beIN Sports access and the official Wimbledon broadcaster page before match time.",
+      },
+      {
+        question: "Is Wimbledon on France Televisions?",
+        answer:
+          "France Televisions is a key Roland Garros route, but the stored Wimbledon row points to beIN Sports France. Treat the two Grand Slams as separate rights windows.",
+      },
+      {
+        question: "What time is Wimbledon on in France?",
+        answer:
+          "France is normally one hour ahead of London during Wimbledon. Convert the official order of play and allow for match delays.",
+      },
+    ],
+  },
+  spain: {
+    displayCountry: "Spain",
+    title: "How to Watch Wimbledon in Spain | TV and Streaming Guide",
+    description:
+      "How to watch Wimbledon in Spain with Movistar Plus+ checks, Spanish streaming notes, schedule links and official broadcaster guidance.",
+    ogTitle: "How to Watch Wimbledon in Spain",
+    ogDescription:
+      "Spain-specific Wimbledon broadcaster checks, Movistar Plus+ streaming notes and order-of-play planning links.",
+    intro:
+      "Spanish viewers should start with the tournament rights holder rather than the player name. For Wimbledon, check Movistar Plus+ and official Wimbledon listings before assuming a court or replay is included.",
+    primaryViewingNote:
+      "The stored Spain Wimbledon row points to Movistar Plus+. Eurosport, Tennis TV and other services can matter in different tennis windows, but Grand Slam rights are separate.",
+    timezoneNote:
+      "Mainland Spain is one hour ahead of London during Wimbledon. Viewers in the Canary Islands should use local time and check whether late court changes affect the listed session.",
+    broadcasterSummary:
+      "For Spain, the Wimbledon row points to Movistar Plus+. Tennis TV can help with ATP weeks, while Grand Slam coverage should be confirmed from tournament and local provider listings.",
+    verificationNote:
+      "Compare the Wimbledon order of play with Movistar Plus+ listings and your package access. Re-check if a Spanish player match moves to a different court.",
+    faq: [
+      {
+        question: "Who shows Wimbledon in Spain?",
+        answer:
+          "The stored broadcaster data points Spanish viewers to Movistar Plus+ for Wimbledon. Confirm the current plan and official Wimbledon broadcaster page before match week.",
+      },
+      {
+        question: "Does Tennis TV show Wimbledon in Spain?",
+        answer:
+          "No. Tennis TV covers ATP Tour events, while Wimbledon uses separate Grand Slam rights in Spain.",
+      },
+      {
+        question: "What time is Wimbledon on in Spain?",
+        answer:
+          "Mainland Spain is normally one hour ahead of London during Wimbledon. Convert the order of play and watch for court-order changes.",
+      },
+    ],
+  },
+  italy: {
+    displayCountry: "Italy",
+    title: "How to Watch Wimbledon in Italy | TV and Streaming Guide",
+    description:
+      "How to watch Wimbledon in Italy with Sky Sport and NOW checks, Italian streaming notes, schedule links and time zone planning.",
+    ogTitle: "How to Watch Wimbledon in Italy",
+    ogDescription:
+      "Italy-specific Wimbledon broadcaster checks, Sky Sport/NOW streaming notes and order-of-play planning links.",
+    intro:
+      "Italian Wimbledon viewing should start with the Grand Slam rights path, not the normal tour calendar. Check Sky Sport, NOW or Sky Go availability against the official Wimbledon order of play before the session starts.",
+    primaryViewingNote:
+      "The stored Italy Wimbledon row points to Sky Sport with NOW or Sky Go where available. SuperTennis and Tennis TV can matter in other event windows, but Wimbledon needs its own check.",
+    timezoneNote:
+      "Italy is one hour ahead of London during Wimbledon, so add one hour to the UK order of play as a quick planning guide. Match sequence and weather can still change the live window.",
+    broadcasterSummary:
+      "For Italy, the Wimbledon row points to Sky Sport and NOW/Sky Go checks. Eurosport is more relevant to some other Slams, while SuperTennis and Tennis TV apply in different tour contexts.",
+    verificationNote:
+      "Open the Wimbledon order of play, then verify Sky Sport, NOW or Sky Go coverage for the exact court. Re-check close to start time if the match follows another long match.",
+    faq: [
+      {
+        question: "Who shows Wimbledon in Italy?",
+        answer:
+          "The stored Wimbledon row points to Sky Sport, with NOW or Sky Go where available. Verify the current Italian package before match time.",
+      },
+      {
+        question: "Is Wimbledon on SuperTennis in Italy?",
+        answer:
+          "SuperTennis can matter for other tennis rights, but the stored Wimbledon row points to Sky Sport. Check the official Wimbledon broadcaster list for current confirmation.",
+      },
+      {
+        question: "What time is Wimbledon on in Italy?",
+        answer:
+          "Italy is normally one hour ahead of London during Wimbledon. Convert the order of play and re-check if earlier matches run long.",
+      },
+    ],
+  },
+  india: {
+    displayCountry: "India",
+    title: "How to Watch Wimbledon in India | TV and Streaming Guide",
+    description:
+      "How to watch Wimbledon in India with Sony Sports and SonyLIV checks, Indian streaming notes, schedule links and time zone planning.",
+    ogTitle: "How to Watch Wimbledon in India",
+    ogDescription:
+      "India-specific Wimbledon broadcaster checks, Sony Sports/SonyLIV notes and order-of-play planning links.",
+    intro:
+      "Indian viewers should plan Wimbledon around both rights and time zones. Start with Sony Sports or SonyLIV checks, then compare the selected match with the official order of play before staying up for a live session.",
+    primaryViewingNote:
+      "The stored India Wimbledon row points to Sony Sports or SonyLIV checks and the current official partner. Verify app access, channel coverage and replay availability before match week.",
+    timezoneNote:
+      "India is several hours ahead of London, so Wimbledon afternoon and evening sessions can run late at night in IST. Convert the order of play carefully and check whether the match may spill past midnight locally.",
+    broadcasterSummary:
+      "For India, the Wimbledon route is stored as a Sony Sports/SonyLIV check. Tennis TV can matter for ATP events, but Grand Slam video rights are separate.",
+    verificationNote:
+      "Compare the Wimbledon order of play with Sony Sports, SonyLIV or the current official partner. If a match is moved to another court, verify whether that feed is included.",
+    faq: [
+      {
+        question: "Who shows Wimbledon in India?",
+        answer:
+          "The stored broadcaster data points Indian viewers to Sony Sports or SonyLIV checks for Wimbledon. Confirm the current official partner and app access before match time.",
+      },
+      {
+        question: "Does Tennis TV show Wimbledon in India?",
+        answer:
+          "No. Tennis TV is an ATP Tour service and Wimbledon uses separate Grand Slam rights in India.",
+      },
+      {
+        question: "What time is Wimbledon on in India?",
+        answer:
+          "Wimbledon is scheduled in London time, which means many matches fall in the evening or late night in India. Convert the official order of play to IST.",
       },
     ],
   },
