@@ -17,6 +17,8 @@ export default function WhoPlaysTennisTodayPage() {
       title="Who Plays Tennis Today? ATP, WTA and Grand Slam Match Guide"
       description="A player-focused daily page for checking which names are on court today and which matches are worth following."
       intent="Use this page when your first question is about the players: who is scheduled, which tournament they are playing and where to continue with legal viewing checks."
+      pagePath="/who-plays-tennis-today"
+      breadcrumbLabel="Who Plays Tennis Today"
       mode="schedule"
       editorialSections={[
         {

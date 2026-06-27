@@ -43,6 +43,66 @@ type Match = {
 const MATCH_DAY_TIME_ZONE = "Europe/Warsaw";
 const MATCH_SECTION_DISPLAY_LIMIT = 24;
 const RANKED_MATCH_DISPLAY_LIMIT = 36;
+const PAGE_URL = "https://watchtennistoday.com/best-tennis-matches-today";
+
+const faq = [
+  {
+    question: "How are the best tennis matches today selected?",
+    answer:
+      "The page prioritizes matches with live status, notable players, important tournaments, reliable match metadata and useful follow-up links.",
+  },
+  {
+    question: "Does this page claim a match is live without data?",
+    answer:
+      "No. A match is labeled live only when the match feed marks its status as live. Otherwise it is shown as scheduled, finished or unavailable.",
+  },
+  {
+    question: "Can I watch the matches directly on Watch Tennis Today?",
+    answer:
+      "No. Watch Tennis Today does not host streams. It points users toward match context, official broadcasters and legal viewing guides.",
+  },
+];
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Best Tennis Matches Today",
+    description: metadata.description,
+    url: PAGE_URL,
+    dateModified: new Date().toISOString(),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://watchtennistoday.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Best Tennis Matches Today",
+        item: PAGE_URL,
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  },
+];
 
 async function getMatches(): Promise<Match[]> {
   return (await getServerMatchesWindow({
@@ -286,7 +346,7 @@ function TodayMatchesBoard({ matches }: { matches: Match[] }) {
               <p className="mt-1 text-3xl font-black text-white">{counts.total}</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-black p-4">
-              <p className="text-xs font-black uppercase text-zinc-500">Live</p>
+              <p className="text-xs font-black uppercase text-zinc-500">Marked live</p>
               <p className="mt-1 text-3xl font-black text-white">{counts.live}</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-black p-4">
@@ -356,6 +416,21 @@ export default async function BestTennisMatchesTodayPage() {
           <p className="max-w-3xl text-lg leading-8 text-zinc-300">
             A practical match-day hub for live tennis, today&apos;s schedule, order of play, player pages and safe legal viewing routes. If the ranked feed is empty, this page still points you to the useful places to check first.
           </p>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-zinc-400">
+            This page does not claim a match is live unless the match feed marks it live.
+          </p>
+          <p className="mt-5 text-sm font-bold text-zinc-500">
+            Last updated:{" "}
+            {new Intl.DateTimeFormat("en", {
+              timeZone: MATCH_DAY_TIME_ZONE,
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              timeZoneName: "short",
+            }).format(new Date())}
+          </p>
         </section>
 
         <TodayMatchesBoard matches={matches} />
@@ -382,6 +457,35 @@ export default async function BestTennisMatchesTodayPage() {
             </p>
           </div>
         </section>
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="mb-4 text-3xl font-black">FAQ</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {faq.map((item) => (
+              <article key={item.question} className="rounded-2xl border border-zinc-800 bg-black p-5">
+                <h3 className="font-black">{item.question}</h3>
+                <p className="mt-3 text-sm leading-6 text-zinc-400">{item.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6" data-testid="related-links">
+          <h2 className="mb-4 text-2xl font-black">Related tennis pages</h2>
+          <div className="grid gap-3 md:grid-cols-3">
+            <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">
+              Tennis schedule today
+            </Link>
+            <Link href="/tennis-order-of-play-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">
+              Order of play today
+            </Link>
+            <Link href="/watch-tennis-live-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black hover:border-green-400">
+              Watch tennis live today
+            </Link>
+          </div>
+        </section>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </div>
     </main>
   );

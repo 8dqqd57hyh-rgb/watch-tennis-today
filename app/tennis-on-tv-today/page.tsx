@@ -17,6 +17,8 @@ export default function TennisOnTvTodayPage() {
       title="Tennis on TV Today: Channels, Broadcast Windows and Legal Streams"
       description="A broadcast-focused daily guide for checking whether today's tennis is on TV, streaming-only, replay-only or unavailable in your country."
       intent="Use this page to connect today's match list with official broadcaster checks, channel schedules and legal streaming options before play starts."
+      pagePath="/tennis-on-tv-today"
+      breadcrumbLabel="Tennis on TV Today"
       mode="schedule"
       editorialSections={[
         {

@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     "Understand today's tennis order of play, court sequence, match timing changes and legal viewing checks.",
   robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://watchtennistoday.com/tennis-order-of-play-today",
+  },
 };
 
 export default function Page() {
@@ -17,7 +20,11 @@ export default function Page() {
       title="Tennis Order of Play Today: Courts, Match Timing & Viewing Guide"
       description="A court-sequence guide for understanding how today's matches are placed, delayed and verified before viewing."
       intent="Use this page when you care about match order, court movement and why a listed time can change after the day begins."
+      pagePath="/tennis-order-of-play-today"
+      breadcrumbLabel="Tennis Order of Play Today"
       mode="order-of-play"
+      fallbackHeading="No confirmed order-of-play feed is available right now"
+      fallbackBody="The match feed is not returning current court-sequence data at this moment. This page keeps the order-of-play explanation visible and avoids inventing courts or start times."
       editorialSections={[
         {
           heading: "Court sequence matters",

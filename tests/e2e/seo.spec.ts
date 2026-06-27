@@ -23,6 +23,39 @@ const canonicalPlayerSlugCases = [
   { path: "/player/sinner-jannik", canonical: "https://watchtennistoday.com/player/jannik-sinner" },
 ];
 
+const dailyLandingPages = [
+  {
+    path: "/tennis-schedule-today",
+    canonical: "https://watchtennistoday.com/tennis-schedule-today",
+    h1: "Tennis Schedule Today",
+  },
+  {
+    path: "/tennis-schedule-tomorrow",
+    canonical: "https://watchtennistoday.com/tennis-schedule-tomorrow",
+    h1: "Tennis Schedule Tomorrow",
+  },
+  {
+    path: "/tennis-results-today",
+    canonical: "https://watchtennistoday.com/tennis-results-today",
+    h1: "Tennis Results Today",
+  },
+  {
+    path: "/tennis-order-of-play-today",
+    canonical: "https://watchtennistoday.com/tennis-order-of-play-today",
+    h1: "Tennis Order of Play Today",
+  },
+  {
+    path: "/best-tennis-matches-today",
+    canonical: "https://watchtennistoday.com/best-tennis-matches-today",
+    h1: "Best Tennis Matches Today",
+  },
+  {
+    path: "/watch-tennis-live-today",
+    canonical: "https://watchtennistoday.com/watch-tennis-live-today",
+    h1: "Watch Tennis Live Today",
+  },
+];
+
 function canonicalHref(html: string) {
   for (const [, tag] of html.matchAll(/<link\b([^>]*)>/gi)) {
     if (!/\brel=["']canonical["']/i.test(tag)) continue;
@@ -39,6 +72,12 @@ function metaContent(html: string, name: string) {
   }
 
   return undefined;
+}
+
+function h1Text(html: string) {
+  const match = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
+
+  return match?.[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 test.describe("SEO-critical page basics", () => {
@@ -131,6 +170,25 @@ test.describe("SEO-critical page basics", () => {
 
     expect(layoutSource).not.toMatch(/alternates\s*:\s*\{[\s\S]*canonical\s*:\s*["']https:\/\/watchtennistoday\.com["']/);
   });
+
+  for (const { path, canonical, h1 } of dailyLandingPages) {
+    test(`${path} has improved SEO landing-page signals`, async ({ request }) => {
+      const response = await request.get(path, { failOnStatusCode: false });
+      const html = await response.text();
+
+      expect(response.status()).toBe(200);
+      expect(canonicalHref(html)).toBe(canonical);
+      expect(h1Text(html)).toContain(h1);
+      expect(metaContent(html, "description")?.length || 0).toBeGreaterThan(80);
+      expect(html).toContain("Last updated:");
+      expect(html).toContain("FAQ");
+      expect(html).toContain("FAQPage");
+      expect(html).toContain("BreadcrumbList");
+      expect(html).toContain('data-testid="related-links"');
+      expect(html.toLowerCase()).not.toContain("live tennis matches right now");
+      expect(html).toContain("does not claim a match is live");
+    });
+  }
 
   test("Wimbledon order of play page renders key SEO content and links", async ({ request }) => {
     const response = await request.get("/wimbledon-order-of-play", {

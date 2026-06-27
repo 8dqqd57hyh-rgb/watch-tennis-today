@@ -4,9 +4,71 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Watch Tennis Live Today | Legal ATP & WTA Viewing Guide",
   description:
-    "Find today&apos;s live tennis matches and learn how to verify legal ATP, WTA, Grand Slam and Challenger viewing options.",
+    "Find today's tennis match status and learn how to verify legal ATP, WTA, Grand Slam and Challenger viewing options.",
   robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://watchtennistoday.com/watch-tennis-live-today",
+  },
 };
+
+const faq = [
+  {
+    question: "Does Watch Tennis Today show live streams?",
+    answer:
+      "No. Watch Tennis Today does not host, embed or retransmit live tennis. It helps users find match context and legal viewing routes.",
+  },
+  {
+    question: "How do I know whether a tennis match is actually live?",
+    answer:
+      "Check the live match page or official scoring source. This guide does not claim a match is live unless the match data marks it live.",
+  },
+  {
+    question: "Can every tennis match be watched legally online?",
+    answer:
+      "No. Some matches have score coverage only, and video rights vary by tournament, court and country.",
+  },
+];
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Watch Tennis Live Today",
+    description: metadata.description,
+    url: "https://watchtennistoday.com/watch-tennis-live-today",
+    dateModified: new Date().toISOString(),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://watchtennistoday.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Watch Tennis Live Today",
+        item: "https://watchtennistoday.com/watch-tennis-live-today",
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  },
+];
 
 export default function WatchTennisLiveTodayPage() {
   return (
@@ -26,6 +88,17 @@ export default function WatchTennisLiveTodayPage() {
           </p>
           <p>
             A live score does not automatically mean a live stream exists. Main courts at Grand Slams and larger ATP/WTA events usually have stronger coverage, while smaller courts, Challenger matches and some ITF events may offer scores only. Before subscribing for one match, verify the event, court, session, country and device rules on the provider&apos;s own page.
+          </p>
+          <p className="text-sm font-bold text-zinc-500">
+            Last updated:{" "}
+            {new Intl.DateTimeFormat("en", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              timeZoneName: "short",
+            }).format(new Date())}
           </p>
         </div>
 
@@ -62,9 +135,9 @@ export default function WatchTennisLiveTodayPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-10">
         <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
-          <h2 className="text-3xl font-bold">Live tennis matches right now</h2>
+          <h2 className="text-3xl font-bold">Check current tennis match status</h2>
           <p className="mt-4 max-w-2xl text-zinc-300">
-            See current live tennis matches, scores and match pages in one place. Use the live page for match discovery, then return here when you need legal viewing context.
+            Open the live tennis page to see which matches are marked live, scheduled, delayed or finished by the match feed. This guide does not label a match live unless the underlying data confirms it.
           </p>
           <Link href="/live-tennis" className="mt-6 inline-block rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400">
             View Live Matches
@@ -85,7 +158,19 @@ export default function WatchTennisLiveTodayPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20">
+      <section className="mx-auto max-w-6xl px-4 py-10">
+        <h2 className="text-3xl font-bold">FAQ</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {faq.map((item) => (
+            <article key={item.question} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+              <h3 className="font-bold">{item.question}</h3>
+              <p className="mt-3 leading-7 text-zinc-300">{item.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-20" data-testid="related-links">
         <h2 className="text-3xl font-bold">Popular Tennis Pages</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Link href="/who-plays-tennis-today" className="rounded-2xl border border-zinc-800 p-5 transition hover:bg-zinc-900">Who Plays Tennis Today</Link>
@@ -93,6 +178,8 @@ export default function WatchTennisLiveTodayPage() {
           <Link href="/official-tennis-broadcasters-guide" className="rounded-2xl border border-zinc-800 p-5 transition hover:bg-zinc-900">Official Broadcasters Guide</Link>
         </div>
       </section>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     </main>
   );
 }

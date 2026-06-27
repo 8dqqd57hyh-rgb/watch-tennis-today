@@ -15,10 +15,14 @@ type DailyTennisGuideProps = {
   title: string;
   description: string;
   intent: string;
+  pagePath: string;
+  breadcrumbLabel: string;
   mode?: "schedule" | "order-of-play" | "results";
   links?: LinkItem[];
   editorialSections?: EditorialSection[];
   faqItems?: { question: string; answer: string }[];
+  fallbackHeading?: string;
+  fallbackBody?: string;
 };
 
 type Match = {
@@ -156,10 +160,14 @@ export default async function DailyTennisGuide({
   title,
   description,
   intent,
+  pagePath,
+  breadcrumbLabel,
   mode = "schedule",
   links = [],
   editorialSections = [],
   faqItems = [],
+  fallbackHeading = "No live schedule data available right now",
+  fallbackBody = "We could not load real tennis matches from the match API at this moment. This page does not show fake fixtures, so please check again later or use official tournament schedules and broadcaster pages.",
 }: DailyTennisGuideProps) {
   const matches = await getMatches();
   const usefulMatches = getUsefulMatches(matches, mode);
@@ -169,6 +177,14 @@ export default async function DailyTennisGuide({
     month: "long",
     day: "numeric",
     year: "numeric",
+  }).format(new Date());
+  const lastUpdated = new Intl.DateTimeFormat("en", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
   }).format(new Date());
 
   const liveCount = matches.filter((match) => normalizeStatus(match.status) === "LIVE").length;
@@ -212,10 +228,30 @@ export default async function DailyTennisGuide({
     "@type": "WebPage",
     name: title,
     description,
+    url: `https://watchtennistoday.com${pagePath}`,
+    dateModified: new Date().toISOString(),
     about: [
       { "@type": "Thing", name: "Tennis schedule" },
       { "@type": "Thing", name: "Live tennis" },
       { "@type": "Thing", name: "Legal tennis streaming" },
+    ],
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://watchtennistoday.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: breadcrumbLabel,
+        item: `https://watchtennistoday.com${pagePath}`,
+      },
     ],
   };
 
@@ -229,7 +265,9 @@ export default async function DailyTennisGuide({
 
       <p className="mb-4 max-w-3xl text-lg leading-8 text-neutral-700">{description}</p>
 
-      <p className="mb-8 text-sm font-bold text-neutral-500">Updated today: {today}</p>
+      <p className="mb-8 text-sm font-bold text-neutral-500">
+        Last updated: {lastUpdated}. Date context: {today}.
+      </p>
 
       <section className="mb-8 rounded-[2rem] bg-neutral-950 p-6 text-white md:p-8">
         <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -244,11 +282,14 @@ export default async function DailyTennisGuide({
         <h2 className="mb-3 text-2xl font-black md:text-3xl">Today&apos;s tennis schedule dashboard</h2>
 
         <p className="max-w-3xl leading-7 text-neutral-300">{intent}</p>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-neutral-400">
+          This page does not claim a match is live unless the match feed marks it live.
+        </p>
 
         <div className="mt-6 grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-3xl font-black">{liveCount}</p>
-            <p className="text-sm font-bold text-neutral-300">Live now</p>
+            <p className="text-sm font-bold text-neutral-300">Marked live</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-3xl font-black">{upcomingCount}</p>
@@ -330,12 +371,12 @@ export default async function DailyTennisGuide({
           </div>
         ) : (
           <div className="rounded-3xl border bg-neutral-50 p-6">
-            <h3 className="mb-2 text-xl font-black text-neutral-950">No live schedule data available right now</h3>
-            <p className="max-w-3xl leading-7 text-neutral-700">
-              We could not load real tennis matches from the match API at this moment. This page does not show fake fixtures, so please check again later or use official tournament schedules and broadcaster pages.
-            </p>
-          </div>
-        )}
+          <h3 className="mb-2 text-xl font-black text-neutral-950">{fallbackHeading}</h3>
+          <p className="max-w-3xl leading-7 text-neutral-700">
+              {fallbackBody}
+          </p>
+        </div>
+      )}
       </section>
 
       {tournaments.length > 0 ? (
@@ -375,7 +416,7 @@ export default async function DailyTennisGuide({
       </section>
 
       {links.length > 0 ? (
-        <section className="mb-8 rounded-3xl border bg-white p-6">
+        <section className="mb-8 rounded-3xl border bg-white p-6" data-testid="related-links">
           <h2 className="mb-4 text-2xl font-black text-neutral-950">Related tennis pages</h2>
           <div className="grid gap-3 md:grid-cols-2">
             {links.map((link) => (
@@ -399,7 +440,7 @@ export default async function DailyTennisGuide({
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, faqSchema]) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([webPageSchema, breadcrumbSchema, faqSchema]) }} />
     </main>
   );
 }

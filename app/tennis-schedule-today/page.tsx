@@ -20,7 +20,11 @@ export default function Page() {
       title="Tennis Schedule Today: Live ATP, WTA & Grand Slam Matches"
       description="A complete schedule-focused page for checking today's real tennis matches before moving to official tournament and broadcaster sources."
       intent="Use this page as the broad daily dashboard: live matches, upcoming matches, tournament context and next-step links for legal viewing."
+      pagePath="/tennis-schedule-today"
+      breadcrumbLabel="Tennis Schedule Today"
       mode="schedule"
+      fallbackHeading="No confirmed tennis schedule rows are available right now"
+      fallbackBody="The match feed is not returning current schedule rows at this moment. Rather than inventing fixtures, use the explanatory guide below, check the official tournament order of play, and return later for updated match data."
       editorialSections={[
         {
           heading: "Complete daily overview",
