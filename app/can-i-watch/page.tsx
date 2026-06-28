@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import { EnrichmentQuickFacts } from "@/app/components/EnrichmentPanels";
 import { canonicalUrl } from "@/app/lib/technicalSeo";
 import { getBroadcastCountryOptions } from "@/src/data/tennisBroadcasts";
+import { getCountryEnrichment } from "@/src/lib/enrichment";
 import CanIWatchClient from "./CanIWatchClient";
 
 export const metadata: Metadata = {
@@ -35,6 +37,9 @@ const faqItems = [
 export default function CanIWatchPage() {
   const pageUrl = canonicalUrl("/can-i-watch");
   const countries = getBroadcastCountryOptions();
+  const enrichedCountries = countries.map((country) => getCountryEnrichment({ slug: country.slug, name: country.countryName }));
+  const totalBroadcasterRows = enrichedCountries.reduce((total, country) => total + country.availableBroadcasters.length, 0);
+  const totalStreamingRows = enrichedCountries.reduce((total, country) => total + country.availableStreaming.length, 0);
   const searchSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -76,6 +81,19 @@ export default function CanIWatchPage() {
             <Link href="/tennis-streaming-service-picker" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-emerald-400">Streaming picker</Link>
           </div>
         </section>
+
+        <div className="mt-8 grid gap-6">
+          <EnrichmentQuickFacts
+            dark
+            title="Finder data coverage"
+            facts={[
+              { label: "Countries", value: countries.length },
+              { label: "Broadcaster links", value: totalBroadcasterRows },
+              { label: "Streaming links", value: totalStreamingRows },
+              { label: "Data layer", value: "Country enrichment" },
+            ]}
+          />
+        </div>
 
         <div className="mt-8">
           <CanIWatchClient countries={countries} />

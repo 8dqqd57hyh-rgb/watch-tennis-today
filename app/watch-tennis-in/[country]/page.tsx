@@ -66,12 +66,14 @@ export async function generateMetadata({
   }
 
   const indexable = shouldIndexBroadcastCountry(broadcastCountry.slug);
-  const title = `Where to Watch Tennis in ${broadcastCountry.country} | Official ATP, WTA & Grand Slam TV`;
-  const description = `Official tennis broadcaster guide for ${broadcastCountry.country}: Grand Slam channels, ATP and WTA streaming options, source links and legal viewing checks.`;
+  const enrichment = getCountryEnrichment({ slug: broadcastCountry.slug, name: broadcastCountry.country });
+  const title = enrichment.seo.title || `Where to Watch Tennis in ${broadcastCountry.country} | Official ATP, WTA & Grand Slam TV`;
+  const description = enrichment.seo.description || `Official tennis broadcaster guide for ${broadcastCountry.country}: Grand Slam channels, ATP and WTA streaming options, source links and legal viewing checks.`;
 
   return {
     title,
     description,
+    keywords: enrichment.seo.keywords,
     robots: robotsFor({ index: indexable }),
     alternates: {
       canonical: canonicalUrl(`/watch-tennis-in/${broadcastCountry.slug}`),

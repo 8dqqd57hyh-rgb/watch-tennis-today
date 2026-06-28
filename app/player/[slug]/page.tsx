@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
+import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
 import { supabase } from "@/app/lib/supabase";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 import {
@@ -15,6 +16,7 @@ import {
   getRelatedStreamingServices,
   getRelatedTournaments,
 } from "@/src/lib/intelligence/queries";
+import { getPlayerEnrichment } from "@/src/lib/enrichment";
 
 export const dynamic = "force-dynamic";
 
@@ -430,29 +432,39 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { playerName, pageSlug } = getPlayerDisplay(slug);
+  const { canonicalSlug, playerName, pageSlug } = getPlayerDisplay(slug);
   const indexable = isIndexablePlayerSlug(slug);
+  const enrichment = getPlayerEnrichment({
+    slug: pageSlug,
+    name: playerName,
+    tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
+    tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
+    surfaceStrength: canonicalSlug ? players[canonicalSlug].surfaceStrength : undefined,
+  });
+  const title = enrichment.seo.title || buildPlayerSeoTitle(playerName);
+  const description = enrichment.seo.description || buildPlayerSeoDescription(playerName);
 
   return {
     // AdSense quality: verified player pages with substantial editorial profiles can index;
     // unknown/API-only player pages stay noindex to avoid thin generated pages.
     robots: robotsFor({ index: indexable }),
-    title: buildPlayerSeoTitle(playerName),
-    description: buildPlayerSeoDescription(playerName),
+    title,
+    description,
+    keywords: enrichment.seo.keywords,
     alternates: {
       canonical: canonicalUrl(`/player/${pageSlug}`),
     },
     openGraph: {
-      title: buildPlayerSeoTitle(playerName),
-      description: buildPlayerSeoDescription(playerName),
+      title,
+      description,
       url: canonicalUrl(`/player/${pageSlug}`),
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: buildPlayerSeoTitle(playerName),
-      description: buildPlayerSeoDescription(playerName),
+      title,
+      description,
     },
   };
 }
@@ -1212,6 +1224,13 @@ const playerMatches = allMatches
   )
   .sort(sortMatchesByUserIntent);
 
+  const enrichment = getPlayerEnrichment({
+    slug: pageSlug,
+    name: playerName,
+    tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
+    tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
+    surfaceStrength: canonicalSlug ? players[canonicalSlug].surfaceStrength : undefined,
+  }, { matches: playerMatches as any });
   const playerNetwork = getPlayerNetwork(pageSlug, { matches: playerMatches });
   const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
   const relatedPlayers = relatedPlayerLinks
@@ -1432,6 +1451,24 @@ const playerMatches = allMatches
               This player page comes from a live-data slug and has not been manually verified yet.
             </section>
           ) : null}
+
+          <div className="mb-6 grid gap-5">
+            <EnrichmentQuickFacts
+              dark
+              title={`${playerName} enriched quick facts`}
+              facts={enrichment.quickFacts.concat([
+                { label: "Career stage", value: enrichment.careerStage },
+                { label: "Current activity", value: enrichment.currentActivity },
+                { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
+              ])}
+            />
+            <EnrichmentWatchSummary
+              dark
+              title={`Where ${playerName} may be available`}
+              availability={enrichment.watchAvailability}
+              summary="This section is computed from tournament links and broadcaster intelligence, not manually duplicated on the player page."
+            />
+          </div>
 
           <section id="matches" className="mb-6 rounded-[2rem] border border-zinc-800 bg-white p-5 text-zinc-950 md:p-6">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -1696,6 +1733,30 @@ const playerMatches = allMatches
           </div>
         </div>
       </section>
+
+      <div className="mb-8 grid gap-6">
+        <EnrichmentQuickFacts
+          title={`${playerName} enriched quick facts`}
+          facts={enrichment.quickFacts.concat([
+            { label: "Career stage", value: enrichment.careerStage },
+            { label: "Current activity", value: enrichment.currentActivity },
+            { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
+          ])}
+        />
+        <EnrichmentWatchSummary
+          title={`Watching options for ${playerName}`}
+          availability={enrichment.watchAvailability}
+          summary="Computed from the shared enrichment layer so UI, SEO and internal links read from the same derived data."
+        />
+        <EnrichmentLinkGrid
+          title={`${playerName} related tennis pages`}
+          groups={[
+            { title: "Related players", links: enrichment.relatedPlayers },
+            { title: "Related tournaments", links: enrichment.relatedTournaments },
+            { title: "Featured matches", links: enrichment.featuredMatches },
+          ]}
+        />
+      </div>
 
       <section className="mb-8 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
         <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">

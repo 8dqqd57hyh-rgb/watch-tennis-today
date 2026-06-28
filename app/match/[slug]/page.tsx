@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
+import { EnrichmentLinkGrid, EnrichmentQuickFacts } from "@/app/components/EnrichmentPanels";
 import {
   buildMatchSchemas,
   fallbackMatchFromSlug,
@@ -21,6 +22,7 @@ import {
   type MatchCenterMatch,
 } from "@/src/lib/matchCenter";
 import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
+import { getMatchEnrichment } from "@/src/lib/enrichment";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -79,14 +81,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = getMatchSeoTitle(match);
-  const description = getMatchSeoDescription(match);
+  const enrichment = getMatchEnrichment(match);
+  const title = enrichment.seo.title || getMatchSeoTitle(match);
+  const description = enrichment.seo.description || getMatchSeoDescription(match);
   const url = canonicalUrl(`/match/${getMatchSlug(match) || slug}`);
   const indexable = isMatchPageIndexable(match);
 
   return {
     title,
     description,
+    keywords: enrichment.seo.keywords,
     robots: robotsFor({ index: indexable }),
     alternates: {
       canonical: url,
@@ -218,6 +222,7 @@ export default async function MatchPage({ params }: PageProps) {
   const timeDisplays = getMatchCountryTimeDisplays(match);
   const playerOneSlug = getCanonicalPlayerSlug(match.player1) || parsed?.playerOneSlug || "";
   const playerTwoSlug = getCanonicalPlayerSlug(match.player2) || parsed?.playerTwoSlug || "";
+  const enrichment = getMatchEnrichment(match);
   const indexable = isMatchPageIndexable(match);
 
   return (
@@ -269,6 +274,36 @@ export default async function MatchPage({ params }: PageProps) {
           <Fact label="Date and time" value={formatDateTime(match.startTime)} />
           <Fact label="Court" value={displayText(match.court) || displayText(match.location)} />
         </section>
+
+        <div className="mb-8 grid gap-6">
+          <EnrichmentQuickFacts
+            dark
+            title={`${enrichment.name} enriched match facts`}
+            facts={[
+              { label: "Importance score", value: enrichment.importanceScore },
+              { label: "Today", value: enrichment.isToday ? "Yes" : "No" },
+              { label: "Live", value: enrichment.isLive ? "Yes" : "No" },
+              { label: "Upcoming", value: enrichment.isUpcoming ? "Yes" : "No" },
+              { label: "Watch countries", value: enrichment.watchCountries.length },
+              { label: "Streaming services", value: enrichment.streamingServices.length },
+              { label: "Top broadcaster", value: enrichment.featuredBroadcasters[0] || "Not matched" },
+              { label: "Context", value: enrichment.matchContext },
+            ]}
+          />
+          <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-white">
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">Recommended viewing</p>
+            <h2 className="text-2xl font-black">Best next step before match time</h2>
+            <p className="mt-3 leading-7 text-zinc-300">{enrichment.recommendedViewing}</p>
+          </section>
+          <EnrichmentLinkGrid
+            dark
+            title="Related match-center pages"
+            groups={[
+              { title: "Related matches", links: enrichment.relatedMatches },
+              { title: "Related guides", links: enrichment.relatedArticles },
+            ]}
+          />
+        </div>
 
         {timeDisplays.length ? (
           <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">

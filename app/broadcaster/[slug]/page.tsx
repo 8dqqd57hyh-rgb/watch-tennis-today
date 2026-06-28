@@ -62,12 +62,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const title = `${broadcaster.name} Tennis Coverage | Countries, Tournaments & Streaming Notes`;
-  const description = `Check ${broadcaster.name} tennis coverage by country and tournament, including free/paid status, official links, confidence level and last verified dates.`;
+  const enrichment = getBroadcasterEnrichment({ slug: broadcaster.slug, name: broadcaster.name });
+  const title = enrichment.seo.title || `${broadcaster.name} Tennis Coverage | Countries, Tournaments & Streaming Notes`;
+  const description = enrichment.seo.description || `Check ${broadcaster.name} tennis coverage by country and tournament, including free/paid status, official links, confidence level and last verified dates.`;
 
   return {
     title,
     description,
+    keywords: enrichment.seo.keywords,
     alternates: {
       canonical: canonicalUrl(`/broadcaster/${broadcaster.slug}`),
     },

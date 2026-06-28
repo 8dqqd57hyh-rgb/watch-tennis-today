@@ -3,7 +3,9 @@ import Link from "next/link";
 import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import AuthorBox from "@/app/components/AuthorBox";
+import { EnrichmentQuickFacts } from "@/app/components/EnrichmentPanels";
 import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
+import { getStreamingEnrichment } from "@/src/lib/enrichment";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -117,6 +119,9 @@ export default function TennisStreamingServicesPage() {
     timeStyle: "short",
     timeZone: "UTC",
   });
+  const serviceEnrichments = services.map((service) => getStreamingEnrichment({ name: service.name }));
+  const supportedCountries = new Set(serviceEnrichments.flatMap((service) => service.countries));
+  const supportedTournaments = new Set(serviceEnrichments.flatMap((service) => service.supportedTournaments));
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -189,6 +194,18 @@ export default function TennisStreamingServicesPage() {
           <p className="mt-3 max-w-4xl leading-7 text-neutral-700">
             Always confirm the exact tournament, country and match date with the official provider. This page is a practical decision guide, not a guarantee that one service carries every match in every region.
           </p>
+        </section>
+
+        <section className="mt-10">
+          <EnrichmentQuickFacts
+            title="Streaming enrichment coverage"
+            facts={[
+              { label: "Services compared", value: services.length },
+              { label: "Countries in dataset", value: supportedCountries.size },
+              { label: "Tournament groups", value: supportedTournaments.size },
+              { label: "Data source", value: "Streaming enrichment" },
+            ]}
+          />
         </section>
 
         <section className="mt-10 overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
+import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
 import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
 import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
@@ -17,6 +18,7 @@ import {
   getRelatedTournaments,
   getTournamentNetwork,
 } from "@/src/lib/intelligence/queries";
+import { getTournamentEnrichment } from "@/src/lib/enrichment";
 
 export const dynamic = "force-dynamic";
 
@@ -372,6 +374,14 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const stableHub = getStableTournamentHub(slug);
   const tournamentName = stableHub?.name || unslugify(slug);
+  const enrichment = getTournamentEnrichment({
+    slug,
+    name: tournamentName,
+    level: stableHub?.level,
+    surface: stableHub?.surface,
+    location: stableHub?.location,
+    seasonWindow: stableHub?.seasonWindow,
+  });
   const calendarEntry = await getTournamentCalendarEntry(slug);
   const indexable = shouldIndexTournamentPage({
     slug,
@@ -381,8 +391,9 @@ export async function generateMetadata({ params }: PageProps) {
   });
 
   return {
-    title: buildTournamentSeoTitle(tournamentName),
-    description: buildTournamentSeoDescription(tournamentName),
+    title: enrichment.seo.title || buildTournamentSeoTitle(tournamentName),
+    description: enrichment.seo.description || buildTournamentSeoDescription(tournamentName),
+    keywords: enrichment.seo.keywords,
     // AdSense quality: unknown tournament pages can be empty when the live API has
     // no matches, so only stable editorial/calendar-backed tournaments can index.
     robots: robotsFor({ index: indexable }),
@@ -390,16 +401,16 @@ export async function generateMetadata({ params }: PageProps) {
       canonical: canonicalUrl(`/tournament/${slug}`),
     },
     openGraph: {
-      title: buildTournamentSeoTitle(tournamentName),
-      description: buildTournamentSeoDescription(tournamentName),
+      title: enrichment.seo.title || buildTournamentSeoTitle(tournamentName),
+      description: enrichment.seo.description || buildTournamentSeoDescription(tournamentName),
       url: canonicalUrl(`/tournament/${slug}`),
       siteName: "Watch Tennis Today",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: buildTournamentSeoTitle(tournamentName),
-      description: buildTournamentSeoDescription(tournamentName),
+      title: enrichment.seo.title || buildTournamentSeoTitle(tournamentName),
+      description: enrichment.seo.description || buildTournamentSeoDescription(tournamentName),
     },
   };
 }
@@ -429,6 +440,14 @@ export default async function Page({ params }: PageProps) {
   const relatedCountryLinks = getRelatedCountries(tournamentNetwork, 8);
   const relatedBroadcasterLinks = getRelatedBroadcasters(tournamentNetwork, 8);
   const relatedStreamingLinks = getRelatedStreamingServices(tournamentNetwork, 6);
+  const enrichment = getTournamentEnrichment({
+    slug,
+    name: tournamentName,
+    level: stableHub?.level,
+    surface: stableHub?.surface,
+    location: stableHub?.location,
+    seasonWindow: stableHub?.seasonWindow,
+  }, { matches: tournamentMatches as any });
 
   const liveCount = tournamentMatches.filter(isLiveMatch).length;
 
@@ -670,6 +689,45 @@ export default async function Page({ params }: PageProps) {
             once scheduled matches or verified calendar data are available.
           </p>
         )}
+
+        <div className="mb-8 grid gap-6">
+          <EnrichmentQuickFacts
+            dark
+            title={`${tournamentName} enriched quick facts`}
+            facts={[
+              { label: "Tour", value: enrichment.tour || "Needs verification" },
+              { label: "Surface", value: enrichment.surface || stableHub?.surface || tournamentProfile.surface },
+              { label: "Country", value: enrichment.country || stableHub?.location || "Needs verification" },
+              { label: "Season", value: enrichment.season || visibleTournamentDateRange || "Needs calendar verification" },
+              { label: "Grand Slam", value: enrichment.isGrandSlam ? "Yes" : "No" },
+              { label: "Live matches", value: enrichment.hasLiveMatches ? "Yes" : "No" },
+              { label: "Broadcast countries", value: enrichment.broadcastCountries.length },
+              { label: "Streaming providers", value: enrichment.streamingProviders.length },
+            ]}
+          />
+          <EnrichmentWatchSummary
+            dark
+            title={`${tournamentName} coverage summary`}
+            availability={{
+              countries: enrichment.broadcastCountries,
+              broadcasters: [],
+              streamingServices: enrichment.streamingProviders,
+              hasFreeOption: false,
+              requiresSubscription: enrichment.streamingProviders.length > 0,
+            }}
+            summary={enrichment.coverageSummary}
+          />
+          <EnrichmentLinkGrid
+            dark
+            title={`${tournamentName} related tennis pages`}
+            groups={[
+              { title: "Featured players", links: enrichment.featuredPlayers },
+              { title: "Related tournaments", links: enrichment.relatedTournaments },
+              { title: "Countries", links: relatedCountryLinks },
+              { title: "Broadcasters and streaming", links: [...relatedBroadcasterLinks, ...relatedStreamingLinks] },
+            ]}
+          />
+        </div>
 
         <section className="mb-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Tournament guide</p>
