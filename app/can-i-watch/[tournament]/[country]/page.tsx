@@ -13,6 +13,13 @@ import {
   getCoverageSummary,
   type TennisBroadcastEntry,
 } from "@/src/data/tennisBroadcasts";
+import {
+  getCountryNetwork,
+  getRelatedBroadcasters,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+  getTournamentNetwork,
+} from "@/src/lib/intelligence/queries";
 
 const confidenceLabels: Record<TennisBroadcastEntry["confidenceLevel"], string> = {
   confirmed: "Confirmed from reviewed source",
@@ -76,6 +83,12 @@ export default async function CanIWatchDetailPage({ params }: { params: Promise<
   const summary = getCoverageSummary(countryKey, tournament);
   const entries = findBroadcasts(countryKey, tournament).filter((entry, index, all) => all.findIndex((item) => resultKey(item) === resultKey(entry)) === index);
   const pageUrl = canonicalUrl(`/can-i-watch/${tournament}/${country}`);
+  const tournamentNetwork = getTournamentNetwork(tournament);
+  const countryNetwork = getCountryNetwork(broadcastCountry.slug);
+  const relatedBroadcasterLinks = getRelatedBroadcasters(countryNetwork, 6);
+  const relatedStreamingLinks = getRelatedStreamingServices(countryNetwork, 6);
+  const relatedTournamentLinks = getRelatedTournaments(countryNetwork, 6)
+    .filter((link) => link.href !== `/tournament/${tournamentNetwork.node?.slug ?? tournament}`);
   const faqItems = [
     {
       question: `Can I watch ${queryName} in ${broadcastCountry.country}?`,
@@ -157,6 +170,24 @@ export default async function CanIWatchDetailPage({ params }: { params: Promise<
             <Link href="/can-i-watch" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">Can I Watch? finder</Link>
             <Link href={`/watch-tennis-in/${broadcastCountry.slug}`} className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">Watch tennis in {broadcastCountry.country}</Link>
             <Link href="/tennis-streaming-service-picker" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black hover:border-emerald-400">Streaming service picker</Link>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {[
+              { title: "Related tournaments", links: relatedTournamentLinks },
+              { title: "Broadcasters", links: relatedBroadcasterLinks },
+              { title: "Streaming services", links: relatedStreamingLinks },
+            ].map((group) => (
+              <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                <h3 className="font-black text-white">{group.title}</h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {group.links.map((link) => (
+                    <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-emerald-400">
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>

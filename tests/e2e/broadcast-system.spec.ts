@@ -17,6 +17,22 @@ import {
   validateBroadcastDatabase,
   type TennisCountryBroadcastDatabase,
 } from "../../src/data/tennisBroadcasts";
+import {
+  getTennisIntelligenceGraph,
+  getTennisIntelligenceGraphStats,
+  resetTennisIntelligenceGraphForTests,
+} from "../../src/lib/intelligence/graph";
+import {
+  getBroadcasterNetwork,
+  getCountryNetwork,
+  getPlayerNetwork,
+  getRelatedBroadcasters,
+  getRelatedCountries,
+  getRelatedMatches,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+  getTournamentNetwork,
+} from "../../src/lib/intelligence/queries";
 
 const grandSlamIds = ["australian-open", "roland-garros", "wimbledon", "us-open"];
 
@@ -288,6 +304,90 @@ test.describe("tennis broadcaster database", () => {
       "invalid_confidence",
       "invalid_last_verified",
     ]));
+  });
+});
+
+test.describe("tennis intelligence graph", () => {
+  test("generates canonical nodes and relationships from existing source data", () => {
+    const graph = getTennisIntelligenceGraph();
+    const stats = getTennisIntelligenceGraphStats(graph);
+
+    expect(stats.nodeCount).toBeGreaterThan(90);
+    expect(stats.edgeCount).toBeGreaterThan(150);
+    expect(graph.nodeByTypeAndSlug.get("player:jannik-sinner")?.name).toBe("Jannik Sinner");
+    expect(graph.nodeByTypeAndSlug.get("tournament:wimbledon")?.name).toContain("Wimbledon");
+    expect(graph.nodeByTypeAndSlug.get("country:usa")?.name).toBe("United States");
+    expect(graph.edges.some((edge) => edge.type === "COUNTRY_HAS_BROADCASTER")).toBe(true);
+    expect(graph.edges.some((edge) => edge.type === "BROADCASTER_STREAMS_ON")).toBe(true);
+    expect(graph.edges.some((edge) => edge.type === "TOURNAMENT_BROADCAST_IN")).toBe(true);
+  });
+
+  test("deduplicates graph nodes and edges", () => {
+    const stats = getTennisIntelligenceGraphStats();
+
+    expect(stats.duplicateNodeCount).toBe(0);
+    expect(stats.duplicateEdgeCount).toBe(0);
+  });
+
+  test("memoizes static graph creation", () => {
+    resetTennisIntelligenceGraphForTests();
+
+    const first = getTennisIntelligenceGraph();
+    const second = getTennisIntelligenceGraph();
+    const stats = getTennisIntelligenceGraphStats(second);
+
+    expect(first).toBe(second);
+    expect(stats.staticBuildCount).toBe(1);
+  });
+
+  test("creates query networks for players, tournaments, countries and broadcasters", () => {
+    const playerNetwork = getPlayerNetwork("jannik-sinner");
+    const tournamentNetwork = getTournamentNetwork("wimbledon");
+    const countryNetwork = getCountryNetwork("usa");
+    const broadcasterNetwork = getBroadcasterNetwork("tennis-channel");
+
+    expect(playerNetwork.node?.name).toBe("Jannik Sinner");
+    expect(getRelatedTournaments(playerNetwork).some((link) => link.href === "/tournament/grand-slam-tournaments")).toBe(true);
+    expect(tournamentNetwork.node?.name).toContain("Wimbledon");
+    expect(getRelatedCountries(tournamentNetwork).some((link) => link.href === "/watch-tennis-in/usa")).toBe(true);
+    expect(countryNetwork.node?.name).toBe("United States");
+    expect(getRelatedBroadcasters(countryNetwork).length).toBeGreaterThan(0);
+    expect(broadcasterNetwork.node?.name).toBe("Tennis Channel");
+    expect(getRelatedStreamingServices(broadcasterNetwork).length).toBeGreaterThan(0);
+  });
+
+  test("handles missing data without throwing", () => {
+    const missingPlayer = getPlayerNetwork("not-a-real-player");
+    const missingBroadcaster = getBroadcasterNetwork("not-a-real-broadcaster");
+
+    expect(missingPlayer.node).toBeNull();
+    expect(missingPlayer.relatedPlayers).toEqual([]);
+    expect(missingBroadcaster.node).toBeNull();
+    expect(missingBroadcaster.contextualLinks).toEqual([]);
+  });
+
+  test("adds match relationships when route-level match data is supplied", () => {
+    const network = getPlayerNetwork("jannik-sinner", {
+      matches: [
+        {
+          id: "fixture-1",
+          player1: "Jannik Sinner",
+          player2: "Carlos Alcaraz",
+          tournament: "Wimbledon",
+          category: "ATP",
+          status: "UPCOMING",
+          score: "",
+          startTime: "2026-07-01T13:00:00Z",
+          surface: "Grass",
+        },
+      ],
+    });
+
+    const matches = getRelatedMatches(network);
+
+    expect(matches).toHaveLength(1);
+    expect(matches[0]?.label).toBe("Jannik Sinner vs Carlos Alcaraz");
+    expect(matches[0]?.href).toContain("/watch/");
   });
 });
 

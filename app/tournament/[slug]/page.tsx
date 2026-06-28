@@ -9,6 +9,14 @@ import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
 import { getStableTournamentHub } from "@/data/tournamentHubs";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import { getServerMatchesWindow, type ServerMatch } from "@/app/lib/serverMatches";
+import {
+  getRelatedBroadcasters,
+  getRelatedCountries,
+  getRelatedPlayers,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+  getTournamentNetwork,
+} from "@/src/lib/intelligence/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -415,6 +423,12 @@ export default async function Page({ params }: PageProps) {
   const stableHubName = stableHub?.name;
   const stableHubRelatedLinks = stableHub?.relatedLinks || [];
   const tournamentName = tournamentMatches[0]?.tournament || stableHub?.name || unslugify(slug);
+  const tournamentNetwork = getTournamentNetwork(slug, { matches: tournamentMatches });
+  const relatedPlayerLinks = getRelatedPlayers(tournamentNetwork, 8);
+  const relatedTournamentLinks = getRelatedTournaments(tournamentNetwork, 6);
+  const relatedCountryLinks = getRelatedCountries(tournamentNetwork, 8);
+  const relatedBroadcasterLinks = getRelatedBroadcasters(tournamentNetwork, 8);
+  const relatedStreamingLinks = getRelatedStreamingServices(tournamentNetwork, 6);
 
   const liveCount = tournamentMatches.filter(isLiveMatch).length;
 
@@ -1132,6 +1146,34 @@ export default async function Page({ params }: PageProps) {
             <Link href="/watch-tennis-in/australia" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-green-400">Australia</Link>
           </div>
         </section>
+
+        {relatedPlayerLinks.length || relatedCountryLinks.length || relatedBroadcasterLinks.length || relatedStreamingLinks.length || relatedTournamentLinks.length ? (
+          <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
+              Tennis intelligence graph
+            </p>
+            <h2 className="text-3xl font-black">Related content for {tournamentName}</h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {[
+                { title: "Top players", links: relatedPlayerLinks },
+                { title: "Countries broadcasting", links: relatedCountryLinks },
+                { title: "Related events", links: relatedTournamentLinks },
+                { title: "Streaming services", links: [...relatedBroadcasterLinks, ...relatedStreamingLinks] },
+              ].map((group) => (
+                <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                  <h3 className="font-black text-white">{group.title}</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {group.links.slice(0, 8).map((link) => (
+                      <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-green-400">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 </div>
       {sportsEventSchema ? (
         <script

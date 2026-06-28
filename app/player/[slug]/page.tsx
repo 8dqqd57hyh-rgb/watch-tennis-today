@@ -7,6 +7,14 @@ import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, 
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import { supabase } from "@/app/lib/supabase";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
+import {
+  getPlayerNetwork,
+  getRelatedBroadcasters,
+  getRelatedCountries,
+  getRelatedPlayers as getGraphRelatedPlayers,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+} from "@/src/lib/intelligence/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -338,27 +346,6 @@ type PlayerDataWithOptionalSeoFields = {
 
 const PLAYER_SLUGS = Object.keys(players) as PlayerSlug[];
 
-const PRIORITY_PLAYERS: PlayerSlug[] = [
-  "jannik-sinner",
-  "carlos-alcaraz",
-  "novak-djokovic",
-  "daniil-medvedev",
-  "alexander-zverev",
-  "holger-rune",
-  "taylor-fritz",
-  "jack-draper",
-  "tommy-paul",
-  "jesper-de-jong",
-  "iga-swiatek",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "elena-rybakina",
-  "jessica-pegula",
-  "naomi-osaka",
-  "mirra-andreeva",
-  "ha-eum-lee",
-];
-
 function getStatusPriority(status: string) {
   const normalized = status.toUpperCase();
 
@@ -388,51 +375,6 @@ function getPlayerSlugByName(name: string) {
   return PLAYER_SLUGS.find((playerSlug) =>
     normalizePlayerName(players[playerSlug].name) === normalizedName
   );
-}
-
-function uniquePlayerSlugs(slugs: (PlayerSlug | undefined | null)[]) {
-  const seen = new Set<PlayerSlug>();
-
-  return slugs.filter((slug): slug is PlayerSlug => {
-    if (!slug || seen.has(slug)) return false;
-
-    seen.add(slug);
-    return true;
-  });
-}
-
-function getRelatedPlayers(
-  currentSlug: PlayerSlug | null,
-  playerMatches: Match[]
-) {
-  const currentTour = currentSlug ? players[currentSlug].tour : null;
-
-  const opponentsFromMatches = playerMatches.flatMap((match) => [
-    getPlayerSlugByName(match.player1),
-    getPlayerSlugByName(match.player2),
-  ]);
-
-  const sameTourPriority = PRIORITY_PLAYERS.filter((playerSlug) =>
-    playerSlug !== currentSlug &&
-    (!currentTour || players[playerSlug].tour === currentTour)
-  );
-
-  const sameTourFallback = PLAYER_SLUGS.filter((playerSlug) =>
-    playerSlug !== currentSlug &&
-    (!currentTour || players[playerSlug].tour === currentTour)
-  );
-
-  const otherPopularPlayers = PRIORITY_PLAYERS.filter((playerSlug) =>
-    playerSlug !== currentSlug &&
-    Boolean(currentTour && players[playerSlug].tour !== currentTour)
-  );
-
-  return uniquePlayerSlugs([
-    ...opponentsFromMatches,
-    ...sameTourPriority,
-    ...sameTourFallback,
-    ...otherPopularPlayers,
-  ]).slice(0, 8);
 }
 
 function isIndexablePlayerSlug(slug: string) {
@@ -1270,7 +1212,15 @@ const playerMatches = allMatches
   )
   .sort(sortMatchesByUserIntent);
 
-  const relatedPlayers = getRelatedPlayers(canonicalSlug, playerMatches);
+  const playerNetwork = getPlayerNetwork(pageSlug, { matches: playerMatches });
+  const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
+  const relatedPlayers = relatedPlayerLinks
+    .map((link) => link.href.split("/").pop())
+    .filter((value): value is PlayerSlug => Boolean(value && value in players));
+  const relatedTournamentLinks = getRelatedTournaments(playerNetwork, 6);
+  const relatedCountryLinks = getRelatedCountries(playerNetwork, 4);
+  const relatedBroadcasterLinks = getRelatedBroadcasters(playerNetwork, 4);
+  const relatedStreamingLinks = getRelatedStreamingServices(playerNetwork, 4);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
   const editorialProfile = getEditorialProfile(canonicalSlug, playerName, sameTourLabel);
   const pageSummary = getPlayerPageSummary(playerName, playerMatches);
@@ -1586,6 +1536,32 @@ const playerMatches = allMatches
               </Link>
             </div>
           </section>
+
+          {relatedTournamentLinks.length || relatedCountryLinks.length || relatedBroadcasterLinks.length || relatedStreamingLinks.length ? (
+            <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
+              <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
+                Tennis intelligence graph
+              </p>
+              <h2 className="text-3xl font-black">Related tournaments and viewing routes</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {[
+                  { title: "Related tournaments", links: relatedTournamentLinks },
+                  { title: "Where to watch", links: [...relatedCountryLinks, ...relatedBroadcasterLinks, ...relatedStreamingLinks] },
+                ].map((group) => (
+                  <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                    <h3 className="font-black text-white">{group.title}</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {group.links.slice(0, 8).map((link) => (
+                        <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-green-400">
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {relatedPlayers.length ? (
             <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-white p-6 text-zinc-950">

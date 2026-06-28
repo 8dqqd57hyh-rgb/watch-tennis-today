@@ -22,6 +22,13 @@ import {
   type TennisBroadcastEntry,
   type TennisTournamentId,
 } from "@/src/data/tennisBroadcasts";
+import {
+  getCountryNetwork,
+  getRelatedBroadcasters,
+  getRelatedPlayers,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+} from "@/src/lib/intelligence/queries";
 
 const grandSlamIds: TennisTournamentId[] = [
   "australian-open",
@@ -203,6 +210,11 @@ export default async function CountryPage({
   const countryPath = `/watch-tennis-in/${broadcastCountry.slug}`;
   const pageUrl = canonicalUrl(countryPath);
   const canIWatchPath = `/can-i-watch/wimbledon/${broadcastCountry.slug}`;
+  const countryNetwork = getCountryNetwork(broadcastCountry.slug);
+  const relatedPlayerLinks = getRelatedPlayers(countryNetwork, 6);
+  const relatedBroadcasterLinks = getRelatedBroadcasters(countryNetwork, 8);
+  const relatedTournamentLinks = getRelatedTournaments(countryNetwork, 6);
+  const relatedStreamingLinks = getRelatedStreamingServices(countryNetwork, 8);
   const grandSlamEntries = getEntries(broadcastCountry.countryCode, grandSlamIds);
   const tourEntries = getEntries(broadcastCountry.countryCode, tourIds);
   const atpEntry = tourEntries.find((entry) => entry.tournamentId === "atp-tour");
@@ -555,6 +567,27 @@ export default async function CountryPage({
 
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <h2 className="text-3xl font-black">Related pages for {broadcastCountry.country} tennis fans</h2>
+          {relatedPlayerLinks.length || relatedBroadcasterLinks.length || relatedTournamentLinks.length || relatedStreamingLinks.length ? (
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {[
+                { title: "Popular players", links: relatedPlayerLinks },
+                { title: "Broadcasters", links: relatedBroadcasterLinks },
+                { title: "Grand Slams", links: relatedTournamentLinks },
+                { title: "Streaming", links: relatedStreamingLinks },
+              ].map((group) => (
+                <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                  <h3 className="font-black text-white">{group.title}</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {group.links.map((link) => (
+                      <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-emerald-400">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Link href="/today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Today&apos;s tennis hub</Link>
             <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-800 bg-black p-4 font-black text-white hover:border-emerald-400">Today&apos;s schedule</Link>

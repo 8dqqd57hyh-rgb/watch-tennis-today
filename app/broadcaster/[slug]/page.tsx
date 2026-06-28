@@ -12,6 +12,13 @@ import {
   getUniqueBroadcasters,
   type TennisBroadcastEntry,
 } from "@/src/data/tennisBroadcasts";
+import {
+  getBroadcasterNetwork,
+  getRelatedCountries,
+  getRelatedPlayers,
+  getRelatedStreamingServices,
+  getRelatedTournaments,
+} from "@/src/lib/intelligence/queries";
 
 const confidenceLabels: Record<TennisBroadcastEntry["confidenceLevel"], string> = {
   confirmed: "Confirmed from reviewed source",
@@ -89,6 +96,11 @@ export default async function BroadcasterPage({ params }: { params: Promise<{ sl
   const tournaments = getTournamentGroupsForBroadcaster(slug);
   const pageUrl = canonicalUrl(`/broadcaster/${broadcaster.slug}`);
   const needsVerification = broadcaster.confidenceLevels.includes("needs_check") || broadcaster.confidenceLevels.includes("partial");
+  const broadcasterNetwork = getBroadcasterNetwork(slug);
+  const relatedCountryLinks = getRelatedCountries(broadcasterNetwork, 8);
+  const relatedTournamentLinks = getRelatedTournaments(broadcasterNetwork, 8);
+  const relatedPlayerLinks = getRelatedPlayers(broadcasterNetwork, 6);
+  const relatedStreamingLinks = getRelatedStreamingServices(broadcasterNetwork, 8);
 
   const faqItems = [
     {
@@ -273,6 +285,34 @@ export default async function BroadcasterPage({ params }: { params: Promise<{ sl
             ))}
           </div>
         </section>
+
+        {relatedCountryLinks.length || relatedTournamentLinks.length || relatedPlayerLinks.length || relatedStreamingLinks.length ? (
+          <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
+              Tennis intelligence graph
+            </p>
+            <h2 className="text-3xl font-black">Related coverage for {broadcaster.name}</h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {[
+                { title: "Countries", links: relatedCountryLinks },
+                { title: "Tournaments", links: relatedTournamentLinks },
+                { title: "Players", links: relatedPlayerLinks },
+                { title: "Streaming services", links: relatedStreamingLinks },
+              ].map((group) => (
+                <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                  <h3 className="font-black text-white">{group.title}</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {group.links.map((link) => (
+                      <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-emerald-400">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-8 grid gap-4 md:grid-cols-2">
           <Link href="/tennis-streaming-service-picker" className="rounded-3xl border border-emerald-500/40 bg-emerald-950/30 p-6 hover:border-emerald-300">
