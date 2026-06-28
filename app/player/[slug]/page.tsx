@@ -32,6 +32,14 @@ type PlayerEditorialProfile = {
   watchReasons?: string[];
 };
 
+function getPlayerSurfaceStrength(player: (typeof players)[PlayerSlug] | undefined): string | undefined {
+  if (player && "surfaceStrength" in player && typeof player.surfaceStrength === "string") {
+    return player.surfaceStrength;
+  }
+
+  return undefined;
+}
+
 const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfile>> = {
   "jannik-sinner": {
     nationality: "Italy",
@@ -439,7 +447,7 @@ export async function generateMetadata({
     name: playerName,
     tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
     tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
-    surfaceStrength: canonicalSlug ? players[canonicalSlug].surfaceStrength : undefined,
+    surfaceStrength: canonicalSlug ? getPlayerSurfaceStrength(players[canonicalSlug]) : undefined,
   });
   const title = enrichment.seo.title || buildPlayerSeoTitle(playerName);
   const description = enrichment.seo.description || buildPlayerSeoDescription(playerName);
@@ -1229,7 +1237,7 @@ const playerMatches = allMatches
     name: playerName,
     tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
     tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
-    surfaceStrength: canonicalSlug ? players[canonicalSlug].surfaceStrength : undefined,
+    surfaceStrength: canonicalSlug ? getPlayerSurfaceStrength(players[canonicalSlug]) : undefined,
   }, { matches: playerMatches as any });
   const playerNetwork = getPlayerNetwork(pageSlug, { matches: playerMatches });
   const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
