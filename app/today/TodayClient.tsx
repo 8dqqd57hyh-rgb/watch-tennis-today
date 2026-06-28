@@ -54,10 +54,7 @@ function slugify(text: string) {
 }
 
 function matchSlug(match: Match) {
-  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
-  const numericId = match.id.split(":").pop();
-
-  return `${readablePart}-${numericId}`;
+  return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
 function readableCountry(country: string) {
@@ -161,7 +158,7 @@ function MatchCard({ match, spoilerFree }: { match: Match; spoilerFree: boolean 
       </p>
 
       <div className="inline-block bg-green-500 text-black px-5 py-3 rounded-2xl font-black">
-        <a href={`/watch/${matchSlug(match)}`}>Match details</a>
+        <a href={`/match/${matchSlug(match)}`}>Match details</a>
       </div>
     </article>
   );
@@ -349,7 +346,7 @@ export default function TodayPage() {
             </div>
 
             <a
-              href={`/watch/${matchSlug(featuredMatch)}`}
+              href={`/match/${matchSlug(featuredMatch)}`}
               className="inline-flex items-center rounded-2xl bg-green-500 px-6 py-4 text-lg font-black text-black hover:bg-green-400 transition-all"
             >
               Open Match Page →

@@ -102,10 +102,7 @@ function unslugify(slug: string) {
 }
 
 function matchSlug(match: Match) {
-  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
-  const numericId = match.id.split(":").pop();
-
-  return `${readablePart}-${numericId}`;
+  return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
 
@@ -323,7 +320,7 @@ function TournamentMatchCard({ match }: { match: Match }) {
       {match.score ? <p className="mt-2 text-sm font-bold text-zinc-200">Score: {match.score}</p> : null}
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href={`/watch/${matchSlug(match)}`} className="rounded-xl bg-green-500 px-3 py-2 text-sm font-black text-black hover:bg-green-400">
+        <Link href={`/match/${matchSlug(match)}`} className="rounded-xl bg-green-500 px-3 py-2 text-sm font-black text-black hover:bg-green-400">
           {isLiveMatch(match) ? "Follow live" : isCompletedMatch(match) ? "Open result" : "Open match"}
         </Link>
         <Link href={getTournamentUrl(match.tournament)} className="rounded-xl border border-zinc-700 px-3 py-2 text-sm font-black text-white hover:border-green-400">
@@ -564,7 +561,7 @@ export default async function Page({ params }: PageProps) {
       { "@type": "Person", name: match.player1 },
       { "@type": "Person", name: match.player2 },
     ],
-    url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
+    url: `https://watchtennistoday.com/match/${matchSlug(match)}`,
   }));
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -949,7 +946,7 @@ export default async function Page({ params }: PageProps) {
             tournamentMatches.map((match) => (
               <a
                 key={match.id}
-                href={`/watch/${matchSlug(match)}`}
+                href={`/match/${matchSlug(match)}`}
                 className="block bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-green-500 transition-all"
               >
                 <div className="flex justify-between gap-4 mb-4">

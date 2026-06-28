@@ -43,10 +43,7 @@ function slugify(value: string) {
 }
 
 function matchSlug(match: Match) {
-  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
-  const numericId = String(match.id).split(":").pop();
-
-  return `${readablePart}-${numericId}`;
+  return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
 function getString(match: Match, keys: string[]) {
@@ -359,7 +356,7 @@ function PlayerLink({ name }: { name: string }) {
 }
 
 function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }) {
-  const matchInfoHref = `/watch/${matchSlug(match)}`;
+  const matchInfoHref = `/match/${matchSlug(match)}`;
   const player1Rank = getString(match, ["ranking1", "player1Ranking", "firstPlayerRanking", "player1Rank"]);
   const player2Rank = getString(match, ["ranking2", "player2Ranking", "secondPlayerRanking", "player2Rank"]);
   const court = getString(match, ["court", "courtName", "eventCourt"]);
@@ -527,7 +524,7 @@ export default async function LiveTennisPage() {
         { "@type": "SportsTeam", name: match.player1 },
         { "@type": "SportsTeam", name: match.player2 },
       ],
-      url: `${SITE_URL}/watch/${matchSlug(match)}`,
+      url: `${SITE_URL}/match/${matchSlug(match)}`,
     })),
   ];
 

@@ -6,6 +6,7 @@ import { players } from "@/data/players";
 import VpnPromo from "@/app/components/VpnPromo";
 import StreamingLinksGrid from "@/app/components/StreamingLinksGrid";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
+import { getMatchSlug } from "@/src/lib/matchCenter";
 
 export const dynamic = "force-dynamic";
 
@@ -256,6 +257,9 @@ export default async function TvSchedulePage({ params }: Props) {
                     {match.player1} vs {match.player2}
                   </h3>
                   <p className="text-zinc-400">{formatDateTime(match.startTime)}</p>
+                  <Link href={`/match/${getMatchSlug(match)}`} className="mt-4 inline-flex rounded-xl bg-green-500 px-4 py-2 text-sm font-black text-black hover:bg-green-400">
+                    Open match center
+                  </Link>
                 </article>
               ))}
             </div>

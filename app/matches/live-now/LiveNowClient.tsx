@@ -41,17 +41,13 @@ const countries = [
 ];
 
 function matchSlug(match: Match) {
-  const readablePart = `${match.player1}-vs-${match.player2}`
+  return `${match.player1}-vs-${match.player2}`
     .toLowerCase()
     .replace(/,/g, "")
     .replace(/\//g, "-")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
-
-  const numericId = match.id.split(":").pop();
-
-  return `${readablePart}-${numericId}`;
 }
 
 function readableCountry(country: string) {
@@ -172,7 +168,7 @@ export default function LiveMatchesNowPage() {
               {liveMatches.slice(0, 12).map((match) => (
                 <a
                   key={match.id}
-                  href={`/watch/${matchSlug(match)}`}
+                  href={`/match/${matchSlug(match)}`}
                   className="block rounded-[2rem] border border-red-500 bg-zinc-900 p-6 hover:scale-[1.01] transition-all"
                   data-testid="match-card"
                 >

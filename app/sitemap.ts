@@ -8,6 +8,11 @@ import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
 import { getBroadcastCountryOptions, getCanIWatchQueryOptions, getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
+import {
+  getMatchSlug as getMatchCenterSlug,
+  shouldIncludeMatchInSitemap,
+  type MatchCenterMatch,
+} from "@/src/lib/matchCenter";
 export const revalidate = 3600;
 
 type Match = {
@@ -181,10 +186,7 @@ const isAtpOrWta =
 }
 
 function matchSlug(match: Match) {
-  const readablePart = slugify(`${match.player1}-vs-${match.player2}`);
-  const numericId = match.id.split(":").pop();
-
-  return `${readablePart}-${numericId}`;
+  return getMatchCenterSlug(match);
 }
 
 async function getMatches(): Promise<Match[]> {
@@ -329,7 +331,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
     );
 
-  const importantMatches = matches.filter(isImportantMatch);
+  const importantMatches = matches.filter((match) =>
+    isImportantMatch(match) && shouldIncludeMatchInSitemap(match as MatchCenterMatch)
+  );
 
   const dynamicPlayers = [
     ...new Set(
@@ -389,7 +393,7 @@ const uniquePlayers = [
   );
 
   const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
-    url: `https://watchtennistoday.com/watch/${matchSlug(match)}`,
+    url: `https://watchtennistoday.com/match/${matchSlug(match)}`,
     lastModified: match.startTime
   ? new Date(match.startTime)
   : now,

@@ -666,13 +666,7 @@ function slugify(value: string) {
 }
 
 function getMatchSlug(match: Match) {
-  const readablePart = slugify(
-    `${match.player1}-vs-${match.player2}`
-  );
-
-  const numericId = match.id.split(":").pop();
-
-  return `${readablePart}-${numericId}`;
+  return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
 function formatMatchDateTime(value?: string) {
@@ -871,7 +865,7 @@ function buildPlayerResourceLinks({
 }
 
 function getWatchMatchUrl(match: Match) {
-  return `/watch/${getMatchSlug(match)}`;
+  return `/match/${getMatchSlug(match)}`;
 }
 
 function getStatusLabel(match: Match) {
@@ -2033,7 +2027,7 @@ const playerMatches = allMatches
         .map((match) => (
           <Link
             key={match.id}
-            href={`/watch/${getMatchSlug(match)}`}
+            href={`/match/${getMatchSlug(match)}`}
             className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white hover:bg-red-400 transition-all"
           >
             Open Match Page →
@@ -2082,7 +2076,7 @@ const playerMatches = allMatches
                     {playerForm.form.map((item) => (
                       <a
                         key={item.match.id}
-                        href={`/watch/${getMatchSlug(item.match)}`}
+                        href={`/match/${getMatchSlug(item.match)}`}
                         title={`${item.result === "W" ? "Won" : "Lost"} vs ${item.opponent}`}
                         className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-black transition hover:scale-105 ${
                           item.result === "W"
@@ -2170,7 +2164,7 @@ const playerMatches = allMatches
                       </p>
                     </div>
                     <a
-                      href={`/watch/${getMatchSlug(item.match)}`}
+                      href={`/match/${getMatchSlug(item.match)}`}
                       className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-bold text-zinc-800 hover:border-green-500 hover:bg-green-50"
                     >
                       {item.match.score || "Open result"} →
@@ -2255,7 +2249,7 @@ const playerMatches = allMatches
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <a
-                      href={`/watch/${getMatchSlug(match)}`}
+                      href={`/match/${getMatchSlug(match)}`}
                       className="inline-flex items-center rounded-xl bg-black px-3 py-2 text-sm font-bold text-white hover:bg-zinc-800 transition-all"
                     >
                       {live ? "Follow live match" : finished ? "Open result" : "Open match"} →
