@@ -1238,7 +1238,7 @@ const playerMatches = allMatches
     tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
     tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
     surfaceStrength: canonicalSlug ? getPlayerSurfaceStrength(players[canonicalSlug]) : undefined,
-  }, { matches: playerMatches as any });
+  }, { matches: playerMatches });
   const playerNetwork = getPlayerNetwork(pageSlug, { matches: playerMatches });
   const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
   const relatedPlayers = relatedPlayerLinks

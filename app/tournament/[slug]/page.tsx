@@ -447,7 +447,7 @@ export default async function Page({ params }: PageProps) {
     surface: stableHub?.surface,
     location: stableHub?.location,
     seasonWindow: stableHub?.seasonWindow,
-  }, { matches: tournamentMatches as any });
+  }, { matches: tournamentMatches });
 
   const liveCount = tournamentMatches.filter(isLiveMatch).length;
 
