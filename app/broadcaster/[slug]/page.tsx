@@ -19,6 +19,7 @@ import {
   getRelatedStreamingServices,
   getRelatedTournaments,
 } from "@/src/lib/intelligence/queries";
+import { getBroadcasterEnrichment } from "@/src/lib/enrichment";
 
 const confidenceLabels: Record<TennisBroadcastEntry["confidenceLevel"], string> = {
   confirmed: "Confirmed from reviewed source",
@@ -92,6 +93,7 @@ export default async function BroadcasterPage({ params }: { params: Promise<{ sl
   if (!broadcaster) notFound();
 
   const entries = uniqueEntries(broadcaster.entries);
+  const enrichment = getBroadcasterEnrichment({ slug: broadcaster.slug, name: broadcaster.name });
   const countries = getCountriesForBroadcaster(slug);
   const tournaments = getTournamentGroupsForBroadcaster(slug);
   const pageUrl = canonicalUrl(`/broadcaster/${broadcaster.slug}`);
@@ -177,7 +179,20 @@ export default async function BroadcasterPage({ params }: { params: Promise<{ sl
           <div className="mt-6 flex flex-wrap gap-3 text-sm text-zinc-400">
             <span>{countries.length} countries</span>
             <span>{tournaments.length} tournament groups</span>
-            <span>Last verified: {broadcaster.lastVerified}</span>
+            <span>Coverage level: {enrichment.coverageLevel}</span>
+            <span>Last verified: {enrichment.lastVerified ?? broadcaster.lastVerified}</span>
+          </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {[
+              ["Streaming services", enrichment.streamingServices.slice(0, 3).join(", ") || "Check provider"],
+              ["Tours", enrichment.tours.join(", ") || "Tournament-specific"],
+              ["Confidence", enrichment.confidenceSummary],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-2xl border border-emerald-500/20 bg-black/40 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">{label}</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-300">{value}</p>
+              </div>
+            ))}
           </div>
         </section>
 

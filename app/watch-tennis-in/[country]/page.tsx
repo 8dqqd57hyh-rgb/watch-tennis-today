@@ -29,6 +29,7 @@ import {
   getRelatedStreamingServices,
   getRelatedTournaments,
 } from "@/src/lib/intelligence/queries";
+import { getCountryEnrichment } from "@/src/lib/enrichment";
 
 const grandSlamIds: TennisTournamentId[] = [
   "australian-open",
@@ -211,6 +212,7 @@ export default async function CountryPage({
   const pageUrl = canonicalUrl(countryPath);
   const canIWatchPath = `/can-i-watch/wimbledon/${broadcastCountry.slug}`;
   const countryNetwork = getCountryNetwork(broadcastCountry.slug);
+  const enrichment = getCountryEnrichment({ slug: broadcastCountry.slug, name: broadcastCountry.country });
   const relatedPlayerLinks = getRelatedPlayers(countryNetwork, 6);
   const relatedBroadcasterLinks = getRelatedBroadcasters(countryNetwork, 8);
   const relatedTournamentLinks = getRelatedTournaments(countryNetwork, 6);
@@ -317,6 +319,25 @@ export default async function CountryPage({
         <Link href="/tennis-tv-broadcast-finder" className="text-sm font-bold text-zinc-400 hover:text-white">
           Back to Broadcast Finder
         </Link>
+
+        <section className="mt-6 rounded-3xl border border-emerald-500/20 bg-zinc-950 p-6">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Enriched coverage summary</p>
+          <h2 className="mt-3 text-2xl font-black text-white">Quick facts for {broadcastCountry.country}</h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-4">
+            {[
+              ["Broadcasters", String(enrichment.availableBroadcasters.length)],
+              ["Streaming", String(enrichment.availableStreaming.length)],
+              ["Free notes", enrichment.freeViewingSummary],
+              ["Premium notes", enrichment.premiumViewingSummary],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-2xl border border-zinc-800 bg-black p-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">{label}</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-300">{value}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-7 text-zinc-400">{enrichment.coverageSummary}</p>
+        </section>
 
         <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8 md:p-10">
           <p className="mb-4 inline-flex rounded-full bg-emerald-400/15 px-4 py-2 text-sm font-black uppercase tracking-[0.22em] text-emerald-300">
