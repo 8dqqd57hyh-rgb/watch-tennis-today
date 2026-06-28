@@ -1,3 +1,14 @@
+/**
+ * Country-guide registry and editorial layer for broadcaster pages.
+ *
+ * This file owns country slugs, broad fallback labels, local context, travel
+ * notes, verification advice and the indexability gate for reviewed country
+ * guides. It is intentionally less strict than src/data/tennisBroadcasts.ts.
+ *
+ * Put exact country+tournament broadcaster rows, official source URLs, prices,
+ * confidence levels and validation in src/data/tennisBroadcasts.ts instead.
+ * Keep countryCode aligned when a country exists in both files.
+ */
 export type BroadcastCountry = {
   slug: string;
   countryCode?: string;

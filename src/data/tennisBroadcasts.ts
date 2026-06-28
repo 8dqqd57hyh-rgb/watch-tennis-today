@@ -1,3 +1,16 @@
+/**
+ * Core Broadcaster Intelligence dataset.
+ *
+ * Use this file for structured, source-backed broadcaster rows: country +
+ * tournament mappings, official source links, price status, confidence,
+ * verification dates, normalized records, matching helpers, pricing helpers,
+ * broadcaster profile helpers and validation.
+ *
+ * Keep broad country-guide editorial copy and indexability decisions in
+ * data/broadcastFinder.ts. When adding a new country here, add or confirm the
+ * matching countryCode in data/broadcastFinder.ts only if the country guide
+ * should exist as a browsable page.
+ */
 export type TennisTournamentId =
   | "australian-open"
   | "roland-garros"
@@ -108,6 +121,7 @@ export type TennisCountryServiceOption = {
 };
 
 export const TENNIS_BROADCAST_LAST_VERIFIED = "2026-06-21";
+const TENNIS_BROADCAST_STALE_AFTER_DAYS = 365;
 
 const VALID_TENNIS_TOURNAMENT_IDS: TennisTournamentId[] = [
   "australian-open",
@@ -186,13 +200,18 @@ function links(...items: TennisOfficialLink[]) {
   });
 }
 
-function service(input: Omit<TennisBroadcastService, "lastVerified">): TennisBroadcastService {
-  return { ...input, lastVerified: TENNIS_BROADCAST_LAST_VERIFIED };
+type TennisBroadcastServiceInput = Omit<TennisBroadcastService, "lastVerified"> & {
+  lastVerified?: string;
+};
+
+function service(input: TennisBroadcastServiceInput): TennisBroadcastService {
+  return { ...input, lastVerified: input.lastVerified ?? TENNIS_BROADCAST_LAST_VERIFIED };
 }
 
 function slamService(
   tournamentId: Exclude<TennisTournamentId, "atp-tour" | "wta-tour">,
   input: Omit<TennisBroadcastService, "lastVerified" | "officialWebsiteUrl" | "officialLinks" | "price"> & {
+    lastVerified?: string;
     price?: TennisServicePrice;
     extraLinks?: TennisOfficialLink[];
   },
@@ -218,7 +237,7 @@ function slamService(
   };
 }
 
-function atpService(input: Omit<TennisBroadcastService, "lastVerified" | "officialWebsiteUrl" | "officialLinks" | "price"> & { price?: TennisServicePrice; extraLinks?: TennisOfficialLink[] }) {
+function atpService(input: Omit<TennisBroadcastService, "lastVerified" | "officialWebsiteUrl" | "officialLinks" | "price"> & { lastVerified?: string; price?: TennisServicePrice; extraLinks?: TennisOfficialLink[] }) {
   return {
     ...tournament("atp-tour"),
     services: [
@@ -237,7 +256,7 @@ function atpService(input: Omit<TennisBroadcastService, "lastVerified" | "offici
   };
 }
 
-function wtaService(input: Omit<TennisBroadcastService, "lastVerified" | "officialWebsiteUrl" | "officialLinks" | "price"> & { price?: TennisServicePrice; extraLinks?: TennisOfficialLink[] }) {
+function wtaService(input: Omit<TennisBroadcastService, "lastVerified" | "officialWebsiteUrl" | "officialLinks" | "price"> & { lastVerified?: string; price?: TennisServicePrice; extraLinks?: TennisOfficialLink[] }) {
   return {
     ...tournament("wta-tour"),
     services: [
@@ -429,10 +448,13 @@ export type BroadcastValidationErrorCode =
   | "invalid_boolean"
   | "invalid_confidence"
   | "invalid_country_code"
+  | "invalid_last_verified"
   | "invalid_slug"
   | "invalid_tournament_slug"
   | "invalid_url"
-  | "missing_required_field";
+  | "missing_required_field"
+  | "stale_last_verified"
+  | "future_last_verified";
 
 export type BroadcastValidationError = {
   code: BroadcastValidationErrorCode;
@@ -446,6 +468,11 @@ export type BroadcastValidationResult = {
   errors: BroadcastValidationError[];
   warnings: BroadcastValidationError[];
   recordCount: number;
+};
+
+export type BroadcastValidationOptions = {
+  referenceDate?: string | Date;
+  staleAfterDays?: number;
 };
 
 function normalizedRecordId(record: Omit<NormalizedBroadcastRecord, "id">) {
@@ -496,12 +523,34 @@ function pushValidationError(errors: BroadcastValidationError[], code: Broadcast
   errors.push({ code, path, message, value });
 }
 
-export function validateBroadcastDatabase(database: TennisCountryBroadcastDatabase[] = tennisBroadcastDatabase): BroadcastValidationResult {
+function parseVerifiedDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) return undefined;
+  if (date.toISOString().slice(0, 10) !== value) return undefined;
+
+  return date;
+}
+
+function resolveReferenceDate(value: string | Date | undefined) {
+  if (value instanceof Date) return value;
+  if (typeof value === "string") return parseVerifiedDate(value) ?? new Date(value);
+
+  return new Date();
+}
+
+function daysBetween(start: Date, end: Date) {
+  return Math.floor((end.getTime() - start.getTime()) / 86_400_000);
+}
+
+export function validateBroadcastDatabase(database: TennisCountryBroadcastDatabase[] = tennisBroadcastDatabase, options: BroadcastValidationOptions = {}): BroadcastValidationResult {
   const errors: BroadcastValidationError[] = [];
   const warnings: BroadcastValidationError[] = [];
   const countryKeys = new Set<string>();
   const ids = new Set<string>();
   const mappings = new Set<string>();
+  const referenceDate = resolveReferenceDate(options.referenceDate);
+  const staleAfterDays = options.staleAfterDays ?? TENNIS_BROADCAST_STALE_AFTER_DAYS;
   let recordCount = 0;
 
   database.forEach((countryItem, countryIndex) => {
@@ -566,6 +615,21 @@ export function validateBroadcastDatabase(database: TennisCountryBroadcastDataba
         if (!record.streamingService) pushValidationError(errors, "missing_required_field", `${servicePath}.streamingService`, "Streaming service is required.");
         if (!record.confidence) pushValidationError(errors, "missing_required_field", `${servicePath}.confidence`, "Confidence is required.");
         if (!record.lastVerified) pushValidationError(errors, "missing_required_field", `${servicePath}.lastVerified`, "Last verified date is required.");
+        if (record.lastVerified) {
+          const lastVerifiedDate = parseVerifiedDate(record.lastVerified);
+
+          if (!lastVerifiedDate) {
+            pushValidationError(errors, "invalid_last_verified", `${servicePath}.lastVerified`, "Last verified date must use YYYY-MM-DD format.", record.lastVerified);
+          } else {
+            const ageDays = daysBetween(lastVerifiedDate, referenceDate);
+
+            if (ageDays < 0) {
+              pushValidationError(warnings, "future_last_verified", `${servicePath}.lastVerified`, "Last verified date is after the validation reference date.", record.lastVerified);
+            } else if (ageDays > staleAfterDays) {
+              pushValidationError(warnings, "stale_last_verified", `${servicePath}.lastVerified`, `Last verified date is older than ${staleAfterDays} days and should be refreshed.`, record.lastVerified);
+            }
+          }
+        }
 
         if (record.officialUrl && !isValidUrl(record.officialUrl)) {
           pushValidationError(errors, "invalid_url", `${servicePath}.officialUrl`, "Official URL must be a valid HTTP or HTTPS URL.", record.officialUrl);

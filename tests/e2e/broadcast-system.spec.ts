@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import {
   calculateKnownMonthlyTotal,
   findBroadcasts,
@@ -19,6 +19,47 @@ import {
 } from "../../src/data/tennisBroadcasts";
 
 const grandSlamIds = ["australian-open", "roland-garros", "wimbledon", "us-open"];
+
+async function getJsonLdObjects(page: Page) {
+  const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
+
+  return scripts
+    .map((script) => {
+      try {
+        return JSON.parse(script);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean) as Array<Record<string, unknown>>;
+}
+
+function schemaMatchesType(schema: Record<string, unknown>, type: string): boolean {
+  const schemaType = schema["@type"];
+  const graph = schema["@graph"];
+
+  if (schemaType === type) return true;
+  if (Array.isArray(schemaType) && schemaType.includes(type)) return true;
+  if (Array.isArray(graph)) {
+    return graph.some((item) =>
+      typeof item === "object" && item !== null && schemaMatchesType(item as Record<string, unknown>, type),
+    );
+  }
+
+  return false;
+}
+
+async function expectJsonLdType(page: Page, type: string) {
+  await expect.poll(async () => {
+    const schemas = await getJsonLdObjects(page);
+
+    return schemas.some((schema) => schemaMatchesType(schema, type));
+  }).toBe(true);
+}
+
+async function expectMetaContent(page: Page, selector: string, expected: string | RegExp) {
+  await expect(page.locator(selector)).toHaveAttribute("content", expected);
+}
 
 test.describe("tennis broadcaster database", () => {
   test("stores Grand Slams separately from ATP and WTA rows", () => {
@@ -188,12 +229,40 @@ test.describe("tennis broadcaster database", () => {
     expect(polandWimbledon?.id).toBe("poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access");
   });
 
+  test("supports per-row last verified dates without changing the global default", () => {
+    const refreshedDatabase = structuredClone(tennisBroadcastDatabase) as TennisCountryBroadcastDatabase[];
+    refreshedDatabase[0].groups[2].services[0].lastVerified = "2026-06-27";
+
+    const records = getNormalizedBroadcastRecords(refreshedDatabase);
+    const refreshedRecord = records.find((record) => record.countrySlug === "poland" && record.tournamentSlug === "wimbledon");
+    const defaultRecord = records.find((record) => record.countrySlug === "poland" && record.tournamentSlug === "australian-open");
+    const validation = validateBroadcastDatabase(refreshedDatabase, { referenceDate: "2026-06-28" });
+
+    expect(refreshedRecord?.lastVerified).toBe("2026-06-27");
+    expect(defaultRecord?.lastVerified).toBe("2026-06-21");
+    expect(validation.isValid).toBe(true);
+    expect(validation.warnings).toEqual([]);
+  });
+
   test("validates the broadcaster database", () => {
-    const result = validateBroadcastDatabase();
+    const result = validateBroadcastDatabase(tennisBroadcastDatabase, { referenceDate: "2026-06-28" });
 
     expect(result.isValid).toBe(true);
     expect(result.recordCount).toBe(72);
     expect(result.errors).toEqual([]);
+    expect(result.warnings).toEqual([]);
+  });
+
+  test("warns when broadcaster rows need freshness review", () => {
+    const staleDatabase = structuredClone(tennisBroadcastDatabase) as TennisCountryBroadcastDatabase[];
+    staleDatabase[0].groups[2].services[0].lastVerified = "2025-01-15";
+
+    const result = validateBroadcastDatabase(staleDatabase, { referenceDate: "2026-06-28", staleAfterDays: 365 });
+
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toEqual([]);
+    expect(result.warnings.map((warning) => warning.code)).toContain("stale_last_verified");
+    expect(result.warnings.find((warning) => warning.code === "stale_last_verified")?.path).toBe("countries[0].groups[2].services[0].lastVerified");
   });
 
   test("detects duplicate mappings and invalid fields", () => {
@@ -204,8 +273,9 @@ test.describe("tennis broadcaster database", () => {
     invalidDatabase[0].groups[2].services[0].broadcasterName = "";
     invalidDatabase[0].groups[3].services[0].isFree = "sometimes" as unknown as boolean;
     invalidDatabase[0].groups[4].services[0].confidenceLevel = "maybe" as never;
+    invalidDatabase[0].groups[5].services[0].lastVerified = "June 21 2026";
 
-    const result = validateBroadcastDatabase(invalidDatabase);
+    const result = validateBroadcastDatabase(invalidDatabase, { referenceDate: "2026-06-28" });
     const codes = result.errors.map((error) => error.code);
 
     expect(result.isValid).toBe(false);
@@ -216,6 +286,7 @@ test.describe("tennis broadcaster database", () => {
       "missing_required_field",
       "invalid_boolean",
       "invalid_confidence",
+      "invalid_last_verified",
     ]));
   });
 });
@@ -253,5 +324,82 @@ test.describe("broadcaster UI", () => {
     await expect(page.getByText("Tennis Channel app").first()).toBeVisible();
     await expect(page.getByText("ESPN platforms").first()).toBeVisible();
     await expect(page.getByText("$11.99/month").first()).toBeVisible();
+  });
+});
+
+test.describe("broadcaster metadata and schema", () => {
+  test("broadcaster directory exposes canonical metadata, OG tags and collection schema", async ({ page }) => {
+    await page.goto("/broadcasters", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle("Tennis Broadcasters | Official TV & Streaming Services by Country");
+    await expectMetaContent(
+      page,
+      'meta[name="description"]',
+      "Browse tennis broadcasters and streaming services by country, tournament coverage, free or paid status, source confidence and last verified date.",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://watchtennistoday.com/broadcasters");
+    await expectMetaContent(page, 'meta[property="og:title"]', "Tennis Broadcasters");
+    await expectMetaContent(page, 'meta[property="og:url"]', "https://watchtennistoday.com/broadcasters");
+    await expectJsonLdType(page, "BreadcrumbList");
+    await expectJsonLdType(page, "FAQPage");
+    await expectJsonLdType(page, "CollectionPage");
+  });
+
+  test("broadcaster profile exposes profile metadata, social tags and service schema", async ({ page }) => {
+    await page.goto("/broadcaster/espn", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle("ESPN Tennis Coverage | Countries, Tournaments & Streaming Notes");
+    await expectMetaContent(
+      page,
+      'meta[name="description"]',
+      "Check ESPN tennis coverage by country and tournament, including free/paid status, official links, confidence level and last verified dates.",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://watchtennistoday.com/broadcaster/espn");
+    await expectMetaContent(page, 'meta[property="og:title"]', "ESPN Tennis Coverage | Countries, Tournaments & Streaming Notes");
+    await expectMetaContent(page, 'meta[property="og:url"]', "https://watchtennistoday.com/broadcaster/espn");
+    await expectMetaContent(page, 'meta[name="twitter:card"]', "summary_large_image");
+    await expectJsonLdType(page, "BreadcrumbList");
+    await expectJsonLdType(page, "FAQPage");
+    await expectJsonLdType(page, "Service");
+  });
+
+  test("Can I Watch finder exposes route metadata, schema and SEO detail links", async ({ page }) => {
+    await page.goto("/can-i-watch", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle("Can I Watch This Tennis Match? | Country & Broadcaster Finder");
+    await expect(page.getByRole("heading", { name: /can i watch this tennis match/i })).toBeVisible();
+    await expectMetaContent(
+      page,
+      'meta[name="description"]',
+      "Choose a country and player or tournament to find official tennis broadcasters, streaming services, free/paid notes and verification links.",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://watchtennistoday.com/can-i-watch");
+    await expectMetaContent(page, 'meta[property="og:title"]', "Can I Watch This Tennis Match?");
+    await expectMetaContent(page, 'meta[property="og:url"]', "https://watchtennistoday.com/can-i-watch");
+    await expectJsonLdType(page, "BreadcrumbList");
+    await expectJsonLdType(page, "WebSite");
+    await expectJsonLdType(page, "FAQPage");
+
+    await page.getByLabel("Country").selectOption("usa");
+    await page.getByPlaceholder("Wimbledon, Iga Swiatek, Carlos Alcaraz...").fill("Wimbledon");
+
+    await expect(page.getByText("ESPN", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open SEO page" })).toHaveAttribute("href", "/can-i-watch/wimbledon/usa");
+  });
+
+  test("Can I Watch detail pages expose canonical metadata and FAQ schema", async ({ page }) => {
+    await page.goto("/can-i-watch/wimbledon/usa", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle("Can I Watch Wimbledon in United States? | Tennis Broadcasters");
+    await expectMetaContent(
+      page,
+      'meta[name="description"]',
+      "Find official tennis broadcasters and streaming services for Wimbledon in United States, including free/paid notes, confidence level and source links.",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://watchtennistoday.com/can-i-watch/wimbledon/usa");
+    await expectMetaContent(page, 'meta[property="og:title"]', "Can I Watch Wimbledon in United States? | Tennis Broadcasters");
+    await expectMetaContent(page, 'meta[property="og:url"]', "https://watchtennistoday.com/can-i-watch/wimbledon/usa");
+    await expectJsonLdType(page, "BreadcrumbList");
+    await expectJsonLdType(page, "FAQPage");
   });
 });
