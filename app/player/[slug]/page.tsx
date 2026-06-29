@@ -767,11 +767,13 @@ function buildPlayerResourceLinks({
   pageSlug,
   currentPath,
   tournaments,
+  hasRanking,
 }: {
   playerName: string;
   pageSlug: string;
   currentPath: string;
   tournaments: string[];
+  hasRanking: boolean;
 }) {
   const tournamentLinks: PlayerResourceLink[] = tournaments.slice(0, 2).map((tournament, index) => ({
     label: `${tournament} tournament page`,
@@ -792,9 +794,24 @@ function buildPlayerResourceLinks({
       priority: 80,
     },
     {
+      label: "Upcoming tennis matches",
+      href: "/tomorrow",
+      priority: 78,
+    },
+    {
       label: "Live tennis matches today",
       href: "/live-tennis",
       priority: 75,
+    },
+    {
+      label: "Top tennis players hub",
+      href: "/best-tennis-players",
+      priority: 73,
+    },
+    {
+      label: hasRanking ? "ATP and WTA rankings explained" : "",
+      href: hasRanking ? "/atp-wta-rankings-explained" : null,
+      priority: 72,
     },
     {
       label: "Tennis schedule today",
@@ -1269,6 +1286,7 @@ const playerMatches = allMatches
     pageSlug,
     currentPath: `/player/${pageSlug}`,
     tournaments: visibleTournaments,
+    hasRanking: Boolean(ranking),
   });
 
   if (process.env.NODE_ENV !== "production") {

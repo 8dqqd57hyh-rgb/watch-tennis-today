@@ -7,7 +7,7 @@ import { getTournamentEditorialProfile } from "@/data/tennisEditorial";
 import { getTournamentCalendarEntry, type TournamentCalendarEntry } from "@/app/lib/tournamentCalendar";
 import { getApiTennisTournamentFixtureDateRange, type TournamentDateRange } from "@/app/lib/tournamentDateRange";
 import { shouldIndexTournamentPage } from "@/app/lib/adsenseIndexing";
-import { getStableTournamentHub } from "@/data/tournamentHubs";
+import { getStableTournamentHub, stableTournamentHubs } from "@/data/tournamentHubs";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import { getServerMatchesWindow, type ServerMatch } from "@/app/lib/serverMatches";
 import {
@@ -285,6 +285,38 @@ function getTournamentUrl(tournament: string) {
   return slug ? `/tournament/${slug}` : "/tournament";
 }
 
+function getAdjacentStableTournamentLinks(slug: string) {
+  const normalizedSlug = slug === "french-open" ? "roland-garros" : slug;
+  const currentIndex = stableTournamentHubs.findIndex((hub) => hub.slug === normalizedSlug);
+  if (currentIndex === -1) return { previous: null, next: null };
+
+  return {
+    previous: stableTournamentHubs[currentIndex - 1] || null,
+    next: stableTournamentHubs[currentIndex + 1] || null,
+  };
+}
+
+function describeTournamentHubLink(label: string) {
+  const lowerLabel = label.toLowerCase();
+  if (lowerLabel.includes("schedule") || lowerLabel.includes("order of play")) {
+    return "Check date, court and order-of-play context for this tournament cluster.";
+  }
+  if (lowerLabel.includes("results")) {
+    return "Review completed matches and result context before moving to the next event.";
+  }
+  if (lowerLabel.includes("watch") || lowerLabel.includes("stream") || lowerLabel.includes("tv")) {
+    return "Compare legal viewing routes and official broadcaster guidance.";
+  }
+  if (lowerLabel.includes("ranking")) {
+    return "Use ranking context to understand seed pressure and draw importance.";
+  }
+  if (lowerLabel.includes("live")) {
+    return "Jump to live match coverage and schedule context for current play.";
+  }
+
+  return `Continue from ${label} to related tournament context and legal viewing guidance.`;
+}
+
 function getMatchStatusBadge(match: Match) {
   if (isLiveMatch(match)) return { label: "Live", className: "bg-red-500 text-white" };
   if (isCompletedMatch(match)) return { label: "Completed", className: "bg-zinc-700 text-white" };
@@ -433,6 +465,7 @@ export default async function Page({ params }: PageProps) {
   const stableHub = getStableTournamentHub(slug);
   const stableHubName = stableHub?.name;
   const stableHubRelatedLinks = stableHub?.relatedLinks || [];
+  const adjacentStableTournamentLinks = getAdjacentStableTournamentLinks(slug);
   const tournamentName = tournamentMatches[0]?.tournament || stableHub?.name || unslugify(slug);
   const tournamentNetwork = getTournamentNetwork(slug, { matches: tournamentMatches });
   const relatedPlayerLinks = getRelatedPlayers(tournamentNetwork, 8);
@@ -1012,6 +1045,42 @@ export default async function Page({ params }: PageProps) {
           </div>
         </section>
 
+        {(adjacentStableTournamentLinks.previous || adjacentStableTournamentLinks.next) ? (
+          <section id="tournament-calendar-links" className="mb-12 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-green-400">Tournament calendar</p>
+            <h2 className="mb-4 text-3xl font-black">Previous and next tournament hubs</h2>
+            <p className="max-w-3xl leading-8 text-zinc-300">
+              Use nearby tournament hubs to move through the season, compare surface changes and keep player discovery connected across events.
+            </p>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {adjacentStableTournamentLinks.previous ? (
+                <Link
+                  href={`/tournament/${adjacentStableTournamentLinks.previous.slug}`}
+                  className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-400"
+                >
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Previous hub</p>
+                  <h3 className="mt-2 text-2xl font-black">{adjacentStableTournamentLinks.previous.name}</h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-400">
+                    {adjacentStableTournamentLinks.previous.seasonWindow} on {adjacentStableTournamentLinks.previous.surface}.
+                  </p>
+                </Link>
+              ) : null}
+              {adjacentStableTournamentLinks.next ? (
+                <Link
+                  href={`/tournament/${adjacentStableTournamentLinks.next.slug}`}
+                  className="rounded-2xl border border-zinc-800 bg-black p-5 hover:border-green-400"
+                >
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Next hub</p>
+                  <h3 className="mt-2 text-2xl font-black">{adjacentStableTournamentLinks.next.name}</h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-400">
+                    {adjacentStableTournamentLinks.next.seasonWindow} on {adjacentStableTournamentLinks.next.surface}.
+                  </p>
+                </Link>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
         {false ? (
         <section className="hidden">
           {tournamentMatches.length > 0 ? (
@@ -1149,7 +1218,7 @@ export default async function Page({ params }: PageProps) {
                     >
                       <h3 className="text-xl font-black">{link.label}</h3>
                       <p className="mt-3 text-sm leading-6 text-zinc-400">
-                        Continue with a related guide, schedule page or official-viewing context.
+                        {describeTournamentHubLink(link.label)}
                       </p>
                     </Link>
                   ))}

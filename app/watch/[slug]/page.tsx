@@ -791,6 +791,25 @@ function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
     });
   }
 
+  if (match.tournament.toLowerCase().includes("wimbledon")) {
+    links.push(
+      {
+        title: "Wimbledon hub",
+        eyebrow: "Wimbledon",
+        description: "Open the Wimbledon hub for draw, schedule and legal viewing context.",
+        href: "/wimbledon",
+        priority: 52,
+      },
+      {
+        title: "Where to watch Wimbledon",
+        eyebrow: "Wimbledon TV",
+        description: "Compare official Wimbledon broadcaster guidance before choosing a viewing route.",
+        href: "/where-to-watch-wimbledon",
+        priority: 51,
+      },
+    );
+  }
+
   return links
     .filter((link, index, list) => list.findIndex((item) => item.href === link.href) === index)
     .sort((a, b) => b.priority - a.priority)
@@ -1284,6 +1303,8 @@ function CurrentMatchPage({
                 player2={match.player2}
                 tournament={match.tournament}
               />
+
+              <RelatedCoverageEngine match={match} matches={matches} />
 
               {relatedMatches.length > 0 ? (
                 <section className="mb-10">
