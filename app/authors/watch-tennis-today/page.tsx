@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: authorProfile.image,
-        width: 1280,
-        height: 1707,
+        width: 800,
+        height: 1199,
         alt: `${authorProfile.name}, founder of Watch Tennis Today`,
       },
     ],
@@ -72,7 +72,7 @@ export default function AuthorPage() {
                 src={authorProfile.imagePath}
                 alt={`${authorProfile.name}, founder of Watch Tennis Today`}
                 fill
-                priority
+                preload
                 sizes="(min-width: 1024px) 420px, 100vw"
                 className="object-cover"
               />

@@ -60,6 +60,8 @@ export function buildOrganizationSchema() {
     logo: {
       "@type": "ImageObject",
       url: organizationProfile.logo,
+      width: 512,
+      height: 512,
     },
     founder: {
       "@id": `${authorProfile.url}#person`,
