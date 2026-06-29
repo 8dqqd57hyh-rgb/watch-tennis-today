@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { normalizeEmail, isValidEmail } from "@/app/lib/emailValidation";
+import { escapeHtml } from "@/app/lib/escapeHtml";
 import { getUpcomingFinals } from "@/app/lib/finals";
+import { checkSubscriptionRateLimit } from "@/app/lib/rateLimit";
 
 type FinalsMatch = {
   player1?: string;
@@ -22,14 +25,15 @@ function getResendClient() {
 
 export async function POST(request: Request) {
   try {
-    const resend = getResendClient();
     const body = await request.json();
+    const email = normalizeEmail(body.email);
+    const rateLimitResult = checkSubscriptionRateLimit(request, email || undefined);
 
-    const email = String(body.email || "")
-      .trim()
-      .toLowerCase();
+    if (rateLimitResult) {
+      return rateLimitResult;
+    }
 
-    if (!email || !email.includes("@")) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
         {
           ok: false,
@@ -41,6 +45,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const resend = getResendClient();
     const baseUrl =
       process.env.NEXT_PUBLIC_SITE_URL ||
       "http://localhost:3000";
@@ -69,26 +74,26 @@ export async function POST(request: Request) {
               (match: FinalsMatch) => `
                 <div style="margin-bottom:24px;padding:16px;border:1px solid #ddd;border-radius:12px;">
                   <h2>
-                    ${match.player1} vs ${match.player2}
+                    ${escapeHtml(match.player1)} vs ${escapeHtml(match.player2)}
                   </h2>
 
                   <p>
                     <strong>Tournament:</strong>
-                    ${match.tournament}
+                    ${escapeHtml(match.tournament)}
                   </p>
 
                   <p>
                     <strong>Category:</strong>
-                    ${match.category}
+                    ${escapeHtml(match.category)}
                   </p>
 
                   <p>
                     <strong>Start:</strong>
-                    ${
+                    ${escapeHtml(
                       match.startTime
                         ? new Date(match.startTime).toLocaleString()
                         : "Time to be confirmed"
-                    }
+                    )}
                   </p>
                 </div>
               `

@@ -6,7 +6,7 @@ import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
-import { supabase } from "@/app/lib/supabase";
+import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 import {
   getPlayerNetwork,

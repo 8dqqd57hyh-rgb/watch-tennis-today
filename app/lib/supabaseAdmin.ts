@@ -1,17 +1,19 @@
+import "server-only";
+
 import { createClient } from "@supabase/supabase-js";
 
 type SupabaseMockResult = Promise<{ data: null | never[]; error: null }>;
 
 type SupabaseMockBuilder = {
-  select: () => SupabaseMockBuilder;
-  insert: () => SupabaseMockResult;
-  upsert: () => SupabaseMockResult;
-  eq: () => SupabaseMockBuilder;
-  gte: () => SupabaseMockBuilder;
-  in: () => SupabaseMockBuilder;
-  not: () => SupabaseMockBuilder;
-  order: () => SupabaseMockBuilder;
-  limit: () => SupabaseMockBuilder;
+  select: (...args: unknown[]) => SupabaseMockBuilder;
+  insert: (...args: unknown[]) => SupabaseMockResult;
+  upsert: (...args: unknown[]) => SupabaseMockResult;
+  eq: (...args: unknown[]) => SupabaseMockBuilder;
+  gte: (...args: unknown[]) => SupabaseMockBuilder;
+  in: (...args: unknown[]) => SupabaseMockBuilder;
+  not: (...args: unknown[]) => SupabaseMockBuilder;
+  order: (...args: unknown[]) => SupabaseMockBuilder;
+  limit: (...args: unknown[]) => SupabaseMockBuilder;
   maybeSingle: <T>() => Promise<{ data: T | null; error: null }>;
   then: SupabaseMockResult["then"];
 };
@@ -38,16 +40,16 @@ function createBuildTimeSupabaseMock() {
   };
 }
 
-const hasSupabaseEnv = Boolean(
+const hasSupabaseAdminEnv = Boolean(
   process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-if (!hasSupabaseEnv) {
+if (!hasSupabaseAdminEnv) {
   console.warn(
-    "Supabase environment variables are missing; using a build-time no-op client. Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in production."
+    "Supabase admin environment variables are missing; using a build-time no-op client. Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in production."
   );
 }
 
-export const supabase = hasSupabaseEnv
+export const supabaseAdmin = hasSupabaseAdminEnv
   ? createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   : createBuildTimeSupabaseMock();

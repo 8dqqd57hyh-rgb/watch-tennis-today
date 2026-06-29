@@ -1,5 +1,5 @@
 import archive from "@/data/matchArchive.json";
-import { supabase } from "@/app/lib/supabase";
+import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 
 export type ArchivedMatch = {
   id: string;

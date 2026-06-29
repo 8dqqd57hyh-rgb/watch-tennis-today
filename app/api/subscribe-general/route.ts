@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { supabase } from "@/app/lib/supabase";
+import { normalizeEmail, isValidEmail } from "@/app/lib/emailValidation";
+import { escapeHtml } from "@/app/lib/escapeHtml";
+import { checkSubscriptionRateLimit } from "@/app/lib/rateLimit";
+import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
 
 const ALLOWED_CONTEXT_TYPES = new Set([
   "daily",
@@ -11,10 +14,6 @@ const ALLOWED_CONTEXT_TYPES = new Set([
   "general",
 ]);
 
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 function sanitizeText(value: unknown, fallback = "") {
   return String(value || fallback)
     .trim()
@@ -22,13 +21,32 @@ function sanitizeText(value: unknown, fallback = "") {
 }
 
 function getBaseUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || "https://watchtennistoday.com";
+  const fallback = "https://watchtennistoday.com";
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || fallback;
+
+  try {
+    const url = new URL(configuredUrl);
+
+    if (url.protocol === "https:" || url.protocol === "http:") {
+      return url.origin;
+    }
+  } catch {
+    return fallback;
+  }
+
+  return fallback;
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = sanitizeText(body.email).toLowerCase();
+    const email = normalizeEmail(body.email);
+    const rateLimitResult = checkSubscriptionRateLimit(request, email || undefined);
+
+    if (rateLimitResult) {
+      return rateLimitResult;
+    }
+
     const contextType = sanitizeText(body.contextType, "general");
     const contextValue = sanitizeText(body.contextValue, "site");
     const source = sanitizeText(body.source, "email-capture");
@@ -50,7 +68,7 @@ export async function POST(request: Request) {
     // Best-effort persistence. If the optional table has not been created yet,
     // do not break the user-facing signup flow; report the warning in logs so it
     // can be wired during production setup.
-    const { error: databaseError } = await supabase
+    const { error: databaseError } = await supabaseAdmin
       .from("email_subscriptions")
       .upsert(
         {
@@ -70,6 +88,7 @@ export async function POST(request: Request) {
 
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
+      const baseUrl = getBaseUrl();
       await resend.emails.send({
         from: "Watch Tennis Today <onboarding@resend.dev>",
         to: email,
@@ -78,10 +97,10 @@ export async function POST(request: Request) {
           <div style="font-family:Arial,sans-serif;padding:24px;line-height:1.6;color:#111;">
             <h1 style="margin:0 0 16px;">You are signed up</h1>
             <p>Thanks for subscribing to Watch Tennis Today updates.</p>
-            <p><strong>Signup type:</strong> ${contextType}</p>
-            <p><strong>Related page:</strong> ${contextValue}</p>
+            <p><strong>Signup type:</strong> ${escapeHtml(contextType)}</p>
+            <p><strong>Related page:</strong> ${escapeHtml(contextValue)}</p>
             <p>We focus on legal viewing guidance, match schedules and useful tennis reminders. We do not send links to unofficial streams.</p>
-            <p><a href="${getBaseUrl()}/newsletter-confirmation" style="display:inline-block;padding:12px 18px;background:#111;color:#fff;border-radius:8px;text-decoration:none;">View subscription details</a></p>
+            <p><a href="${baseUrl}/newsletter-confirmation" style="display:inline-block;padding:12px 18px;background:#111;color:#fff;border-radius:8px;text-decoration:none;">View subscription details</a></p>
           </div>
         `,
       });

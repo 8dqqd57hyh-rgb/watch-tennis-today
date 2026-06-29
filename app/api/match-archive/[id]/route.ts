@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/app/lib/supabase";
+import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 
 type ArchivedMatchRow = {
   id?: string | number | null;

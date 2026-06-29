@@ -55,6 +55,7 @@ export default function TennisTournamentsPage() {
             <article key={level.name} className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
               <h2 className="text-3xl font-black">{level.name}</h2>
               <p className="mt-2 text-sm font-bold text-emerald-300">{level.examples}</p>
+              {/* Static editorial HTML only. Sanitize any future dynamic CMS/API HTML before rendering. */}
               <p className="mt-3 leading-8 text-zinc-300" dangerouslySetInnerHTML={{ __html: level.body }} />
             </article>
           ))}

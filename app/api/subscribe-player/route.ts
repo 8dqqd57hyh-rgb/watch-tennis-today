@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { supabase } from "@/app/lib/supabase";
+import { normalizeEmail, isValidEmail } from "@/app/lib/emailValidation";
+import { escapeHtml } from "@/app/lib/escapeHtml";
+import { checkSubscriptionRateLimit } from "@/app/lib/rateLimit";
+import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
 import { getCanonicalPlayerSlug, players } from "@/data/playerSlugs";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const email = String(body.email || "")
-      .trim()
-      .toLowerCase();
+    const email = normalizeEmail(body.email);
+    const rateLimitResult = checkSubscriptionRateLimit(request, email || undefined);
+
+    if (rateLimitResult) {
+      return rateLimitResult;
+    }
 
     const requestedPlayer = String(body.playerSlug || body.playerName || "");
     const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedPlayer);
@@ -17,7 +23,7 @@ export async function POST(request: Request) {
     const playerName = canonicalPlayerSlug ? players[canonicalPlayerSlug].name : "";
     const source = String(body.source || "player-page");
 
-    if (!email.includes("@")) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
         {
           ok: false,
@@ -41,7 +47,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("player_subscriptions")
       .insert({
         email,
@@ -66,6 +72,7 @@ export async function POST(request: Request) {
 
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
+      const safePlayerName = escapeHtml(playerName);
       await resend.emails.send({
         from:
           "Watch Tennis Today <onboarding@resend.dev>",
@@ -77,7 +84,7 @@ export async function POST(request: Request) {
         html: `
         <div style="font-family:Arial;padding:24px;">
           <h1>
-            🎾 You are now following ${playerName}
+            🎾 You are now following ${safePlayerName}
           </h1>
 
           <p>
