@@ -2,6 +2,7 @@ import Link from "next/link";
 import EmailSignup from "@/app/components/EmailSignup";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import FreeVsPaidWimbledonViewing from "@/app/components/FreeVsPaidWimbledonViewing";
+import RelatedPages from "@/app/components/RelatedPages";
 import RelatedWimbledonGuides from "@/app/components/RelatedWimbledonGuides";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
@@ -231,7 +232,7 @@ export default function WimbledonGuidePage({
           <a href="/wimbledon-live" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Live hub</a>
           <a href="/wimbledon-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Schedule</a>
           <a href="/wimbledon-order-of-play" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Order of play</a>
-          <a href="/wimbledon-tv-schedule" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">TV schedule</a>
+          <a href="/where-to-watch-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">Where to watch</a>
           <a href="/best-vpn-for-wimbledon" className="rounded-2xl border bg-white p-4 font-semibold hover:bg-neutral-50">VPN guide</a>
         </div>
       </section>
@@ -357,6 +358,24 @@ export default function WimbledonGuidePage({
       </section>
 
       <EmailSignup />
+
+      <RelatedPages
+        className="mt-8"
+        variant="light"
+        currentPath={currentPath}
+        eyebrow="Wimbledon paths"
+        title="Related Wimbledon and live tennis pages"
+        description="Continue from this Wimbledon guide into the schedule, results, daily tennis hubs and player discovery pages."
+        links={[
+          { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Legal live viewing checks and match-day context." },
+          { href: "/wimbledon-schedule", label: "Wimbledon schedule", eyebrow: "Wimbledon", description: "Plan court sessions and order-of-play changes." },
+          { href: "/wimbledon-results", label: "Wimbledon results", eyebrow: "Wimbledon", description: "Move from live coverage into completed match context." },
+          { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "See live, upcoming and completed matches beyond Wimbledon." },
+          { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow ATP and WTA live match windows." },
+          { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Open player profiles connected to major tournament demand." },
+          { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Compare Wimbledon with the other major tournaments." },
+        ]}
+      />
 
       <div className="mt-8">
         <RelatedWimbledonGuides currentPath={currentPath} />

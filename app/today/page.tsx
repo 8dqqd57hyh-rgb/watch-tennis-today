@@ -1,5 +1,7 @@
 import TodayClient from "./TodayClient";
 import EmailCapture from "@/components/EmailCapture";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedPages from "@/app/components/RelatedPages";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +15,12 @@ export const metadata = {
 export default function Page() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
+      <nav className="mb-6 flex flex-wrap gap-2 text-sm text-slate-500" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-emerald-700">Home</Link>
+        <span>/</span>
+        <span className="font-semibold text-slate-900">Tennis Today</span>
+      </nav>
+
       <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">Daily tennis guide</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Today&apos;s tennis matches, live schedule and legal viewing checks</h1>
@@ -47,20 +55,22 @@ export default function Page() {
         </article>
       </section>
 
-      <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-950">Useful viewing guides from today&apos;s schedule</h2>
-        <p className="mt-3 max-w-3xl leading-7 text-slate-700">
-          After you identify the match and tournament, use these pages to verify country rights, player-specific schedule context and official broadcaster routes.
-        </p>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <Link href="/watch-tennis-in/france" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in France</Link>
-          <Link href="/watch-tennis-in/germany" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in Germany</Link>
-          <Link href="/watch-tennis-in/spain" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Watch tennis in Spain</Link>
-          <Link href="/tv-schedule/iga-swiatek" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Iga Swiatek TV schedule</Link>
-          <Link href="/player/jesper-de-jong" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Jesper de Jong profile</Link>
-          <Link href="/player/ha-eum-lee" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold text-slate-950 hover:border-emerald-500">Ha Eum Lee profile</Link>
-        </div>
-      </section>
+      <RelatedPages
+        className="mb-8"
+        variant="light"
+        currentPath="/today"
+        eyebrow="Next steps"
+        title="Useful pages from today's tennis schedule"
+        description="After you identify the match and tournament, use these pages to verify live status, country rights, player context and official broadcaster routes."
+        links={[
+          { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow live, starting-soon and completed match windows." },
+          { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Open player profiles and next-match pages from one directory." },
+          { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Move from today's schedule into Wimbledon viewing context." },
+          { href: "/wimbledon-schedule", label: "Wimbledon schedule", eyebrow: "Wimbledon", description: "Plan court sessions, order of play and legal TV checks." },
+          { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Jump to major-tournament live match coverage." },
+          { href: "/tennis-tv-broadcast-finder", label: "Tennis broadcaster finder", eyebrow: "Country rights", description: "Verify legal broadcaster routes by country and event." },
+        ]}
+      />
 
       <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-slate-950">FAQ: using today&apos;s tennis schedule</h2>
@@ -90,6 +100,12 @@ export default function Page() {
         />
       </div>
       <TodayClient />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "Tennis Today", url: "https://watchtennistoday.com/today" },
+        ]}
+      />
     </main>
   );
 }

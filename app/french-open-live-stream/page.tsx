@@ -1,3 +1,7 @@
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import RelatedPages from "@/app/components/RelatedPages";
+import Link from "next/link";
+
 export const metadata = {
   title: "French Open Live Stream Guide | Legal Roland Garros Viewing Options",
   description:
@@ -5,16 +9,17 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
-const resources = [
-  { href: "/french-open", label: "French Open live hub" },
-  { href: "/where-to-watch-french-open", label: "Where to watch by country" },
-  { href: "/french-open-order-of-play", label: "French Open order of play" },
-  { href: "/french-open-results", label: "Latest French Open results" },
-];
-
 export default function FrenchOpenLiveStreamPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
+      <nav className="mb-6 flex flex-wrap gap-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-green-700">Home</Link>
+        <span>/</span>
+        <Link href="/french-open" className="hover:text-green-700">French Open</Link>
+        <span>/</span>
+        <span className="font-semibold text-neutral-900">Live Stream Guide</span>
+      </nav>
+
       <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-green-700">
         Roland Garros streaming guide
       </p>
@@ -48,20 +53,21 @@ export default function FrenchOpenLiveStreamPage() {
           </ul>
         </section>
 
-        <section>
-          <h2 className="mb-3 text-2xl font-semibold">Useful French Open pages</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {resources.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="rounded-xl border p-4 font-medium hover:bg-neutral-50"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </section>
+        <RelatedPages
+          variant="light"
+          currentPath="/french-open-live-stream"
+          eyebrow="Roland Garros paths"
+          title="Useful French Open pages"
+          description="Use these stable pages to confirm the order of play, results, country rights and broader tennis schedule context."
+          links={[
+            { href: "/french-open", label: "French Open hub", eyebrow: "Roland Garros", description: "Live context and main tournament guide." },
+            { href: "/where-to-watch-french-open", label: "Where to watch French Open", eyebrow: "Viewing", description: "Country-by-country broadcaster checks." },
+            { href: "/french-open-order-of-play", label: "French Open order of play", eyebrow: "Schedule", description: "Daily match timing and court context." },
+            { href: "/french-open-results", label: "French Open results", eyebrow: "Results", description: "Completed match and draw context." },
+            { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "All live, upcoming and completed tennis matches." },
+            { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Current ATP and WTA live match windows." },
+          ]}
+        />
 
         <p className="text-base text-neutral-600">
           Tip: if you are travelling, the streaming service available at home may not be
@@ -69,6 +75,13 @@ export default function FrenchOpenLiveStreamPage() {
           broadcaster rules before relying on a subscription abroad.
         </p>
       </div>
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://watchtennistoday.com" },
+          { name: "French Open", url: "https://watchtennistoday.com/french-open" },
+          { name: "French Open Live Stream Guide", url: "https://watchtennistoday.com/french-open-live-stream" },
+        ]}
+      />
     </main>
   );
 }

@@ -1,5 +1,8 @@
 import { safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
+import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import FrenchOpenDayTimeline from "@/app/components/FrenchOpenDayTimeline";
+import RelatedPages from "@/app/components/RelatedPages";
+import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
@@ -185,17 +188,6 @@ export default async function FrenchOpenOrderOfPlayPage() {
     ["Completed", completedMatches.length],
   ];
 
-  const relatedLinks = [
-    ["French Open Today", "/french-open"],
-    ["French Open Results", "/french-open-results"],
-    ["French Open Schedule", "/french-open-order-of-play"],
-    ["French Open Live", "/french-open"],
-    ["TV Schedule", "/where-to-watch-french-open"],
-    ["French Open Hub", "/french-open"],
-    ["Where to Watch", "/where-to-watch-french-open"],
-    ["Streaming Countries", "/where-to-watch-french-open"],
-  ];
-
   const faq = [
     {
       q: "What is the French Open order of play?",
@@ -214,6 +206,14 @@ export default async function FrenchOpenOrderOfPlayPage() {
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
       <div className="mx-auto max-w-7xl">
+        <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-400" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-white">Home</Link>
+          <span>/</span>
+          <Link href="/french-open" className="hover:text-white">French Open</Link>
+          <span>/</span>
+          <span className="text-white">Order of Play</span>
+        </nav>
+
         <FrenchOpenDayTimeline compact />
 
         <section className="mb-10 rounded-[2.5rem] border border-orange-500/50 bg-gradient-to-br from-orange-950/50 to-black p-8">
@@ -376,27 +376,22 @@ export default async function FrenchOpenOrderOfPlayPage() {
           )}
         </section>
 
-        <section className="mb-12 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
-          <h2 className="mb-5 text-3xl font-black">
-            More French Open guides
-          </h2>
-
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {relatedLinks.map(([title, href]) => (
-              <a
-                key={href}
-                href={href}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition hover:border-orange-500"
-              >
-                <h3 className="mb-2 text-lg font-black">{title}</h3>
-                <p className="text-sm leading-6 text-zinc-400">
-                  Follow Roland Garros matches, streams, scores and schedule
-                  updates.
-                </p>
-              </a>
-            ))}
-          </div>
-        </section>
+        <RelatedPages
+          className="mb-12"
+          currentPath="/french-open-order-of-play"
+          eyebrow="Roland Garros paths"
+          title="Related French Open and live tennis pages"
+          description="Continue from the order of play into live match coverage, results, legal viewing checks and broader tennis schedule hubs."
+          links={[
+            { href: "/french-open", label: "French Open hub", eyebrow: "Roland Garros", description: "Open the main Roland Garros guide and live context." },
+            { href: "/where-to-watch-french-open", label: "Where to watch French Open", eyebrow: "Viewing", description: "Verify legal broadcaster routes by country." },
+            { href: "/french-open-results", label: "French Open results", eyebrow: "Results", description: "Move from the daily schedule into completed match context." },
+            { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "See all current tennis matches beyond Roland Garros." },
+            { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow active ATP and WTA match windows." },
+            { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Open player profiles connected to schedule demand." },
+            { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Compare Roland Garros with other major live coverage." },
+          ]}
+        />
 
         <section className="mb-12 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 to-black p-8">
           <h2 className="mb-5 text-3xl font-black">
@@ -450,6 +445,13 @@ export default async function FrenchOpenOrderOfPlayPage() {
               })),
             }),
           }}
+        />
+        <BreadcrumbSchema
+          items={[
+            { name: "Home", url: "https://watchtennistoday.com" },
+            { name: "French Open", url: "https://watchtennistoday.com/french-open" },
+            { name: "French Open Order of Play", url: "https://watchtennistoday.com/french-open-order-of-play" },
+          ]}
         />
       </div>
     </main>

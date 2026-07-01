@@ -15,8 +15,8 @@ type WimbledonCountryLandingPageProps = {
 const planningLinks = [
   { href: "/wimbledon-schedule", label: "Wimbledon schedule" },
   { href: "/wimbledon-order-of-play", label: "Order of play" },
-  { href: "/wimbledon-tv-schedule", label: "TV schedule" },
   { href: "/where-to-watch-wimbledon", label: "Where to watch Wimbledon" },
+  { href: "/wimbledon-results", label: "Wimbledon results" },
 ];
 
 export default function WimbledonCountryLandingPage({

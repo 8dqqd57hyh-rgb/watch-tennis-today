@@ -1,5 +1,6 @@
 import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
+import RelatedPages from "@/app/components/RelatedPages";
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
 
@@ -451,6 +452,24 @@ export default async function GrandSlamLivePage() {
         </section>
 
         <RelatedMoneyLinks />
+
+        <RelatedPages
+          className="mb-14"
+          currentPath="/grand-slam-live"
+          eyebrow="Major tournament paths"
+          title="Related Grand Slam and live tennis pages"
+          description="Use these hubs to move from major-tournament live coverage into daily schedules, player pages and tournament-specific guides."
+          links={[
+            { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "All live, upcoming and completed tennis matches." },
+            { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "ATP and WTA matches currently in the live flow." },
+            { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Find player profiles and next-match context." },
+            { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Tournament-specific viewing and schedule guidance." },
+            { href: "/wimbledon-schedule", label: "Wimbledon schedule", eyebrow: "Wimbledon", description: "Order-of-play and court planning context." },
+            { href: "/wimbledon-results", label: "Wimbledon results", eyebrow: "Wimbledon", description: "Completed match and draw context." },
+            { href: "/french-open-order-of-play", label: "French Open order of play", eyebrow: "Roland Garros", description: "Daily match timing and court context." },
+            { href: "/where-to-watch-french-open", label: "Where to watch French Open", eyebrow: "Roland Garros", description: "Country broadcaster checks for Roland Garros." },
+          ]}
+        />
 
     
       </div>

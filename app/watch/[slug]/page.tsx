@@ -471,7 +471,7 @@ function BasicRelatedLinks({
     player1Url ? { label: `${player1} page`, href: player1Url } : null,
     player2Url ? { label: `${player2} page`, href: player2Url } : null,
     tournamentName && tournamentUrl ? { label: `${tournamentName} page`, href: tournamentUrl } : null,
-    { label: "Today's tennis schedule", href: "/tennis-schedule-today" },
+    { label: "Today's tennis schedule", href: "/today" },
     { label: "Live tennis page", href: "/live-tennis" },
     { label: "Tennis order of play page", href: "/tennis-order-of-play-today" },
   ].filter((link): link is { label: string; href: string } => Boolean(link));
@@ -718,7 +718,7 @@ function buildRelatedCoverageLinks(match: Match, matches: Match[]) {
       title: "Today’s tennis schedule",
       eyebrow: "Schedule",
       description: "See the full tennis schedule for today, including live, upcoming and completed matches.",
-      href: "/tennis-schedule-today",
+      href: "/today",
       priority: 55,
     },
     {
@@ -834,7 +834,7 @@ function RelatedCoverageEngine({
           </p>
           <h2 className="text-3xl font-black">Keep following this matchup</h2>
         </div>
-        <Link href="/tennis-schedule-today" className="text-sm font-bold text-green-400 hover:text-green-300">
+        <Link href="/today" className="text-sm font-bold text-green-400 hover:text-green-300">
           Open today’s schedule →
         </Link>
       </div>
@@ -1028,7 +1028,7 @@ function ArchivedMatchPage({ archivedMatch }: { archivedMatch: ArchivedMatchLike
           </section>
 
           <div className="flex flex-wrap gap-4">
-            <a href="/tennis-schedule-today" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
+            <a href="/today" className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400">
               Tennis Schedule Today
             </a>
             <a href="/live-tennis" className="rounded-2xl bg-zinc-800 px-6 py-4 font-black text-white transition-all hover:bg-zinc-700">
@@ -1219,7 +1219,7 @@ function CurrentMatchPage({
                 <Link href="#where-to-watch" className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black transition hover:bg-green-400">
                   Where to watch
                 </Link>
-                <Link href="/tennis-schedule-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white transition hover:border-green-400">
+                <Link href="/today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white transition hover:border-green-400">
                   Today&apos;s schedule
                 </Link>
                 <LocalMatchFollowButton

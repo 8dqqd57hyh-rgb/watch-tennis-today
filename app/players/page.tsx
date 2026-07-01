@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RelatedPages from "@/app/components/RelatedPages";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,25 @@ export default function PlayersPage() {
             <a href="/analysis" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white hover:border-green-500" data-testid="guide-streaming-link">Tennis analysis</a>
           </div>
         </section>
+
+        <RelatedPages
+          className="mb-14"
+          currentPath="/players"
+          eyebrow="Player discovery"
+          title="Related tennis player and schedule pages"
+          description="Use these pages to move between the player directory, live match coverage, daily schedules and major player guides without landing on a dead end."
+          links={[
+            { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "Find which players are active today." },
+            { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow active ATP and WTA matches." },
+            { href: "/players/atp", label: "ATP players", eyebrow: "ATP", description: "Browse ATP-focused player pages." },
+            { href: "/players/wta", label: "WTA players", eyebrow: "WTA", description: "Browse WTA-focused player pages." },
+            { href: "/watch-alcaraz-live", label: "Carlos Alcaraz live", eyebrow: "Player live", description: "Open a high-demand player viewing guide." },
+            { href: "/watch-sinner-live", label: "Jannik Sinner live", eyebrow: "Player live", description: "Open a high-demand player viewing guide." },
+            { href: "/watch-djokovic-live", label: "Novak Djokovic live", eyebrow: "Player live", description: "Open a high-demand player viewing guide." },
+            { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Connect player demand to major tournament coverage." },
+          ]}
+        />
+
         <section className="mb-14 rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8">
   <h2 className="text-3xl font-black mb-5">
     ATP & WTA Player Hubs

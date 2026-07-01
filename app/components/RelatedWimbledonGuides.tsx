@@ -3,7 +3,6 @@ import Link from "next/link";
 export const WIMBLEDON_GUIDE_LINKS = [
   { href: "/wimbledon-schedule", label: "Wimbledon Schedule" },
   { href: "/wimbledon-order-of-play", label: "Wimbledon Order of Play" },
-  { href: "/wimbledon-tv-schedule", label: "Wimbledon TV Schedule" },
   { href: "/where-to-watch-wimbledon", label: "Where to Watch Wimbledon" },
   { href: "/best-vpn-for-wimbledon", label: "Best VPN for Wimbledon" },
   { href: "/wimbledon-live", label: "Wimbledon Live" },

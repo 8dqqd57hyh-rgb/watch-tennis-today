@@ -6,6 +6,7 @@ import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
 import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
+import RelatedPages from "@/app/components/RelatedPages";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 import {
@@ -2416,20 +2417,26 @@ const playerMatches = allMatches
         </div>
       </section>
 
-      <section id="faq" className="mb-10 scroll-mt-24 rounded-3xl border border-zinc-200 bg-white p-6">
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Related resources</p>
-        <h2 className="text-2xl font-black text-zinc-950">Player resources for rankings, tournaments and legal viewing</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
-          Continue from {playerName} to evergreen guides that explain rankings, tournament levels, scoring and legal streaming checks.
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {playerResourceLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-black text-zinc-900 hover:border-green-500">
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <RelatedPages
+        className="mb-10 scroll-mt-24"
+        variant="light"
+        currentPath={`/player/${pageSlug}`}
+        eyebrow="Related resources"
+        title={`Player resources for ${playerName}`}
+        description={`Continue from ${playerName} to live schedules, player discovery, tournament context and legal viewing checks.`}
+        links={[
+          { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "Check live, upcoming and completed matches today." },
+          { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow current ATP and WTA match windows." },
+          { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Return to the full player directory." },
+          { href: `/watch-player-live/${pageSlug}`, label: `${playerName} live guide`, eyebrow: "Player live", description: "Open player-specific legal viewing context." },
+          ...playerResourceLinks.map((link) => ({
+            href: link.href,
+            label: link.label,
+            eyebrow: "Guide",
+            description: "Evergreen tennis context for rankings, tournaments or legal viewing.",
+          })),
+        ]}
+      />
 
       <section className="mb-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-white">
         <h2 className="text-3xl font-black mb-5">
@@ -2456,10 +2463,10 @@ const playerMatches = allMatches
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/watch"
+            href="/today"
             className="rounded-2xl bg-green-500 px-5 py-3 font-black text-black hover:bg-green-400 transition-all"
           >
-            View Tennis Schedule
+            Today&apos;s Tennis Schedule
           </Link>
 
           <Link

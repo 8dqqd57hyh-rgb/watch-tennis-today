@@ -1,4 +1,5 @@
 import JsonLd from "@/app/components/JsonLd";
+import RelatedPages from "@/app/components/RelatedPages";
 import { getLiveTennisPageMatches, type ServerMatch } from "@/app/lib/serverMatches";
 import { safePlayerUrl } from "@/data/playerSlugs";
 import Link from "next/link";
@@ -569,8 +570,8 @@ export default async function LiveTennisPage() {
             <a href="#tv-schedule" className="rounded-full border border-zinc-800 px-4 py-2 text-sm font-black text-zinc-300 hover:border-emerald-400 hover:text-white">
               TV Schedule
             </a>
-            <a href="#faq" className="rounded-full border border-zinc-800 px-4 py-2 text-sm font-black text-zinc-300 hover:border-emerald-400 hover:text-white">
-              FAQ
+            <a href="#related" className="rounded-full border border-zinc-800 px-4 py-2 text-sm font-black text-zinc-300 hover:border-emerald-400 hover:text-white">
+              Related pages
             </a>
           </div>
         </nav>
@@ -599,6 +600,24 @@ export default async function LiveTennisPage() {
             <EmptyState />
           )}
         </div>
+
+        <RelatedPages
+          className="mt-10 scroll-mt-24"
+          currentPath="/live-tennis"
+          eyebrow="Keep following"
+          title="Related live tennis pages"
+          description="Move from the live match view into today's schedule, player pages, Grand Slam context and legal viewing checks."
+          links={[
+            { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "See live, upcoming and completed matches in one schedule." },
+            { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Find player profiles and current match pages." },
+            { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Follow Wimbledon matches, courts and viewing context." },
+            { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Filter the live flow to major tournament matches." },
+            { href: "/watch-alcaraz-live", label: "Carlos Alcaraz live", eyebrow: "Player live", description: "Open a high-demand player live guide." },
+            { href: "/watch-sinner-live", label: "Jannik Sinner live", eyebrow: "Player live", description: "Open a high-demand player live guide." },
+            { href: "/watch-djokovic-live", label: "Novak Djokovic live", eyebrow: "Player live", description: "Open a high-demand player live guide." },
+            { href: "/tennis-tv-broadcast-finder", label: "Tennis broadcaster finder", eyebrow: "Country rights", description: "Verify official viewing routes before opening a stream." },
+          ]}
+        />
 
         <section id="tv-schedule" className="mt-10 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
           <h2 className="text-3xl font-black">Useful next steps</h2>

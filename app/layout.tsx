@@ -233,7 +233,7 @@ export default function RootLayout({
     <div className="mx-auto flex max-w-7xl flex-wrap gap-4 border-t border-zinc-900 px-6 py-6 text-xs text-zinc-500">
       <Link href="/about" className="hover:text-white">About</Link>
       <Link href="/contact" className="hover:text-white">Contact</Link>
-      <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+      <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
       <Link href="/terms" className="hover:text-white">Terms</Link>
       <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
       <Link href="/affiliate-disclosure" className="hover:text-white">Affiliate Disclosure</Link>

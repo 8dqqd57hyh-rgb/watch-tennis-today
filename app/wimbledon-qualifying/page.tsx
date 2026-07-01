@@ -202,7 +202,7 @@ function MatchCard({ match }: { match: Match }) {
         <Link href={`/watch/${matchSlug(match)}`} className="rounded-2xl bg-green-500 px-4 py-3 text-sm font-black text-black hover:bg-green-400">
           Match details
         </Link>
-        <Link href="/wimbledon-live-stream" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500">
+        <Link href="/wimbledon-live" className="rounded-2xl border border-zinc-800 px-4 py-3 text-sm font-black text-zinc-200 hover:border-green-500">
           Watch guide
         </Link>
       </div>
