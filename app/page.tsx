@@ -23,9 +23,9 @@ export const metadata: Metadata = {
 
 const quickLinks = [
   { href: "/today", label: "Today schedule" },
+  { href: "/live-tennis-upsets", label: "Live upsets" },
   { href: "/tomorrow", label: "Tomorrow" },
   { href: "/players", label: "Players" },
-  { href: "/tournament", label: "Tournaments" },
 ];
 
 export default function Home() {
@@ -48,6 +48,9 @@ export default function Home() {
           <div className="flex flex-wrap gap-2 text-sm font-bold">
             <Link href="/live-tennis" className="rounded-full bg-green-500 px-4 py-2 text-black hover:bg-green-400">
               Live tennis
+            </Link>
+            <Link href="/live-tennis-upsets" className="rounded-full border border-zinc-800 px-4 py-2 text-zinc-200 hover:border-green-500">
+              Upset alerts
             </Link>
             <Link href="/tennis-on-tv-today" className="rounded-full border border-zinc-800 px-4 py-2 text-zinc-200 hover:border-green-500">
               TV schedule

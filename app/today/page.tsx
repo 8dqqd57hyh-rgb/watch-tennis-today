@@ -64,6 +64,7 @@ export default function Page() {
         description="After you identify the match and tournament, use these pages to verify live status, country rights, player context and official broadcaster routes."
         links={[
           { href: "/live-tennis", label: "Live tennis matches", eyebrow: "Live hub", description: "Follow live, starting-soon and completed match windows." },
+          { href: "/live-tennis-upsets", label: "Live tennis upsets", eyebrow: "Upset alerts", description: "Track lower-ranked players challenging higher-ranked opponents." },
           { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Open player profiles and next-match pages from one directory." },
           { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Move from today's schedule into Wimbledon viewing context." },
           { href: "/wimbledon-schedule", label: "Wimbledon schedule", eyebrow: "Wimbledon", description: "Plan court sessions, order of play and legal TV checks." },

@@ -609,6 +609,7 @@ export default async function LiveTennisPage() {
           description="Move from the live match view into today's schedule, player pages, Grand Slam context and legal viewing checks."
           links={[
             { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "See live, upcoming and completed matches in one schedule." },
+            { href: "/live-tennis-upsets", label: "Biggest tennis upsets today", eyebrow: "Upset alerts", description: "Find lower-ranked players leading or beating favorites." },
             { href: "/players", label: "ATP and WTA players", eyebrow: "Player hub", description: "Find player profiles and current match pages." },
             { href: "/wimbledon-live", label: "Wimbledon live coverage", eyebrow: "Wimbledon", description: "Follow Wimbledon matches, courts and viewing context." },
             { href: "/grand-slam-live", label: "Grand Slam live tennis", eyebrow: "Grand Slams", description: "Filter the live flow to major tournament matches." },

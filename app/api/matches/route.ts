@@ -49,6 +49,14 @@ type ApiTennisPlayer = {
   player_name?: string | null;
 };
 
+type ApiTennisStandingPlayer = ApiTennisPlayer & {
+  place?: string | number | null;
+  rank?: string | number | null;
+  position?: string | number | null;
+  player?: string | null;
+  player_full_name?: string | null;
+};
+
 type WatchProvider = {
   name: string;
   url: string;
@@ -71,6 +79,9 @@ type MappedMatch = {
   startTime: string | null;
   winner: string | null;
   winnerId: string | null;
+  ranking1?: number | null;
+  ranking2?: number | null;
+  rankingSource?: string | null;
   watchProviders: WatchProvider[];
 };
 
@@ -400,6 +411,74 @@ function normalizeSearchName(value: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+}
+
+function parseStandingRank(player: ApiTennisStandingPlayer) {
+  const raw = player.place ?? player.rank ?? player.position ?? "";
+  const rank = Number.parseInt(String(raw), 10);
+
+  return Number.isFinite(rank) && rank > 0 ? rank : null;
+}
+
+function parseStandingName(player: ApiTennisStandingPlayer) {
+  return normalizeSearchName(
+    player.player_name ||
+      player.player ||
+      player.player_full_name ||
+      ""
+  );
+}
+
+async function fetchApiStandings(apiKey: string, tour: "ATP" | "WTA") {
+  const result = await fetchApiTennisResult(
+    "get_standings",
+    apiKey,
+    `&event_type=${tour}`,
+    8000
+  );
+  const rows = Array.isArray(result) ? result : [];
+  const rankings = new Map<string, number>();
+
+  for (const row of rows) {
+    const player = row as ApiTennisStandingPlayer;
+    const name = parseStandingName(player);
+    const rank = parseStandingRank(player);
+
+    if (name && rank) {
+      rankings.set(name, rank);
+
+      const parts = name.split(/\s+/).filter(Boolean);
+      const first = parts[0] || "";
+      const surname = parts.slice(1).join(" ");
+
+      if (first && surname) {
+        const initial = first.charAt(0);
+        rankings.set(`${initial} ${surname}`, rank);
+        rankings.set(`${initial}. ${surname}`, rank);
+        rankings.set(`${surname} ${initial}`, rank);
+        rankings.set(`${surname} ${initial}.`, rank);
+      }
+    }
+  }
+
+  return rankings;
+}
+
+function getRankingForPlayer(rankings: Map<string, number>, playerName: string) {
+  const normalized = normalizeSearchName(playerName);
+  if (!normalized) return null;
+
+  const exact = rankings.get(normalized);
+  if (exact) return exact;
+
+  const parts = normalized.split(/\s+/).filter(Boolean);
+  const reversed = parts.length > 1 ? [...parts].reverse().join(" ") : "";
+  if (reversed) {
+    const reversedMatch = rankings.get(reversed);
+    if (reversedMatch) return reversedMatch;
+  }
+
+  return null;
 }
 
 function isInitialToken(value: string) {
@@ -1253,6 +1332,7 @@ export async function GET(request: Request) {
   const playerName = searchParams.get("playerName");
   const matchId = searchParams.get("matchId");
   const includeFinished = searchParams.get("includeFinished") === "1";
+  const includeRankings = searchParams.get("includeRankings") === "1";
   const formHistory = searchParams.get("formHistory") === "1";
   const daysBack = Number.parseInt(searchParams.get("daysBack") || "3", 10);
   const daysForward = Number.parseInt(searchParams.get("daysForward") || "30", 10);
@@ -1295,6 +1375,7 @@ const dateStop = formatDate(dateStopDate);
     resolvedPlayerKey,
     matchId,
     includeFinished,
+    includeRankings,
     formHistory,
     requestedDaysBack: daysBack,
     requestedDaysForward: daysForward,
@@ -1381,14 +1462,31 @@ const dateStop = formatDate(dateStopDate);
         });
     }
 
+    const categoriesToRank = includeRankings
+      ? new Set(
+          filteredMatches
+            .map((match) => normalizeCategory(match.event_type_type, match.tournament_name))
+            .filter((category): category is "ATP" | "WTA" => category === "ATP" || category === "WTA")
+        )
+      : new Set<"ATP" | "WTA">();
+    const [atpRankings, wtaRankings] = await Promise.all([
+      categoriesToRank.has("ATP") ? fetchApiStandings(apiKey, "ATP") : Promise.resolve(new Map<string, number>()),
+      categoriesToRank.has("WTA") ? fetchApiStandings(apiKey, "WTA") : Promise.resolve(new Map<string, number>()),
+    ]);
+
     let mappedMatches: MappedMatch[] = filteredMatches.map((match) => {
       const tournament = match.tournament_name || "Unknown tournament";
       const category = normalizeCategory(match.event_type_type, tournament);
+      const rankings = category === "ATP" ? atpRankings : category === "WTA" ? wtaRankings : null;
+      const player1 = normalizeParticipantName(match.event_first_player);
+      const player2 = normalizeParticipantName(match.event_second_player);
+      const ranking1 = rankings ? getRankingForPlayer(rankings, player1) : null;
+      const ranking2 = rankings ? getRankingForPlayer(rankings, player2) : null;
 
       return {
         id: String(match.event_key),
-        player1: normalizeParticipantName(match.event_first_player),
-        player2: normalizeParticipantName(match.event_second_player),
+        player1,
+        player2,
         tournament,
         category,
         status: normalizeStatus(match),
@@ -1402,6 +1500,13 @@ const dateStop = formatDate(dateStopDate);
         startTime: getStartTime(match),
         winner: match.event_winner || match.event_winner_player || null,
         winnerId: null,
+        ...(includeRankings
+          ? {
+              ranking1,
+              ranking2,
+              rankingSource: ranking1 || ranking2 ? "API-Tennis standings" : null,
+            }
+          : {}),
         watchProviders: getWatchProviders(category, tournament),
       };
     });

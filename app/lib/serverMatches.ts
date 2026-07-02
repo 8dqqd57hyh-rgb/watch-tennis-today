@@ -94,6 +94,14 @@ export async function getLiveTennisPageMatches(revalidateSeconds = 60): Promise<
   });
 }
 
+export async function getLiveTennisUpsetMatches(revalidateSeconds = 60): Promise<ServerMatch[]> {
+  return fetchServerMatches(
+    "/api/matches?includeFinished=1&includeRankings=1&daysBack=1&daysForward=1",
+    revalidateSeconds,
+    { timeoutMs: 10000 }
+  );
+}
+
 export async function getServerMatchesWindow({
   revalidateSeconds = 60,
   timeoutMs,

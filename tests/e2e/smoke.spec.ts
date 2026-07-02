@@ -8,6 +8,7 @@ import {
 const htmlPages = [
   "/",
   "/live-tennis",
+  "/live-tennis-upsets",
   "/best-tennis-matches-today",
   "/tennis-schedule-today",
   "/players",

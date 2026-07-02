@@ -205,6 +205,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "",
     "/today",
     "/live-tennis",
+    "/live-tennis-upsets",
     "/who-plays-tennis-today",
     "/tennis-watchlist-today",
     "/tennis-spoiler-free-scores",
@@ -293,7 +294,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/best-ways-to-watch-tennis-online",
     ...WIMBLEDON_COUNTRY_SLUGS.map((country) => `/how-to-watch-wimbledon-in-${country}`),
   ].map((path) => {
-    const livePages = ["", "/live-tennis", "/today"];
+    const livePages = ["", "/live-tennis", "/live-tennis-upsets", "/today"];
 
     return buildSitemapEntry({
       path,

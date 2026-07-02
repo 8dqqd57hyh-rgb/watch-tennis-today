@@ -122,6 +122,9 @@ export default function RootLayout({
         <Link href="/best-tennis-matches-today" className="site-nav-link" data-testid="primary-nav-link">
           Matches Today
         </Link>
+        <Link href="/live-tennis-upsets" className="site-nav-link" data-testid="primary-nav-link">
+          Upsets
+        </Link>
         <Link href="/players" className="site-nav-link" data-testid="primary-nav-link">
           Players
         </Link>
@@ -155,8 +158,9 @@ export default function RootLayout({
             <Link href="/tennis-tv-broadcast-finder">Where to Watch</Link>
             <Link href="/tennis-on-tv-today">Tennis on TV Today</Link>
             <Link href="/tennis-time-zone-converter">Time Zone Converter</Link>
-            <Link href="/tennis-watchlist-today">Tennis Watchlist</Link>
-            <Link href="/french-open">French Open</Link>
+          <Link href="/tennis-watchlist-today">Tennis Watchlist</Link>
+          <Link href="/live-tennis-upsets">Live Tennis Upsets</Link>
+          <Link href="/french-open">French Open</Link>
             <Link href="/wimbledon-live">Wimbledon</Link>
           </div>
         </details>
@@ -181,6 +185,7 @@ export default function RootLayout({
         <p className="mb-3 font-black uppercase tracking-wide text-zinc-200">Watch</p>
         <div className="space-y-2">
           <Link href="/live-tennis" className="block hover:text-white">Live Tennis</Link>
+          <Link href="/live-tennis-upsets" className="block hover:text-white">Live Tennis Upsets</Link>
           <Link href="/best-tennis-matches-today" className="block hover:text-white">Matches Today</Link>
           <Link href="/tv-schedule" className="block hover:text-white">TV Schedule</Link>
           <Link href="/tennis-on-tv-today" className="block hover:text-white">Tennis on TV Today</Link>
