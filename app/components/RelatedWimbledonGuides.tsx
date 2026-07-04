@@ -9,6 +9,7 @@ export const WIMBLEDON_GUIDE_LINKS = [
   { href: "/wimbledon-prize-money", label: "Wimbledon Prize Money" },
   { href: "/wimbledon-draw", label: "Wimbledon Draw" },
   { href: "/wimbledon-results", label: "Wimbledon Results" },
+  { href: "/wimbledon-who-is-out-today", label: "Who Is Out of Wimbledon Today" },
 ];
 
 export const WIMBLEDON_COUNTRY_GUIDE_LINKS = [

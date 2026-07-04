@@ -124,7 +124,7 @@ const focusCopy = {
   },
   results: {
     heading: "Results and draw tracking",
-    body: "Results pages should help readers understand who advanced, which section of the draw changed, and which matches may become important for the next TV window.",
+    body: "Results pages should help readers understand completed matches, draw context, and which matches may become important for the next TV window.",
   },
   tv: {
     heading: "TV schedule planning",
@@ -269,7 +269,7 @@ export default function WimbledonGuidePage({
       </section>
 
       <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-2xl font-bold text-neutral-950">Schedule, spoilers and next-round planning</h2>
+        <h2 className="mb-4 text-2xl font-bold text-neutral-950">Schedule and next-round planning</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {scheduleChecks.map((item) => (
             <article key={item.title} className="rounded-2xl bg-neutral-50 p-4">
@@ -280,6 +280,7 @@ export default function WimbledonGuidePage({
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <a href="/wimbledon-results" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Results</a>
+          <a href="/wimbledon-who-is-out-today" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Who is out today</a>
           <a href="/tennis-spoiler-free-scores" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Spoiler-free scores</a>
           <a href="/tennis-time-zone-converter" className="rounded-2xl border bg-white px-4 py-3 text-sm font-bold hover:bg-neutral-50">Time zone planner</a>
         </div>

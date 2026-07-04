@@ -2,6 +2,7 @@ import JsonLd from "@/app/components/JsonLd";
 import RelatedPages from "@/app/components/RelatedPages";
 import { getLiveTennisPageMatches, type ServerMatch } from "@/app/lib/serverMatches";
 import { safePlayerUrl } from "@/data/playerSlugs";
+import { calculateMatchImportance } from "@/lib/matchImportance";
 import Link from "next/link";
 
 export const revalidate = 60;
@@ -279,6 +280,21 @@ function buildSections(matches: Match[], now: Date): MatchSection[] {
 
     buckets[classification.bucket].push(match);
   }
+
+  const sortByImportance = (left: Match, right: Match) => {
+    const options = { now };
+    const leftImportance = calculateMatchImportance(left, options);
+    const rightImportance = calculateMatchImportance(right, options);
+
+    if (leftImportance !== rightImportance) return rightImportance - leftImportance;
+
+    const leftTime = left.startTime ? new Date(left.startTime).getTime() : Number.POSITIVE_INFINITY;
+    const rightTime = right.startTime ? new Date(right.startTime).getTime() : Number.POSITIVE_INFINITY;
+
+    return leftTime - rightTime;
+  };
+
+  buckets.live.sort(sortByImportance);
 
   if (process.env.NODE_ENV === "development") {
     console.info("[LIVE-TENNIS] match classification", {
