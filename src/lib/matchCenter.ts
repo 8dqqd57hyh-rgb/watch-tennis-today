@@ -196,6 +196,7 @@ export async function findMatchBySlug(slug: string, matches?: MatchCenterMatch[]
     matches ??
     (await (await import("@/app/lib/serverMatches")).getServerMatchesWindow({
       includeFinished: true,
+      includeRankings: true,
       daysBack: 3,
       daysForward: 14,
       revalidateSeconds: 60,

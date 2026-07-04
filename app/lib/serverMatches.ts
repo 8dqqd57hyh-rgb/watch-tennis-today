@@ -107,6 +107,7 @@ export async function getServerMatchesWindow({
   timeoutMs,
   noStore,
   includeFinished = false,
+  includeRankings = false,
   daysBack = 3,
   daysForward = 3,
 }: {
@@ -114,6 +115,7 @@ export async function getServerMatchesWindow({
   timeoutMs?: number;
   noStore?: boolean;
   includeFinished?: boolean;
+  includeRankings?: boolean;
   daysBack?: number;
   daysForward?: number;
 }): Promise<ServerMatch[]> {
@@ -124,6 +126,10 @@ export async function getServerMatchesWindow({
 
   if (includeFinished) {
     params.set("includeFinished", "1");
+  }
+
+  if (includeRankings) {
+    params.set("includeRankings", "1");
   }
 
   return fetchServerMatches(`/api/matches?${params.toString()}`, revalidateSeconds, {
