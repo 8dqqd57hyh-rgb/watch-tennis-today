@@ -24,6 +24,9 @@ export type MatchCenterMatch = {
   score: string;
   pointScore?: string | null;
   startTime: string | null;
+  resumeTime?: string | null;
+  rescheduledStartTime?: string | null;
+  notBeforeTime?: string | null;
   round?: string | null;
   court?: string | null;
   surface?: string | null;
@@ -109,6 +112,55 @@ function isFinishedStatus(status?: string | null) {
 function isCancelledStatus(status?: string | null) {
   const normalized = normalizeStatus(status);
   return normalized.includes("cancelled") || normalized.includes("canceled") || normalized.includes("postponed");
+}
+
+function isSuspendedStatus(status?: string | null) {
+  const normalized = normalizeStatus(status);
+  return normalized.includes("suspended") || normalized.includes("interrupted") || normalized.includes("delay");
+}
+
+function firstValidDateValue(values: (unknown | null | undefined)[]) {
+  for (const value of values) {
+    if (typeof value !== "string") continue;
+    const date = validDate(value);
+    if (date) return { value, date };
+  }
+
+  return null;
+}
+
+export function getMatchTimingDisplay(match: MatchCenterMatch, now = new Date()) {
+  const suspended = isSuspendedStatus(match.status);
+  const resumeCandidate = firstValidDateValue([
+    match.resumeTime,
+    match.rescheduledStartTime,
+    match.notBeforeTime,
+  ]);
+  const startCandidate = firstValidDateValue([match.startTime]);
+  const candidate = resumeCandidate || startCandidate;
+  const isPast = candidate ? candidate.date.getTime() < now.getTime() : false;
+
+  if (suspended) {
+    if (candidate && (!isPast || Boolean(resumeCandidate))) {
+      return {
+        label: "Resume time",
+        value: candidate.value,
+        pending: false,
+      };
+    }
+
+    return {
+      label: "Resume time",
+      value: null,
+      pending: true,
+    };
+  }
+
+  return {
+    label: "Date and time",
+    value: startCandidate?.value || null,
+    pending: false,
+  };
 }
 
 function countrySlugToName(slug: string) {
@@ -301,7 +353,7 @@ export function getMatchSeoTitle(match: Pick<MatchCenterMatch, "player1" | "play
 }
 
 export function getMatchSeoDescription(match: Pick<MatchCenterMatch, "player1" | "player2" | "tournament" | "startTime">) {
-  const date = validDate(match.startTime);
+  const date = validDate(getMatchTimingDisplay(match as MatchCenterMatch).value);
   const dateText = date
     ? new Intl.DateTimeFormat("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZoneName: "short" }).format(date)
     : "time TBC";
@@ -313,7 +365,8 @@ export function getMatchSeoDescription(match: Pick<MatchCenterMatch, "player1" |
 export function getMatchFaq(match: MatchCenterMatch) {
   const summary = getMatchCoverageSummary(match);
   const tournament = compact(match.tournament) || "this event";
-  const startDate = validDate(match.startTime);
+  const timing = getMatchTimingDisplay(match);
+  const startDate = validDate(timing.value);
   const startText = startDate
     ? new Intl.DateTimeFormat("en", {
         month: "short",
@@ -330,6 +383,8 @@ export function getMatchFaq(match: MatchCenterMatch) {
       question: `When is ${match.player1} vs ${match.player2}?`,
       answer: startText
         ? `${match.player1} vs ${match.player2} is listed for ${startText}. Tennis start times can move when earlier matches run long.`
+        : timing.pending
+          ? `${match.player1} vs ${match.player2} is suspended and the current feed does not provide a confirmed resume time. Check the official tournament order of play before making viewing plans.`
         : "The current feed does not provide a confirmed start time. Check the official tournament order of play before making viewing plans.",
     },
     {
@@ -370,7 +425,8 @@ export function shouldIncludeMatchInSitemap(match: MatchCenterMatch) {
 }
 
 export function getMatchCountryTimeDisplays(match: MatchCenterMatch) {
-  const date = validDate(match.startTime);
+  const timing = getMatchTimingDisplay(match);
+  const date = validDate(timing.value);
   if (!date) return [];
 
   return DEFAULT_WATCH_COUNTRIES.slice(0, 5).map((countrySlug) => ({
@@ -419,7 +475,7 @@ export function getMatchPaths(match: MatchCenterMatch) {
 export function buildMatchSchemas(match: MatchCenterMatch) {
   const url = canonicalUrl(`/match/${getMatchSlug(match)}`);
   const faq = getMatchFaq(match);
-  const startDate = validDate(match.startTime)?.toISOString();
+  const startDate = validDate(getMatchTimingDisplay(match).value)?.toISOString();
   const location = compact(match.court || match.location);
   const sportsEvent: Record<string, unknown> = {
     "@context": "https://schema.org",

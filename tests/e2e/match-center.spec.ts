@@ -7,6 +7,7 @@ import {
   getMatchSeoDescription,
   getMatchSeoTitle,
   getMatchSlug,
+  getMatchTimingDisplay,
   getMatchWatchOptions,
   isMatchPageIndexable,
   parseMatchSlug,
@@ -63,6 +64,39 @@ test.describe("AI match center helpers", () => {
     );
     expect(getMatchSeoDescription(match())).toContain("Wimbledon");
     expect(getMatchSeoDescription(match())).toContain("official broadcaster checks");
+  });
+
+  test("uses resume timing for suspended matches without showing stale starts", () => {
+    const now = new Date("2026-07-07T18:00:00.000Z");
+
+    expect(
+      getMatchTimingDisplay(
+        match({
+          status: "SUSPENDED",
+          startTime: "2026-07-07T16:00:00.000Z",
+        }),
+        now
+      )
+    ).toEqual({
+      label: "Resume time",
+      value: null,
+      pending: true,
+    });
+
+    expect(
+      getMatchTimingDisplay(
+        match({
+          status: "SUSPENDED",
+          startTime: "2026-07-07T16:00:00.000Z",
+          resumeTime: "2026-07-08T11:30:00.000Z",
+        }),
+        now
+      )
+    ).toEqual({
+      label: "Resume time",
+      value: "2026-07-08T11:30:00.000Z",
+      pending: false,
+    });
   });
 
   test("protects thin or stale match pages from indexing", () => {

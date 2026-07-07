@@ -5,6 +5,11 @@ type ApiTennisMatch = {
   event_key: string;
   event_date: string;
   event_time: string;
+  event_resume_date?: string | null;
+  event_resume_time?: string | null;
+  resume_time?: string | null;
+  rescheduled_time?: string | null;
+  not_before_time?: string | null;
   event_first_player: string;
   event_second_player: string;
   first_player_key?: string | number | null;
@@ -77,6 +82,7 @@ type MappedMatch = {
   score: string;
   pointScore: string | null;
   startTime: string | null;
+  resumeTime?: string | null;
   winner: string | null;
   winnerId: string | null;
   ranking1?: number | null;
@@ -942,6 +948,29 @@ function getStartTime(match: ApiTennisMatch) {
   return `${match.event_date}T${match.event_time}:00`;
 }
 
+function normalizeApiDateTimeValue(value?: string | null) {
+  const text = String(value || "").trim();
+  if (!text || text === "-") return null;
+
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? null : text;
+}
+
+function getResumeTime(match: ApiTennisMatch) {
+  const directTime =
+    normalizeApiDateTimeValue(match.resume_time) ||
+    normalizeApiDateTimeValue(match.rescheduled_time) ||
+    normalizeApiDateTimeValue(match.not_before_time);
+
+  if (directTime) return directTime;
+
+  if (match.event_resume_date && match.event_resume_time) {
+    return `${match.event_resume_date}T${match.event_resume_time}:00`;
+  }
+
+  return null;
+}
+
 function normalizeParticipantName(value?: string | null) {
   const name = String(value || "").trim();
   const normalized = normalizeSearchName(name);
@@ -1498,6 +1527,7 @@ const dateStop = formatDate(dateStopDate);
         score: formatScore(match),
         pointScore: formatPointScore(match),
         startTime: getStartTime(match),
+        resumeTime: getResumeTime(match),
         winner: match.event_winner || match.event_winner_player || null,
         winnerId: null,
         ...(includeRankings

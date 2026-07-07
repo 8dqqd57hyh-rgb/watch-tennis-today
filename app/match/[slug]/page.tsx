@@ -15,6 +15,7 @@ import {
   getMatchSeoDescription,
   getMatchSeoTitle,
   getMatchSlug,
+  getMatchTimingDisplay,
   getMatchWatchOptions,
   getPlayerRecentForm,
   isMatchPageIndexable,
@@ -383,13 +384,14 @@ export default async function MatchPage({ params }: PageProps) {
   const schemas = buildMatchSchemas(match);
   const officialLinks = getMatchOfficialLinks(match);
   const timeDisplays = getMatchCountryTimeDisplays(match);
+  const timing = getMatchTimingDisplay(match);
   const playerOneSlug = getCanonicalPlayerSlug(match.player1) || parsed?.playerOneSlug || "";
   const playerTwoSlug = getCanonicalPlayerSlug(match.player2) || parsed?.playerTwoSlug || "";
   const enrichment = getMatchEnrichment(match);
   const headlineFacts = [
     { label: "Tournament", value: displayText(match.tournament) },
     { label: "Round", value: displayText(match.round) },
-    { label: "Date and time", value: formatDateTime(match.startTime) },
+    { label: timing.label, value: timing.pending ? "TBC" : formatDateTime(timing.value) },
     { label: "Court", value: displayText(match.court) || displayText(match.location) },
     { label: "Surface", value: displayText(match.surface) },
     { label: "Status", value: displayText(match.status) },
