@@ -28,6 +28,139 @@ type MatchSection = {
   matches: Match[];
 };
 
+export type LiveTennisCopy = {
+  locale: string;
+  path: string;
+  title: string;
+  description: string;
+  breadcrumb: string;
+  backLabel: string;
+  eyebrow: string;
+  lastUpdated: string;
+  liveMatches: string;
+  upcomingToday: string;
+  navTvSchedule: string;
+  navRelated: string;
+  sectionTitles: { live: string; soon: string; later: string; completed: string };
+  sectionDescriptions: { live: string; soon: string; later: string; completed: string };
+  badgeLabels: { live: string; soon: string; done: string; today: string };
+  detailLabels: {
+    status: string;
+    score: string;
+    start: string;
+    round: string;
+    court: string;
+    surface: string;
+    h2h: string;
+    lastMeeting: string;
+    importance: string;
+    rank: string;
+  };
+  ctas: { matchInfo: string; tvGuide: string; tournament: string; howToWatch: string };
+  empty: { title: string; body: string; todaySchedule: string; tvSchedule: string; playerPages: string };
+  related: { eyebrow: string; title: string; description: string };
+  usefulNextSteps: string;
+};
+
+export const englishLiveTennisCopy: LiveTennisCopy = {
+  locale: "en",
+  path: "/live-tennis",
+  title: "Live Tennis Today",
+  description: "Follow today's ATP and WTA live matches, schedules, scores, TV information and player updates.",
+  breadcrumb: "Live Tennis",
+  backLabel: "Back to Watch Tennis Today",
+  eyebrow: "ATP & WTA live match hub",
+  lastUpdated: "Last updated",
+  liveMatches: "Live matches",
+  upcomingToday: "Upcoming today",
+  navTvSchedule: "TV Schedule",
+  navRelated: "Related pages",
+  sectionTitles: { live: "Live Now", soon: "Starting Soon", later: "Later Today", completed: "Completed Today" },
+  sectionDescriptions: {
+    live: "Matches currently in progress.",
+    soon: "Matches scheduled to begin within the next two hours.",
+    later: "More tennis still scheduled for today.",
+    completed: "Recent results from today's schedule.",
+  },
+  badgeLabels: { live: "Live", soon: "Starting soon", done: "Result", today: "Today" },
+  detailLabels: {
+    status: "Status",
+    score: "Score",
+    start: "Start",
+    round: "Round",
+    court: "Court",
+    surface: "Surface",
+    h2h: "H2H",
+    lastMeeting: "Last meeting",
+    importance: "Importance",
+    rank: "rank",
+  },
+  ctas: { matchInfo: "Match info", tvGuide: "TV guide", tournament: "Tournament", howToWatch: "How to watch" },
+  empty: {
+    title: "No live matches found right now",
+    body: "Tennis schedules change throughout the day. Check today's schedule, TV guide and player pages for upcoming ATP and WTA windows.",
+    todaySchedule: "Today's schedule",
+    tvSchedule: "TV schedule",
+    playerPages: "Player pages",
+  },
+  related: {
+    eyebrow: "Keep following",
+    title: "Related live tennis pages",
+    description: "Move from the live match view into today's schedule, player pages, Grand Slam context and legal viewing checks.",
+  },
+  usefulNextSteps: "Useful next steps",
+};
+
+export const polishLiveTennisCopy: LiveTennisCopy = {
+  ...englishLiveTennisCopy,
+  locale: "pl",
+  path: "/pl/tenis-na-zywo",
+  title: "Tenis na żywo",
+  description: "Zobacz mecze tenisa na żywo, aktualny plan gier, godziny rozpoczęcia i dostępne opcje oglądania online.",
+  breadcrumb: "Tenis na żywo",
+  backLabel: "Wróć do Watch Tennis Today",
+  eyebrow: "Centrum meczów ATP i WTA na żywo",
+  lastUpdated: "Ostatnia aktualizacja",
+  liveMatches: "Mecze na żywo",
+  upcomingToday: "Nadchodzące dzisiaj",
+  navTvSchedule: "Program TV",
+  navRelated: "Powiązane strony",
+  sectionTitles: { live: "Na żywo teraz", soon: "Wkrótce się rozpoczną", later: "Później dzisiaj", completed: "Zakończone dzisiaj" },
+  sectionDescriptions: {
+    live: "Mecze, które są obecnie w toku.",
+    soon: "Mecze zaplanowane na najbliższe dwie godziny.",
+    later: "Kolejne mecze zaplanowane jeszcze na dzisiaj.",
+    completed: "Najnowsze wyniki z dzisiejszego planu gier.",
+  },
+  badgeLabels: { live: "Na żywo", soon: "Wkrótce", done: "Wynik", today: "Dzisiaj" },
+  detailLabels: {
+    status: "Status",
+    score: "Wynik",
+    start: "Start",
+    round: "Runda",
+    court: "Kort",
+    surface: "Nawierzchnia",
+    h2h: "H2H",
+    lastMeeting: "Ostatni mecz",
+    importance: "Znaczenie",
+    rank: "ranking",
+  },
+  ctas: { matchInfo: "Informacje o meczu", tvGuide: "Program TV", tournament: "Turniej", howToWatch: "Jak oglądać" },
+  empty: {
+    title: "Nie znaleziono teraz meczów na żywo",
+    body: "Plan tenisowy zmienia się w ciągu dnia. Sprawdź dzisiejszy terminarz, program TV i strony zawodników, aby znaleźć najbliższe mecze ATP i WTA.",
+    todaySchedule: "Dzisiejszy terminarz",
+    tvSchedule: "Program TV",
+    playerPages: "Strony zawodników",
+  },
+  related: {
+    eyebrow: "Śledź dalej",
+    title: "Powiązane strony o tenisie na żywo",
+    description: "Przejdź z widoku meczów na żywo do dzisiejszego terminarza, stron zawodników, turniejów wielkoszlemowych i legalnych opcji oglądania.",
+  },
+  usefulNextSteps: "Przydatne następne kroki",
+};
+
 async function getMatches(): Promise<Match[]> {
   return (await getLiveTennisPageMatches(60)) as Match[];
 }
@@ -260,7 +393,7 @@ function getCategoryLabel(category?: string | null) {
   return category || "Tennis";
 }
 
-function buildSections(matches: Match[], now: Date): MatchSection[] {
+function buildSections(matches: Match[], now: Date, copy: LiveTennisCopy): MatchSection[] {
   const buckets = {
     live: [] as Match[],
     soon: [] as Match[],
@@ -311,29 +444,29 @@ function buildSections(matches: Match[], now: Date): MatchSection[] {
   const sections: MatchSection[] = [
     {
       id: "live-now",
-      title: "Live Now",
-      description: "Matches currently in progress.",
+      title: copy.sectionTitles.live,
+      description: copy.sectionDescriptions.live,
       tone: "live",
       matches: buckets.live.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "starting-soon",
-      title: "Starting Soon",
-      description: "Matches scheduled to begin within the next two hours.",
+      title: copy.sectionTitles.soon,
+      description: copy.sectionDescriptions.soon,
       tone: "soon",
       matches: buckets.soon.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "later-today",
-      title: "Later Today",
-      description: "More tennis still scheduled for today.",
+      title: copy.sectionTitles.later,
+      description: copy.sectionDescriptions.later,
       tone: "later",
       matches: buckets.later.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
     {
       id: "completed-today",
-      title: "Completed Today",
-      description: "Recent results from today’s schedule.",
+      title: copy.sectionTitles.completed,
+      description: copy.sectionDescriptions.completed,
       tone: "done",
       matches: buckets.completed.slice(0, MATCH_SECTION_DISPLAY_LIMIT),
     },
@@ -372,7 +505,7 @@ function PlayerLink({ name }: { name: string }) {
   );
 }
 
-function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }) {
+function MatchCard({ match, tone, copy }: { match: Match; tone: MatchSection["tone"]; copy: LiveTennisCopy }) {
   const matchInfoHref = `/match/${matchSlug(match)}`;
   const player1Rank = getString(match, ["ranking1", "player1Ranking", "firstPlayerRanking", "player1Rank"]);
   const player2Rank = getString(match, ["ranking2", "player2Ranking", "secondPlayerRanking", "player2Rank"]);
@@ -388,7 +521,7 @@ function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }
     <article className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 shadow-lg shadow-black/20" data-testid="match-card">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wide ${badgeClass(tone)}`}>
-          {tone === "live" ? "Live" : tone === "soon" ? "Starting soon" : tone === "done" ? "Result" : "Today"}
+          {tone === "live" ? copy.badgeLabels.live : tone === "soon" ? copy.badgeLabels.soon : tone === "done" ? copy.badgeLabels.done : copy.badgeLabels.today}
         </span>
         <span className="rounded-full border border-zinc-800 px-3 py-1 text-xs font-black text-zinc-300">
           {category}
@@ -407,53 +540,53 @@ function MatchCard({ match, tone }: { match: Match; tone: MatchSection["tone"] }
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-2">
-        <DetailPill label="Status" value={match.status} />
-        <DetailPill label="Score" value={match.score || match.pointScore} />
-        <DetailPill label="Start" value={startTime} />
-        <DetailPill label="Round" value={match.round} />
-        <DetailPill label="Court" value={court} />
-        <DetailPill label="Surface" value={surface} />
-        <DetailPill label={`${match.player1} rank`} value={player1Rank ? `#${player1Rank}` : null} />
-        <DetailPill label={`${match.player2} rank`} value={player2Rank ? `#${player2Rank}` : null} />
-        <DetailPill label="H2H" value={headToHead} />
-        <DetailPill label="Last meeting" value={previousMeeting} />
-        <DetailPill label="Importance" value={matchImportance} />
+        <DetailPill label={copy.detailLabels.status} value={match.status} />
+        <DetailPill label={copy.detailLabels.score} value={match.score || match.pointScore} />
+        <DetailPill label={copy.detailLabels.start} value={startTime} />
+        <DetailPill label={copy.detailLabels.round} value={match.round} />
+        <DetailPill label={copy.detailLabels.court} value={court} />
+        <DetailPill label={copy.detailLabels.surface} value={surface} />
+        <DetailPill label={`${match.player1} ${copy.detailLabels.rank}`} value={player1Rank ? `#${player1Rank}` : null} />
+        <DetailPill label={`${match.player2} ${copy.detailLabels.rank}`} value={player2Rank ? `#${player2Rank}` : null} />
+        <DetailPill label={copy.detailLabels.h2h} value={headToHead} />
+        <DetailPill label={copy.detailLabels.lastMeeting} value={previousMeeting} />
+        <DetailPill label={copy.detailLabels.importance} value={matchImportance} />
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
         <Link href={matchInfoHref} className="rounded-2xl bg-emerald-400 px-4 py-3 text-center font-black text-black hover:bg-emerald-300" data-testid="guide-streaming-link">
-          Match info
+          {copy.ctas.matchInfo}
         </Link>
         <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
-          TV guide
+          {copy.ctas.tvGuide}
         </Link>
         <Link href={tournamentUrl(match.tournament)} className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
-          Tournament
+          {copy.ctas.tournament}
         </Link>
         <Link href="/best-ways-to-watch-tennis-online" className="rounded-2xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400" data-testid="guide-streaming-link">
-          How to watch
+          {copy.ctas.howToWatch}
         </Link>
       </div>
     </article>
   );
 }
 
-function EmptyState() {
+function EmptyState({ copy }: { copy: LiveTennisCopy }) {
   return (
     <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8" data-testid="empty-state">
-      <h2 className="text-3xl font-black text-white">No live matches found right now</h2>
+      <h2 className="text-3xl font-black text-white">{copy.empty.title}</h2>
       <p className="mt-3 max-w-3xl text-zinc-400">
-        Tennis schedules change throughout the day. Check today’s schedule, TV guide and player pages for upcoming ATP and WTA windows.
+        {copy.empty.body}
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/tennis-schedule-today" className="rounded-2xl bg-emerald-400 px-5 py-3 font-black text-black" data-testid="guide-streaming-link">
-          Today’s schedule
+          {copy.empty.todaySchedule}
         </Link>
         <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white" data-testid="guide-streaming-link">
-          TV schedule
+          {copy.empty.tvSchedule}
         </Link>
         <Link href="/players" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white" data-testid="guide-streaming-link">
-          Player pages
+          {copy.empty.playerPages}
         </Link>
       </div>
     </section>
@@ -466,6 +599,11 @@ export const metadata = {
     "Follow today’s ATP and WTA live tennis matches, schedules, scores, TV information and player updates throughout the day.",
   alternates: {
     canonical: `${SITE_URL}/live-tennis`,
+    languages: {
+      en: `${SITE_URL}/live-tennis`,
+      pl: `${SITE_URL}/pl/tenis-na-zywo`,
+      "x-default": `${SITE_URL}/live-tennis`,
+    },
   },
   openGraph: {
     title: "Live Tennis Today | ATP & WTA Matches, Scores and TV Schedule",
@@ -484,14 +622,18 @@ export const metadata = {
 };
 
 export default async function LiveTennisPage() {
+  return <LiveTennisPageContent copy={englishLiveTennisCopy} />;
+}
+
+export async function LiveTennisPageContent({ copy }: { copy: LiveTennisCopy }) {
   const now = new Date();
   const matches = await getMatches();
-  const sections = buildSections(matches, now);
+  const sections = buildSections(matches, now, copy);
   const liveCount = sections.find((section) => section.id === "live-now")?.matches.length || 0;
   const upcomingCount = sections
     .filter((section) => section.id === "starting-soon" || section.id === "later-today")
     .reduce((total, section) => total + section.matches.length, 0);
-  const updatedAt = new Intl.DateTimeFormat("en", {
+  const updatedAt = new Intl.DateTimeFormat(copy.locale === "pl" ? "pl-PL" : "en", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -504,9 +646,9 @@ export default async function LiveTennisPage() {
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "Live Tennis Today",
-      url: `${SITE_URL}/live-tennis`,
-      description: metadata.description,
+      name: copy.title,
+      url: `${SITE_URL}${copy.path}`,
+      description: copy.description,
       dateModified: now.toISOString(),
       isPartOf: {
         "@type": "WebSite",
@@ -519,7 +661,7 @@ export default async function LiveTennisPage() {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: "Live Tennis", item: `${SITE_URL}/live-tennis` },
+        { "@type": "ListItem", position: 2, name: copy.breadcrumb, item: `${SITE_URL}${copy.path}` },
       ],
     },
     ...matches.slice(0, 10).map((match) => ({
@@ -550,27 +692,27 @@ export default async function LiveTennisPage() {
       <JsonLd data={jsonLd} />
       <div className="mx-auto max-w-6xl px-6 py-8 md:px-10">
         <Link href="/" className="text-zinc-400 hover:text-white">
-          ← Back to Watch Tennis Today
+          ← {copy.backLabel}
         </Link>
 
         <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 to-black p-6 md:p-10">
-          <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-emerald-300">ATP & WTA live match hub</p>
-          <h1 className="max-w-4xl text-5xl font-black leading-none md:text-7xl">Live Tennis Today</h1>
+          <p className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-emerald-300">{copy.eyebrow}</p>
+          <h1 className="max-w-4xl text-5xl font-black leading-none md:text-7xl">{copy.title}</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">
-            Follow today’s ATP and WTA live matches, schedules, scores, TV information and player updates.
+            {copy.description}
           </p>
 
           <div className="mt-8 grid gap-3 md:grid-cols-3">
             <div className="rounded-3xl border border-zinc-800 bg-black p-5">
-              <p className="text-sm font-bold text-zinc-500">Last updated</p>
+              <p className="text-sm font-bold text-zinc-500">{copy.lastUpdated}</p>
               <p className="mt-2 text-xl font-black">{updatedAt}</p>
             </div>
             <div className="rounded-3xl border border-red-500/40 bg-red-950/30 p-5">
-              <p className="text-sm font-bold text-zinc-400">Live matches</p>
+              <p className="text-sm font-bold text-zinc-400">{copy.liveMatches}</p>
               <p className="mt-2 text-4xl font-black">{liveCount}</p>
             </div>
             <div className="rounded-3xl border border-emerald-400/30 bg-emerald-950/20 p-5">
-              <p className="text-sm font-bold text-zinc-400">Upcoming today</p>
+              <p className="text-sm font-bold text-zinc-400">{copy.upcomingToday}</p>
               <p className="mt-2 text-4xl font-black">{upcomingCount}</p>
             </div>
           </div>
@@ -584,10 +726,10 @@ export default async function LiveTennisPage() {
               </a>
             ))}
             <a href="#tv-schedule" className="rounded-full border border-zinc-800 px-4 py-2 text-sm font-black text-zinc-300 hover:border-emerald-400 hover:text-white">
-              TV Schedule
+              {copy.navTvSchedule}
             </a>
             <a href="#related" className="rounded-full border border-zinc-800 px-4 py-2 text-sm font-black text-zinc-300 hover:border-emerald-400 hover:text-white">
-              Related pages
+              {copy.navRelated}
             </a>
           </div>
         </nav>
@@ -607,22 +749,22 @@ export default async function LiveTennisPage() {
                 </div>
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                   {section.matches.map((match) => (
-                    <MatchCard key={match.id} match={match} tone={section.tone} />
+                    <MatchCard key={match.id} match={match} tone={section.tone} copy={copy} />
                   ))}
                 </div>
               </section>
             ))
           ) : (
-            <EmptyState />
+            <EmptyState copy={copy} />
           )}
         </div>
 
         <RelatedPages
           className="mt-10 scroll-mt-24"
-          currentPath="/live-tennis"
-          eyebrow="Keep following"
-          title="Related live tennis pages"
-          description="Move from the live match view into today's schedule, player pages, Grand Slam context and legal viewing checks."
+          currentPath={copy.path}
+          eyebrow={copy.related.eyebrow}
+          title={copy.related.title}
+          description={copy.related.description}
           links={[
             { href: "/today", label: "Today's tennis schedule", eyebrow: "Daily hub", description: "See live, upcoming and completed matches in one schedule." },
             { href: "/live-tennis-upsets", label: "Biggest tennis upsets today", eyebrow: "Upset alerts", description: "Find lower-ranked players leading or beating favorites." },
@@ -637,7 +779,7 @@ export default async function LiveTennisPage() {
         />
 
         <section id="tv-schedule" className="mt-10 scroll-mt-24 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
-          <h2 className="text-3xl font-black">Useful next steps</h2>
+          <h2 className="text-3xl font-black">{copy.usefulNextSteps}</h2>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             <Link href="/tennis-on-tv-today" className="rounded-2xl border border-zinc-700 bg-black p-4 font-black hover:border-emerald-400" data-testid="guide-streaming-link">
               Tennis on TV today

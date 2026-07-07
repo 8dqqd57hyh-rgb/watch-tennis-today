@@ -9,7 +9,14 @@ export const metadata = {
   title: "Today's Tennis Matches & Schedule | Live, Upcoming and Finished",
   description: "Follow today's tennis matches with live, upcoming and completed match sections, featured matches, player links and legal viewing checks.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://watchtennistoday.com/today" },
+  alternates: {
+    canonical: "https://watchtennistoday.com/today",
+    languages: {
+      en: "https://watchtennistoday.com/today",
+      pl: "https://watchtennistoday.com/pl/dzisiaj",
+      "x-default": "https://watchtennistoday.com/today",
+    },
+  },
 };
 
 export default function Page() {

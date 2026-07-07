@@ -112,6 +112,7 @@ export function proxy(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
   const range = requestHeaders.get("range");
 
   // Some bots send malformed Range headers.

@@ -304,6 +304,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
+  const polishPages = [
+    "/pl/dzisiaj",
+    "/pl/tenis-na-zywo",
+    "/pl/kto-gra-dzisiaj-w-tenisa",
+    "/pl/gdzie-ogladac-tenis-w-polsce",
+  ].map((path) =>
+    buildSitemapEntry({
+      path,
+      lastModified: now,
+      changeFrequency: path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? "hourly" : "weekly",
+      priority: 0.9,
+    })
+  );
+
 
   // AdSense quality: include only manually reviewed country guides.
   const broadcasterPages: MetadataRoute.Sitemap = getUniqueBroadcasters().map((broadcaster) => ({
@@ -421,6 +435,7 @@ const frenchOpenPages = [
 
  return uniqueSitemapEntries([
   ...staticPages,
+  ...polishPages,
   ...countryPages,
   ...broadcasterPages,
   ...canIWatchPages,

@@ -77,6 +77,15 @@ export async function generateMetadata({
     robots: robotsFor({ index: indexable }),
     alternates: {
       canonical: canonicalUrl(`/watch-tennis-in/${broadcastCountry.slug}`),
+      ...(broadcastCountry.slug === "poland"
+        ? {
+            languages: {
+              en: canonicalUrl("/watch-tennis-in/poland"),
+              pl: canonicalUrl("/pl/gdzie-ogladac-tenis-w-polsce"),
+              "x-default": canonicalUrl("/watch-tennis-in/poland"),
+            },
+          }
+        : {}),
     },
     openGraph: {
       title,

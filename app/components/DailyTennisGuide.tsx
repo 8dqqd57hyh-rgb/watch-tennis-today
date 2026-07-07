@@ -23,6 +23,81 @@ type DailyTennisGuideProps = {
   faqItems?: { question: string; answer: string }[];
   fallbackHeading?: string;
   fallbackBody?: string;
+  labels?: Partial<DailyTennisGuideLabels>;
+};
+
+type DailyTennisGuideLabels = {
+  lastUpdated: string;
+  dateContext: string;
+  realMatchData: string;
+  noInventedMatchups: string;
+  scheduleDashboard: string;
+  liveClaimNote: string;
+  markedLive: string;
+  upcoming: string;
+  delayedSuspended: string;
+  editorialGuide: string;
+  todaysMatches: string;
+  latestUpdates: string;
+  liveUpcomingMatches: string;
+  openFullLivePage: string;
+  time: string;
+  score: string;
+  notStartedUnavailable: string;
+  matchPage: string;
+  whereToWatch: string;
+  tournamentContext: string;
+  tournamentsAppearing: string;
+  scheduleCheck: string;
+  howToUseThisPage: string;
+  howToUseThisPageBody: string;
+  legalViewing: string;
+  legalViewingBody: string;
+  relatedTennisPages: string;
+  faq: string;
+  liveNow: string;
+  suspendedDelayed: string;
+  upcomingStatus: string;
+  statusTbc: string;
+  timeTbc: string;
+};
+
+const defaultLabels: DailyTennisGuideLabels = {
+  lastUpdated: "Last updated",
+  dateContext: "Date context",
+  realMatchData: "Real match data",
+  noInventedMatchups: "Pulled from the tennis match API. No invented matchups.",
+  scheduleDashboard: "Today's tennis schedule dashboard",
+  liveClaimNote: "This page does not claim a match is live unless the match feed marks it live.",
+  markedLive: "Marked live",
+  upcoming: "Upcoming",
+  delayedSuspended: "Delayed / suspended",
+  editorialGuide: "Editorial guide",
+  todaysMatches: "Today's matches",
+  latestUpdates: "Latest live or completed match updates",
+  liveUpcomingMatches: "Live and upcoming tennis matches",
+  openFullLivePage: "Open full live page",
+  time: "Time",
+  score: "Score",
+  notStartedUnavailable: "Not started / unavailable",
+  matchPage: "Match page",
+  whereToWatch: "Where to watch",
+  tournamentContext: "Tournament context",
+  tournamentsAppearing: "Tournaments appearing in today's data",
+  scheduleCheck: "Schedule check",
+  howToUseThisPage: "How to use this page",
+  howToUseThisPageBody:
+    "Start with live and upcoming matches, open the match page for context, then confirm the final court time with the tournament order of play.",
+  legalViewing: "Legal viewing",
+  legalViewingBody:
+    "Watch options depend on your country, tournament and broadcaster rights. Use our viewing guides to find legal routes before the match starts.",
+  relatedTennisPages: "Related tennis pages",
+  faq: "FAQ",
+  liveNow: "Live now",
+  suspendedDelayed: "Suspended / delayed",
+  upcomingStatus: "Upcoming",
+  statusTbc: "Status TBC",
+  timeTbc: "Time to be confirmed",
 };
 
 type Match = {
@@ -91,14 +166,14 @@ function normalizeStatus(status?: string) {
   return String(status || "").toUpperCase();
 }
 
-function statusLabel(status?: string) {
+function statusLabel(status: string | undefined, labels: DailyTennisGuideLabels) {
   const value = normalizeStatus(status);
 
-  if (value === "LIVE") return "Live now";
-  if (value === "SUSPENDED") return "Suspended / delayed";
-  if (value === "UPCOMING") return "Upcoming";
+  if (value === "LIVE") return labels.liveNow;
+  if (value === "SUSPENDED") return labels.suspendedDelayed;
+  if (value === "UPCOMING") return labels.upcomingStatus;
 
-  return value || "Status TBC";
+  return value || labels.statusTbc;
 }
 
 function statusClass(status?: string) {
@@ -111,10 +186,10 @@ function statusClass(status?: string) {
   return "bg-neutral-100 text-neutral-700";
 }
 
-function formatMatchTime(value: string | null) {
-  if (!value) return "Time to be confirmed";
+function formatMatchTime(value: string | null, locale: string, timeTbc: string) {
+  if (!value) return timeTbc;
 
-  return new Date(value).toLocaleString("en-US", {
+  return new Date(value).toLocaleString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -168,17 +243,20 @@ export default async function DailyTennisGuide({
   faqItems = [],
   fallbackHeading = "No live schedule data available right now",
   fallbackBody = "We could not load real tennis matches from the match API at this moment. This page does not show fake fixtures, so please check again later or use official tournament schedules and broadcaster pages.",
+  labels: labelsInput,
 }: DailyTennisGuideProps) {
+  const labels = { ...defaultLabels, ...labelsInput };
   const matches = await getMatches();
   const usefulMatches = getUsefulMatches(matches, mode);
   const tournaments = getTournamentSummary(matches);
 
-  const today = new Intl.DateTimeFormat("en", {
+  const formatterLocale = labelsInput ? "pl-PL" : "en";
+  const today = new Intl.DateTimeFormat(formatterLocale, {
     month: "long",
     day: "numeric",
     year: "numeric",
   }).format(new Date());
-  const lastUpdated = new Intl.DateTimeFormat("en", {
+  const lastUpdated = new Intl.DateTimeFormat(formatterLocale, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -266,38 +344,38 @@ export default async function DailyTennisGuide({
       <p className="mb-4 max-w-3xl text-lg leading-8 text-neutral-700">{description}</p>
 
       <p className="mb-8 text-sm font-bold text-neutral-500">
-        Last updated: {lastUpdated}. Date context: {today}.
+        {labels.lastUpdated}: {lastUpdated}. {labels.dateContext}: {today}.
       </p>
 
       <section className="mb-8 rounded-[2rem] bg-neutral-950 p-6 text-white md:p-8">
         <div className="mb-5 flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-red-500 px-4 py-2 text-sm font-black text-white">
-            Real match data
+            {labels.realMatchData}
           </span>
           <span className="text-sm text-neutral-300">
-            Pulled from the tennis match API. No invented matchups.
+            {labels.noInventedMatchups}
           </span>
         </div>
 
-        <h2 className="mb-3 text-2xl font-black md:text-3xl">Today&apos;s tennis schedule dashboard</h2>
+        <h2 className="mb-3 text-2xl font-black md:text-3xl">{labels.scheduleDashboard}</h2>
 
         <p className="max-w-3xl leading-7 text-neutral-300">{intent}</p>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-neutral-400">
-          This page does not claim a match is live unless the match feed marks it live.
+          {labels.liveClaimNote}
         </p>
 
         <div className="mt-6 grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-3xl font-black">{liveCount}</p>
-            <p className="text-sm font-bold text-neutral-300">Marked live</p>
+            <p className="text-sm font-bold text-neutral-300">{labels.markedLive}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-3xl font-black">{upcomingCount}</p>
-            <p className="text-sm font-bold text-neutral-300">Upcoming</p>
+            <p className="text-sm font-bold text-neutral-300">{labels.upcoming}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
             <p className="text-3xl font-black">{suspendedCount}</p>
-            <p className="text-sm font-bold text-neutral-300">Delayed / suspended</p>
+            <p className="text-sm font-bold text-neutral-300">{labels.delayedSuspended}</p>
           </div>
         </div>
       </section>
@@ -305,7 +383,7 @@ export default async function DailyTennisGuide({
 
       {editorialSections.length > 0 ? (
         <section className="mb-8 rounded-3xl border bg-white p-6 shadow-sm">
-          <p className="mb-3 text-sm font-black uppercase tracking-wide text-sky-700">Editorial guide</p>
+          <p className="mb-3 text-sm font-black uppercase tracking-wide text-sky-700">{labels.editorialGuide}</p>
           <div className="grid gap-5 md:grid-cols-2">
             {editorialSections.map((section) => (
               <article key={section.heading}>
@@ -320,13 +398,13 @@ export default async function DailyTennisGuide({
       <section className="mb-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-black uppercase tracking-wide text-sky-700">Today&apos;s matches</p>
+            <p className="text-sm font-black uppercase tracking-wide text-sky-700">{labels.todaysMatches}</p>
             <h2 className="text-3xl font-black text-neutral-950">
-              {mode === "results" ? "Latest live or completed match updates" : "Live and upcoming tennis matches"}
+              {mode === "results" ? labels.latestUpdates : labels.liveUpcomingMatches}
             </h2>
           </div>
           <a href="/live-tennis" className="rounded-full border px-5 py-3 text-sm font-black hover:border-sky-400">
-            Open full live page
+            {labels.openFullLivePage}
           </a>
         </div>
 
@@ -336,7 +414,7 @@ export default async function DailyTennisGuide({
               <article key={match.id} className="rounded-3xl border bg-white p-5 shadow-sm">
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <span className={`rounded-full px-3 py-1 text-xs font-black uppercase ${statusClass(match.status)}`}>
-                    {statusLabel(match.status)}
+                    {statusLabel(match.status, labels)}
                   </span>
                   <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-black uppercase text-neutral-700">
                     {match.category || "Tennis"}
@@ -351,19 +429,19 @@ export default async function DailyTennisGuide({
 
                 <div className="mb-4 grid gap-2 text-sm text-neutral-700 md:grid-cols-2">
                   <p>
-                    <span className="font-black text-neutral-950">Time:</span> {formatMatchTime(match.startTime)}
+                    <span className="font-black text-neutral-950">{labels.time}:</span> {formatMatchTime(match.startTime, formatterLocale, labels.timeTbc)}
                   </p>
                   <p>
-                    <span className="font-black text-neutral-950">Score:</span> {match.score && match.score !== "-" ? match.score : "Not started / unavailable"}
+                    <span className="font-black text-neutral-950">{labels.score}:</span> {match.score && match.score !== "-" ? match.score : labels.notStartedUnavailable}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <a href={`/watch/${matchSlug(match)}`} className="rounded-full bg-neutral-950 px-4 py-2 text-sm font-black text-white hover:bg-neutral-800">
-                    Match page
+                    {labels.matchPage}
                   </a>
                   <a href="/watch-tennis-live-today" className="rounded-full border px-4 py-2 text-sm font-black hover:border-sky-400">
-                    Where to watch
+                    {labels.whereToWatch}
                   </a>
                 </div>
               </article>
@@ -381,8 +459,8 @@ export default async function DailyTennisGuide({
 
       {tournaments.length > 0 ? (
         <section className="mb-8 rounded-3xl border bg-neutral-50 p-6">
-          <p className="mb-2 text-sm font-black uppercase tracking-wide text-sky-700">Tournament context</p>
-          <h2 className="mb-4 text-2xl font-black text-neutral-950">Tournaments appearing in today&apos;s data</h2>
+          <p className="mb-2 text-sm font-black uppercase tracking-wide text-sky-700">{labels.tournamentContext}</p>
+          <h2 className="mb-4 text-2xl font-black text-neutral-950">{labels.tournamentsAppearing}</h2>
           <div className="flex flex-wrap gap-2">
             {tournaments.map((tournament) => (
               <span key={tournament} className="rounded-full border bg-white px-4 py-2 text-sm font-bold text-neutral-800">
@@ -396,28 +474,28 @@ export default async function DailyTennisGuide({
       <section className="mb-8 grid gap-4 md:grid-cols-2">
         <div className="rounded-3xl border bg-white p-6 shadow-sm">
           <p className="mb-3 inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-black uppercase text-sky-700">
-            Schedule check
+            {labels.scheduleCheck}
           </p>
-          <h2 className="mb-3 text-xl font-black text-neutral-950">How to use this page</h2>
+          <h2 className="mb-3 text-xl font-black text-neutral-950">{labels.howToUseThisPage}</h2>
           <p className="text-base leading-7 text-neutral-700">
-            Start with live and upcoming matches, open the match page for context, then confirm the final court time with the tournament order of play.
+            {labels.howToUseThisPageBody}
           </p>
         </div>
 
         <div className="rounded-3xl border bg-white p-6 shadow-sm">
           <p className="mb-3 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase text-emerald-700">
-            Legal viewing
+            {labels.legalViewing}
           </p>
-          <h2 className="mb-3 text-xl font-black text-neutral-950">Where to watch</h2>
+          <h2 className="mb-3 text-xl font-black text-neutral-950">{labels.whereToWatch}</h2>
           <p className="text-base leading-7 text-neutral-700">
-            Watch options depend on your country, tournament and broadcaster rights. Use our viewing guides to find legal routes before the match starts.
+            {labels.legalViewingBody}
           </p>
         </div>
       </section>
 
       {links.length > 0 ? (
         <section className="mb-8 rounded-3xl border bg-white p-6" data-testid="related-links">
-          <h2 className="mb-4 text-2xl font-black text-neutral-950">Related tennis pages</h2>
+          <h2 className="mb-4 text-2xl font-black text-neutral-950">{labels.relatedTennisPages}</h2>
           <div className="grid gap-3 md:grid-cols-2">
             {links.map((link) => (
               <a key={link.href} href={link.href} className="rounded-2xl border bg-neutral-50 p-4 font-bold text-neutral-900 hover:border-sky-400 hover:bg-white">
@@ -429,7 +507,7 @@ export default async function DailyTennisGuide({
       ) : null}
 
       <section className="rounded-3xl border bg-white p-6">
-        <h2 className="mb-4 text-2xl font-black text-neutral-950">FAQ</h2>
+        <h2 className="mb-4 text-2xl font-black text-neutral-950">{labels.faq}</h2>
         <div className="space-y-4">
           {faq.map((item) => (
             <div key={item.question}>

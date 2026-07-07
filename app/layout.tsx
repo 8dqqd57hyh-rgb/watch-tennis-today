@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -6,7 +7,9 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import CookieBanner from "@/app/components/CookieBanner";
 import ClickAnalytics from "@/app/components/ClickAnalytics";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import { ADSENSE_SCRIPT_SRC } from "@/app/lib/adsense";
+import { getLocaleFromPath } from "@/app/lib/i18n";
 import {
   buildAuthorPersonSchema,
   buildOrganizationSchema,
@@ -58,14 +61,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const locale = getLocaleFromPath(headersList.get("x-pathname") || "/");
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-black">
@@ -110,6 +116,8 @@ export default function RootLayout({
       >
         🎾 Watch Tennis Today
       </Link>
+
+      <LanguageSwitcher />
 
       <nav
         aria-label="Primary navigation"

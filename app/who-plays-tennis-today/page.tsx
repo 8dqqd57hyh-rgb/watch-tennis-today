@@ -7,7 +7,14 @@ export const metadata: Metadata = {
   title: "Who Plays Tennis Today? | ATP, WTA and Grand Slam Match Guide",
   description:
     "See who plays tennis today with player-focused match discovery, tournament context, order-of-play checks and legal viewing links.",
-  alternates: { canonical: "https://watchtennistoday.com/who-plays-tennis-today" },
+  alternates: {
+    canonical: "https://watchtennistoday.com/who-plays-tennis-today",
+    languages: {
+      en: "https://watchtennistoday.com/who-plays-tennis-today",
+      pl: "https://watchtennistoday.com/pl/kto-gra-dzisiaj-w-tenisa",
+      "x-default": "https://watchtennistoday.com/who-plays-tennis-today",
+    },
+  },
 };
 
 export default function WhoPlaysTennisTodayPage() {
