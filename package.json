@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "indexnow": "tsx scripts/submit-indexnow.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
@@ -59,6 +60,7 @@
     "mochawesome-report-generator": "^6.3.2",
     "start-server-and-test": "^3.0.11",
     "tailwindcss": "^4",
+    "tsx": "^4.23.0",
     "typescript": "^5",
     "wait-on": "^9.0.10"
   }
