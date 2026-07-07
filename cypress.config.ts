@@ -4,6 +4,7 @@ import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 const baseUrl = process.env.CYPRESS_BASE_URL || "http://localhost:3000";
 
 export default defineConfig({
+  allowCypressEnv: false,
   viewportWidth: 1280,
   viewportHeight: 720,
   video: true,

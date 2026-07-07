@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
   const polishHref = getEquivalentPath(pathname, "pl");
 
   return (
-    <nav aria-label="Language switcher" className="flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-950 p-1 text-xs font-black">
+    <nav aria-label="Language switcher" className="language-switcher flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-950 p-1 text-xs font-black">
       <Link
         href={englishHref}
         hrefLang="en"

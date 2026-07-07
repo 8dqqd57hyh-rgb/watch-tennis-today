@@ -60,6 +60,18 @@ footer a {
   color: #ffffff !important;
 }
 
+.site-header .language-switcher a {
+  color: #d4d4d8 !important;
+}
+
+.site-header .language-switcher a[aria-current="page"] {
+  color: #050505 !important;
+}
+
+.site-header .language-switcher a:not([aria-current="page"]):hover {
+  color: #ffffff !important;
+}
+
 @media (max-width: 760px) {
   .site-header > div {
     align-items: flex-start;
