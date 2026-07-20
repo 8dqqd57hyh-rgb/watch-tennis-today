@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import HomepageMatchExplorer from "@/app/components/HomepageMatchExplorer";
-import HomepageWimbledonBanner from "@/app/components/HomepageWimbledonBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -57,8 +56,6 @@ export default function Home() {
             </Link>
           </div>
         </header>
-
-        <HomepageWimbledonBanner />
 
         <HomepageMatchExplorer />
 
