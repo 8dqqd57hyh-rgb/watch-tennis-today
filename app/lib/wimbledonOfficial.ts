@@ -1,16 +1,6 @@
 import "server-only";
 import type { ServerMatch } from "@/app/lib/serverMatches";
-
-type OfficialTeam = Array<{
-  displayNameA?: string | null; displayNameB?: string | null; firstNameA?: string | null; lastNameA?: string | null;
-  firstNameB?: string | null; lastNameB?: string | null; nationA?: string | null; nationB?: string | null; seed?: number | null; won?: boolean | null;
-}>;
-type OfficialMatch = {
-  matchId?: string | null; eventCode?: string | null; eventName?: string | null; roundName?: string | null; status?: string | null;
-  winner?: string | null; epoch?: number | null; notBefore?: string | null; courtName?: string | null; team1?: OfficialTeam; team2?: OfficialTeam;
-  score?: { gameScore?: (string | null)[] | null; tennisSets?: Array<{ team1?: { scoreDisplay?: string | null }; team2?: { scoreDisplay?: string | null } }> | null } | null;
-  officialStartTime?: string | null;
-};
+import { londonDateTimeIso, mapMatch, type OfficialMatch } from "@/app/lib/wimbledonOfficialUtils";
 type ScheduleResponse = { data?: { schedule?: { courts?: Array<{ courtName?: string | null; matches?: OfficialMatch[] | null }> | null } | null } };
 
 const QUERY = `query Schedule($year: Int!, $day: Int!) {
@@ -22,24 +12,10 @@ const QUERY = `query Schedule($year: Int!, $day: Int!) {
   } } }
 }`;
 
-function teamName(team?: OfficialTeam) {
+function teamName(team?: OfficialMatch["team1"]) {
   const row = team?.[0]; if (!row) return "TBD";
   const full = (first?: string | null, last?: string | null, display?: string | null) => [first, last].filter(Boolean).join(" ") || display || "";
   return [full(row.firstNameA, row.lastNameA, row.displayNameA), full(row.firstNameB, row.lastNameB, row.displayNameB)].filter(Boolean).join(" / ") || "TBD";
-}
-
-function score(match: OfficialMatch) {
-  const sets = match.score?.tennisSets || [];
-  return sets.map((set) => `${set.team1?.scoreDisplay ?? ""}-${set.team2?.scoreDisplay ?? ""}`).filter((value) => value !== "-").join(" ");
-}
-
-function londonDateTimeIso(year: number, month: number, day: number, hour: number, minute: number) {
-  const initialUtc = Date.UTC(year, month - 1, day, hour, minute);
-  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(initialUtc));
-  const londonHour = Number(parts.find((part) => part.type === "hour")?.value || hour);
-  const londonMinute = Number(parts.find((part) => part.type === "minute")?.value || minute);
-  const offsetMinutes = (londonHour * 60 + londonMinute) - (hour * 60 + minute);
-  return new Date(initialUtc - offsetMinutes * 60_000).toISOString();
 }
 
 function decodeScheduleText(value: string) {
@@ -72,21 +48,6 @@ async function fetchPublishedFinalTimes(year: number) {
     }
   } catch { /* The GraphQL fixture remains usable without the overview page. */ }
   return result;
-}
-
-function mapMatch(match: OfficialMatch, derived = false): ServerMatch {
-  const p1 = teamName(match.team1); const p2 = teamName(match.team2); const event = String(match.eventName || "Wimbledon");
-  const winner = match.winner === "1" || match.team1?.[0]?.won ? p1 : match.winner === "2" || match.team2?.[0]?.won ? p2 : null;
-  return {
-    id: `wimbledon-${match.matchId || `${match.eventCode}-${derived ? "derived" : "final"}`}`,
-    player1: p1, player2: p2, tournament: `The Championships, Wimbledon - ${event}`, category: event,
-    status: derived ? "SCHEDULED" : match.status || "SCHEDULED", round: "Final", score: score(match), pointScore: null,
-    startTime: match.officialStartTime || null, court: match.courtName || null, surface: "Grass", winner, winnerId: null,
-    seed1: match.team1?.[0]?.seed ?? null, seed2: match.team2?.[0]?.seed ?? null,
-    country1: match.team1?.[0]?.nationA ?? null, country2: match.team2?.[0]?.nationA ?? null,
-    watchProviders: [{ name: "Wimbledon official broadcasters", url: "https://www.wimbledon.com/en_GB/about/tv_coverage", verificationStatus: "official", note: "Coverage varies by country and court." }],
-    officialSourceUrl: derived ? "https://www.wimbledon.com/en_GB/scores/results" : "https://www.wimbledon.com/en_GB/scores/schedule",
-  };
 }
 
 async function fetchDay(year: number, day: number) {

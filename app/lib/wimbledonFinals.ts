@@ -116,7 +116,7 @@ export function selectWimbledonFinals(matches: ServerMatch[]): WimbledonFinal[] 
   return [...selected.values()].map((match) => ({
     id: String(match.id), eventType: getWimbledonEventType(match), eventLabel: LABELS[getWimbledonEventType(match)],
     participants: [participant(match.player1, match.ranking1), participant(match.player2, match.ranking2)],
-    status: normalizeFinalStatus(match.status), providerStatus: String(match.status || "Scheduled"), startTime: match.resumeTime as string || match.startTime,
+    status: normalizeFinalStatus(match.status), providerStatus: String(match.status || "Scheduled"), startTime: typeof match.resumeTime === "string" ? match.resumeTime : match.startTime,
     score: match.score || "", pointScore: typeof match.pointScore === "string" ? match.pointScore : null,
     winnerParticipantIndex: winnerIndex(match), round: match.round || null, watchProviders: match.watchProviders || [],
     matchUrl: String(match.id).startsWith("wimbledon-") ? "/wimbledon-live" : `/watch/${encodeURIComponent(String(match.id))}`,

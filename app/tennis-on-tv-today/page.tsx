@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerMatchesWindow, type ServerMatch } from "@/app/lib/serverMatches";
+import { serializeJsonLd, tennisOnTvMatchHref } from "@/app/lib/tennisOnTvToday";
 import LocalTvTime from "@/app/components/LocalTvTime";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,26 @@ const editorialSections = [
   { title: "Legal viewing only", body: "Watch Tennis Today does not host or retransmit matches. We surface fixture data and recognized provider routes so viewers can reach legal coverage and avoid unreliable stream pages." },
 ];
 
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://watchtennistoday.com" },
+      { "@type": "ListItem", position: 2, name: "Tennis on TV Today", item: "https://watchtennistoday.com/tennis-on-tv-today" },
+    ],
+  },
+] as const;
+
 function normalizeStatus(status?: string) {
   return String(status || "").toUpperCase();
 }
@@ -45,14 +66,6 @@ function dayKey(value: Date) {
 
 function matchDay(match: ServerMatch) {
   return match.startTime ? dayKey(new Date(match.startTime)) : "";
-}
-
-function slugify(value: string) {
-  return value.toLowerCase().replace(/,/g, "").replace(/\//g, "-").replace(/[^a-z0-9]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
-}
-
-function matchHref(match: ServerMatch) {
-  return `/watch/${slugify(`${match.player1}-vs-${match.player2}`)}-${String(match.id).split(":").pop()}`;
 }
 
 function statusMeta(match: ServerMatch) {
@@ -101,7 +114,7 @@ function MatchCard({ match }: { match: ServerMatch }) {
         <time dateTime={match.startTime || undefined} className="shrink-0 text-sm font-black text-zinc-900"><LocalTvTime startTime={match.startTime} /></time>
         <ProviderBadges match={match} />
       </div>
-      {match.watchProviders.length ? <Link href={matchHref(match)} className="mt-3 block rounded-lg bg-zinc-950 px-3 py-2 text-center text-sm font-black text-white hover:bg-zinc-800">Watch options</Link> : null}
+      {match.watchProviders.length ? <Link href={tennisOnTvMatchHref(match)} className="mt-3 block rounded-lg bg-zinc-950 px-3 py-2 text-center text-sm font-black text-white hover:bg-zinc-800">Watch options</Link> : null}
     </article>
   );
 }
@@ -117,9 +130,6 @@ export default async function TennisOnTvTodayPage() {
   const tomorrowMatches = sortMatches(matches.filter((match) => matchDay(match) === tomorrowKey));
   const heroMatches = todayMatches.filter((match) => matchPriority(match) < 2).slice(0, 4);
   const grouped = Map.groupBy(todayMatches, (match) => match.tournament || "Other tennis");
-
-  const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
-  const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://watchtennistoday.com" }, { "@type": "ListItem", position: 2, name: "Tennis on TV Today", item: "https://watchtennistoday.com/tennis-on-tv-today" }] };
 
   return (
     <main className="mx-auto max-w-6xl px-3 py-4 sm:px-5 sm:py-6">
@@ -149,7 +159,7 @@ export default async function TennisOnTvTodayPage() {
             <div className="divide-y divide-zinc-100">{tournamentMatches.map((match) => { const status = statusMeta(match); return (
               <article key={match.id} className="grid gap-2 px-3 py-3 sm:grid-cols-[5rem_1fr_auto_auto] sm:items-center">
                 <time dateTime={match.startTime || undefined} className="text-sm font-black"><LocalTvTime startTime={match.startTime} /></time>
-                <Link href={matchHref(match)} className="font-bold text-zinc-950 hover:underline">{match.player1} <span className="text-xs text-zinc-400">vs</span> {match.player2}</Link>
+                <Link href={tennisOnTvMatchHref(match)} className="font-bold text-zinc-950 hover:underline">{match.player1} <span className="text-xs text-zinc-400">vs</span> {match.player2}</Link>
                 <ProviderBadges match={match} />
                 <span className={`w-fit rounded px-2 py-1 text-[10px] font-black uppercase ${status.className}`}>{status.label}</span>
               </article>
@@ -176,7 +186,7 @@ export default async function TennisOnTvTodayPage() {
       <nav aria-label="Related tennis pages" className="mt-7 grid gap-2 border-t border-zinc-200 pt-6 sm:grid-cols-2 lg:grid-cols-4">
         {[{ href: "/watch-tennis-live-today", label: "Legal tennis streams today" }, { href: "/tennis-schedule-today", label: "Complete tennis schedule" }, { href: "/official-tennis-broadcasters-guide", label: "Official broadcasters guide" }, { href: "/tennis-order-of-play-today", label: "Order of play today" }].map((item) => <Link key={item.href} href={item.href} className="rounded-lg bg-zinc-100 px-3 py-3 text-sm font-bold text-zinc-900 hover:bg-zinc-200">{item.label}</Link>)}
       </nav>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([faqSchema, breadcrumbSchema]) }} />
+      <script type="application/ld+json">{serializeJsonLd(structuredData)}</script>
     </main>
   );
 }
