@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { SITE_URL } from "@/app/lib/technicalSeo";
 
 export type ServerMatch = {
   id: string;
@@ -23,14 +23,22 @@ export type ServerMatch = {
   [key: string]: unknown;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
+export function getBaseUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-  if (!host) return "http://localhost:3000";
+  if (!configuredUrl) return SITE_URL;
 
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return `${protocol}://${host}`;
+  try {
+    const url = new URL(configuredUrl);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return SITE_URL;
+    }
+
+    return url.origin;
+  } catch {
+    return SITE_URL;
+  }
 }
 
 function normalizeMatch(item: ServerMatch): ServerMatch {
@@ -59,7 +67,7 @@ async function fetchServerMatches(
   revalidateSeconds = 60,
   options: { timeoutMs?: number; noStore?: boolean } = {}
 ): Promise<ServerMatch[]> {
-  const baseUrl = await getBaseUrl();
+  const baseUrl = getBaseUrl();
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), options.timeoutMs ?? 5000);
   const developmentCacheBust =
