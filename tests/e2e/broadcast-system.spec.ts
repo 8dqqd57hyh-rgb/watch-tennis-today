@@ -33,6 +33,10 @@ import {
   getRelatedTournaments,
   getTournamentNetwork,
 } from "../../src/lib/intelligence/queries";
+import {
+  buildBroadcastResearchCsv,
+  getBroadcastResearchSummary,
+} from "../../app/lib/broadcastResearch";
 
 const grandSlamIds = ["australian-open", "roland-garros", "wimbledon", "us-open"];
 
@@ -78,6 +82,24 @@ async function expectMetaContent(page: Page, selector: string, expected: string 
 }
 
 test.describe("tennis broadcaster database", () => {
+  test("builds a reusable research summary and CSV from normalized records", () => {
+    const records = getNormalizedBroadcastRecords();
+    const summary = getBroadcastResearchSummary(records);
+    const csv = buildBroadcastResearchCsv(records);
+
+    expect(summary).toMatchObject({
+      recordCount: 72,
+      countryCount: 12,
+      tournamentCount: 6,
+      latestVerified: "2026-06-21",
+    });
+    expect(summary.broadcasterCount).toBeGreaterThan(0);
+    expect(csv.split("\r\n")).toHaveLength(records.length + 1);
+    expect(csv).toContain('"record_id","country_code"');
+    expect(csv).toContain('"poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access"');
+    expect(csv).toContain('"https://www.wimbledon.com/en_GB/about/tv_coverage"');
+  });
+
   test("stores Grand Slams separately from ATP and WTA rows", () => {
     const usaEntries = getCountryBroadcastEntries("US");
     const usaGrandSlams = usaEntries.filter((entry) => entry.eventType === "grand_slam");

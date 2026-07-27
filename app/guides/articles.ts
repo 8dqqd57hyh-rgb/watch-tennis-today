@@ -74,7 +74,7 @@ export const guideArticles: GuideArticle[] = [
   {
     "slug": "tennis-tiebreak-rules",
     "title": "Tennis Tiebreak Rules Explained",
-    "description": "How tennis tiebreaks work, including serving order, points, changeovers and final-set tiebreaks.",
+    "description": "Learn how tennis tiebreaks work, including serving order, changeovers, the win-by-two rule, standard seven-point scoring and final-set formats at major events.",
     "category": "Scoring",
     "intro": "A tiebreak is the short scoring game used to decide a set when the score reaches 6-6 in most modern formats. Instead of playing regular games until someone breaks serve, players play points numbered 1, 2, 3 and so on. The usual set tiebreak is first to seven points, but the winner must lead by at least two.\n\nTiebreaks are easy to follow once you know three things: the target score, the serve order and the change-of-ends rhythm. This guide explains those details and shows why tiebreaks feel so different from normal games.",
     "sections": [
@@ -318,7 +318,7 @@ export const guideArticles: GuideArticle[] = [
   {
     "slug": "tennis-surfaces-explained",
     "title": "Tennis Surfaces Explained",
-    "description": "How clay, grass and hard courts change tennis tactics, movement, scheduling and match expectations.",
+    "description": "Learn how clay, grass and hard tennis courts affect ball speed, bounce, movement, tactics, player styles and match expectations across the professional tours.",
     "category": "Surfaces",
     "intro": "Tennis is unusual because the same sport changes dramatically depending on the court surface. Clay, grass and hard courts use the same scoring system, but they reward different movement, shot selection and patience. A player who looks untouchable on one surface can look much more vulnerable on another.\n\nUnderstanding surfaces helps fans read matches before the first ball. It explains why certain players dominate spring clay events, why grass seasons feel rushed and dangerous, and why hard courts produce many of the sport’s most balanced matchups.",
     "sections": [
@@ -375,7 +375,7 @@ export const guideArticles: GuideArticle[] = [
   {
     "slug": "tennis-scoring-system-explained",
     "title": "Tennis Scoring System Explained",
-    "description": "A beginner-friendly guide to love, 15, 30, 40, deuce, advantage, games, sets and matches.",
+    "description": "Learn how tennis scoring works, from love, 15, 30 and 40 to deuce, advantage, games, sets, tiebreaks and match formats, with clear examples for beginners.",
     "category": "Scoring",
     "intro": "Tennis scoring looks strange because it uses several layers at once. A player wins points to win a game, games to win a set, and sets to win the match. The words love, 15, 30 and 40 can make the sport feel harder than it is, but the structure is logical once you separate the scoreboard into those layers.\n\nThis guide explains the scoring system in match language, so a new fan can follow a live score without needing a rulebook beside the screen.",
     "sections": [
