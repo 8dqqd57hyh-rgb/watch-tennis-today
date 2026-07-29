@@ -70,6 +70,39 @@ export default function Home() {
             </Link>
           ))}
         </section>
+
+        <section
+          aria-labelledby="support-project-title"
+          className="mt-8 overflow-hidden rounded-3xl border border-green-500/30 bg-gradient-to-br from-green-500/10 via-zinc-950 to-zinc-950 p-6 md:flex md:items-center md:justify-between md:gap-10 md:p-8"
+        >
+          <div className="max-w-3xl">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-green-400">
+              Independent tennis resource
+            </p>
+            <h2 id="support-project-title" className="mt-2 text-2xl font-black md:text-3xl">
+              Support the project
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-zinc-300 md:text-base">
+              Watch Tennis Today is built to make tennis schedules, match details
+              and official viewing information easier to find. Your support helps
+              cover hosting, maintain the data tools and fund the time needed to
+              verify information and keep improving the free experience for
+              tennis fans.
+            </p>
+            <p className="mt-2 text-xs leading-5 text-zinc-400">
+              Support is optional and never affects our editorial choices.
+            </p>
+          </div>
+
+          <a
+            href="https://www.paypal.me/AnzhalikaSokalava"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex shrink-0 items-center justify-center rounded-full bg-green-500 px-6 py-3 text-sm font-black text-black transition hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 focus:ring-offset-black md:mt-0"
+          >
+            Support via PayPal
+          </a>
+        </section>
       </div>
     </main>
   );
