@@ -59,4 +59,14 @@ test.describe("smoke checks", () => {
     expect(html).toContain("Scheduled matches");
     expect(html).toContain("Finished matches");
   });
+
+  test("homepage offers optional project support", async ({ request }) => {
+    const response = await request.get("/", { failOnStatusCode: false });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Support the project");
+    expect(html).toContain("https://www.paypal.me/AnzhalikaSokalava");
+    expect(html).toContain("Support is optional");
+  });
 });
