@@ -5,7 +5,7 @@ export const metadata = {
   title: "Watch Tennis Live Today | Legal ATP & WTA Viewing Guide",
   description:
     "Find today's tennis match status and learn how to verify legal ATP, WTA, Grand Slam and Challenger viewing options.",
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   alternates: {
     canonical: "https://watchtennistoday.com/watch-tennis-live-today",
   },
