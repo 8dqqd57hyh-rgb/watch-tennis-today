@@ -16,6 +16,7 @@ import {
   getRelatedGuides,
   publishedGuideArticles,
 } from "../articles";
+import { robotsFor } from "@/app/lib/technicalSeo";
 
 type GuidePageProps = {
   params: Promise<{ slug: string }>;
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: GuidePageProps) {
   return {
     title: `${article.title} | Watch Tennis Today`,
     description: article.description,
+    robots: robotsFor({ index: true }),
     alternates: { canonical: `https://watchtennistoday.com/guides/${article.slug}` },
   };
 }

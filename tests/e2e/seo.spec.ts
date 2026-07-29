@@ -56,6 +56,14 @@ const dailyLandingPages = [
   },
 ];
 
+const bingNoindexReportPages = [
+  "/guides/tennis-tiebreak-rules",
+  "/guides/wild-card-in-tennis-explained",
+  "/guides/tennis-surfaces-explained",
+  "/guides/tennis-scoring-system-explained",
+  "/watch-tennis-in/poland",
+];
+
 const wimbledonCountryLandingPages = [
   {
     path: "/how-to-watch-wimbledon-in-usa",
@@ -308,6 +316,39 @@ test.describe("SEO-critical page basics", () => {
       expect(html).toContain('data-testid="related-links"');
       expect(html.toLowerCase()).not.toContain("live tennis matches right now");
       expect(html).toContain("does not claim a match is live");
+    });
+  }
+
+  test("/watch-tennis-live-today is indexable and listed in the sitemap", async ({ request }) => {
+    const [pageResponse, sitemapResponse] = await Promise.all([
+      request.get("/watch-tennis-live-today", { failOnStatusCode: false }),
+      request.get("/sitemap.xml", { failOnStatusCode: false }),
+    ]);
+    const html = await pageResponse.text();
+    const sitemap = await sitemapResponse.text();
+
+    expect(pageResponse.status()).toBe(200);
+    expect(metaContent(html, "robots")?.toLowerCase() ?? "").not.toContain("noindex");
+    expect(sitemapResponse.status()).toBe(200);
+    expect(sitemap).toContain(
+      "<loc>https://watchtennistoday.com/watch-tennis-live-today</loc>",
+    );
+  });
+
+  for (const path of bingNoindexReportPages) {
+    test(`${path} is explicitly indexable and listed in the sitemap`, async ({ request }) => {
+      const [pageResponse, sitemapResponse] = await Promise.all([
+        request.get(path, { failOnStatusCode: false }),
+        request.get("/sitemap.xml", { failOnStatusCode: false }),
+      ]);
+      const html = await pageResponse.text();
+      const sitemap = await sitemapResponse.text();
+
+      expect(pageResponse.status()).toBe(200);
+      expect(metaContent(html, "robots")?.toLowerCase() ?? "").toContain("index");
+      expect(metaContent(html, "robots")?.toLowerCase() ?? "").not.toContain("noindex");
+      expect(sitemapResponse.status()).toBe(200);
+      expect(sitemap).toContain(`<loc>${SITE_URL}${path}</loc>`);
     });
   }
 

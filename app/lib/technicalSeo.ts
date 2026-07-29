@@ -80,7 +80,6 @@ export const NOINDEX_ONLY_PATHS = new Set([
   "/tv-schedule",
   "/watch-sabalenka-live",
   "/watch-swiatek-live",
-  "/watch-tennis-live-today",
   "/wta-live-today",
 ]);
 
