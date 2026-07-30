@@ -49,7 +49,15 @@ function playerLookupAliases(name: string, slug: string) {
   return Array.from(aliases);
 }
 
-const legacyPlayerSlugAliases: Record<string, PlayerSlug> = {
+export const legacyPlayerSlugAliases: Record<string, PlayerSlug> = {
+  "c-gauff": "coco-gauff",
+  "a-sabalenka": "aryna-sabalenka",
+  "d-medvedev": "daniil-medvedev",
+  "medvedev-daniil": "daniil-medvedev",
+  "i-swiatek": "iga-swiatek",
+  "n-djokovic": "novak-djokovic",
+  "j.-sinner": "jannik-sinner",
+  "svitolina-elina": "elina-svitolina",
   "h alexandrova": "ekaterina-alexandrova",
   "h e lee": "ha-eum-lee",
   "h. e. lee": "ha-eum-lee",
@@ -123,6 +131,17 @@ export function getCanonicalPlayerSlug(nameOrSlug: string): PlayerSlug | null {
   if (!isSafePlayerCandidate(raw)) return null;
 
   return null;
+}
+
+export function isCanonicalPlayerSlug(slug: string): slug is PlayerSlug {
+  return slug in players;
+}
+
+export function getPlayerAliasEntries() {
+  return Array.from(canonicalNameToSlug.entries()).map(([alias, canonicalSlug]) => ({
+    alias,
+    canonicalSlug,
+  }));
 }
 
 export function looksLikeClearlyInvalidPlayerSlug(nameOrSlug: string) {

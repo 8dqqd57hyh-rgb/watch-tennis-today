@@ -1,4 +1,5 @@
 import { canonicalUrl } from "@/app/lib/technicalSeo";
+import { shouldIndexMatch } from "@/app/lib/matchSeo";
 import {
   getCanonicalPlayerSlug,
   playerNameFromSlug,
@@ -65,22 +66,6 @@ export type MatchWatchOption = {
 };
 
 const DEFAULT_WATCH_COUNTRIES = ["usa", "uk", "poland", "germany", "france", "spain", "italy", "canada", "australia"];
-const INDEXABLE_PLAYER_SLUGS = new Set([
-  "jannik-sinner",
-  "carlos-alcaraz",
-  "novak-djokovic",
-  "daniil-medvedev",
-  "alexander-zverev",
-  "taylor-fritz",
-  "iga-swiatek",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "elena-rybakina",
-  "jessica-pegula",
-  "naomi-osaka",
-  "mirra-andreeva",
-  "jasmine-paolini",
-]);
 
 function slugify(value: string) {
   return playerSlug(value)
@@ -107,11 +92,6 @@ function isFinishedStatus(status?: string | null) {
   return ["finished", "completed", "ended", "final", "retired", "walkover"].some((item) =>
     normalized.includes(item)
   );
-}
-
-function isCancelledStatus(status?: string | null) {
-  const normalized = normalizeStatus(status);
-  return normalized.includes("cancelled") || normalized.includes("canceled") || normalized.includes("postponed");
 }
 
 function isSuspendedStatus(status?: string | null) {
@@ -405,19 +385,10 @@ export function getMatchFaq(match: MatchCenterMatch) {
 }
 
 export function isMatchPageIndexable(match: MatchCenterMatch) {
-  const hasPlayers = Boolean(compact(match.player1) && compact(match.player2));
-  const hasEvent = Boolean(compact(match.tournament));
-  const hasDate = Boolean(validDate(match.startTime));
-  const hasUsefulContext = getMatchWatchOptions(match).length > 0 || Boolean(match.round || match.court || match.surface);
-  const isStale = validDate(match.startTime)
-    ? Date.now() - (validDate(match.startTime) as Date).getTime() > 7 * 24 * 60 * 60 * 1000
-    : false;
-  const hasIndexablePlayer = [match.player1, match.player2].some((name) => {
-    const canonicalSlug = getCanonicalPlayerSlug(name) || playerSlug(name);
-    return INDEXABLE_PLAYER_SLUGS.has(canonicalSlug);
+  return shouldIndexMatch({
+    ...match,
+    watchProviders: getMatchWatchOptions(match),
   });
-
-  return hasPlayers && hasEvent && hasDate && hasUsefulContext && !isCancelledStatus(match.status) && !isStale && hasIndexablePlayer;
 }
 
 export function shouldIncludeMatchInSitemap(match: MatchCenterMatch) {

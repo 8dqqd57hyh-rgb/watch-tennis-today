@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { notFound, permanentRedirect } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
@@ -1238,6 +1239,14 @@ export default async function PlayerPage({
 }) {
   const { slug } = await params;
   const { canonicalSlug, pageSlug, playerName, isVerifiedPlayer } = getPlayerDisplay(slug);
+
+  if (!canonicalSlug) {
+    notFound();
+  }
+
+  if (slug !== canonicalSlug) {
+    permanentRedirect(`/player/${canonicalSlug}`);
+  }
 
   const allMatches = await getMatchesForPlayer(playerName);
 
