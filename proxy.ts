@@ -40,9 +40,15 @@ export function proxy(request: NextRequest) {
 
       if (requestedSlug) {
         const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedSlug);
-        const url = request.nextUrl.clone();
-        url.pathname = `/player/${canonicalPlayerSlug || requestedSlug}`;
-        return NextResponse.redirect(url, 308);
+        if (canonicalPlayerSlug) {
+          const url = request.nextUrl.clone();
+          url.pathname = `/player/${canonicalPlayerSlug}`;
+          return NextResponse.redirect(url, 308);
+        }
+
+        // Unknown and malformed plural player URLs must reach the route and
+        // return 404 instead of creating another redirecting crawl target.
+        return NextResponse.next();
       }
     }
   }

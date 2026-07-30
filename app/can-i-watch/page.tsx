@@ -40,17 +40,6 @@ export default function CanIWatchPage() {
   const enrichedCountries = countries.map((country) => getCountryEnrichment({ slug: country.slug, name: country.countryName }));
   const totalBroadcasterRows = enrichedCountries.reduce((total, country) => total + country.availableBroadcasters.length, 0);
   const totalStreamingRows = enrichedCountries.reduce((total, country) => total + country.availableStreaming.length, 0);
-  const searchSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Watch Tennis Today",
-    url: canonicalUrl("/"),
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${pageUrl}?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -64,7 +53,6 @@ export default function CanIWatchPage() {
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
       <BreadcrumbSchema items={[{ name: "Home", url: canonicalUrl("/") }, { name: "Can I Watch?", url: pageUrl }]} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(searchSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <div className="mx-auto max-w-7xl">

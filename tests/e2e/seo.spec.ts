@@ -21,6 +21,8 @@ const canonicalPlayerSlugCases = [
   { path: "/player/j-fonseca", canonical: "https://watchtennistoday.com/player/joao-fonseca" },
   { path: "/player/swiatek-iga", canonical: "https://watchtennistoday.com/player/iga-swiatek" },
   { path: "/player/sinner-jannik", canonical: "https://watchtennistoday.com/player/jannik-sinner" },
+  { path: "/player/j.-sinner", canonical: "https://watchtennistoday.com/player/jannik-sinner" },
+  { path: "/player/svitolina-elina", canonical: "https://watchtennistoday.com/player/elina-svitolina" },
 ];
 
 const dailyLandingPages = [
@@ -130,7 +132,6 @@ const wimbledonCountryLandingPages = [
 const wimbledonCountryLinkSources = [
   "/wimbledon",
   "/where-to-watch-wimbledon",
-  "/wimbledon-tv-schedule",
 ];
 
 function canonicalHref(html: string) {
@@ -262,7 +263,7 @@ test.describe("SEO-critical page basics", () => {
       expect(html).toContain("FAQPage");
       expect(html).toContain("/wimbledon-schedule");
       expect(html).toContain("/wimbledon-order-of-play");
-      expect(html).toContain("/wimbledon-tv-schedule");
+      expect(html).not.toContain('href="/wimbledon-tv-schedule"');
       expect(html).toContain("/where-to-watch-wimbledon");
 
       const robots = metaContent(html, "robots")?.toLowerCase();
@@ -309,7 +310,7 @@ test.describe("SEO-critical page basics", () => {
       expect(canonicalHref(html)).toBe(canonical);
       expect(h1Text(html)).toContain(h1);
       expect(metaContent(html, "description")?.length || 0).toBeGreaterThan(80);
-      expect(html).toContain("Last updated:");
+      expect(html).toMatch(/Last updated(?:<!-- -->)*:\s*/);
       expect(html).toContain("FAQ");
       expect(html).toContain("FAQPage");
       expect(html).toContain("BreadcrumbList");
@@ -372,16 +373,39 @@ test.describe("SEO-critical page basics", () => {
   });
 
   for (const { path, canonical } of canonicalPlayerSlugCases) {
-    test(`${path} resolves to a verified player canonical without hub collapse`, async ({ request }) => {
-      const response = await request.get(path, { failOnStatusCode: false });
-      const html = await response.text();
+    test(`${path} permanently redirects to its verified player canonical`, async ({ request }) => {
+      const response = await request.get(path, { failOnStatusCode: false, maxRedirects: 0 });
 
-      expect(response.status()).toBe(200);
-      expect(response.url()).not.toMatch(/\/players$/);
-      expect(html).toMatch(/<h1[\s>]/i);
-      expect(canonicalHref(html)).toBe(canonical);
+      expect([301, 308]).toContain(response.status());
+      expect(new URL(response.headers().location || "", SITE_URL).toString()).toBe(canonical);
     });
   }
+
+  test("malformed and placeholder player entities return 404", async ({ request }) => {
+    for (const path of ["/player/qf3", "/player/l.-liu", "/players/qf3"]) {
+      const response = await request.get(path, { failOnStatusCode: false, maxRedirects: 0 });
+      expect(response.status()).toBe(404);
+    }
+  });
+
+  test("finder does not advertise a crawlable SearchAction placeholder", async ({ request }) => {
+    const response = await request.get("/can-i-watch", { failOnStatusCode: false });
+    const html = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(html).not.toContain("SearchAction");
+    expect(html).not.toContain("search_term_string");
+  });
+
+  test("watch Open Graph images stay fetchable but carry noindex", async ({ request }) => {
+    const response = await request.get("/watch/example-vs-example-1/opengraph-image", {
+      failOnStatusCode: false,
+    });
+
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("image/png");
+    expect(response.headers()["x-robots-tag"]).toContain("noindex");
+  });
 
   test("player page renders a compact useful profile instead of an SEO-heavy long page", async ({ request }) => {
     const response = await request.get("/player/jannik-sinner", {
