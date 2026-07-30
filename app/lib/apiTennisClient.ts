@@ -30,6 +30,11 @@ function getCacheStatus(payloadSizeBytes: number): ApiTennisFetchMeta["cacheStat
   return "eligible";
 }
 
+export function getApiTennisCacheMode(method: string, cacheSeconds?: number) {
+  if (method === "get_fixtures" || !cacheSeconds) return "no-store" as const;
+  return "next-revalidate" as const;
+}
+
 function logApiTennisRequest(meta: ApiTennisFetchMeta) {
   if (!shouldLogApiTennis()) return;
   console.log("[API-TENNIS]", {
@@ -66,12 +71,13 @@ export async function fetchApiTennisResult<T>(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 6500);
   const startedAt = Date.now();
+  const cacheMode = getApiTennisCacheMode(method, options.cacheSeconds);
 
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      next: options.cacheSeconds ? { revalidate: options.cacheSeconds } : undefined,
-      cache: options.cacheSeconds ? undefined : "no-store",
+      next: cacheMode === "next-revalidate" ? { revalidate: options.cacheSeconds } : undefined,
+      cache: cacheMode === "no-store" ? "no-store" : undefined,
     });
 
     const text = await response.text().catch(() => "");
@@ -97,8 +103,8 @@ export async function fetchApiTennisResult<T>(
       payloadSizeBytes: payloadSize,
       resultCount,
       durationMs: Date.now() - startedAt,
-      cacheMode: options.cacheSeconds ? "next-revalidate" : "no-store",
-      cacheSeconds: options.cacheSeconds,
+      cacheMode,
+      cacheSeconds: cacheMode === "next-revalidate" ? options.cacheSeconds : undefined,
       cacheStatus: getCacheStatus(payloadSize),
     };
 
