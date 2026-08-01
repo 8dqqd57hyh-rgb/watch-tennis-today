@@ -105,7 +105,9 @@ export default function ClickAnalytics() {
 
       const isInternal = url.origin === window.location.origin;
       const isAffiliate = isAffiliateLink(anchor, url);
-      const eventName = isAffiliate ? "affiliate_click" : isInternal ? "internal_link_click" : "external_link_click";
+      const eventName =
+        getTrackValue(anchor, "data-track-event") ||
+        (isAffiliate ? "affiliate_click" : isInternal ? "internal_link_click" : "external_link_click");
       const linkText = cleanText(anchor.textContent) || "unlabeled link";
       const linkId = getTrackValue(anchor, "data-track-id") || linkText.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 60) || "unlabeled_link";
 

@@ -88,7 +88,19 @@ function sortMatches(matches: ServerMatch[]) {
 }
 
 function ProviderBadges({ match }: { match: ServerMatch }) {
-  if (!match.watchProviders.length) return <span className="text-xs font-semibold text-zinc-500">Broadcaster TBC</span>;
+  if (!match.watchProviders.length) return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-xs font-semibold text-zinc-500">Broadcaster TBC</span>
+      <Link
+        href="/tennis-tv-broadcast-finder"
+        data-track-event="broadcaster_finder_opened"
+        data-track-area="tv_provider_fallback"
+        className="text-xs font-black text-sky-700 hover:underline"
+      >
+        Find by country
+      </Link>
+    </div>
+  );
   return (
     <div className="flex flex-wrap gap-1.5" aria-label="TV channels and streaming services">
       {match.watchProviders.slice(0, 3).map((provider) => (
@@ -114,7 +126,26 @@ function MatchCard({ match }: { match: ServerMatch }) {
         <time dateTime={match.startTime || undefined} className="shrink-0 text-sm font-black text-zinc-900"><LocalTvTime startTime={match.startTime} /></time>
         <ProviderBadges match={match} />
       </div>
-      {match.watchProviders.length ? <Link href={tennisOnTvMatchHref(match)} className="mt-3 block rounded-lg bg-zinc-950 px-3 py-2 text-center text-sm font-black text-white hover:bg-zinc-800">Watch options</Link> : null}
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <Link
+          href={tennisOnTvMatchHref(match)}
+          data-track-event={match.watchProviders.length ? "watch_options_opened" : "match_opened"}
+          data-track-area="tv_match_card"
+          className="block rounded-lg bg-zinc-950 px-3 py-2 text-center text-sm font-black text-white hover:bg-zinc-800"
+        >
+          {match.watchProviders.length ? "Watch options" : "Match details"}
+        </Link>
+        {!match.watchProviders.length ? (
+          <Link
+            href="/tennis-tv-broadcast-finder"
+            data-track-event="broadcaster_finder_opened"
+            data-track-area="tv_match_card"
+            className="block rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-black text-zinc-900 hover:border-sky-500"
+          >
+            Find broadcasters
+          </Link>
+        ) : null}
+      </div>
     </article>
   );
 }
@@ -159,7 +190,7 @@ export default async function TennisOnTvTodayPage() {
             <div className="divide-y divide-zinc-100">{tournamentMatches.map((match) => { const status = statusMeta(match); return (
               <article key={match.id} className="grid gap-2 px-3 py-3 sm:grid-cols-[5rem_1fr_auto_auto] sm:items-center">
                 <time dateTime={match.startTime || undefined} className="text-sm font-black"><LocalTvTime startTime={match.startTime} /></time>
-                <Link href={tennisOnTvMatchHref(match)} className="font-bold text-zinc-950 hover:underline">{match.player1} <span className="text-xs text-zinc-400">vs</span> {match.player2}</Link>
+                <Link href={tennisOnTvMatchHref(match)} data-track-event="match_opened" data-track-area="tv_schedule" className="font-bold text-zinc-950 hover:underline">{match.player1} <span className="text-xs text-zinc-400">vs</span> {match.player2}</Link>
                 <ProviderBadges match={match} />
                 <span className={`w-fit rounded px-2 py-1 text-[10px] font-black uppercase ${status.className}`}>{status.label}</span>
               </article>
