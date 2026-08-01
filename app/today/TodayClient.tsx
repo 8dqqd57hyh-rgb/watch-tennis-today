@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
 import TennisTimeZonePlanner from "@/app/components/TennisTimeZonePlanner";
 import SpoilerFreeScoreToggle, {
@@ -22,7 +23,7 @@ type Match = {
   category: string;
   status: string;
   score: string;
-  startTime: string;
+  startTime: string | null;
   round?: string;
 };
 
@@ -42,7 +43,10 @@ function matchSlug(match: Match) {
   return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
-function formatTime(value: string) {
+type TourFilter = "ALL" | "ATP" | "WTA";
+type StatusFilter = "ALL" | "LIVE" | "UPCOMING" | "RESULTS";
+
+function formatTime(value: string | null) {
   if (!value) return "Time TBC";
 
   return new Date(value).toLocaleTimeString("en-US", {
@@ -85,6 +89,7 @@ function isMainTourMatch(match: Match) {
 }
 
 function timeValue(match: Match) {
+  if (!match.startTime) return Number.MAX_SAFE_INTEGER;
   const value = new Date(match.startTime).getTime();
   return Number.isNaN(value) ? Number.MAX_SAFE_INTEGER : value;
 }
@@ -149,7 +154,7 @@ function MatchCard({
           {match.tournament}
         </Link>
         <span aria-hidden="true">•</span>
-        <time dateTime={match.startTime}>{formatTime(match.startTime)}</time>
+        <time dateTime={match.startTime || undefined}>{formatTime(match.startTime)}</time>
       </div>
 
       {reasons.length > 0 && importance > 1 ? (
@@ -164,12 +169,24 @@ function MatchCard({
         </p>
       ) : null}
 
-      <Link
-        href={`/match/${matchSlug(match)}`}
-        className="mt-5 inline-flex rounded-xl bg-green-500 px-4 py-2 font-black text-black hover:bg-green-400"
-      >
-        Match details
-      </Link>
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link
+          href={`/match/${matchSlug(match)}`}
+          data-track-event="match_opened"
+          data-track-area="today_match_card"
+          className="inline-flex rounded-xl bg-green-500 px-4 py-2 font-black text-black hover:bg-green-400"
+        >
+          Match details
+        </Link>
+        <Link
+          href={`/watch/${encodeURIComponent(match.id)}`}
+          data-track-event="watch_options_opened"
+          data-track-area="today_match_card"
+          className="inline-flex rounded-xl border border-zinc-700 px-4 py-2 font-bold text-white hover:border-green-400"
+        >
+          Watch options
+        </Link>
+      </div>
     </article>
   );
 }
@@ -204,13 +221,22 @@ function MatchSection({
   );
 }
 
-export default function TodayClient() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+function trackFilter(filterType: "tour" | "status", value: string) {
+  const payload = { filter_type: filterType, filter_value: value, from_path: "/today" };
+  track("schedule_filter_used", payload);
+  window.gtag?.("event", "schedule_filter_used", payload);
+}
+
+export default function TodayClient({ initialMatches }: { initialMatches: Match[] }) {
+  const [matches, setMatches] = useState<Match[]>(() =>
+    initialMatches.filter((match) => isTodayMatch(match) && isMainTourMatch(match)),
+  );
+  const [tourFilter, setTourFilter] = useState<TourFilter>("ALL");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [spoilerFree, setSpoilerFree] = useSpoilerFreeScores();
 
   useEffect(() => {
-    async function loadMatches() {
+    async function refreshMatches() {
       try {
         const safeMatches = await fetchClientMatches(TODAY_MATCHES_URL, {
           ttlMs: 30_000,
@@ -220,30 +246,31 @@ export default function TodayClient() {
           (match) => isTodayMatch(match) && isMainTourMatch(match)
         ));
       } catch {
-        setMatches([]);
-      } finally {
-        setLoading(false);
+        // Preserve the server-rendered schedule if the live refresh fails.
       }
     }
 
-    loadMatches();
+    refreshMatches();
   }, []);
 
   const groupedMatches = useMemo(() => {
-    const live = sortByImportance(matches.filter((match) => isLiveStatus(match.status)));
-    const upcoming = sortByImportance(matches.filter((match) => isUpcomingStatus(match.status)));
-    const completed = [...matches]
+    const tourMatches = matches.filter(
+      (match) => tourFilter === "ALL" || match.category === tourFilter,
+    );
+    const live = sortByImportance(tourMatches.filter((match) => isLiveStatus(match.status)));
+    const upcoming = sortByImportance(tourMatches.filter((match) => isUpcomingStatus(match.status)));
+    const completed = [...tourMatches]
       .filter((match) => isCompletedStatus(match.status))
       .sort((left, right) => timeValue(right) - timeValue(left));
 
     return { live, upcoming, completed };
-  }, [matches]);
+  }, [matches, tourFilter]);
   const atpCount = matches.filter((match) => match.category === "ATP").length;
   const wtaCount = matches.filter((match) => match.category === "WTA").length;
 
   return (
     <div className="rounded-[2rem] bg-black px-4 py-6 text-white md:px-8">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2 text-sm font-bold">
           <span className="rounded-full bg-red-500/20 px-3 py-2 text-red-300">
             {groupedMatches.live.length} live
@@ -264,12 +291,42 @@ export default function TodayClient() {
         <SpoilerFreeScoreToggle enabled={spoilerFree} onChange={setSpoilerFree} />
       </div>
 
-      {loading ? (
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
-          <p className="text-lg font-bold">Loading today&apos;s matches…</p>
-          <p className="mt-2 text-zinc-400">Live and important matches will appear first.</p>
-        </div>
-      ) : matches.length === 0 ? (
+      <div className="mb-8 grid gap-4 border-t border-zinc-800 pt-5 md:grid-cols-2">
+        <fieldset>
+          <legend className="mb-2 text-xs font-black uppercase tracking-wide text-zinc-400">Tour</legend>
+          <div className="flex flex-wrap gap-2">
+            {(["ALL", "ATP", "WTA"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={tourFilter === value}
+                onClick={() => { setTourFilter(value); trackFilter("tour", value); }}
+                className={`rounded-full px-4 py-2 text-sm font-black ${tourFilter === value ? "bg-green-500 text-black" : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"}`}
+              >
+                {value === "ALL" ? "ATP + WTA" : value}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend className="mb-2 text-xs font-black uppercase tracking-wide text-zinc-400">Show</legend>
+          <div className="flex flex-wrap gap-2">
+            {(["ALL", "LIVE", "UPCOMING", "RESULTS"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={statusFilter === value}
+                onClick={() => { setStatusFilter(value); trackFilter("status", value); }}
+                className={`rounded-full px-4 py-2 text-sm font-black ${statusFilter === value ? "bg-white text-black" : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"}`}
+              >
+                {value === "ALL" ? "All matches" : value === "RESULTS" ? "Results" : value === "UPCOMING" ? "Upcoming" : "Live"}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      {matches.length === 0 ? (
         <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8">
           <h2 className="text-2xl font-black">No ATP or WTA matches are listed for today yet</h2>
           <p className="mt-3 max-w-2xl text-zinc-300">
@@ -295,32 +352,38 @@ export default function TodayClient() {
         </div>
       ) : (
         <>
-          <MatchSection
-            title="Live now"
-            count={groupedMatches.live.length}
-            matches={groupedMatches.live}
-            spoilerFree={spoilerFree}
-          />
-          <MatchSection
-            title="Coming up today"
-            count={groupedMatches.upcoming.length}
-            matches={groupedMatches.upcoming}
-            spoilerFree={spoilerFree}
-          />
-          <MatchSection
-            title="Latest results"
-            count={groupedMatches.completed.length}
-            matches={groupedMatches.completed}
-            spoilerFree={spoilerFree}
-          />
+          {statusFilter === "ALL" || statusFilter === "LIVE" ? <MatchSection title="Live now" count={groupedMatches.live.length} matches={groupedMatches.live} spoilerFree={spoilerFree} /> : null}
+          {statusFilter === "ALL" || statusFilter === "UPCOMING" ? <MatchSection title="Coming up today" count={groupedMatches.upcoming.length} matches={groupedMatches.upcoming} spoilerFree={spoilerFree} /> : null}
+          {statusFilter === "ALL" || statusFilter === "RESULTS" ? <MatchSection title="Latest results" count={groupedMatches.completed.length} matches={groupedMatches.completed} spoilerFree={spoilerFree} /> : null}
+          {((statusFilter === "LIVE" && !groupedMatches.live.length) ||
+            (statusFilter === "UPCOMING" && !groupedMatches.upcoming.length) ||
+            (statusFilter === "RESULTS" && !groupedMatches.completed.length)) ? (
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-300">
+              No matches fit these filters. Try another status or tour.
+            </div>
+          ) : null}
         </>
       )}
 
       {matches.length > 0 ? (
-        <details className="mt-4 rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
+        <details
+          className="mt-4 rounded-3xl border border-zinc-800 bg-zinc-950 p-5"
+          onToggle={(event) => {
+            if (event.currentTarget.open) {
+              const payload = { from_path: "/today", match_count: matches.length };
+              track("timezone_planner_opened", payload);
+              window.gtag?.("event", "timezone_planner_opened", payload);
+            }
+          }}
+        >
           <summary className="cursor-pointer text-lg font-black">Plan times in your timezone</summary>
           <div className="mt-5">
-            <TennisTimeZonePlanner matches={matches} />
+            <TennisTimeZonePlanner
+              matches={matches.map((match) => ({
+                ...match,
+                startTime: match.startTime || undefined,
+              }))}
+            />
           </div>
         </details>
       ) : null}

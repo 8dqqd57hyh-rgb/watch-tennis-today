@@ -71,6 +71,7 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
     ],
   };
   const supplementalLinks = supplementalLinkMap[article.slug] || [];
+  const isAtpLevelsGuide = article.slug === "masters-1000-500-250-explained";
   const { publishedDate, updatedDate } = getGuideArticleDates(article);
   const readingTime = getGuideReadingTime(article);
   const sourceReferences = getGuideSourceReferences(article);
@@ -156,16 +157,48 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
           </dl>
         </header>
 
+        {isAtpLevelsGuide ? (
+          <section className="mt-8 overflow-hidden rounded-3xl border border-emerald-800 bg-zinc-950" aria-labelledby="atp-levels-comparison">
+            <div className="p-6">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-emerald-300">Quick comparison</p>
+              <h2 id="atp-levels-comparison" className="mt-2 text-2xl font-black text-white">Masters 1000 vs ATP 500 vs ATP 250</h2>
+              <p className="mt-2 text-zinc-400">The category signals the champion&apos;s usual ranking reward and the event&apos;s place in the ATP calendar.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[38rem] text-left text-sm">
+                <thead className="border-y border-zinc-800 bg-black text-zinc-400">
+                  <tr><th className="px-6 py-3">Level</th><th className="px-6 py-3">Champion points</th><th className="px-6 py-3">Typical role</th><th className="px-6 py-3">Field</th></tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800 text-zinc-200">
+                  <tr><th className="px-6 py-4 text-white">Masters 1000</th><td className="px-6 py-4">1,000</td><td className="px-6 py-4">Elite regular-tour event</td><td className="px-6 py-4">Usually deepest</td></tr>
+                  <tr><th className="px-6 py-4 text-white">ATP 500</th><td className="px-6 py-4">500</td><td className="px-6 py-4">Major ranking week</td><td className="px-6 py-4">Often very strong</td></tr>
+                  <tr><th className="px-6 py-4 text-white">ATP 250</th><td className="px-6 py-4">250</td><td className="px-6 py-4">Tour title and ranking opportunity</td><td className="px-6 py-4">More variable</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="grid gap-3 border-t border-zinc-800 p-6 sm:grid-cols-2">
+              <Link href="/today" data-track-event="guide_next_step_opened" data-track-area="atp_levels_comparison" className="rounded-xl bg-emerald-400 px-4 py-3 text-center font-black text-black hover:bg-emerald-300">See today&apos;s ATP matches</Link>
+              <Link href="/tennis-tournaments" data-track-event="guide_next_step_opened" data-track-area="atp_levels_comparison" className="rounded-xl border border-zinc-700 px-4 py-3 text-center font-black text-white hover:border-emerald-400">Explore tournament levels</Link>
+            </div>
+          </section>
+        ) : null}
+
         <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-lg leading-9 text-zinc-300">
           <h2 className="mb-3 text-2xl font-black text-white">What this guide helps you do</h2>
           <p>{article.intro}</p>
         </section>
 
         <div className="mt-8 space-y-7 text-lg leading-9 text-zinc-300">
-          {article.sections.map((section) => (
+          {article.sections.map((section, index) => (
             <section key={`${article.slug}-${section.heading}`} className="rounded-3xl border border-zinc-900 bg-zinc-950 p-6">
               <h2 className="mb-3 text-2xl font-black text-white">{section.heading}</h2>
               <p>{section.body}</p>
+              {isAtpLevelsGuide && index === 0 ? (
+                <div className="mt-5 flex flex-wrap gap-3 border-t border-zinc-800 pt-5 text-sm">
+                  <Link href="/today" data-track-event="guide_next_step_opened" data-track-area="guide_first_section" className="rounded-full bg-emerald-400 px-4 py-2 font-black text-black hover:bg-emerald-300">What&apos;s playing today?</Link>
+                  <Link href="/tennis-calendar" data-track-event="guide_next_step_opened" data-track-area="guide_first_section" className="rounded-full border border-zinc-700 px-4 py-2 font-black text-white hover:border-emerald-400">View the tennis calendar</Link>
+                </div>
+              ) : null}
             </section>
           ))}
         </div>

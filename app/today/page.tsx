@@ -3,6 +3,7 @@ import EmailCapture from "@/components/EmailCapture";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import RelatedPages from "@/app/components/RelatedPages";
 import Link from "next/link";
+import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -20,7 +21,15 @@ export const metadata = {
   },
 };
 
-export default function Page() {
+export default async function Page() {
+  const initialMatches = await getServerMatchesWindow({
+    includeFinished: true,
+    daysBack: 0,
+    daysForward: 1,
+    noStore: true,
+    timeoutMs: 8000,
+  });
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
       <nav className="mb-4 flex gap-2 text-sm text-slate-500" aria-label="Breadcrumb">
@@ -43,7 +52,7 @@ export default function Page() {
         </p>
       </header>
 
-      <TodayClient />
+      <TodayClient initialMatches={initialMatches} />
 
       <RelatedPages
         className="mt-10"
