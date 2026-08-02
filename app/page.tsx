@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import HomepageMatchExplorer from "@/app/components/HomepageMatchExplorer";
+import HomepageFinalsBanner from "@/app/components/HomepageFinalsBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,7 @@ export default function Home() {
           </div>
         </header>
 
+        <HomepageFinalsBanner />
         <HomepageMatchExplorer />
 
         <section aria-label="Popular tennis planning pages" className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

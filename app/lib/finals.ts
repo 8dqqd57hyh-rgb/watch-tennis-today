@@ -10,6 +10,22 @@ export type Match = {
   round?: string;
 };
 
+const FEATURED_FINALISTS = ["pegula", "jodar", "jódar"];
+
+function isFinalRound(round: string) {
+  return /(^|\s-\s)finals?$/.test(round.trim().toLowerCase());
+}
+
+export function isFeaturedWashingtonFinal(match: Match) {
+  const players = `${match.player1 || ""} ${match.player2 || ""}`.toLowerCase();
+  const tournament = (match.tournament || "").toLowerCase();
+
+  return (
+    (tournament.includes("washington") || tournament.includes("mubadala") || tournament.includes("dc open")) &&
+    FEATURED_FINALISTS.some((name) => players.includes(name))
+  );
+}
+
 export function getUpcomingFinals(matches: Match[]) {
   return matches
     .filter((match) => {
@@ -25,10 +41,7 @@ export function getUpcomingFinals(matches: Match[]) {
         category === "atp" ||
         category === "wta";
 
-      const isFinalRound =
-        round.includes("final") &&
-        !round.includes("semi") &&
-        !round.includes("quarter");
+      const isFinal = isFinalRound(round);
 
       const isGrandSlam =
         tournament.includes("french open") ||
@@ -39,16 +52,38 @@ export function getUpcomingFinals(matches: Match[]) {
 
       return (
         isAllowedCategory &&
-        isFinalRound &&
+        isFinal &&
         !isGrandSlam &&
         match.startTime &&
-        match.status !== "FINISHED" &&
-        match.status !== "CANCELLED"
+        !["finished", "completed", "cancelled", "canceled"].includes(
+          (match.status || "").toLowerCase()
+        )
       );
     })
     .sort(
       (a, b) =>
         new Date(a.startTime).getTime() -
         new Date(b.startTime).getTime()
+    );
+}
+
+export function getFeaturedWashingtonFinals(matches: Match[]) {
+  return matches
+    .filter((match) => {
+      const round = (match.round || "").toLowerCase();
+      const category = (match.category || "").toLowerCase();
+      const status = (match.status || "").toLowerCase();
+
+      return (
+        ["atp", "wta"].includes(category) &&
+        isFinalRound(round) &&
+        !["cancelled", "canceled"].includes(status) &&
+        Boolean(match.startTime) &&
+        isFeaturedWashingtonFinal(match)
+      );
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     );
 }
