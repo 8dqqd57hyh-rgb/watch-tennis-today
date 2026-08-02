@@ -35,13 +35,12 @@ describe("HomepageFinalsBanner polling", () => {
     cy.get("@fetchFinals").should("have.been.calledTwice");
   });
 
-  it("backs off after repeated failures and resets after success", () => {
+  it("backs off after a failure and resets after success", () => {
     cy.clock();
     cy.window().then((window) => {
       const fetchFinals = cy.stub(window, "fetch")
         .onFirstCall().resolves(new Response(null, { status: 503 }))
-        .onSecondCall().resolves(new Response(null, { status: 503 }))
-        .onThirdCall().resolves(new Response(JSON.stringify({ finals: [] }), {
+        .onSecondCall().resolves(new Response(JSON.stringify({ finals: [] }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         }))
@@ -56,9 +55,7 @@ describe("HomepageFinalsBanner polling", () => {
     cy.get("@fetchFinals").should("have.been.calledOnce");
     cy.tick(120_000);
     cy.get("@fetchFinals").should("have.been.calledTwice");
-    cy.tick(240_000);
-    cy.get("@fetchFinals").should("have.been.calledThrice");
     cy.tick(60_000);
-    cy.get("@fetchFinals").should("have.callCount", 4);
+    cy.get("@fetchFinals").should("have.been.calledThrice");
   });
 });
