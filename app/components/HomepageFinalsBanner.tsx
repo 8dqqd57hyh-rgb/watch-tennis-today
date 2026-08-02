@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Match } from "@/app/lib/finals";
 
 const REFRESH_MS = 60_000;
+const MAX_REFRESH_MS = 15 * REFRESH_MS;
 
 function matchHref(match: Match) {
   return `/watch/${encodeURIComponent(String(match.id))}`;
@@ -26,8 +27,24 @@ export default function HomepageFinalsBanner() {
   useEffect(() => {
     let active = true;
     let controller: AbortController | null = null;
+    let timer: number | null = null;
+    let consecutiveFailures = 0;
+
+    function clearTimer() {
+      if (timer === null) return;
+      window.clearTimeout(timer);
+      timer = null;
+    }
+
+    function scheduleRefresh() {
+      clearTimer();
+      if (!active || document.hidden) return;
+      const delay = Math.min(REFRESH_MS * 2 ** consecutiveFailures, MAX_REFRESH_MS);
+      timer = window.setTimeout(refresh, delay);
+    }
 
     async function refresh() {
+      if (!active || document.hidden) return;
       controller?.abort();
       controller = new AbortController();
       try {
@@ -35,22 +52,36 @@ export default function HomepageFinalsBanner() {
           cache: "no-store",
           signal: controller.signal,
         });
-        if (!response.ok) return;
+        if (!response.ok) throw new Error(`Finals refresh failed with ${response.status}`);
         const data = (await response.json()) as { finals?: Match[] };
         if (!active) return;
         setFinals(Array.isArray(data.finals) ? data.finals : []);
         setUpdatedAt(new Date());
+        consecutiveFailures = 0;
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
+        consecutiveFailures += 1;
+      } finally {
+        scheduleRefresh();
       }
     }
 
-    void refresh();
-    const timer = window.setInterval(refresh, REFRESH_MS);
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        clearTimer();
+        controller?.abort();
+        return;
+      }
+      void refresh();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    if (!document.hidden) void refresh();
     return () => {
       active = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       controller?.abort();
-      window.clearInterval(timer);
+      clearTimer();
     };
   }, []);
 
