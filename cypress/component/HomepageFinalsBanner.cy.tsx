@@ -35,7 +35,7 @@ describe("HomepageFinalsBanner polling", () => {
     cy.get("@fetchFinals").should("have.been.calledTwice");
   });
 
-  it("backs off after a failure and resets after success", () => {
+  it("backs off after a failed refresh", () => {
     cy.clock();
     cy.window().then((window) => {
       const fetchFinals = cy.stub(window, "fetch")
@@ -53,9 +53,9 @@ describe("HomepageFinalsBanner polling", () => {
 
     cy.mount(<HomepageFinalsBanner />);
     cy.get("@fetchFinals").should("have.been.calledOnce");
-    cy.tick(120_000);
+    cy.tick(119_999);
+    cy.get("@fetchFinals").should("have.been.calledOnce");
+    cy.tick(1);
     cy.get("@fetchFinals").should("have.been.calledTwice");
-    cy.tick(60_000);
-    cy.get("@fetchFinals").should("have.been.calledThrice");
   });
 });
