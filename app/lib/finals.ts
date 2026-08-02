@@ -6,14 +6,26 @@ export type Match = {
   category: string;
   status: string;
   score: string;
-  startTime: string;
+  startTime: string | null;
   round?: string;
 };
 
 const FEATURED_FINALISTS = ["pegula", "jodar", "jódar"];
 
 function isFinalRound(round: string) {
-  return /(^|\s-\s)finals?$/.test(round.trim().toLowerCase());
+  const normalizedRound = round.trim().toLowerCase();
+
+  return (
+    /\bfinals?$/.test(normalizedRound) &&
+    !/(?:\b(?:semi|quarter|qualif(?:ying|ication))|\b\d+\/\d+)[\s-]*finals?$/.test(normalizedRound)
+  );
+}
+
+function getStartTimestamp(startTime: string | null) {
+  if (!startTime) return null;
+
+  const timestamp = new Date(startTime).getTime();
+  return Number.isFinite(timestamp) ? timestamp : null;
 }
 
 export function isFeaturedWashingtonFinal(match: Match) {
@@ -54,7 +66,7 @@ export function getUpcomingFinals(matches: Match[]) {
         isAllowedCategory &&
         isFinal &&
         !isGrandSlam &&
-        match.startTime &&
+        getStartTimestamp(match.startTime) !== null &&
         !["finished", "completed", "cancelled", "canceled"].includes(
           (match.status || "").toLowerCase()
         )
@@ -62,8 +74,8 @@ export function getUpcomingFinals(matches: Match[]) {
     })
     .sort(
       (a, b) =>
-        new Date(a.startTime).getTime() -
-        new Date(b.startTime).getTime()
+        (getStartTimestamp(a.startTime) ?? Number.MAX_SAFE_INTEGER) -
+        (getStartTimestamp(b.startTime) ?? Number.MAX_SAFE_INTEGER)
     );
 }
 
@@ -78,12 +90,13 @@ export function getFeaturedWashingtonFinals(matches: Match[]) {
         ["atp", "wta"].includes(category) &&
         isFinalRound(round) &&
         !["cancelled", "canceled"].includes(status) &&
-        Boolean(match.startTime) &&
+        getStartTimestamp(match.startTime) !== null &&
         isFeaturedWashingtonFinal(match)
       );
     })
     .sort(
       (a, b) =>
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        (getStartTimestamp(a.startTime) ?? Number.MAX_SAFE_INTEGER) -
+        (getStartTimestamp(b.startTime) ?? Number.MAX_SAFE_INTEGER)
     );
 }

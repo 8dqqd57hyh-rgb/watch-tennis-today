@@ -17,9 +17,41 @@ test("selects the featured Washington finals and keeps suspended matches", () =>
   expect(getFeaturedWashingtonFinals([baseMatch])).toEqual([baseMatch]);
 });
 
-test("does not mistake early rounds ending in -finals for a tournament final", () => {
-  const earlyRound = { ...baseMatch, round: "WTA Toronto - 1/64-finals" };
+test("recognizes common provider final round labels", () => {
+  for (const round of ["Final", "Finals", "Grand Final", "WTA Washington Final"]) {
+    const match = { ...baseMatch, round };
 
-  expect(getUpcomingFinals([earlyRound])).toEqual([]);
-  expect(getFeaturedWashingtonFinals([earlyRound])).toEqual([]);
+    expect(getUpcomingFinals([match])).toEqual([match]);
+    expect(getFeaturedWashingtonFinals([match])).toEqual([match]);
+  }
+});
+
+test("does not mistake early rounds ending in -finals for a tournament final", () => {
+  for (const round of [
+    "WTA Toronto - 1/64-finals",
+    "1/4 Final",
+    "Semi Final",
+    "Quarter-Final",
+    "Qualifying Final",
+  ]) {
+    const earlyRound = { ...baseMatch, round };
+
+    expect(getUpcomingFinals([earlyRound])).toEqual([]);
+    expect(getFeaturedWashingtonFinals([earlyRound])).toEqual([]);
+  }
+});
+
+test("excludes finals with null or invalid start times", () => {
+  const missingStart = { ...baseMatch, id: "missing", startTime: null };
+  const invalidStart = { ...baseMatch, id: "invalid", startTime: "not-a-date" };
+
+  expect(getUpcomingFinals([missingStart, invalidStart])).toEqual([]);
+  expect(getFeaturedWashingtonFinals([missingStart, invalidStart])).toEqual([]);
+});
+
+test("sorts finals by valid start time", () => {
+  const earlier = { ...baseMatch, id: "earlier", startTime: "2026-08-02T20:00:00Z" };
+
+  expect(getUpcomingFinals([baseMatch, earlier])).toEqual([earlier, baseMatch]);
+  expect(getFeaturedWashingtonFinals([baseMatch, earlier])).toEqual([earlier, baseMatch]);
 });
