@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
@@ -26,6 +27,7 @@ import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
 import { players, type PlayerSlug } from "@/data/players";
 import { getRivalryForMatch } from "@/data/rivalries";
 import { getMatchEnrichment } from "@/src/lib/enrichment";
+import LocalMatchDateTime from "@/app/components/LocalMatchDateTime";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -36,21 +38,6 @@ type PageProps = {
 
 function jsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
-}
-
-function formatDateTime(value?: string | null) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat("en", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  }).format(date);
 }
 
 function statusLabel(match: MatchCenterMatch) {
@@ -128,7 +115,7 @@ function PlayerLink({ href, name }: { href: string | null; name: string }) {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string | null | undefined }) {
+function Fact({ label, value }: { label: string; value: ReactNode }) {
   if (!value) return null;
 
   return (
@@ -391,7 +378,12 @@ export default async function MatchPage({ params }: PageProps) {
   const headlineFacts = [
     { label: "Tournament", value: displayText(match.tournament) },
     { label: "Round", value: displayText(match.round) },
-    { label: timing.label, value: timing.pending ? "TBC" : formatDateTime(timing.value) },
+    {
+      label: `${timing.label} (your local time)`,
+      value: timing.pending || !timing.value
+        ? "TBC"
+        : <LocalMatchDateTime value={timing.value} />,
+    },
     { label: "Court", value: displayText(match.court) || displayText(match.location) },
     { label: "Surface", value: displayText(match.surface) },
     { label: "Status", value: displayText(match.status) },

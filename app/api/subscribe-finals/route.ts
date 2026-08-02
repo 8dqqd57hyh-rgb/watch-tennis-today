@@ -10,7 +10,7 @@ type FinalsMatch = {
   player2?: string;
   tournament?: string;
   category?: string;
-  startTime?: string | number | Date;
+  startTime?: string | number | Date | null;
 };
 
 function getResendClient() {
