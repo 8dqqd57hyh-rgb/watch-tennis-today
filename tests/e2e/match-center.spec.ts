@@ -35,9 +35,9 @@ function match(overrides: Partial<MatchCenterMatch> = {}): MatchCenterMatch {
 }
 
 test.describe("AI match center helpers", () => {
-  test("provides a stable UTC fallback before rendering match time locally", () => {
-    expect(formatMatchDateTime("2026-08-03T16:00:00.000Z", false)).toContain("UTC");
-    expect(formatMatchDateTime("not-a-date", true)).toBe("TBC");
+  test("formats match time locally without a UTC suffix", () => {
+    expect(formatMatchDateTime("2026-08-03T16:00:00.000Z")).not.toContain("UTC");
+    expect(formatMatchDateTime("not-a-date")).toBe("TBC");
   });
 
   test("generates and parses readable match slugs", () => {
