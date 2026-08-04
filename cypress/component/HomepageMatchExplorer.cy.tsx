@@ -7,6 +7,32 @@ describe("HomepageMatchExplorer component", { tags: ["@component", "@api"] }, ()
     cy.intercept("GET", "/api/wimbledon-qualifying*", []);
   });
 
+  it("renders server-provided match cards before the client refresh completes", () => {
+    cy.intercept("GET", "/api/matches*", { delay: 1000, body: [] }).as("refreshMatches");
+
+    cy.mount(
+      <HomepageMatchExplorer
+        initialMatches={[
+          {
+            id: "server:1",
+            player1: "Server Player One",
+            player2: "Server Player Two",
+            tournament: "Server Open",
+            category: "ATP",
+            status: "UPCOMING",
+            score: "",
+            startTime: "2026-08-04T12:00:00.000Z",
+            watchProviders: [],
+          },
+        ]}
+      />,
+    );
+
+    cy.getByTestId("match-loading-skeleton").should("not.exist");
+    cy.contains("Server Player One").should("be.visible");
+    cy.contains("Server Player Two").should("be.visible");
+  });
+
   it("renders loading state and then match cards from props returned by the API", () => {
     let releaseMatches: (matches: unknown) => void = () => {};
     const matchesPromise = new Promise((resolve) => {

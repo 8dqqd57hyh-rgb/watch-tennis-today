@@ -7,7 +7,7 @@ import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
-import { getBroadcastCountryOptions, getCanIWatchQueryOptions, getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
+import { getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
 import {
   getMatchSlug as getMatchCenterSlug,
   shouldIncludeMatchInSitemap,
@@ -338,17 +338,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
 
-  const canIWatchPages: MetadataRoute.Sitemap = getCanIWatchQueryOptions()
-    .filter((option) => option.type === "tournament")
-    .flatMap((option) =>
-      getBroadcastCountryOptions().map((country) => ({
-        url: `https://watchtennistoday.com/can-i-watch/${option.slug}/${country.slug}`,
-        lastModified: ENTITY_LAST_MODIFIED,
-        changeFrequency: "monthly" as const,
-        priority: 0.83,
-      })),
-    );
-
   const importantMatches = matches.filter((match) =>
     isImportantMatch(match) && shouldIncludeMatchInSitemap(match as MatchCenterMatch)
   );
@@ -441,7 +430,6 @@ const frenchOpenPages = [
   ...polishPages,
   ...countryPages,
   ...broadcasterPages,
-  ...canIWatchPages,
   ...guidePages,
   ...playerPages,
   ...tournamentPages,
