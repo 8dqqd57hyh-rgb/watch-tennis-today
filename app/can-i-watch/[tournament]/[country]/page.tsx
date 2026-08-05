@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
+import StreamingOfferCard from "@/app/components/StreamingOfferCard";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import {
   findBroadcasts,
@@ -134,6 +135,8 @@ export default async function CanIWatchDetailPage({ params }: { params: Promise<
         </section>
 
         {summary.warning ? <section className="mt-6 rounded-2xl border border-amber-400/40 bg-amber-950/20 p-5 leading-7 text-amber-100">{summary.warning}</section> : null}
+
+        <StreamingOfferCard tournamentSlug={tournament} countryCode={countryKey} />
 
         <section className="mt-8 grid gap-4 lg:grid-cols-2">
           {entries.length > 0 ? entries.map((entry) => (

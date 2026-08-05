@@ -8,6 +8,7 @@
     "start": "next start",
     "indexnow": "tsx scripts/submit-indexnow.ts",
     "seo:audit": "tsx scripts/seo-audit.ts",
+    "update-streaming-offers": "tsx scripts/update-streaming-offers.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "us-open-pl-max-eurosport",
+    "tournamentSlug": "us-open",
+    "countryCode": "PL",
+    "providerName": "HBO Max",
+    "broadcasterName": "Eurosport",
+    "providerSlug": "max",
+    "basePlan": { "name": "Standard", "price": 29.99 },
+    "sportsAddon": { "name": "Kanały TV i Sport", "price": 15 },
+    "currency": "PLN",
+    "billingPeriod": "monthly",
+    "channels": ["Eurosport 1", "Eurosport 2"],
+    "coverage": { "live": true, "replay": true, "allCourts": true, "commentaryLanguages": ["pl"] },
+    "officialUrl": "https://www.max.com/pl/pl/sports",
+    "sourceUrls": [
+      "https://www.max.com/pl/pl/sports",
+      "https://www.usopen.org/en_US/about/tv_intl.html"
+    ],
+    "lastCheckedAt": "2026-08-05T00:00:00.000Z",
+    "validUntil": "2026-09-14T00:00:00.000Z",
+    "status": "verified",
+    "verificationMethod": "manual",
+    "verifiedBy": "Watch Tennis Today editorial review",
+    "verifiedAt": "2026-08-05T00:00:00.000Z",
+    "notes": "US Open rights and Max checkout details are reviewed separately; verify the final checkout price before subscribing."
+  }
+]
