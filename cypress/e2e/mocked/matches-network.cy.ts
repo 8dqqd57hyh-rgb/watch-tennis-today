@@ -61,7 +61,8 @@ describe("mocked tennis match data", { tags: ["@api", "@critical"] }, () => {
     );
 
     cy.visit("/");
-    cy.getByTestId("match-loading-skeleton").should("be.visible");
+    cy.getByTestId("match-loading-skeleton").should("not.exist");
+    cy.getByTestId("match-card").should("have.length.at.least", 1);
     cy.wait("@delayedMatches");
     cy.getByTestId("match-card").should("have.length.at.least", 1);
   });
