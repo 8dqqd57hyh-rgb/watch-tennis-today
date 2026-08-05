@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
+import {
+  isChampionshipFinalRound,
+  normalizeMatchStartTime,
+  resolveMatchWinner,
+} from "@/app/lib/matchNormalization";
 
 type ApiTennisMatch = {
   event_key: string;
@@ -945,15 +950,14 @@ function formatScore(match: ApiTennisMatch) {
 function getStartTime(match: ApiTennisMatch) {
   if (!match.event_date || !match.event_time) return null;
 
-  return `${match.event_date}T${match.event_time}:00`;
+  return normalizeMatchStartTime(`${match.event_date}T${match.event_time}:00`);
 }
 
 function normalizeApiDateTimeValue(value?: string | null) {
   const text = String(value || "").trim();
   if (!text || text === "-") return null;
 
-  const date = new Date(text);
-  return Number.isNaN(date.getTime()) ? null : text;
+  return normalizeMatchStartTime(text);
 }
 
 function getResumeTime(match: ApiTennisMatch) {
@@ -965,7 +969,7 @@ function getResumeTime(match: ApiTennisMatch) {
   if (directTime) return directTime;
 
   if (match.event_resume_date && match.event_resume_time) {
-    return `${match.event_resume_date}T${match.event_resume_time}:00`;
+    return normalizeMatchStartTime(`${match.event_resume_date}T${match.event_resume_time}:00`);
   }
 
   return null;
@@ -1303,7 +1307,7 @@ async function getArchivedMatches(dateStart: string, limit = 2500) {
       status: match.status || "FINISHED",
       score: match.score || "",
       pointScore: "",
-      startTime: match.start_time || "",
+      startTime: normalizeMatchStartTime(match.start_time),
       winner: null,
       winnerId: null,
       watchProviders: match.watch_providers || [],
@@ -1343,7 +1347,7 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
         status: match.status || "FINISHED",
         score: match.score || "",
         pointScore: "",
-        startTime: match.start_time || "",
+        startTime: normalizeMatchStartTime(match.start_time),
         winner: null,
         winnerId: null,
         watchProviders: match.watch_providers || [],
@@ -1520,15 +1524,16 @@ const dateStop = formatDate(dateStopDate);
         category,
         status: normalizeStatus(match),
         round: match.tournament_round || "",
-        isFinal:
-          (match.tournament_round || "").toLowerCase().includes("final") &&
-          !(match.tournament_round || "").toLowerCase().includes("semi") &&
-          Boolean(match.event_date),
+        isFinal: isChampionshipFinalRound(match.tournament_round) && Boolean(match.event_date),
         score: formatScore(match),
         pointScore: formatPointScore(match),
         startTime: getStartTime(match),
         resumeTime: getResumeTime(match),
-        winner: match.event_winner || match.event_winner_player || null,
+        winner: resolveMatchWinner(
+          match.event_winner_player || match.event_winner,
+          player1,
+          player2
+        ),
         winnerId: null,
         ...(includeRankings
           ? {

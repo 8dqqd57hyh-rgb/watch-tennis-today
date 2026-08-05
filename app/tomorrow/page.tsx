@@ -1,4 +1,5 @@
 import TomorrowClient from "./TomorrowClient";
+import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -8,7 +9,14 @@ export const metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function Page() {
+export default async function Page() {
+  const initialMatches = await getServerMatchesWindow({
+    revalidateSeconds: 60,
+    daysBack: 0,
+    daysForward: 2,
+    timeoutMs: 8000,
+  });
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -62,7 +70,7 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <TomorrowClient />
+      <TomorrowClient initialMatches={initialMatches} />
     </main>
   );
 }

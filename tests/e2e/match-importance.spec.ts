@@ -42,6 +42,12 @@ test.describe("match importance utility", () => {
     expect(getMatchImportanceReasons(match({ round: "Semi Final" }), { now })).toContain("Semifinal round");
   });
 
+  test("does not mistake fractional draw rounds for the championship final", () => {
+    for (const round of ["ATP Montreal - 1/32-finals", "1/16-finals", "Quarter-finals", "Qualifying Final"]) {
+      expect(getMatchImportanceReasons(match({ round }), { now })).not.toContain("Final round");
+    }
+  });
+
   test("boosts live matches", () => {
     const regularScore = calculateMatchImportance(match(), { now });
     const liveScore = calculateMatchImportance(match({ status: "LIVE" }), { now });

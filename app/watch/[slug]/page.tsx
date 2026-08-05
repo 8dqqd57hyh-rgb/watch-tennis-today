@@ -9,6 +9,7 @@ import { getArchivedMatch, getArchivedMatchFromDatabase } from "@/app/lib/matchA
 import LiveMatchScore from "./LiveMatchScore";
 import LocalMatchFollowButton from "@/app/components/LocalMatchFollowButton";
 import MatchReminderPanel from "@/app/components/MatchReminderPanel";
+import LocalMatchDateTime from "@/app/components/LocalMatchDateTime";
 import { getServerMatchById, getServerMatches } from "@/app/lib/serverMatches";
 import { getMatchLifecycle, type MatchLifecycle } from "@/app/lib/matchLifecycle";
 import { buildMatchEditorialContext } from "@/data/tennisEditorial";
@@ -338,7 +339,7 @@ function getScoreDisplay(match: Match) {
   return score;
 }
 
-function formatLocalDateTime(value: string | null) {
+function formatUtcDateTime(value: string | null) {
   if (!value) return "Time to be confirmed";
 
   const parsed = new Date(value);
@@ -350,6 +351,7 @@ function formatLocalDateTime(value: string | null) {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
     timeZoneName: "short",
   }).format(parsed);
 }
@@ -386,7 +388,7 @@ type MatchDetailsInput = {
 function buildMatchDetails(match: MatchDetailsInput) {
   return [
     match.startTime
-      ? { label: "Start time", value: formatLocalDateTime(match.startTime) }
+      ? { label: "Start time (UTC)", value: formatUtcDateTime(match.startTime) }
       : null,
     getOptionalText(match.tournament)
       ? { label: "Tournament", value: getOptionalText(match.tournament) as string }
@@ -531,7 +533,9 @@ function MatchLifecyclePanel({
         <div className="grid gap-3 text-sm">
           <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
             <span className="text-zinc-500">Scheduled start</span>
-            <span className="text-right font-bold text-zinc-200">{formatLocalDateTime(match.startTime)}</span>
+            <span className="text-right font-bold text-zinc-200">
+              {match.startTime ? <LocalMatchDateTime value={match.startTime} /> : "Time to be confirmed"}
+            </span>
           </div>
           <div className="flex justify-between gap-4 border-t border-zinc-800 pt-3">
             <span className="text-zinc-500">Feed status</span>
@@ -1164,7 +1168,7 @@ function CurrentMatchPage({
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
                       <p className="text-xs font-black uppercase text-zinc-500">Start time</p>
-                      <p className="mt-1 font-black">{formatLocalDateTime(match.startTime)}</p>
+                      <p className="mt-1 font-black">{match.startTime ? <LocalMatchDateTime value={match.startTime} /> : "Time to be confirmed"}</p>
                     </div>
                     <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
                       <p className="text-xs font-black uppercase text-zinc-500">Status</p>
@@ -1464,7 +1468,7 @@ function CurrentMatchPage({
                 <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                     <p className="text-xs font-black uppercase text-zinc-500">Local start time</p>
-                    <p className="mt-1 font-black">{formatLocalDateTime(match.startTime)}</p>
+                    <p className="mt-1 font-black">{match.startTime ? <LocalMatchDateTime value={match.startTime} /> : "Time to be confirmed"}</p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                     <p className="text-xs font-black uppercase text-zinc-500">Status</p>
@@ -1734,7 +1738,7 @@ function CurrentMatchPage({
                 </div>
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
                   <p className="mb-2 text-sm text-zinc-500">Match time</p>
-                  <p className="text-lg font-black">{formatLocalDateTime(match.startTime)}</p>
+                  <p className="text-lg font-black">{match.startTime ? <LocalMatchDateTime value={match.startTime} /> : "Time to be confirmed"}</p>
                 </div>
                 <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
                   <p className="mb-2 text-sm text-zinc-500">Viewing rule</p>
