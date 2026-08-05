@@ -29,6 +29,8 @@ const popularBroadcasters = [
   { name: "Tennis TV", href: "/tennis-tv-broadcast-finder" },
 ];
 
+const TV_SCHEDULE_MATCH_LIMIT = 80;
+
 const editorialSections = [
   { title: "How tennis TV rights work", body: "Tennis rights are sold by tournament and territory. The same match can be on cable in one country, streaming-only in another, or unavailable on a main channel. Always confirm the selected court with the local broadcaster." },
   { title: "Why listings can change", body: "Long matches, rain delays and court changes can move both start times and broadcast windows. Channel grids may update after the tournament order of play, so recheck the official provider close to first ball." },
@@ -160,7 +162,8 @@ export default async function TennisOnTvTodayPage() {
   const todayMatches = sortMatches(matches.filter((match) => matchDay(match) === todayKey));
   const tomorrowMatches = sortMatches(matches.filter((match) => matchDay(match) === tomorrowKey));
   const heroMatches = todayMatches.filter((match) => matchPriority(match) < 2).slice(0, 4);
-  const grouped = Map.groupBy(todayMatches, (match) => match.tournament || "Other tennis");
+  const displayedTodayMatches = todayMatches.slice(0, TV_SCHEDULE_MATCH_LIMIT);
+  const grouped = Map.groupBy(displayedTodayMatches, (match) => match.tournament || "Other tennis");
 
   return (
     <main className="mx-auto max-w-6xl px-3 py-4 sm:px-5 sm:py-6">
@@ -184,6 +187,12 @@ export default async function TennisOnTvTodayPage() {
 
       {todayMatches.length ? <section aria-labelledby="schedule-title" className="mt-6">
         <h2 id="schedule-title" className="text-2xl font-black text-zinc-950">Today&apos;s TV Schedule</h2>
+        {todayMatches.length > displayedTodayMatches.length ? (
+          <p className="mt-2 text-sm text-zinc-600">
+            Showing the first {displayedTodayMatches.length} live and upcoming listings. Use the full schedule for every lower-tour fixture.
+            {" "}<Link href="/today" className="font-black text-sky-700 hover:underline">Open the full schedule</Link>
+          </p>
+        ) : null}
         <div className="mt-3 space-y-3">{Array.from(grouped.entries()).map(([tournament, tournamentMatches]) => (
           <section key={tournament} className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
             <h3 className="border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-black text-zinc-950">{tournament}</h3>

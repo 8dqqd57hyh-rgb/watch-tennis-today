@@ -61,10 +61,11 @@ type PageProps = {
 
 async function getMatches(): Promise<Match[]> {
   return getServerMatchesWindow({
+    revalidateSeconds: 60,
     includeFinished: true,
     daysBack: 7,
     daysForward: 14,
-    noStore: true,
+    timeoutMs: 8000,
   });
 }
 
@@ -487,7 +488,7 @@ export default async function Page({ params }: PageProps) {
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
   const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
   const calendarEntry = await getTournamentCalendarEntry(slug);
-  const apiTournamentDateRange = calendarEntry
+  const apiTournamentDateRange = calendarEntry || tournamentDateWindow
     ? null
     : await getApiTennisTournamentFixtureDateRange(slug, tournamentName);
   const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);

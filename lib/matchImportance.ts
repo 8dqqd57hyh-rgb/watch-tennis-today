@@ -1,6 +1,7 @@
 import { players } from "@/data/players";
 import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
 import { getRivalryForMatch } from "@/data/rivalries";
+import { isChampionshipFinalRound } from "@/app/lib/matchNormalization";
 
 type MatchImportanceProvider = {
   name?: string | null;
@@ -64,7 +65,7 @@ function getRoundWeight(match: MatchImportanceMatch) {
   if (!round) return { weight: 0, reason: null };
   if (/\bsemi[-\s]?finals?\b/.test(round)) return { weight: 1, reason: "Semifinal round" };
   if (/\bquarter[-\s]?finals?\b/.test(round)) return { weight: 0.7, reason: "Quarterfinal round" };
-  if (/\bfinals?\b/.test(round) && !/\bsemi|quarter\b/.test(round)) return { weight: 1.4, reason: "Final round" };
+  if (isChampionshipFinalRound(round)) return { weight: 1.4, reason: "Final round" };
 
   return { weight: 0, reason: null };
 }

@@ -225,6 +225,8 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).not.toContain("https://watchtennistoday.com/watch-player-live/iga-swiatek");
     expect(urls).not.toContain("https://watchtennistoday.com/watch-swiatek-live");
     expect(urls.some((url) => url.includes("/watch/"))).toBe(false);
+    expect(urls).toContain("https://watchtennistoday.com/can-i-watch");
+    expect(urls.some((url) => url.startsWith("https://watchtennistoday.com/can-i-watch/"))).toBe(false);
   });
 
   test("sitemap excludes redirect-only and noindex-only paths", async ({ request }) => {

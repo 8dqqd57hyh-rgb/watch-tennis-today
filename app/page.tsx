@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import HomepageMatchExplorer from "@/app/components/HomepageMatchExplorer";
 import HomepageFinalsBanner from "@/app/components/HomepageFinalsBanner";
+import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,34 @@ const quickLinks = [
   { href: "/players", label: "Players" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const serverMatches = await getServerMatchesWindow({
+    includeFinished: true,
+    daysBack: 0,
+    daysForward: 1,
+    noStore: true,
+    timeoutMs: 8000,
+  });
+  const initialMatches = serverMatches.map((match) => ({
+    id: match.id,
+    player1: match.player1,
+    player2: match.player2,
+    tournament: match.tournament,
+    category: match.category,
+    status: match.status,
+    score: match.score,
+    startTime: match.startTime ?? "",
+    watchProviders: match.watchProviders.map((provider) => ({
+      name: provider.name || "",
+      url: provider.url || "",
+      accessType: provider.accessType || "",
+      verificationStatus: provider.verificationStatus || "",
+      note: provider.note || "",
+    })),
+    round: match.round,
+    isFinal: match.isFinal === true,
+  }));
+
   return (
     <main className="min-h-screen bg-black p-4 text-white md:p-8">
       <div className="mx-auto max-w-7xl">
@@ -59,7 +87,7 @@ export default function Home() {
         </header>
 
         <HomepageFinalsBanner />
-        <HomepageMatchExplorer />
+        <HomepageMatchExplorer initialMatches={initialMatches} />
 
         <section aria-label="Popular tennis planning pages" className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {quickLinks.map((link) => (

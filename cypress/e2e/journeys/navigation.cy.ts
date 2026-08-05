@@ -1,7 +1,7 @@
 describe("primary navigation", { tags: ["@journey", "@critical"] }, () => {
   const links = [
     { label: "Live Tennis", path: "/live-tennis" },
-    { label: "Matches Today", path: "/best-tennis-matches-today" },
+    { label: "Matches Today", path: "/today" },
     { label: "Players", path: "/players" },
     { label: "Calendar", path: "/tennis-calendar" },
     { label: "Guides", path: "/tennis-guides" },

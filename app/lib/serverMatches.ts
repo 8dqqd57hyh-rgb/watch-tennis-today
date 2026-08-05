@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/app/lib/technicalSeo";
+import { normalizeMatchStartTime, resolveMatchWinner } from "@/app/lib/matchNormalization";
 
 export type ServerMatch = {
   id: string;
@@ -42,10 +43,15 @@ export function getBaseUrl() {
 }
 
 function normalizeMatch(item: ServerMatch): ServerMatch {
+  const winner = typeof item.winner === "string"
+    ? resolveMatchWinner(item.winner, item.player1, item.player2)
+    : item.winner;
+
   return {
     ...item,
     score: item.score || "",
-    startTime: item.startTime ?? null,
+    startTime: normalizeMatchStartTime(item.startTime),
+    winner,
     watchProviders: Array.isArray(item.watchProviders) ? item.watchProviders : [],
   };
 }

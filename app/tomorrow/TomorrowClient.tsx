@@ -89,9 +89,9 @@ function isUsefulMatch(match: Match) {
   return !blocked.some((value) => playerText.includes(value));
 }
 
-export default function TomorrowClient() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function TomorrowClient({ initialMatches = [] }: { initialMatches?: Match[] }) {
+  const [matches, setMatches] = useState<Match[]>(initialMatches);
+  const [loading, setLoading] = useState(initialMatches.length === 0);
 
   useEffect(() => {
     async function loadMatches() {

@@ -14,7 +14,7 @@ test("primary navigation links are visible and navigate", async ({ page }) => {
 
   const links = [
     { name: /live tennis/i, url: /\/live-tennis$/ },
-    { name: /matches today/i, url: /\/best-tennis-matches-today$/ },
+    { name: /matches today/i, url: /\/today$/ },
     { name: /^players$/i, url: /\/players$/ },
     { name: /calendar/i, url: /\/tennis-calendar$/ },
     { name: /guides/i, url: /\/tennis-guides$/ },

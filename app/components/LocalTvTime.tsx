@@ -12,8 +12,7 @@ function formatTime(startTime: string | null, local: boolean) {
   return new Intl.DateTimeFormat(local ? undefined : "en", {
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: local ? undefined : "UTC",
-    timeZoneName: "short",
+    ...(local ? {} : { timeZone: "UTC" }),
   }).format(date);
 }
 
@@ -21,7 +20,7 @@ export default function LocalTvTime({ startTime }: { startTime: string | null })
   const label = useSyncExternalStore(
     subscribe,
     () => formatTime(startTime, true),
-    () => formatTime(startTime, false),
+    () => "Local time loading…",
   );
 
   return <span className="inline-block min-w-20">{label}</span>;

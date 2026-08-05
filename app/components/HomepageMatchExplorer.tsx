@@ -200,9 +200,13 @@ function MatchLoadingSkeleton() {
   );
 }
 
-export default function HomepageMatchExplorer() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function HomepageMatchExplorer({
+  initialMatches = [],
+}: {
+  initialMatches?: Match[];
+}) {
+  const [matches, setMatches] = useState<Match[]>(() => capHomepageMatches(initialMatches));
+  const [loading, setLoading] = useState(initialMatches.length === 0);
   const [loadError, setLoadError] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -245,7 +249,6 @@ export default function HomepageMatchExplorer() {
       if (lastError) {
         console.warn("Failed to load matches after retries:", lastError);
         if (!isMounted) return;
-        setMatches([]);
         setLoadError(true);
       }
 
