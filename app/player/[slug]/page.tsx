@@ -1446,7 +1446,7 @@ const playerMatches = allMatches
                   {editorialProfile.playingStyle}
                 </p>
                 <Link
-                  href={`/can-i-watch/${slug}/poland`}
+                  href="/can-i-watch"
                   className="mt-5 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black hover:bg-emerald-300"
                 >
                   Can I watch {playerName}?

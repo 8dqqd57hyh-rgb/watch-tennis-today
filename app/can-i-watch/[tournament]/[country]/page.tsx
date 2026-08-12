@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import StreamingOfferCard from "@/app/components/StreamingOfferCard";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
+import { isCuratedCanIWatchDetail } from "@/app/lib/canIWatchSeo";
 import {
   findBroadcasts,
   formatBroadcastPrice,
@@ -63,7 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<{ tournamen
   return {
     title,
     description,
-    robots: robotsFor({ index: true }),
+    robots: robotsFor({ index: isCuratedCanIWatchDetail(tournament, country) }),
     alternates: { canonical: canonicalUrl(`/can-i-watch/${tournament}/${country}`) },
     openGraph: {
       title,

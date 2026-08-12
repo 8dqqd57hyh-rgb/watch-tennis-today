@@ -101,8 +101,9 @@ test.describe("Can I Watch finder", () => {
 
     const schemas = await getJsonLdObjects(page);
     const website = schemas.find((schema) => schemaMatchesType(schema, "WebSite"));
-    expect(JSON.stringify(website)).toContain("SearchAction");
-    expect(JSON.stringify(website)).toContain("search_term_string");
+    expect(website).toBeTruthy();
+    expect(JSON.stringify(website)).not.toContain("SearchAction");
+    expect(JSON.stringify(website)).not.toContain("search_term_string");
   });
 });
 
@@ -115,7 +116,7 @@ test.describe("Can I Watch SEO pages", () => {
     },
     {
       path: "/can-i-watch/us-open/usa",
-      heading: /Can I watch US Open in USA\?/i,
+      heading: /Can I watch US Open in United States\?/i,
       canonical: "https://watchtennistoday.com/can-i-watch/us-open/usa",
     },
   ];
@@ -131,12 +132,19 @@ test.describe("Can I Watch SEO pages", () => {
       await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/i);
       await expect(page.getByText("Broadcasters").first()).toBeVisible();
       await expect(page.getByText("Related tools")).toBeVisible();
-      await expect(page.getByRole("link", { name: /Can I Watch\? finder/i })).toBeVisible();
+      await expect(page.getByRole("link", { name: /Can I Watch\? finder/i }).first()).toBeVisible();
       await expectJsonLdType(page, "FAQPage");
       await expectJsonLdType(page, "BreadcrumbList");
       expectNoCriticalConsoleErrors(errors);
     });
   }
+
+  test("keeps non-curated detail combinations usable but noindex", async ({ page }) => {
+    const response = await page.goto("/can-i-watch/iga-swiatek/poland", { waitUntil: "domcontentloaded" });
+
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,\s*follow/i);
+  });
 
   test("unknown country returns not found", async ({ request }) => {
     const response = await request.get("/can-i-watch/wimbledon/atlantis", { failOnStatusCode: false });

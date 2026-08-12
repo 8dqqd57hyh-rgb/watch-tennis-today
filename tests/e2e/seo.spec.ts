@@ -226,7 +226,9 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).not.toContain("https://watchtennistoday.com/watch-swiatek-live");
     expect(urls.some((url) => url.includes("/watch/"))).toBe(false);
     expect(urls).toContain("https://watchtennistoday.com/can-i-watch");
-    expect(urls.some((url) => url.startsWith("https://watchtennistoday.com/can-i-watch/"))).toBe(false);
+    expect(urls).toContain("https://watchtennistoday.com/can-i-watch/wimbledon/poland");
+    expect(urls).toContain("https://watchtennistoday.com/can-i-watch/us-open/usa");
+    expect(urls).not.toContain("https://watchtennistoday.com/can-i-watch/iga-swiatek/poland");
   });
 
   test("sitemap excludes redirect-only and noindex-only paths", async ({ request }) => {
@@ -397,6 +399,38 @@ test.describe("SEO-critical page basics", () => {
     expect(response.status()).toBe(200);
     expect(html).not.toContain("SearchAction");
     expect(html).not.toContain("search_term_string");
+  });
+
+  test("parameterized homepage URLs are noindex while the clean root remains indexable", async ({ request }) => {
+    const [rootResponse, searchResponse, placeholderResponse, trackingResponse] = await Promise.all([
+      request.get("/", { failOnStatusCode: false }),
+      request.get("/?search=test", { failOnStatusCode: false }),
+      request.get("/?search=%7Bsearch_term_string%7D", { failOnStatusCode: false }),
+      request.get("/?utm_source=test", { failOnStatusCode: false }),
+    ]);
+
+    const [rootHtml, searchHtml, placeholderHtml, trackingHtml] = await Promise.all([
+      rootResponse.text(),
+      searchResponse.text(),
+      placeholderResponse.text(),
+      trackingResponse.text(),
+    ]);
+
+    expect(rootResponse.status()).toBe(200);
+    expect(canonicalHref(rootHtml)).toBe("https://watchtennistoday.com");
+    expect((metaContent(rootHtml, "robots") || "").toLowerCase()).not.toContain("noindex");
+
+    expect(searchResponse.status()).toBe(200);
+    expect(canonicalHref(searchHtml)).toBe("https://watchtennistoday.com");
+    expect((searchResponse.headers()["x-robots-tag"] || "").toLowerCase()).toContain("noindex, follow");
+
+    expect(placeholderResponse.status()).toBe(200);
+    expect(canonicalHref(placeholderHtml)).toBe("https://watchtennistoday.com");
+    expect((placeholderResponse.headers()["x-robots-tag"] || "").toLowerCase()).toContain("noindex, follow");
+
+    expect(trackingResponse.status()).toBe(200);
+    expect(canonicalHref(trackingHtml)).toBe("https://watchtennistoday.com");
+    expect((metaContent(trackingHtml, "robots") || "").toLowerCase()).not.toContain("noindex");
   });
 
   test("watch Open Graph images stay fetchable but carry noindex", async ({ request }) => {

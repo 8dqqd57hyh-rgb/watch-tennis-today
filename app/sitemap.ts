@@ -6,6 +6,7 @@ import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
 import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
+import { CURATED_CAN_I_WATCH_PATHS } from "@/app/lib/canIWatchSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
 import { getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
 import {
@@ -337,6 +338,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.82,
   }));
 
+  const canIWatchPages: MetadataRoute.Sitemap = CURATED_CAN_I_WATCH_PATHS.flatMap((path) => {
+    const entry = buildSitemapEntry({
+      path,
+      lastModified: ENTITY_LAST_MODIFIED,
+      changeFrequency: "monthly",
+      priority: 0.78,
+    });
+
+    return entry ? [entry] : [];
+  });
+
 
   const importantMatches = matches.filter((match) =>
     isImportantMatch(match) && shouldIncludeMatchInSitemap(match as MatchCenterMatch)
@@ -429,6 +441,7 @@ const frenchOpenPages = [
   ...staticPages,
   ...polishPages,
   ...countryPages,
+  ...canIWatchPages,
   ...broadcasterPages,
   ...guidePages,
   ...playerPages,
