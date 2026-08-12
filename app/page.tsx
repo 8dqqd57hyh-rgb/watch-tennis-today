@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import HomepageMatchExplorer from "@/app/components/HomepageMatchExplorer";
+import type { HomepageMatch } from "@/app/components/HomepageMatchExplorer";
 import HomepageFinalsBanner from "@/app/components/HomepageFinalsBanner";
 import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: "Tennis Matches Today | Live Scores, Schedule and Where to Watch",
   description:
     "Find today's live and upcoming tennis matches, scores, start times, tournament context and official viewing links for ATP, WTA, Challenger, ITF and Grand Slam tennis.",
@@ -22,6 +23,30 @@ export const metadata: Metadata = {
   },
 };
 
+type HomePageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function hasNonTrackingQueryParams(searchParams: Record<string, string | string[] | undefined>) {
+  return Object.keys(searchParams).some((key) => {
+    if (key.startsWith("utm_")) return false;
+    if (["gclid", "fbclid", "msclkid", "ref"].includes(key)) return false;
+
+    return searchParams[key] !== undefined;
+  });
+}
+
+export async function generateMetadata({ searchParams }: HomePageProps): Promise<Metadata> {
+  const resolvedSearchParams = (await searchParams) ?? {};
+
+  return {
+    ...baseMetadata,
+    robots: hasNonTrackingQueryParams(resolvedSearchParams)
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+  };
+}
+
 const quickLinks = [
   { href: "/today", label: "Today schedule" },
   { href: "/live-tennis-upsets", label: "Live upsets" },
@@ -29,7 +54,9 @@ const quickLinks = [
   { href: "/players", label: "Players" },
 ];
 
-export default async function Home() {
+export default async function Home({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const shouldNoindex = hasNonTrackingQueryParams(resolvedSearchParams);
   const serverMatches = await getServerMatchesWindow({
     includeFinished: true,
     daysBack: 0,
@@ -37,7 +64,7 @@ export default async function Home() {
     noStore: true,
     timeoutMs: 8000,
   });
-  const initialMatches = serverMatches.map((match) => ({
+  const initialMatches: HomepageMatch[] = serverMatches.map((match) => ({
     id: match.id,
     player1: match.player1,
     player2: match.player2,
@@ -59,6 +86,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-black p-4 text-white md:p-8">
+      {shouldNoindex ? <meta name="robots" content="noindex, follow" /> : null}
       <div className="mx-auto max-w-7xl">
         <header className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>

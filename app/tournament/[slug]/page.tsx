@@ -19,6 +19,7 @@ import {
   getTournamentNetwork,
 } from "@/src/lib/intelligence/queries";
 import { getTournamentEnrichment } from "@/src/lib/enrichment";
+import { isCuratedCanIWatchDetail } from "@/app/lib/canIWatchSeo";
 
 export const dynamic = "force-dynamic";
 
@@ -488,7 +489,7 @@ export default async function Page({ params }: PageProps) {
   const tournamentProfile = getTournamentEditorialProfile(slug, tournamentName);
   const tournamentDateWindow = getTournamentDateWindow(tournamentMatches);
   const calendarEntry = await getTournamentCalendarEntry(slug);
-  const apiTournamentDateRange = calendarEntry || tournamentDateWindow
+  const apiTournamentDateRange = calendarEntry
     ? null
     : await getApiTennisTournamentFixtureDateRange(slug, tournamentName);
   const matchFeedDateRange = formatTournamentDateRange(tournamentDateWindow);
@@ -682,7 +683,7 @@ export default async function Page({ params }: PageProps) {
             <Link href="#upcoming-matches" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Upcoming</Link>
             <Link href="#completed-matches" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Results</Link>
             <Link href="#how-to-watch" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">How to watch</Link>
-            <Link href={`/can-i-watch/${slug}/poland`} className="rounded-full border border-emerald-500 px-4 py-2 text-sm font-black text-emerald-300 hover:bg-emerald-500 hover:text-black">Can I watch?</Link>
+            <Link href={isCuratedCanIWatchDetail(slug, "poland") ? `/can-i-watch/${slug}/poland` : "/can-i-watch"} className="rounded-full border border-emerald-500 px-4 py-2 text-sm font-black text-emerald-300 hover:bg-emerald-500 hover:text-black">Can I watch?</Link>
             <Link href="/live-tennis" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Live tennis</Link>
             <Link href="/today" className="rounded-full border border-zinc-700 px-4 py-2 text-sm font-black text-white hover:border-green-400">Matches today</Link>
           </div>

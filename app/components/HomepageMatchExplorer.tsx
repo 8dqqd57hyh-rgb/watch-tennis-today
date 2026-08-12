@@ -15,7 +15,7 @@ type WatchProvider = {
   note: string;
 };
 
-type Match = {
+export type HomepageMatch = {
   id: string;
   player1: string;
   player2: string;
@@ -32,7 +32,7 @@ type Match = {
 const MAX_HOME_MATCHES = 60;
 const MAX_MATCH_CARDS = 24;
 
-function capHomepageMatches(matches: Match[]) {
+function capHomepageMatches(matches: HomepageMatch[]) {
   return matches.slice(0, MAX_HOME_MATCHES);
 }
 
@@ -48,7 +48,7 @@ function isGrandSlamTournament(tournament: string) {
   );
 }
 
-function getSafeWatchProviders(match: Match) {
+function getSafeWatchProviders(match: HomepageMatch) {
   if (!isGrandSlamTournament(match.tournament)) {
     return match.watchProviders;
   }
@@ -96,7 +96,7 @@ function slugify(text: string) {
 function playerUrl(name: string) {
   return safePlayerUrl(name);
 }
-function matchSlug(match: Match) {
+function matchSlug(match: HomepageMatch) {
   const readablePart = `${match.player1}-vs-${match.player2}`
     .toLowerCase()
     .replace(/,/g, "")
@@ -155,14 +155,14 @@ function displayablePlayers(name?: string) {
   return isRealPlayerSide(fallbackName) ? [fallbackName] : [];
 }
 
-function hasRenderablePlayers(match: Match) {
+function hasRenderablePlayers(match: HomepageMatch) {
   return (
     displayablePlayers(match.player1).length > 0 &&
     displayablePlayers(match.player2).length > 0
   );
 }
 
-function getHomepageMatches(matches: Match[]) {
+function getHomepageMatches(matches: HomepageMatch[]) {
   const filtered = matches.filter(hasRenderablePlayers);
   if (filtered.length > 0) {
     return filtered;
@@ -203,9 +203,9 @@ function MatchLoadingSkeleton() {
 export default function HomepageMatchExplorer({
   initialMatches = [],
 }: {
-  initialMatches?: Match[];
+  initialMatches?: HomepageMatch[];
 }) {
-  const [matches, setMatches] = useState<Match[]>(() => capHomepageMatches(initialMatches));
+  const [matches, setMatches] = useState<HomepageMatch[]>(() => capHomepageMatches(initialMatches));
   const [loading, setLoading] = useState(initialMatches.length === 0);
   const [loadError, setLoadError] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("ALL");
@@ -232,7 +232,7 @@ export default function HomepageMatchExplorer({
           });
 
           if (!isMounted) return;
-          setMatches(capHomepageMatches(safeMatches as Match[]));
+          setMatches(capHomepageMatches(safeMatches as HomepageMatch[]));
           setLoadError(false);
           lastError = null;
           break;

@@ -7,6 +7,21 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/",
+        has: [
+          {
+            type: "query",
+            key: "search",
+          },
+        ],
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, follow",
+          },
+        ],
+      },
+      {
         source: "/watch/:slug/opengraph-image",
         headers: [
           {
