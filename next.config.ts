@@ -56,6 +56,51 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/privacy-policy",
+        destination: "/privacy",
+        permanent: true,
+      },
+      {
+        source: "/watch-tennis-in-australia",
+        destination: "/watch-tennis-in/australia",
+        permanent: true,
+      },
+      {
+        source: "/watch-tennis-in-canada",
+        destination: "/watch-tennis-in/canada",
+        permanent: true,
+      },
+      {
+        source: "/watch-tennis-in-uk",
+        destination: "/watch-tennis-in/uk",
+        permanent: true,
+      },
+      {
+        source: "/watch-tennis-in-usa",
+        destination: "/watch-tennis-in/usa",
+        permanent: true,
+      },
+      {
+        source: "/watch-french-open-in-australia",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
+        source: "/watch-french-open-in-canada",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
+        source: "/watch-french-open-in-uk",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
+        source: "/watch-french-open-in-usa",
+        destination: "/where-to-watch-french-open",
+        permanent: true,
+      },
+      {
         source: "/guides/how-tennis-draws-work",
         destination: "/guides/tennis-draws-explained",
         permanent: true,
