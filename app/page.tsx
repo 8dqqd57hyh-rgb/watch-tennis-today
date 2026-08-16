@@ -114,8 +114,8 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
         </header>
 
-        <HomepageFinalsBanner />
         <HomepageMatchExplorer initialMatches={initialMatches} />
+        <HomepageFinalsBanner />
 
         <section aria-label="Popular tennis planning pages" className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {quickLinks.map((link) => (

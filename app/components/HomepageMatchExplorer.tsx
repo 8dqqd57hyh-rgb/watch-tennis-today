@@ -284,49 +284,51 @@ export default function HomepageMatchExplorer({
 
   const visibleFilteredMatches = filteredMatches.slice(0, MAX_MATCH_CARDS);
 
+  const searchToolSection = (
+    <section className="z-20 mb-6 rounded-3xl border border-zinc-800 bg-zinc-950/95 p-4 shadow-2xl shadow-black/30 backdrop-blur md:p-5">
+      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-lg font-black text-white">Find a match</h2>
+        <p className="text-sm font-bold text-zinc-500" suppressHydrationWarning>
+          Updated {new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+        </p>
+      </div>
+      <input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search player or tournament..."
+        aria-label="Search by player or tournament"
+        className="w-full rounded-2xl border border-zinc-800 bg-black px-5 py-4 text-base outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/40"
+      />
+
+      <div className="mt-4 flex flex-wrap gap-2" aria-label="Filter matches">
+        {["ALL", "LIVE", "ATP", "WTA", "CHALLENGER", "ITF"].map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            onClick={() => setSelectedFilter(filter)}
+            aria-pressed={selectedFilter === filter}
+            className={`rounded-full px-4 py-2 text-sm font-black transition ${
+              selectedFilter === filter
+                ? "bg-green-500 text-black"
+                : "border border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-green-500 hover:text-white focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+            }`}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-3 text-sm font-bold text-zinc-400" role="status" aria-live="polite">
+        <span>{filteredMatches.length} matches found</span>
+        <span>{homepageMatches.filter((match) => match.status === "LIVE").length} live now</span>
+        <Link href="/live-tennis" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">Live page</Link>
+        <Link href="/tennis-on-tv-today" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">TV schedule</Link>
+      </div>
+    </section>
+  );
+
   return (
     <>
-        <section className="z-20 mb-6 rounded-3xl border border-zinc-800 bg-zinc-950/95 p-4 shadow-2xl shadow-black/30 backdrop-blur md:sticky md:top-20 md:p-5">
-          <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-lg font-black text-white">Find a match</h2>
-            <p className="text-sm font-bold text-zinc-500" suppressHydrationWarning>
-              Updated {new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-            </p>
-          </div>
-          <input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search player or tournament..."
-            aria-label="Search by player or tournament"
-            className="w-full rounded-2xl border border-zinc-800 bg-black px-5 py-4 text-base outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/40"
-          />
-
-          <div className="mt-4 flex flex-wrap gap-2" aria-label="Filter matches">
-            {["ALL", "LIVE", "ATP", "WTA", "CHALLENGER", "ITF"].map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setSelectedFilter(filter)}
-                aria-pressed={selectedFilter === filter}
-                className={`rounded-full px-4 py-2 text-sm font-black transition ${
-                  selectedFilter === filter
-                    ? "bg-green-500 text-black"
-                    : "border border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-green-500 hover:text-white focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3 text-sm font-bold text-zinc-400" role="status" aria-live="polite">
-            <span>{filteredMatches.length} matches found</span>
-            <span>{homepageMatches.filter((match) => match.status === "LIVE").length} live now</span>
-            <Link href="/live-tennis" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">Live page</Link>
-            <Link href="/tennis-on-tv-today" className="text-green-400 hover:text-green-300" data-testid="guide-streaming-link">TV schedule</Link>
-          </div>
-        </section>
-
         {loading ? (
           <MatchLoadingSkeleton />
         ) : loadError ? (
@@ -452,6 +454,8 @@ export default function HomepageMatchExplorer({
             })}
           </div>
         )}
+
+        {searchToolSection}
     </>
   );
 }
