@@ -20,7 +20,7 @@ export function isLiveLikeMatch(match: PollableMatch) {
     status.includes("finished") ||
     status.includes("completed") ||
     status.includes("ended") ||
-    status.includes("final") ||
+    (status.includes("final") && !status.includes("final set")) ||
     status.includes("retired") ||
     status.includes("walkover") ||
     status.includes("cancelled") ||
