@@ -5,8 +5,6 @@ import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 import { buildTodayCoverageGraph, getCoverageGraphStats } from "@/src/data/coverageGraph";
 import { formatBroadcastPrice } from "@/src/data/tennisBroadcasts";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Today's Tennis TV Schedule | Matches, Channels & Streaming Routes",
   description:
@@ -31,10 +29,10 @@ function formatTime(value: Date | null) {
 
 export default async function TodaysTennisTvSchedulePage() {
   const matches = await getServerMatchesWindow({
+    revalidateSeconds: 60,
     includeFinished: false,
     daysBack: 0,
     daysForward: 1,
-    noStore: true,
     timeoutMs: 7000,
   });
   const nodes = buildTodayCoverageGraph(matches, "USA").slice(0, 40);

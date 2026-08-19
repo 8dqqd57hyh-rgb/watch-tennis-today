@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Match } from "@/app/lib/finals";
 
 const REFRESH_MS = 60_000;
+const IDLE_REFRESH_MS = 5 * REFRESH_MS;
 const MAX_REFRESH_MS = 15 * REFRESH_MS;
 
 function matchHref(match: Match) {
@@ -18,6 +19,13 @@ function statusLabel(status: string) {
   if (normalized === "live" || normalized.includes("in progress")) return "LIVE";
   if (normalized.includes("finish") || normalized.includes("complete")) return "Final result";
   return status || "Scheduled";
+}
+
+function hasLiveFinals(finals: Match[]) {
+  return finals.some((match) => {
+    const status = String(match.status || "").toLowerCase();
+    return status === "live" || status.includes("in progress");
+  });
 }
 
 export default function HomepageFinalsBanner() {
@@ -36,10 +44,11 @@ export default function HomepageFinalsBanner() {
       timer = null;
     }
 
-    function scheduleRefresh() {
+    function scheduleRefresh(nextFinals: Match[] = []) {
       clearTimer();
       if (!active || document.hidden) return;
-      const delay = Math.min(REFRESH_MS * 2 ** consecutiveFailures, MAX_REFRESH_MS);
+      const baseDelay = hasLiveFinals(nextFinals) ? REFRESH_MS : IDLE_REFRESH_MS;
+      const delay = Math.min(baseDelay * 2 ** consecutiveFailures, MAX_REFRESH_MS);
       timer = window.setTimeout(refresh, delay);
     }
 
@@ -55,14 +64,16 @@ export default function HomepageFinalsBanner() {
         if (!response.ok) throw new Error(`Finals refresh failed with ${response.status}`);
         const data = (await response.json()) as { finals?: Match[] };
         if (!active) return;
-        setFinals(Array.isArray(data.finals) ? data.finals : []);
+        const nextFinals = Array.isArray(data.finals) ? data.finals : [];
+        setFinals(nextFinals);
         setUpdatedAt(new Date());
         consecutiveFailures = 0;
+        scheduleRefresh(nextFinals);
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
         consecutiveFailures += 1;
       } finally {
-        scheduleRefresh();
+        if (consecutiveFailures > 0) scheduleRefresh();
       }
     }
 

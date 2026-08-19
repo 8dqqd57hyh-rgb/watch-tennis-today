@@ -128,7 +128,7 @@ async function getMatches(): Promise<Match[]> {
     const baseUrl = await getBaseUrl();
 
     const response = await fetch(`${baseUrl}/api/matches`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
 
     if (!response.ok) return [];

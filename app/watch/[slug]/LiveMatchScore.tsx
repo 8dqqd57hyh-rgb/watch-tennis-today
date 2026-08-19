@@ -23,9 +23,27 @@ function isLive(status: string) {
 }
 
 function isFinished(status: string) {
-  return ["FINISHED", "CANCELLED", "RETIRED", "COMPLETED"].includes(
+  return ["FINISHED", "CANCELLED", "CANCELED", "RETIRED", "COMPLETED", "POSTPONED"].includes(
     normalizeStatus(status)
   );
+}
+
+function getPollingDelay(match: Match) {
+  const status = normalizeStatus(match.status);
+
+  if (status === "LIVE") return 60_000;
+  if (status === "SUSPENDED") return 90_000;
+
+  if (["UPCOMING", "SCHEDULED", "NOT STARTED"].includes(status)) {
+    if (!match.startTime) return 10 * 60_000;
+
+    const minutesUntilStart = (new Date(match.startTime).getTime() - Date.now()) / 60_000;
+    if (!Number.isFinite(minutesUntilStart)) return 10 * 60_000;
+    if (minutesUntilStart > 60) return Math.max(60_000, (minutesUntilStart - 60) * 60_000);
+    return 5 * 60_000;
+  }
+
+  return 10 * 60_000;
 }
 
 function getStatusStyles(status: string) {
@@ -180,6 +198,8 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     async function refreshMatch() {
+      let nextMatch = match;
+
       try {
         setIsRefreshing(true);
         const response = await fetch(
@@ -202,6 +222,7 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
         if (!isMounted) return;
 
         if (freshMatch) {
+          nextMatch = freshMatch;
           setMatch((current) => ({ ...current, ...freshMatch }));
           setLastUpdatedAt(new Date());
           setUpdateError(null);
@@ -213,14 +234,15 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       } finally {
         if (isMounted) {
           setIsRefreshing(false);
-          scheduleRefresh();
+          scheduleRefresh(nextMatch);
         }
       }
     }
 
-    function scheduleRefresh() {
+    function scheduleRefresh(nextMatch = match) {
       if (!isMounted || document.hidden) return;
-      timeoutId = setTimeout(refreshMatch, 60000);
+      if (isFinished(nextMatch.status)) return;
+      timeoutId = setTimeout(refreshMatch, getPollingDelay(nextMatch));
     }
 
     function handleVisibilityChange() {
@@ -241,7 +263,7 @@ export default function LiveMatchScore({ initialMatch }: { initialMatch: Match }
       if (timeoutId) clearTimeout(timeoutId);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [initialMatch.id, shouldPoll]);
+  }, [initialMatch.id, match, shouldPoll]);
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-black/60 p-5 shadow-2xl sm:p-6">

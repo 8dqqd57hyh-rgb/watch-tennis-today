@@ -4,8 +4,6 @@ import { getServerMatchesWindow, type ServerMatch } from "@/app/lib/serverMatche
 import { serializeJsonLd, tennisOnTvMatchHref } from "@/app/lib/tennisOnTvToday";
 import LocalTvTime from "@/app/components/LocalTvTime";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Tennis on TV Today | Live Tennis Channels and Legal Streams",
   description:
@@ -153,7 +151,7 @@ function MatchCard({ match }: { match: ServerMatch }) {
 }
 
 export default async function TennisOnTvTodayPage() {
-  const matches = await getServerMatchesWindow({ includeFinished: true, daysBack: 0, daysForward: 1, noStore: true, timeoutMs: 10000 });
+  const matches = await getServerMatchesWindow({ revalidateSeconds: 60, includeFinished: true, daysBack: 0, daysForward: 1, timeoutMs: 10000 });
   const now = new Date();
   const todayKey = dayKey(now);
   const tomorrow = new Date(now);

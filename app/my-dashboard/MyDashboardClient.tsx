@@ -6,6 +6,7 @@ import { players } from "@/data/players";
 import { getCanonicalPlayerSlug, normalizePlayerName } from "@/data/playerSlugs";
 import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
 import { fetchClientMatches } from "@/app/lib/clientMatchFetch";
+import { normalizeBulkPlayerNames } from "@/app/api/matches/requestPlan";
 
 const STORAGE_KEY = "watchTennisToday.followedPlayers";
 
@@ -193,23 +194,25 @@ export default function MyDashboardClient() {
 
       setLoading(true);
       try {
-        const results = await Promise.all(
-          followedPlayers.map(async (player) => {
-            const params = new URLSearchParams({
-              playerName: player.name,
-              includeFinished: "1",
-              daysBack: "7",
-              daysForward: "30",
-            });
-            return fetchClientMatches(`/api/matches?${params.toString()}`, {
-              ttlMs: 60_000,
-            });
-          })
+        const playerNames = normalizeBulkPlayerNames(
+          followedPlayers.map((player) => player.name)
         );
+        if (playerNames.length === 0) {
+          setMatches([]);
+          return [];
+        }
 
-        const uniqueMatches = Array.from(new Map(results.flat().map((match) => [String(match.id), match])).values()) as Match[];
-        setMatches(uniqueMatches);
-        return uniqueMatches;
+        const params = new URLSearchParams({
+          playerNames: playerNames.join(","),
+          includeFinished: "1",
+          daysBack: "7",
+          daysForward: "30",
+        });
+        const safeMatches = await fetchClientMatches(`/api/matches?${params.toString()}`, {
+          ttlMs: 60_000,
+        });
+        setMatches(safeMatches as Match[]);
+        return safeMatches;
       } catch (error) {
         console.error(error);
         setMatches([]);

@@ -236,6 +236,8 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
   const [spoilerFree, setSpoilerFree] = useSpoilerFreeScores();
 
   useEffect(() => {
+    if (initialMatches.length > 0) return;
+
     async function refreshMatches() {
       try {
         const safeMatches = await fetchClientMatches(TODAY_MATCHES_URL, {
@@ -251,7 +253,7 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
     }
 
     refreshMatches();
-  }, []);
+  }, [initialMatches.length]);
 
   const groupedMatches = useMemo(() => {
     const tourMatches = matches.filter(

@@ -174,6 +174,12 @@ export default function MyTournamentClient() {
 
   useEffect(() => {
     async function loadMatches() {
+      if (followedTournaments.length === 0) {
+        setMatches([]);
+        setLoading(false);
+        return [];
+      }
+
       setLoading(true);
       try {
         const params = new URLSearchParams({ includeFinished: "1", daysBack: "7", daysForward: "14" });
@@ -192,7 +198,7 @@ export default function MyTournamentClient() {
     }
 
     return startSmartMatchPolling({ load: loadMatches });
-  }, []);
+  }, [followedTournaments.length]);
 
   function addTournament(tournament: FollowedTournament) {
     if (followedTournaments.some((item) => item.slug === tournament.slug)) return;

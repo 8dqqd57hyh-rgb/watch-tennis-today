@@ -257,6 +257,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tennis-tv-schedule-today",
     "/watch-tennis-live-today",
     "/coverage-graph",
+    "/tournaments/krakow-open",
     "/how-to-watch-tennis-without-cable",
     "/how-to-watch-tennis-safely-abroad",
     "/how-to-watch-tennis-legally",

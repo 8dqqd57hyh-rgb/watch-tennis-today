@@ -5,8 +5,6 @@ import type { HomepageMatch } from "@/app/components/HomepageMatchExplorer";
 import HomepageFinalsBanner from "@/app/components/HomepageFinalsBanner";
 import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
-
 const baseMetadata: Metadata = {
   title: "Tennis Matches Today | Live Scores, Schedule and Where to Watch",
   description:
@@ -58,10 +56,10 @@ export default async function Home({ searchParams }: HomePageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const shouldNoindex = hasNonTrackingQueryParams(resolvedSearchParams);
   const serverMatches = await getServerMatchesWindow({
+    revalidateSeconds: 60,
     includeFinished: true,
     daysBack: 0,
     daysForward: 1,
-    noStore: true,
     timeoutMs: 8000,
   });
   const initialMatches: HomepageMatch[] = serverMatches.map((match) => ({

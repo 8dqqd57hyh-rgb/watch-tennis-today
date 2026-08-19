@@ -94,6 +94,8 @@ export default function TomorrowClient({ initialMatches = [] }: { initialMatches
   const [loading, setLoading] = useState(initialMatches.length === 0);
 
   useEffect(() => {
+    if (initialMatches.length > 0) return;
+
     async function loadMatches() {
       try {
         const response = await fetch("/api/matches");
@@ -119,7 +121,7 @@ export default function TomorrowClient({ initialMatches = [] }: { initialMatches
     }
 
     loadMatches();
-  }, []);
+  }, [initialMatches.length]);
 
   const tomorrowMatches = useMemo(() => {
     const tomorrowKey = getTomorrowKey();

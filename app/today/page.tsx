@@ -5,7 +5,6 @@ import RelatedPages from "@/app/components/RelatedPages";
 import Link from "next/link";
 import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "ATP & WTA Matches Today | Live Schedule and Results",
   description:
@@ -23,10 +22,10 @@ export const metadata = {
 
 export default async function Page() {
   const initialMatches = await getServerMatchesWindow({
+    revalidateSeconds: 60,
     includeFinished: true,
     daysBack: 0,
     daysForward: 1,
-    noStore: true,
     timeoutMs: 8000,
   });
 

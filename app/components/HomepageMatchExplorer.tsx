@@ -212,6 +212,8 @@ export default function HomepageMatchExplorer({
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    if (initialMatches.length > 0) return;
+
     let isMounted = true;
 
     async function loadMatches() {
@@ -262,7 +264,7 @@ export default function HomepageMatchExplorer({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [initialMatches.length]);
 
   const homepageMatches = getHomepageMatches(matches);
 

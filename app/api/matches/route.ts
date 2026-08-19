@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 import {
+  getBulkPlayerParameterState,
+  getMatchesRequestPlan,
+} from "@/app/api/matches/requestPlan";
+import {
+  apiNameMatchesPlayer,
+  apiMatchHasPlayerByContextualDoublesName,
+  apiMatchHasPlayerBySinglesName,
+  apiSinglesNameMatchesPlayer,
+  filterBulkApiMatches,
+  filterBulkMappedMatches,
+} from "@/app/api/matches/bulkPlayer";
+import {
   isChampionshipFinalRound,
   normalizeMatchStartTime,
   resolveMatchWinner,
@@ -494,84 +506,6 @@ function getRankingForPlayer(rankings: Map<string, number>, playerName: string) 
 
 function isInitialToken(value: string) {
   return /^[a-z]$/.test(value.replace(/\./g, ""));
-}
-
-function apiDoublesSideIncludesPlayer(playerName: string, sideName: string): boolean {
-  if (!/[\/&+]/.test(sideName)) return false;
-
-  const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
-  const targetLast = targetParts[targetParts.length - 1] || "";
-  if (!targetLast) return false;
-
-  return sideName
-    .split(/[\/&+]/)
-    .map((part) => normalizeSearchName(part))
-    .filter(Boolean)
-    .some((part) => {
-      const partTokens = part.split(/\s+/).filter(Boolean);
-
-      if (partTokens.length === 1) {
-        return partTokens[0] === targetLast;
-      }
-
-      return apiNameMatchesPlayer(playerName, part);
-    });
-}
-
-function apiSinglesNameMatchesPlayer(playerName: string, sideName: string): boolean {
-  const targetParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
-  const sideParts = normalizeSearchName(sideName).split(/\s+/).filter(Boolean);
-
-  const targetFirst = targetParts[0] || "";
-  const targetLast = targetParts[targetParts.length - 1] || "";
-  const sideFirst = sideParts[0] || "";
-  const sideLast = sideParts[sideParts.length - 1] || "";
-
-  if (!targetLast || !sideParts.length) return false;
-  if (targetParts.join(" ") === sideParts.join(" ")) return true;
-
-  // Common API-Tennis formats for the same player include:
-  // - "Alexander Zverev"
-  // - "A. Zverev" / "A Zverev"
-  // - "Zverev A." / "Zverev A"
-  // Treat all of these as the same player. Without the reversed surname+initial
-  // branch, get_H2H recent rows are filtered out before they can reach the form
-  // tracker, which makes pages like /player/alexander-zverev miss Rome/Madrid/etc.
-  if (targetLast === sideLast) {
-    return !targetFirst || !sideFirst || targetFirst[0] === sideFirst[0];
-  }
-
-  if (sideFirst === targetLast && sideLast && targetFirst) {
-    return sideLast === targetFirst || (isInitialToken(sideLast) && sideLast[0] === targetFirst[0]);
-  }
-
-  return false;
-}
-
-function apiNameMatchesPlayer(playerName: string, sideName: string): boolean {
-  return (
-    apiSinglesNameMatchesPlayer(playerName, sideName) ||
-    apiDoublesSideIncludesPlayer(playerName, sideName)
-  );
-}
-
-function apiMatchHasPlayerBySinglesName(playerName: string, match: ApiTennisMatch) {
-  return [match.event_first_player, match.event_second_player].some((sideName) =>
-    apiSinglesNameMatchesPlayer(playerName, sideName || "")
-  );
-}
-
-function apiMatchHasPlayerByContextualDoublesName(
-  playerName: string,
-  match: ApiTennisMatch,
-  exactPlayerTournaments: Set<string>
-) {
-  const tournament = String(match.tournament_name || "").trim();
-  if (!tournament || !exactPlayerTournaments.has(tournament)) return false;
-
-  return [match.event_first_player, match.event_second_player].some((sideName) =>
-    apiDoublesSideIncludesPlayer(playerName, sideName || "")
-  );
 }
 
 function normalizeApiStatusText(value?: string | null) {
@@ -1358,11 +1292,58 @@ async function getArchivedMatchesForPlayer(playerName: string, dateStart: string
   }
 }
 
+async function getArchivedMatchesForPlayers(playerNames: string[], dateStart: string) {
+  try {
+    const { data, error } = await supabase
+      .from("match_archive")
+      .select("id, player1, player2, tournament, category, status, score, start_time, watch_providers")
+      .gte("start_time", `${dateStart}T00:00:00.000Z`)
+      .order("start_time", { ascending: false })
+      .limit(5000);
+
+    if (error || !Array.isArray(data)) {
+      if (error) console.warn("match_archive bulk lookup failed:", error.message);
+      return [];
+    }
+
+    return (data as ArchivedMatchRow[])
+      .filter((match) =>
+        playerNames.some((playerName) =>
+          [match.player1, match.player2].some((sideName) =>
+            apiNameMatchesPlayer(playerName, String(sideName || ""))
+          )
+        )
+      )
+      .map((match) => ({
+        id: String(match.id),
+        player1: match.player1 || "Unknown player",
+        player2: match.player2 || "Unknown player",
+        tournament: match.tournament || "Unknown tournament",
+        category: match.category || "UNKNOWN",
+        status: match.status || "FINISHED",
+        score: match.score || "",
+        pointScore: "",
+        startTime: normalizeMatchStartTime(match.start_time),
+        winner: null,
+        winnerId: null,
+        watchProviders: match.watch_providers || [],
+      }));
+  } catch (error) {
+    console.warn("match_archive bulk lookup skipped:", error);
+    return [];
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   const playerKeyFromQuery = searchParams.get("playerKey");
   const playerName = searchParams.get("playerName");
+  const bulkPlayerParameterState = getBulkPlayerParameterState({
+    hasPlayerNamesParameter: searchParams.has("playerNames"),
+    playerName,
+    playerNames: searchParams.get("playerNames"),
+  });
   const matchId = searchParams.get("matchId");
   const includeFinished = searchParams.get("includeFinished") === "1";
   const includeRankings = searchParams.get("includeRankings") === "1";
@@ -1370,6 +1351,17 @@ export async function GET(request: Request) {
   const daysBack = Number.parseInt(searchParams.get("daysBack") || "3", 10);
   const daysForward = Number.parseInt(searchParams.get("daysForward") || "30", 10);
   const logFilters = shouldLogMatchFilters(searchParams);
+
+  if (bulkPlayerParameterState.kind === "empty") {
+    return NextResponse.json([]);
+  }
+
+  if (bulkPlayerParameterState.kind === "invalid") {
+    return NextResponse.json(
+      { matches: [], error: "Use either playerName or playerNames, not both." },
+      { status: 400 }
+    );
+  }
 
   const apiKey = process.env.API_TENNIS_KEY;
 
@@ -1386,12 +1378,24 @@ export async function GET(request: Request) {
 
 const today = new Date();
 
-const maxDaysBack = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
-const maxDaysForward = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
-const defaultDaysBack = matchId ? 1 : 3;
-const defaultDaysForward = matchId ? 7 : playerName || resolvedPlayerKey || formHistory ? 30 : 3;
-const safeDaysBack = Number.isFinite(daysBack) ? Math.min(Math.max(daysBack, 0), maxDaysBack) : defaultDaysBack;
-const safeDaysForward = Number.isFinite(daysForward) ? Math.min(Math.max(daysForward, 1), maxDaysForward) : defaultDaysForward;
+const requestPlan = getMatchesRequestPlan({
+  playerNames: searchParams.get("playerNames"),
+  playerName,
+  playerKey: resolvedPlayerKey,
+  matchId,
+  formHistory,
+  includeFinished,
+  daysBack,
+  daysForward,
+});
+const {
+  bulkPlayerNames: plannedBulkPlayerNames,
+  hasBulkPlayers: plannedHasBulkPlayers,
+  safeDaysBack,
+  safeDaysForward,
+} = requestPlan;
+const bulkPlayerNames = plannedBulkPlayerNames;
+const hasBulkPlayers = plannedHasBulkPlayers;
 
 const dateStartDate = new Date();
 dateStartDate.setDate(today.getDate() - safeDaysBack);
@@ -1404,6 +1408,7 @@ const dateStop = formatDate(dateStopDate);
 
   logMatchFilters(logFilters, "request", {
     playerName,
+    bulkPlayerNames,
     playerKeyFromQuery,
     resolvedPlayerKey,
     matchId,
@@ -1471,12 +1476,14 @@ const dateStop = formatDate(dateStopDate);
         .map((match) => String(match.tournament_name || "").trim())
         .filter(Boolean)
     );
-    const filteredMatches = playerName
-      ? uniqueMatches.filter((match) =>
-          apiMatchHasPlayerBySinglesName(playerName, match) ||
-          apiMatchHasPlayerByContextualDoublesName(playerName, match, exactPlayerTournaments)
-        )
-      : uniqueMatches;
+    const filteredMatches = hasBulkPlayers
+      ? filterBulkApiMatches(uniqueMatches, bulkPlayerNames)
+      : playerName
+        ? uniqueMatches.filter((match) =>
+            apiMatchHasPlayerBySinglesName(playerName, match) ||
+            apiMatchHasPlayerByContextualDoublesName(playerName, match, exactPlayerTournaments)
+          )
+        : uniqueMatches;
     logMatchFilters(logFilters, "after-player-filter", {
       count: filteredMatches.length,
       removed: uniqueMatches.length - filteredMatches.length,
@@ -1563,6 +1570,19 @@ const dateStop = formatDate(dateStopDate);
       });
     }
 
+    if (includeFinished && hasBulkPlayers && !formHistory) {
+      const beforeArchiveMerge = mappedMatches.length;
+      const archivedMatches = await getArchivedMatchesForPlayers(bulkPlayerNames, dateStart);
+      mappedMatches = Array.from(
+        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+      );
+      logMatchFilters(logFilters, "after-bulk-player-archive-merge", {
+        before: beforeArchiveMerge,
+        archived: archivedMatches.length,
+        after: mappedMatches.length,
+      });
+    }
+
     if (includeFinished && formHistory && !playerName && !resolvedPlayerKey) {
       // Player pages can request a broad history scan and then filter locally by
       // normalized player name. Merge the archive even when the live API returns
@@ -1580,10 +1600,14 @@ const dateStop = formatDate(dateStopDate);
       });
     }
 
+    if (hasBulkPlayers) {
+      mappedMatches = filterBulkMappedMatches(mappedMatches, bulkPlayerNames);
+    }
+
     // Only fall back to the general archive for the global matches feed.
     // For player-specific requests, returning all archived matches can create
     // wrong player alerts, e.g. a Jannik Sinner email for an unrelated match.
-    if (mappedMatches.length === 0 && !playerName && !resolvedPlayerKey) {
+    if (mappedMatches.length === 0 && !playerName && !resolvedPlayerKey && !hasBulkPlayers) {
       mappedMatches = await getArchivedMatches(dateStart);
       logMatchFilters(logFilters, "after-global-archive-fallback", {
         count: mappedMatches.length,

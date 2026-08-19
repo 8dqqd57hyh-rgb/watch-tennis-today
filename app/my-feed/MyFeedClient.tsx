@@ -347,6 +347,12 @@ export default function MyFeedClient() {
 
   useEffect(() => {
     async function loadMatches() {
+      if (followedPlayers.length === 0 && followedMatches.length === 0 && followedTournaments.length === 0) {
+        setMatches([]);
+        setLoading(false);
+        return [];
+      }
+
       setLoading(true);
       try {
         const safeMatches = await fetchClientMatches("/api/matches?includeFinished=1&daysBack=7&daysForward=30", {
@@ -364,7 +370,7 @@ export default function MyFeedClient() {
     }
 
     return startSmartMatchPolling({ load: loadMatches });
-  }, []);
+  }, [followedMatches.length, followedPlayers.length, followedTournaments.length]);
 
   const feedMatches = useMemo(() => {
     const savedMatchIds = new Set(followedMatches.map((match) => String(match.id)));
