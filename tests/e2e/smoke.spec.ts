@@ -1,9 +1,5 @@
-import { expect, test } from "@playwright/test";
-import {
-  collectCriticalConsoleErrors,
-  expectNoCriticalConsoleErrors,
-  expectPageHasContent,
-} from "./helpers";
+import { expect, test } from "./fixtures/test";
+import { expectPageHasContent } from "./helpers";
 
 const htmlPages = [
   "/",
@@ -26,13 +22,11 @@ const documentPages = ["/robots.txt", "/sitemap.xml", "/ads.txt"];
 test.describe("smoke checks", () => {
   for (const path of htmlPages) {
     test(`${path} loads without crashing`, async ({ page }) => {
-      const errors = collectCriticalConsoleErrors(page);
       const response = await page.goto(path, { waitUntil: "domcontentloaded" });
 
       expect(response?.status()).toBe(200);
       await expect(page).toHaveTitle(/\S/);
       await expectPageHasContent(page);
-      expectNoCriticalConsoleErrors(errors);
     });
   }
 
