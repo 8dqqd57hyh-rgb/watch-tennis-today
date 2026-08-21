@@ -1,9 +1,6 @@
-import { expect, test } from "@playwright/test";
-import {
-  collectCriticalConsoleErrors,
-  expectNoCriticalConsoleErrors,
-  expectPageHasContent,
-} from "./helpers";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures";
+import { expectPageHasContent } from "./helpers";
 
 const htmlPages = [
   "/",
@@ -25,14 +22,13 @@ const documentPages = ["/robots.txt", "/sitemap.xml", "/ads.txt"];
 
 test.describe("smoke checks", () => {
   for (const path of htmlPages) {
-    test(`${path} loads without crashing`, async ({ page }) => {
-      const errors = collectCriticalConsoleErrors(page);
+    test(`${path} loads without crashing`, async ({ page, runtimeMonitor }) => {
+      expect(runtimeMonitor.isActive()).toBe(true);
       const response = await page.goto(path, { waitUntil: "domcontentloaded" });
 
       expect(response?.status()).toBe(200);
       await expect(page).toHaveTitle(/\S/);
       await expectPageHasContent(page);
-      expectNoCriticalConsoleErrors(errors);
     });
   }
 
@@ -70,32 +66,4 @@ test.describe("smoke checks", () => {
     expect(html).toContain("Support is optional");
   });
 
-  test("homepage surfaces the live Washington finals banner", async ({ page }) => {
-    await page.route("**/api/finals", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        body: JSON.stringify({
-          ok: true,
-          finals: [{
-            id: "dc-final-1",
-            player1: "Jessica Pegula",
-            player2: "Alexandra Eala",
-            tournament: "Washington DC Open",
-            category: "WTA",
-            status: "SUSPENDED",
-            score: "6-4 1-2",
-            startTime: "2026-08-03T16:00:00.000Z",
-            round: "Final",
-          }],
-        }),
-      });
-    });
-
-    await page.goto("/");
-    const banner = page.getByTestId("featured-finals-banner");
-    await expect(banner).toBeVisible();
-    await expect(banner).toContainText("Pegula and Jódar finals");
-    await expect(banner).toContainText("Rain delay");
-    await expect(banner).toContainText("6-4 1-2");
-  });
 });

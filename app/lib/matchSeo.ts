@@ -59,7 +59,7 @@ export function shouldIndexMatch(match: MatchSeoInput, now = new Date()) {
   if (!hasMeaningfulPlayer(match.player1) || !hasMeaningfulPlayer(match.player2) || !tournament) {
     return false;
   }
-  if (/LIVE|UPCOMING|SUSPENDED|DELAYED/.test(status)) return false;
+  if (/LIVE|SUSPENDED|DELAYED/.test(status)) return false;
   if (/CANCEL|POSTPON|ABANDON|WALKOVER/.test(status)) return false;
   if (!isEligibleCompetition(category, tournament)) return false;
 
@@ -77,7 +77,7 @@ export function shouldIndexMatch(match: MatchSeoInput, now = new Date()) {
   if (!match.startTime) return false;
   const timestamp = new Date(match.startTime).getTime();
   if (Number.isNaN(timestamp)) return false;
-  if (now.getTime() - timestamp > 180 * 24 * 60 * 60 * 1000) return false;
+  if (now.getTime() - timestamp > 60 * 24 * 60 * 60 * 1000) return false;
 
   return true;
 }

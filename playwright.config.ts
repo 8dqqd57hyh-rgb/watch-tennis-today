@@ -23,6 +23,16 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "firefox",
+      testMatch: /cross-browser\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      testMatch: /cross-browser\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
   webServer: shouldStartServer
     ? {

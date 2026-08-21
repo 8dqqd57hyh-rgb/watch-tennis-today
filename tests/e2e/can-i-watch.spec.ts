@@ -1,9 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
-import {
-  collectCriticalConsoleErrors,
-  expectNoCriticalConsoleErrors,
-  expectPageHasContent,
-} from "./helpers";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./fixtures";
+import { expectPageHasContent } from "./helpers";
 
 async function getJsonLdObjects(page: Page) {
   const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
@@ -43,63 +40,62 @@ async function expectJsonLdType(page: Page, type: string) {
 }
 
 test.describe("Can I Watch finder", () => {
-  test("loads with default Wimbledon coverage for Poland", async ({ page }) => {
-    const errors = collectCriticalConsoleErrors(page);
-    const response = await page.goto("/can-i-watch", { waitUntil: "domcontentloaded" });
+  test("loads with default Wimbledon coverage for Poland", async ({ canIWatchPage, runtimeMonitor }) => {
+    expect(runtimeMonitor.isActive()).toBe(true);
+    const response = await canIWatchPage.goto();
 
     expect(response?.status()).toBe(200);
-    await expect(page).toHaveTitle(/Can I Watch This Tennis Match/i);
-    await expect(page.getByRole("heading", { name: /Can I watch this tennis match\?/i })).toBeVisible();
-    await expect(page.getByLabel(/Country/i)).toHaveValue("poland");
-    await expect(page.getByLabel(/Player or tournament/i)).toHaveValue("Wimbledon");
+    await expect(canIWatchPage.page).toHaveTitle(/Can I Watch This Tennis Match/i);
+    await expect(canIWatchPage.finderHeading).toBeVisible();
+    await expect(canIWatchPage.countrySelect).toHaveValue("poland");
+    await expect(canIWatchPage.searchInput).toHaveValue("Wimbledon");
 
-    await expect(page.getByText("Broadcasters").first()).toBeVisible();
-    await expect(page.getByText("Free routes").first()).toBeVisible();
-    await expect(page.getByText("Paid routes").first()).toBeVisible();
-    await expect(page.getByText("Last verified").first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open SEO page/i })).toHaveAttribute(
+    await expect(canIWatchPage.broadcastersSection).toBeVisible();
+    await expect(canIWatchPage.freeRoutes).toBeVisible();
+    await expect(canIWatchPage.paidRoutes).toBeVisible();
+    await expect(canIWatchPage.lastVerified).toBeVisible();
+    await expect(canIWatchPage.seoPageLink).toHaveAttribute(
       "href",
       "/can-i-watch/wimbledon/poland",
     );
-    await expectPageHasContent(page);
-    expectNoCriticalConsoleErrors(errors);
+    await expectPageHasContent(canIWatchPage.page);
   });
 
-  test("updates results and SEO page link when country and tournament change", async ({ page }) => {
-    await page.goto("/can-i-watch", { waitUntil: "domcontentloaded" });
+  test("updates results and SEO page link when country and tournament change", async ({ canIWatchPage }) => {
+    await canIWatchPage.goto();
 
-    await page.getByLabel(/Country/i).selectOption("usa");
-    await page.getByLabel(/Player or tournament/i).fill("US Open");
+    await canIWatchPage.selectCountry("usa");
+    await canIWatchPage.searchFor("US Open");
 
-    await expect(page.getByRole("link", { name: /Open SEO page/i })).toHaveAttribute(
+    await expect(canIWatchPage.seoPageLink).toHaveAttribute(
       "href",
       "/can-i-watch/us-open/usa",
     );
-    await expect(page.getByText(/Streaming route:/i).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /Broadcaster profile/i }).first()).toBeVisible();
+    await expect(canIWatchPage.streamingRoute).toBeVisible();
+    await expect(canIWatchPage.broadcasterProfileLink).toBeVisible();
   });
 
-  test("supports player search without crashing", async ({ page }) => {
-    await page.goto("/can-i-watch", { waitUntil: "domcontentloaded" });
+  test("supports player search without crashing", async ({ canIWatchPage }) => {
+    await canIWatchPage.goto();
 
-    await page.getByLabel(/Country/i).selectOption("uk");
-    await page.getByLabel(/Player or tournament/i).fill("Iga Swiatek");
+    await canIWatchPage.selectCountry("uk");
+    await canIWatchPage.searchFor("Iga Swiatek");
 
-    await expect(page.getByRole("link", { name: /Open SEO page/i })).toHaveAttribute(
+    await expect(canIWatchPage.seoPageLink).toHaveAttribute(
       "href",
       "/can-i-watch/iga-swiatek/uk",
     );
-    await expect(page.getByText(/Broadcasters|No verified route/i).first()).toBeVisible();
+    await expect(canIWatchPage.coverageResult).toBeVisible();
   });
 
-  test("exposes SearchAction, FAQ and breadcrumb schema on finder page", async ({ page }) => {
-    await page.goto("/can-i-watch", { waitUntil: "domcontentloaded" });
+  test("exposes SearchAction, FAQ and breadcrumb schema on finder page", async ({ canIWatchPage }) => {
+    await canIWatchPage.goto();
 
-    await expectJsonLdType(page, "WebSite");
-    await expectJsonLdType(page, "FAQPage");
-    await expectJsonLdType(page, "BreadcrumbList");
+    await expectJsonLdType(canIWatchPage.page, "WebSite");
+    await expectJsonLdType(canIWatchPage.page, "FAQPage");
+    await expectJsonLdType(canIWatchPage.page, "BreadcrumbList");
 
-    const schemas = await getJsonLdObjects(page);
+    const schemas = await getJsonLdObjects(canIWatchPage.page);
     const website = schemas.find((schema) => schemaMatchesType(schema, "WebSite"));
     expect(website).toBeTruthy();
     expect(JSON.stringify(website)).not.toContain("SearchAction");
@@ -122,8 +118,8 @@ test.describe("Can I Watch SEO pages", () => {
   ];
 
   for (const route of pages) {
-    test(`${route.path} renders broadcaster research and SEO metadata`, async ({ page }) => {
-      const errors = collectCriticalConsoleErrors(page);
+    test(`${route.path} renders broadcaster research and SEO metadata`, async ({ page, runtimeMonitor }) => {
+      expect(runtimeMonitor.isActive()).toBe(true);
       const response = await page.goto(route.path, { waitUntil: "domcontentloaded" });
 
       expect(response?.status()).toBe(200);
@@ -135,7 +131,6 @@ test.describe("Can I Watch SEO pages", () => {
       await expect(page.getByRole("link", { name: /Can I Watch\? finder/i }).first()).toBeVisible();
       await expectJsonLdType(page, "FAQPage");
       await expectJsonLdType(page, "BreadcrumbList");
-      expectNoCriticalConsoleErrors(errors);
     });
   }
 

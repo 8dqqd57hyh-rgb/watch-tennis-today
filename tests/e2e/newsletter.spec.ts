@@ -1,11 +1,8 @@
-import { expect, test } from "@playwright/test";
-import {
-  collectCriticalConsoleErrors,
-  expectNoCriticalConsoleErrors,
-} from "./helpers";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures";
 
-test("email subscription form validates input and submits safely", async ({ page }) => {
-  const errors = collectCriticalConsoleErrors(page);
+test("email subscription form validates input and submits safely", async ({ page, runtimeMonitor }) => {
+  expect(runtimeMonitor.isActive()).toBe(true);
 
   await page.route("**/api/subscribe-*", async (route) => {
     await route.fulfill({
@@ -37,5 +34,4 @@ test("email subscription form validates input and submits safely", async ({ page
   await submit.click();
 
   await expect(page.getByText(/signed up|subscribed|thank you|updates/i).first()).toBeVisible();
-  expectNoCriticalConsoleErrors(errors);
 });

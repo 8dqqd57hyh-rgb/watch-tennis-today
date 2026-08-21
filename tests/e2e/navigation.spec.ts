@@ -1,12 +1,9 @@
-import { expect, test } from "@playwright/test";
-import {
-  collectCriticalConsoleErrors,
-  expectNoCriticalConsoleErrors,
-  expectPageHasContent,
-} from "./helpers";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures";
+import { expectPageHasContent } from "./helpers";
 
-test("primary navigation links are visible and navigate", async ({ page }) => {
-  const errors = collectCriticalConsoleErrors(page);
+test("primary navigation links are visible and navigate", async ({ page, runtimeMonitor }) => {
+  expect(runtimeMonitor.isActive()).toBe(true);
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const nav = page.getByRole("navigation", { name: /primary/i });
@@ -32,5 +29,4 @@ test("primary navigation links are visible and navigate", async ({ page }) => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
   }
 
-  expectNoCriticalConsoleErrors(errors);
 });

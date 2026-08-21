@@ -606,7 +606,7 @@ export default async function CountryPage({
               {[
                 { title: "Popular players", links: relatedPlayerLinks },
                 { title: "Broadcasters", links: relatedBroadcasterLinks },
-                { title: "Grand Slams", links: relatedTournamentLinks },
+                { title: "Grand Slam guides", links: relatedTournamentLinks },
                 { title: "Streaming", links: relatedStreamingLinks },
               ].map((group) => (
                 <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
