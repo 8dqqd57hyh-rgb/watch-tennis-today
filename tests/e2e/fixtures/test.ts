@@ -9,7 +9,7 @@ type QaFixtures = {
 };
 
 export const test = base.extend<QaFixtures>({
-  criticalConsoleErrors: async ({ page }, use, testInfo) => {
+  criticalConsoleErrors: [async ({ page }, use, testInfo) => {
     const errors = collectCriticalConsoleErrors(page);
 
     await use(errors);
@@ -22,7 +22,7 @@ export const test = base.extend<QaFixtures>({
     }
 
     expectNoCriticalConsoleErrors(errors);
-  },
+  }, { auto: true }],
 });
 
 export { expect };
