@@ -3,6 +3,7 @@ import Link from "next/link";
 import HomepageMatchExplorer from "@/app/components/HomepageMatchExplorer";
 import type { HomepageMatch } from "@/app/components/HomepageMatchExplorer";
 import HomepageFinalsBanner from "@/app/components/HomepageFinalsBanner";
+import USOpenQualifyingSpotlight from "@/app/components/USOpenQualifyingSpotlight";
 import { getServerMatchesWindow } from "@/app/lib/serverMatches";
 
 const baseMetadata: Metadata = {
@@ -112,6 +113,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
         </header>
 
+        <USOpenQualifyingSpotlight />
         <HomepageMatchExplorer initialMatches={initialMatches} />
         <HomepageFinalsBanner />
 
