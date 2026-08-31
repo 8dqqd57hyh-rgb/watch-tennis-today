@@ -74,3 +74,26 @@ export function resolveMatchWinner(
   if (["second player", "player 2", "2"].includes(normalized)) return player2;
   return winner || null;
 }
+
+export function getMatchLocalDateKey(value?: string | null, timeZone?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("en-CA", {
+    ...(timeZone ? { timeZone } : {}),
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+export function normalizeTournamentKey(value?: string | null) {
+  const normalized = String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  if (/\b(?:us|u s|united states) open\b/.test(normalized)) return "us-open";
+  if (/\b(?:roland garros|french open)\b/.test(normalized)) return "roland-garros";
+  return normalized.replace(/\s+/g, "-");
+}
+
+export function isUsOpenTournament(value?: string | null) {
+  return normalizeTournamentKey(value) === "us-open";
+}

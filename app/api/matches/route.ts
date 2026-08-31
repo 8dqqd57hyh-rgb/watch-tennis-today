@@ -17,6 +17,7 @@ import {
   normalizeMatchStartTime,
   resolveMatchWinner,
 } from "@/app/lib/matchNormalization";
+import { resolveProviderMatchStatus } from "@/app/lib/matchStatus";
 
 type ApiTennisMatch = {
   event_key: string;
@@ -568,7 +569,6 @@ function isApiLiveStatus(value?: string | null) {
 }
 
 function normalizeStatus(match: ApiTennisMatch) {
-  const status = normalizeApiStatusText(match.event_status);
   const startTime = getStartTime(match);
   const startsInFuture = startTime ? new Date(startTime) > new Date() : false;
 
@@ -594,79 +594,20 @@ const hasScore = Boolean(
     )
 );
 
-  if (isPastUnplayedFixture(match, hasScore)) {
-    return "EXPIRED";
-  }
-
-  if (isApiCancelledStatus(status)) {
-    return "CANCELLED";
-  }
-
-  if (isApiFinishedStatus(status)) {
-    return "FINISHED";
-  }
-
-  if (status.includes("retired") || status.includes("walkover")) {
-    return "RETIRED";
-  }
-
-  if (isApiScheduledStatus(status) && !hasScore) {
-    return "UPCOMING";
-  }
-
-  if (isApiPostponedStatus(status)) {
-    return startsInFuture && !hasScore ? "UPCOMING" : "SUSPENDED";
-  }
-
-  if (
-    startsInFuture &&
-    !hasScore &&
-    (
-      status.includes("suspended") ||
-      status.includes("interrupted") ||
-      status.includes("delay") ||
-      status.includes("postponed")
-    )
-  ) {
-    return "UPCOMING";
-  }
-
-  if (
-    status.includes("suspended") ||
-    status.includes("interrupted") ||
-    status.includes("delay") ||
-    status.includes("postponed")
-  ) {
-    return "SUSPENDED";
-  }
-
-  if (isStaleLiveFixture(match)) {
-    return hasScore ? "FINISHED" : "EXPIRED";
-  }
-
-  if (
-    match.event_live === "1" ||
-    isApiLiveStatus(status)
-  ) {
-    return "LIVE";
-  }
-
-  // API-Tennis fixtures often return past completed matches with a score but
-  // without a reliable `event_status`. Treat scored past fixtures as finished
-  // so player form / recent results pages do not look empty for active players.
-  if (hasScore) {
-    return startsInFuture ? "SUSPENDED" : "FINISHED";
-  }
-
-// fixtures without official time yet
-if (
-  !status ||
-  isApiScheduledStatus(status)
-) {
-  return "UPCOMING";
-}
-
-return "UPCOMING";
+  return resolveProviderMatchStatus({
+    providerStatus: match.event_status,
+    providerLive: match.event_live === "1",
+    providerScheduled:
+      !String(match.event_status || "").trim() &&
+      match.event_live === "0" &&
+      Boolean(match.event_date) &&
+      Boolean(match.event_time) &&
+      !hasScore,
+    hasScore,
+    startsInFuture,
+    staleLive: isStaleLiveFixture(match),
+    pastUnplayed: isPastUnplayedFixture(match, hasScore),
+  });
 }
 
 function normalizePointToken(value: string) {
@@ -1561,7 +1502,7 @@ const dateStop = formatDate(dateStopDate);
       const beforeArchiveMerge = mappedMatches.length;
       const archivedMatches = await getArchivedMatchesForPlayer(playerName, dateStart);
       mappedMatches = Array.from(
-        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+        new Map([...archivedMatches, ...mappedMatches].map((match) => [String(match.id), match])).values()
       );
       logMatchFilters(logFilters, "after-player-archive-merge", {
         before: beforeArchiveMerge,
@@ -1574,7 +1515,7 @@ const dateStop = formatDate(dateStopDate);
       const beforeArchiveMerge = mappedMatches.length;
       const archivedMatches = await getArchivedMatchesForPlayers(bulkPlayerNames, dateStart);
       mappedMatches = Array.from(
-        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+        new Map([...archivedMatches, ...mappedMatches].map((match) => [String(match.id), match])).values()
       );
       logMatchFilters(logFilters, "after-bulk-player-archive-merge", {
         before: beforeArchiveMerge,
@@ -1591,7 +1532,7 @@ const dateStop = formatDate(dateStopDate);
       const beforeArchiveMerge = mappedMatches.length;
       const archivedMatches = await getArchivedMatches(dateStart, 5000);
       mappedMatches = Array.from(
-        new Map([...mappedMatches, ...archivedMatches].map((match) => [String(match.id), match])).values()
+        new Map([...archivedMatches, ...mappedMatches].map((match) => [String(match.id), match])).values()
       );
       logMatchFilters(logFilters, "after-form-archive-merge", {
         before: beforeArchiveMerge,

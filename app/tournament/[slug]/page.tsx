@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isLiveMatch as hasLiveStatus, isSuspendedMatch, isUpcomingMatch } from "@/app/lib/matchStatus";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import LocalTournamentFollowButton from "@/app/components/LocalTournamentFollowButton";
@@ -235,7 +236,7 @@ function isTodayMatch(match: Match, now: Date) {
 }
 
 function isLiveMatch(match: Match) {
-  return match.status?.toUpperCase() === "LIVE";
+  return hasLiveStatus(match.status);
 }
 
 function isCompletedMatch(match: Match) {
@@ -249,7 +250,7 @@ function isCancelledMatch(match: Match) {
 }
 
 function isScheduledMatch(match: Match) {
-  return !isLiveMatch(match) && !isCompletedMatch(match) && !isCancelledMatch(match);
+  return isUpcomingMatch(match.status);
 }
 
 function getMatchTimestamp(match: Match) {
@@ -322,7 +323,7 @@ function describeTournamentHubLink(label: string) {
 function getMatchStatusBadge(match: Match) {
   if (isLiveMatch(match)) return { label: "Live", className: "bg-red-500 text-white" };
   if (isCompletedMatch(match)) return { label: "Completed", className: "bg-zinc-700 text-white" };
-  if (match.status === "SUSPENDED") return { label: "Suspended", className: "bg-yellow-500 text-black" };
+  if (isSuspendedMatch(match.status)) return { label: "Suspended", className: "bg-yellow-500 text-black" };
   if (match.status === "POSTPONED") return { label: "Postponed", className: "bg-yellow-500 text-black" };
   if (isCancelledMatch(match)) return { label: "Cancelled", className: "bg-zinc-600 text-white" };
   return { label: "Scheduled", className: "bg-green-400 text-black" };

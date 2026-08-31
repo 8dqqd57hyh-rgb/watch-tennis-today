@@ -1,5 +1,7 @@
 "use client";
 
+import { isLiveMatch, isSuspendedMatch } from "@/app/lib/matchStatus";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { players } from "@/data/players";
@@ -85,7 +87,11 @@ function getStatusValue(match: Match | FollowedMatch) {
 }
 
 function isLiveStatus(match: Match | FollowedMatch) {
-  return ["LIVE", "SUSPENDED"].includes(getStatusValue(match));
+  return isLiveMatch(match.status);
+}
+
+function isSuspendedStatus(match: Match | FollowedMatch) {
+  return isSuspendedMatch(match.status);
 }
 
 function isUpcomingStatus(match: Match | FollowedMatch) {
@@ -409,6 +415,7 @@ export default function MyFeedClient() {
   }, [followedMatches, followedPlayers, followedTournaments, matches]);
 
   const live = feedMatches.filter(isLiveStatus);
+  const suspended = feedMatches.filter(isSuspendedStatus);
   const next = feedMatches.filter(isUpcomingStatus);
   const results = feedMatches.filter(isResultStatus);
   const empty = followedPlayers.length === 0 && followedMatches.length === 0 && followedTournaments.length === 0;
@@ -614,10 +621,14 @@ export default function MyFeedClient() {
         )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-4">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-black">Live now</h2>
           <div className="mt-4 grid gap-3">{live.slice(0, 4).map((match) => <FeedMatchCard key={`live-${match.id}`} match={match} />)}{live.length === 0 ? <p className="rounded-2xl bg-zinc-50 p-4 text-sm font-bold text-zinc-600">Nothing live for your feed right now.</p> : null}</div>
+        </section>
+        <section className="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-black">Suspended</h2>
+          <div className="mt-4 grid gap-3">{suspended.slice(0, 4).map((match) => <FeedMatchCard key={`suspended-${match.id}`} match={match} />)}{suspended.length === 0 ? <p className="rounded-2xl bg-zinc-50 p-4 text-sm font-bold text-zinc-600">No suspended matches in your feed.</p> : null}</div>
         </section>
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-black">Next matches</h2>

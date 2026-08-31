@@ -15,9 +15,9 @@ export default function LegalStreamingOptions({ country = "global", title = "Leg
 
   return (
     <section id="legal-streaming-options" className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">Legal viewing</p>
+      <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-800">Legal viewing</p>
       <h2 className="text-2xl font-black text-zinc-950">{title}</h2>
-      <p className="mt-3 text-sm leading-7 text-zinc-600">
+      <p className="mt-3 text-sm leading-7 text-zinc-700">
         Tennis rights change by tournament, country and season. Use this block as a safe starting point for {readableCountry(country)} and confirm the event on the provider or tournament website before paying.
       </p>
       <p className="mt-3 rounded-2xl bg-yellow-50 p-4 text-xs leading-6 text-yellow-900">
@@ -37,8 +37,8 @@ export default function LegalStreamingOptions({ country = "global", title = "Leg
                   </a>
                 ) : partner.name}
               </h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-600">{partner.notes}</p>
-              <p className="mt-3 text-xs font-bold uppercase tracking-wide text-zinc-500">
+              <p className="mt-2 text-sm leading-6 text-zinc-700">{partner.notes}</p>
+              <p className="mt-3 text-xs font-bold uppercase tracking-wide text-zinc-700">
                 Relevant for: {partner.tournaments.join(", ")}
               </p>
             </article>

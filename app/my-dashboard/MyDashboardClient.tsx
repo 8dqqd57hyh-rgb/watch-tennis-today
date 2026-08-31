@@ -1,5 +1,7 @@
 "use client";
 
+import { isLiveMatch, isSuspendedMatch } from "@/app/lib/matchStatus";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { players } from "@/data/players";
@@ -253,10 +255,11 @@ export default function MyDashboardClient() {
       });
   }, [followedPlayers, matches]);
 
-  const liveMatches = personalMatches.filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()));
+  const liveMatches = personalMatches.filter((match) => isLiveMatch(match.status));
+  const suspendedMatches = personalMatches.filter((match) => isSuspendedMatch(match.status));
   const nextMatches = personalMatches.filter((match) => match.status?.toUpperCase() === "UPCOMING");
   const recentResults = personalMatches.filter((match) => ["FINISHED", "RETIRED"].includes(match.status?.toUpperCase()));
-  const attentionMatches = [...liveMatches, ...nextMatches.slice(0, 3), ...recentResults.slice(0, 2)].slice(0, 6);
+  const attentionMatches = [...liveMatches, ...suspendedMatches, ...nextMatches.slice(0, 3), ...recentResults.slice(0, 2)].slice(0, 6);
 
   const playerOptions = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -279,8 +282,9 @@ export default function MyDashboardClient() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="grid grid-cols-2 gap-3 text-center md:grid-cols-4">
             <div className="rounded-2xl border border-red-200 bg-white p-4"><p className="text-3xl font-black text-red-600">{liveMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Live</p></div>
+            <div className="rounded-2xl border border-amber-200 bg-white p-4"><p className="text-3xl font-black text-amber-700">{suspendedMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Suspended</p></div>
             <div className="rounded-2xl border border-emerald-200 bg-white p-4"><p className="text-3xl font-black text-zinc-950">{nextMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Next</p></div>
             <div className="rounded-2xl border border-zinc-200 bg-white p-4"><p className="text-3xl font-black text-zinc-950">{recentResults.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Results</p></div>
           </div>
@@ -358,13 +362,21 @@ export default function MyDashboardClient() {
         )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-4">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-black text-zinc-950">Live now</h2>
           <p className="mt-1 text-sm text-zinc-500">Saved players currently playing.</p>
           <div className="mt-4 grid gap-3">
             {liveMatches.slice(0, 4).map((match) => <MiniMatchCard key={`${match.followedPlayer.slug}-${match.id}-live`} match={match} />)}
             {liveMatches.length === 0 ? <p className="rounded-2xl bg-zinc-50 p-4 text-sm font-bold text-zinc-600">No saved player is live right now.</p> : null}
+          </div>
+        </section>
+        <section className="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-black text-zinc-950">Suspended</h2>
+          <p className="mt-1 text-sm text-zinc-500">Saved-player matches currently paused.</p>
+          <div className="mt-4 grid gap-3">
+            {suspendedMatches.slice(0, 4).map((match) => <MiniMatchCard key={`${match.followedPlayer.slug}-${match.id}-suspended`} match={match} />)}
+            {suspendedMatches.length === 0 ? <p className="rounded-2xl bg-zinc-50 p-4 text-sm font-bold text-zinc-600">No saved-player match is suspended.</p> : null}
           </div>
         </section>
 

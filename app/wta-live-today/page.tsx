@@ -2,6 +2,7 @@ import VpnPromo from "@/app/components/VpnPromo";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { getServerMatches } from "@/app/lib/serverMatches";
 import Link from "next/link";
+import { isLiveMatch, isSuspendedMatch } from "@/app/lib/matchStatus";
 
 export const revalidate = 60;
 
@@ -80,8 +81,9 @@ export default async function WtaLiveTodayPage() {
   });
 
   const liveWtaMatches = wtaMatches
-    .filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()))
+    .filter((match) => isLiveMatch(match.status))
     .sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+  const suspendedWtaMatches = wtaMatches.filter((match) => isSuspendedMatch(match.status));
 
   const upcomingWtaMatches = wtaMatches
     .filter((match) => match.status?.toUpperCase() === "UPCOMING")
@@ -135,6 +137,19 @@ export default async function WtaLiveTodayPage() {
             </div>
           </div>
         </section>
+
+        {suspendedWtaMatches.length > 0 ? (
+          <section className="mb-14">
+            <h2 className="mb-6 text-4xl font-black">Suspended WTA matches</h2>
+            <div className="space-y-5">{suspendedWtaMatches.map((match) => (
+              <Link key={match.id} href={`/watch/${matchSlug(match)}`} className="block rounded-3xl border border-amber-400 bg-amber-950/20 p-6">
+                <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-black text-black">SUSPENDED</span>
+                <h3 className="mt-4 text-3xl font-black">{match.player1} vs {match.player2}</h3>
+                <p className="mt-3 font-bold text-amber-300">Match suspended</p>
+              </Link>
+            ))}</div>
+          </section>
+        ) : null}
 
 
         <section className="mb-14">

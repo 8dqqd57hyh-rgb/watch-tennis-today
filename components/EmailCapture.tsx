@@ -113,7 +113,7 @@ export default function EmailCapture({
   const wrapperClass = dark
     ? "border border-zinc-800 bg-zinc-950 text-white"
     : "border border-zinc-200 bg-white text-zinc-950";
-  const textClass = dark ? "text-zinc-300" : "text-zinc-600";
+  const textClass = dark ? "text-zinc-300" : "text-zinc-700";
   const inputClass = dark
     ? "border-zinc-700 bg-black text-white placeholder:text-zinc-500 focus:border-green-400"
     : "border-zinc-300 bg-white text-zinc-950 placeholder:text-zinc-500 focus:border-green-500";
@@ -121,7 +121,7 @@ export default function EmailCapture({
   return (
     <section className={`${wrapperClass} rounded-[2rem] p-5 shadow-sm md:p-6`} data-testid="email-signup">
       <div className={compact ? "mb-4" : "mb-5"}>
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-500">
+        <p className={`mb-2 text-xs font-black uppercase tracking-[0.2em] ${dark ? "text-green-400" : "text-green-800"}`}>
           Optional tennis alerts
         </p>
         <h2 className={compact ? "text-2xl font-black" : "text-2xl font-black md:text-3xl"}>
@@ -159,7 +159,7 @@ export default function EmailCapture({
       )}
 
       {error ? <p className="mt-3 text-sm font-bold text-red-500">{error}</p> : null}
-      <p className={`mt-3 text-xs leading-6 ${dark ? "text-zinc-500" : "text-zinc-500"}`}>
+      <p className={`mt-3 text-xs leading-6 ${dark ? "text-zinc-400" : "text-zinc-700"}`}>
         Privacy-friendly signup. Unsubscribe anytime. Watch Tennis Today does not send links to unofficial streams.
       </p>
     </section>

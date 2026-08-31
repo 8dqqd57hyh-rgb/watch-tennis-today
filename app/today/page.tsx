@@ -27,26 +27,27 @@ export default async function Page() {
     daysBack: 0,
     daysForward: 1,
     timeoutMs: 8000,
+    noStore: true,
   });
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6">
-      <nav className="mb-4 flex gap-2 text-sm text-slate-500" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-emerald-700">
+    <main className="mx-auto min-h-screen max-w-7xl bg-black px-4 py-6 text-white">
+      <nav className="mb-4 flex gap-2 text-sm text-zinc-400" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-zinc-200">
           Home
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="font-semibold text-slate-900">Tennis today</span>
+        <span className="font-semibold text-zinc-400">Tennis today</span>
       </nav>
 
       <header className="mb-5">
-        <p className="text-sm font-bold uppercase tracking-wide text-emerald-700">
+        <p className="text-sm font-bold uppercase tracking-wide text-emerald-400">
           ATP &amp; WTA live schedule
         </p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950 md:text-5xl">
+        <h1 className="mt-1 text-3xl font-black tracking-tight text-zinc-50 md:text-5xl">
           ATP &amp; WTA matches today
         </h1>
-        <p className="mt-2 text-slate-600">
+        <p className="mt-2 text-zinc-300">
           Main-tour matches only: live first, then the most important upcoming fixtures and latest results.
         </p>
       </header>

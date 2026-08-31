@@ -10,10 +10,12 @@ import SpoilerFreeScoreToggle, {
   useSpoilerFreeScores,
 } from "@/app/components/SpoilerFreeScoreToggle";
 import { safePlayerUrl } from "@/data/playerSlugs";
+import { getMatchLocalDateKey } from "@/app/lib/matchNormalization";
 import {
   calculateMatchImportance,
   getMatchImportanceReasons,
 } from "@/lib/matchImportance";
+import { getMatchStatusPresentation, groupMatchesByStatus, isFinishedMatch, isLiveMatch, isRetiredMatch, isSuspendedMatch } from "@/app/lib/matchStatus";
 
 type Match = {
   id: string;
@@ -44,7 +46,7 @@ function matchSlug(match: Match) {
 }
 
 type TourFilter = "ALL" | "ATP" | "WTA";
-type StatusFilter = "ALL" | "LIVE" | "UPCOMING" | "RESULTS";
+type StatusFilter = "ALL" | "LIVE" | "SUSPENDED" | "UPCOMING" | "RESULTS";
 
 function formatTime(value: string | null) {
   if (!value) return "Time TBC";
@@ -55,33 +57,12 @@ function formatTime(value: string | null) {
   });
 }
 
-function isLiveStatus(status: string) {
-  return status.toUpperCase() === "LIVE";
-}
-
 function isCompletedStatus(status: string) {
-  return ["FINISHED", "COMPLETED", "FT", "ENDED"].includes(status.toUpperCase());
-}
-
-function isUpcomingStatus(status: string) {
-  const normalized = status.toUpperCase();
-  return (
-    ["UPCOMING", "SCHEDULED", "NOT STARTED"].includes(normalized) ||
-    (!isLiveStatus(status) && !isCompletedStatus(status))
-  );
-}
-
-function localDateKey(value?: string | null) {
-  if (!value) return null;
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return date.toLocaleDateString("en-CA");
+  return isFinishedMatch(status) || isRetiredMatch(status);
 }
 
 function isTodayMatch(match: Match) {
-  return localDateKey(match.startTime) === localDateKey(new Date().toISOString());
+  return getMatchLocalDateKey(match.startTime) === getMatchLocalDateKey(new Date().toISOString());
 }
 
 function isMainTourMatch(match: Match) {
@@ -116,7 +97,9 @@ function MatchCard({
   match: Match;
   spoilerFree: boolean;
 }) {
-  const live = isLiveStatus(match.status);
+  const live = isLiveMatch(match.status);
+  const suspended = isSuspendedMatch(match.status);
+  const presentation = getMatchStatusPresentation(match.status);
   const importance = calculateMatchImportance(match);
   const reasons = getMatchImportanceReasons(match).slice(0, 2);
 
@@ -125,6 +108,8 @@ function MatchCard({
       className={`rounded-3xl border p-5 transition-colors ${
         live
           ? "border-red-500/70 bg-red-950/20"
+          : suspended
+            ? "border-amber-400/60 bg-amber-950/20"
           : "border-zinc-800 bg-zinc-900 hover:border-green-500"
       }`}
     >
@@ -133,15 +118,21 @@ function MatchCard({
           className={`rounded-full px-3 py-1 ${
             live
               ? "bg-red-500 text-white"
+              : suspended
+                ? "bg-amber-400 text-black"
               : isCompletedStatus(match.status)
                 ? "bg-zinc-200 text-zinc-950"
                 : "bg-zinc-700 text-zinc-100"
           }`}
         >
-          {live ? "Live now" : match.status || "Scheduled"}
+          {presentation.badge}
         </span>
         <span className="text-zinc-400">{match.category}</span>
       </div>
+
+      <p className={`mt-3 text-sm font-bold ${suspended ? "text-amber-300" : live ? "text-red-300" : "text-zinc-300"}`}>
+        {presentation.supportingText}
+      </p>
 
       <h3 className="mt-5 text-2xl font-black leading-tight">
         <PlayerLink name={match.player1} />
@@ -163,7 +154,7 @@ function MatchCard({
         </p>
       ) : null}
 
-      {(live || isCompletedStatus(match.status)) && match.score ? (
+      {(live || suspended || isCompletedStatus(match.status)) && match.score ? (
         <p className="mt-3 text-sm font-bold text-zinc-200">
           Score: <SpoilerSafeScore score={match.score} hidden={spoilerFree} />
         </p>
@@ -213,7 +204,7 @@ function MatchSection({
         <span className="text-sm text-zinc-400">{count} matches</span>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {matches.slice(0, 12).map((match) => (
+        {matches.map((match) => (
           <MatchCard key={match.id} match={match} spoilerFree={spoilerFree} />
         ))}
       </div>
@@ -236,15 +227,14 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
   const [spoilerFree, setSpoilerFree] = useSpoilerFreeScores();
 
   useEffect(() => {
-    if (initialMatches.length > 0) return;
-
+    let active = true;
     async function refreshMatches() {
       try {
         const safeMatches = await fetchClientMatches(TODAY_MATCHES_URL, {
-          ttlMs: 30_000,
+          ttlMs: 0,
           timeoutMs: 8000,
         });
-        setMatches((safeMatches as Match[]).filter(
+        if (active) setMatches((safeMatches as Match[]).filter(
           (match) => isTodayMatch(match) && isMainTourMatch(match)
         ));
       } catch {
@@ -252,20 +242,22 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
       }
     }
 
-    refreshMatches();
-  }, [initialMatches.length]);
+    void refreshMatches();
+    const intervalId = window.setInterval(refreshMatches, 30_000);
+    return () => { active = false; window.clearInterval(intervalId); };
+  }, []);
 
   const groupedMatches = useMemo(() => {
     const tourMatches = matches.filter(
       (match) => tourFilter === "ALL" || match.category === tourFilter,
     );
-    const live = sortByImportance(tourMatches.filter((match) => isLiveStatus(match.status)));
-    const upcoming = sortByImportance(tourMatches.filter((match) => isUpcomingStatus(match.status)));
-    const completed = [...tourMatches]
-      .filter((match) => isCompletedStatus(match.status))
-      .sort((left, right) => timeValue(right) - timeValue(left));
+    const grouped = groupMatchesByStatus(tourMatches);
+    const live = sortByImportance(grouped.live);
+    const upcoming = sortByImportance(grouped.upcoming);
+    const completed = [...grouped.finished].sort((left, right) => timeValue(right) - timeValue(left));
+    const suspended = sortByImportance(grouped.suspended);
 
-    return { live, upcoming, completed };
+    return { live, upcoming, completed, suspended };
   }, [matches, tourFilter]);
   const atpCount = matches.filter((match) => match.category === "ATP").length;
   const wtaCount = matches.filter((match) => match.category === "WTA").length;
@@ -276,6 +268,9 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
         <div className="flex flex-wrap gap-2 text-sm font-bold">
           <span className="rounded-full bg-red-500/20 px-3 py-2 text-red-300">
             {groupedMatches.live.length} live
+          </span>
+          <span className="rounded-full bg-amber-400/20 px-3 py-2 text-amber-300">
+            {groupedMatches.suspended.length} suspended
           </span>
           <span className="rounded-full bg-zinc-800 px-3 py-2 text-zinc-200">
             {groupedMatches.upcoming.length} upcoming
@@ -313,7 +308,7 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
         <fieldset>
           <legend className="mb-2 text-xs font-black uppercase tracking-wide text-zinc-400">Show</legend>
           <div className="flex flex-wrap gap-2">
-            {(["ALL", "LIVE", "UPCOMING", "RESULTS"] as const).map((value) => (
+            {(["ALL", "LIVE", "SUSPENDED", "UPCOMING", "RESULTS"] as const).map((value) => (
               <button
                 key={value}
                 type="button"
@@ -321,7 +316,7 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
                 onClick={() => { setStatusFilter(value); trackFilter("status", value); }}
                 className={`rounded-full px-4 py-2 text-sm font-black ${statusFilter === value ? "bg-white text-black" : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"}`}
               >
-                {value === "ALL" ? "All matches" : value === "RESULTS" ? "Results" : value === "UPCOMING" ? "Upcoming" : "Live"}
+                {value === "ALL" ? "All matches" : value === "RESULTS" ? "Results" : value === "UPCOMING" ? "Upcoming" : value === "SUSPENDED" ? "Suspended" : "Live"}
               </button>
             ))}
           </div>
@@ -357,8 +352,10 @@ export default function TodayClient({ initialMatches }: { initialMatches: Match[
           {statusFilter === "ALL" || statusFilter === "LIVE" ? <MatchSection title="Live now" count={groupedMatches.live.length} matches={groupedMatches.live} spoilerFree={spoilerFree} /> : null}
           {statusFilter === "ALL" || statusFilter === "UPCOMING" ? <MatchSection title="Coming up today" count={groupedMatches.upcoming.length} matches={groupedMatches.upcoming} spoilerFree={spoilerFree} /> : null}
           {statusFilter === "ALL" || statusFilter === "RESULTS" ? <MatchSection title="Latest results" count={groupedMatches.completed.length} matches={groupedMatches.completed} spoilerFree={spoilerFree} /> : null}
+          {statusFilter === "ALL" || statusFilter === "SUSPENDED" ? <MatchSection title="Suspended" count={groupedMatches.suspended.length} matches={groupedMatches.suspended} spoilerFree={spoilerFree} /> : null}
           {((statusFilter === "LIVE" && !groupedMatches.live.length) ||
             (statusFilter === "UPCOMING" && !groupedMatches.upcoming.length) ||
+            (statusFilter === "SUSPENDED" && !groupedMatches.suspended.length) ||
             (statusFilter === "RESULTS" && !groupedMatches.completed.length)) ? (
             <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-300">
               No matches fit these filters. Try another status or tour.

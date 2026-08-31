@@ -1,5 +1,7 @@
 "use client";
 
+import { isLiveMatch, isSuspendedMatch } from "@/app/lib/matchStatus";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { startSmartMatchPolling } from "@/app/lib/smartMatchPolling";
@@ -230,7 +232,8 @@ export default function MyTournamentClient() {
       });
   }, [followedTournaments, matches]);
 
-  const liveMatches = tournamentMatchesList.filter((match) => ["LIVE", "SUSPENDED"].includes(match.status?.toUpperCase()));
+  const liveMatches = tournamentMatchesList.filter((match) => isLiveMatch(match.status));
+  const suspendedMatches = tournamentMatchesList.filter((match) => isSuspendedMatch(match.status));
   const nextMatches = tournamentMatchesList.filter((match) => match.status?.toUpperCase() === "UPCOMING");
   const recentResults = tournamentMatchesList.filter((match) => ["FINISHED", "RETIRED"].includes(match.status?.toUpperCase()));
 
@@ -246,8 +249,9 @@ export default function MyTournamentClient() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="grid grid-cols-2 gap-3 text-center md:grid-cols-4">
             <div className="rounded-2xl border border-emerald-200 bg-white p-4"><p className="text-3xl font-black text-red-600">{liveMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Live</p></div>
+            <div className="rounded-2xl border border-amber-200 bg-white p-4"><p className="text-3xl font-black text-amber-700">{suspendedMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Suspended</p></div>
             <div className="rounded-2xl border border-emerald-200 bg-white p-4"><p className="text-3xl font-black text-zinc-950">{nextMatches.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Next</p></div>
             <div className="rounded-2xl border border-emerald-200 bg-white p-4"><p className="text-3xl font-black text-zinc-950">{recentResults.length}</p><p className="text-xs font-bold uppercase text-zinc-500">Results</p></div>
           </div>
@@ -276,7 +280,8 @@ export default function MyTournamentClient() {
 
       {loading ? <div className="rounded-3xl border border-zinc-200 bg-white p-6 font-bold text-zinc-600 shadow-sm">Loading your tournament board...</div> : null}
 
-      <Section title="Live now" subtitle="Live or suspended matches from your saved tournaments." matches={liveMatches} emptyText="No saved tournament is live right now." />
+      <Section title="Live now" subtitle="Matches currently in progress from your saved tournaments." matches={liveMatches} emptyText="No saved tournament is live right now." />
+      <Section title="Suspended" subtitle="Paused matches from your saved tournaments." matches={suspendedMatches} emptyText="No saved tournament match is suspended." />
       <Section title="Next matches" subtitle="Upcoming fixtures from your saved tournaments." matches={nextMatches} emptyText="No upcoming matches found for your saved tournaments yet." />
       <Section title="Recent results" subtitle="Latest completed matches from your saved tournaments." matches={recentResults} emptyText="No recent results found yet." />
     </div>
