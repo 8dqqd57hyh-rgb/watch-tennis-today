@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "watchTennisToday.followedPlayers";
 
@@ -34,10 +34,18 @@ export default function LocalPlayerFollowButton({
   playerName: string;
   playerSlug: string;
 }) {
-  const [followed, setFollowed] = useState(() =>
-    readFollowedPlayers().some((player) => player.slug === playerSlug)
-  );
-  const [count, setCount] = useState(() => readFollowedPlayers().length);
+  const [followed, setFollowed] = useState(false);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      const followedPlayers = readFollowedPlayers();
+      setFollowed(followedPlayers.some((player) => player.slug === playerSlug));
+      setCount(followedPlayers.length);
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [playerSlug]);
 
   function toggleFollow() {
     const followedPlayers = readFollowedPlayers();
@@ -66,7 +74,7 @@ export default function LocalPlayerFollowButton({
   }
 
   return (
-    <section className="mb-8 rounded-3xl border border-green-200 bg-gradient-to-br from-green-50 to-white p-6 shadow-sm">
+    <section data-testid="player-follow-card" className="mb-8 rounded-3xl border border-green-200 bg-gradient-to-br from-green-50 to-white p-6 shadow-sm">
       <p className="mb-2 text-sm font-black uppercase tracking-[0.18em] text-green-700">
         Personal match hub
       </p>
@@ -77,7 +85,7 @@ export default function LocalPlayerFollowButton({
             Follow {playerName} in My Players 🎾
           </h2>
 
-          <p className="max-w-2xl leading-7 text-zinc-600">
+          <p className="max-w-2xl leading-7 text-zinc-700">
             Save this player on this device and get a private dashboard with only
             your followed players’ live matches, next matches and quick watch links.
           </p>
@@ -89,8 +97,8 @@ export default function LocalPlayerFollowButton({
             onClick={toggleFollow}
             className={
               followed
-                ? "rounded-2xl border border-green-300 bg-white px-5 py-3 font-black text-green-800 shadow-sm hover:bg-green-50"
-                : "rounded-2xl bg-black px-5 py-3 font-black text-white shadow-sm hover:bg-zinc-800"
+                ? "rounded-2xl border border-green-400 bg-white px-5 py-3 font-black text-green-900 shadow-sm transition hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
+                : "rounded-2xl bg-black px-5 py-3 font-black text-white shadow-sm transition hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
             }
           >
             {followed ? "✓ Following" : "🔔 Follow player"}
@@ -98,7 +106,7 @@ export default function LocalPlayerFollowButton({
 
           <Link
             href="/my-players"
-            className="rounded-2xl border border-zinc-200 bg-white px-5 py-3 font-black text-zinc-900 shadow-sm hover:border-green-400 hover:bg-green-50"
+            className="rounded-2xl border border-zinc-300 bg-white px-5 py-3 font-black text-zinc-950 shadow-sm transition hover:border-green-500 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
           >
             My Players{count ? ` (${count})` : ""} →
           </Link>

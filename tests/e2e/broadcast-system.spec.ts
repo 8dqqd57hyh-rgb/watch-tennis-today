@@ -91,12 +91,12 @@ test.describe("tennis broadcaster database", () => {
       recordCount: 72,
       countryCount: 12,
       tournamentCount: 6,
-      latestVerified: "2026-06-21",
+      latestVerified: "2026-09-17",
     });
     expect(summary.broadcasterCount).toBeGreaterThan(0);
     expect(csv.split("\r\n")).toHaveLength(records.length + 1);
     expect(csv).toContain('"record_id","country_code"');
-    expect(csv).toContain('"poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access"');
+    expect(csv).toContain('"poland:wimbledon:not-independently-confirmed-for-the-current-year:check-the-official-wimbledon-broadcaster-list-for-poland"');
     expect(csv).toContain('"https://www.wimbledon.com/en_GB/about/tv_coverage"');
   });
 
@@ -241,8 +241,8 @@ test.describe("tennis broadcaster database", () => {
     expect(summary.broadcasterCount).toBe(1);
     expect(summary.freeRouteCount).toBe(0);
     expect(summary.subscriptionRouteCount).toBe(1);
-    expect(summary.lastVerified).toBe("2026-06-21");
-    expect(summary.confidenceLevels).toEqual(["partial"]);
+    expect(summary.lastVerified).toBe("2026-09-17");
+    expect(summary.confidenceLevels).toEqual(["needs_check"]);
   });
 
   test("exposes normalized broadcast records with required fields", () => {
@@ -256,15 +256,15 @@ test.describe("tennis broadcaster database", () => {
       countrySlug: "poland",
       tournamentSlug: "wimbledon",
       tournamentName: "Wimbledon",
-      broadcasterName: "Polsat",
+      broadcasterName: "Not independently confirmed for the current year",
       officialUrl: "https://www.wimbledon.com/en_GB/about/tv_coverage",
-      streamingService: "Polsat Box Go or current Polsat sports access",
+      streamingService: "Check the official Wimbledon broadcaster list for Poland",
       free: false,
       subscriptionRequired: true,
-      confidence: "partial",
-      lastVerified: "2026-06-21",
+      confidence: "needs_check",
+      lastVerified: "2026-09-17",
     });
-    expect(polandWimbledon?.id).toBe("poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access");
+    expect(polandWimbledon?.id).toBe("poland:wimbledon:not-independently-confirmed-for-the-current-year:check-the-official-wimbledon-broadcaster-list-for-poland");
   });
 
   test("supports per-row last verified dates without changing the global default", () => {
@@ -274,7 +274,7 @@ test.describe("tennis broadcaster database", () => {
     const records = getNormalizedBroadcastRecords(refreshedDatabase);
     const refreshedRecord = records.find((record) => record.countrySlug === "poland" && record.tournamentSlug === "wimbledon");
     const defaultRecord = records.find((record) => record.countrySlug === "poland" && record.tournamentSlug === "australian-open");
-    const validation = validateBroadcastDatabase(refreshedDatabase, { referenceDate: "2026-06-28" });
+    const validation = validateBroadcastDatabase(refreshedDatabase, { referenceDate: "2026-09-17" });
 
     expect(refreshedRecord?.lastVerified).toBe("2026-06-27");
     expect(defaultRecord?.lastVerified).toBe("2026-06-21");
@@ -283,7 +283,7 @@ test.describe("tennis broadcaster database", () => {
   });
 
   test("validates the broadcaster database", () => {
-    const result = validateBroadcastDatabase(tennisBroadcastDatabase, { referenceDate: "2026-06-28" });
+    const result = validateBroadcastDatabase(tennisBroadcastDatabase, { referenceDate: "2026-09-17" });
 
     expect(result.isValid).toBe(true);
     expect(result.recordCount).toBe(72);
@@ -295,7 +295,7 @@ test.describe("tennis broadcaster database", () => {
     const staleDatabase = structuredClone(tennisBroadcastDatabase) as TennisCountryBroadcastDatabase[];
     staleDatabase[0].groups[2].services[0].lastVerified = "2025-01-15";
 
-    const result = validateBroadcastDatabase(staleDatabase, { referenceDate: "2026-06-28", staleAfterDays: 365 });
+    const result = validateBroadcastDatabase(staleDatabase, { referenceDate: "2026-09-17", staleAfterDays: 365 });
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toEqual([]);
@@ -313,7 +313,7 @@ test.describe("tennis broadcaster database", () => {
     invalidDatabase[0].groups[4].services[0].confidenceLevel = "maybe" as never;
     invalidDatabase[0].groups[5].services[0].lastVerified = "June 21 2026";
 
-    const result = validateBroadcastDatabase(invalidDatabase, { referenceDate: "2026-06-28" });
+    const result = validateBroadcastDatabase(invalidDatabase, { referenceDate: "2026-09-17" });
     const codes = result.errors.map((error) => error.code);
 
     expect(result.isValid).toBe(false);

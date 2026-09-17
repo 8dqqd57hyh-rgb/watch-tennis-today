@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
         </h1>
 
         <p className="text-zinc-400 mb-8">
-          Last updated: June 3, 2026
+          Last updated: September 17, 2026
         </p>
 
         <div className="space-y-8 text-zinc-300 leading-relaxed">
@@ -51,6 +51,17 @@ export default function PrivacyPolicyPage() {
               information is used to understand website performance and improve
               the user experience.
             </p>
+            <p className="mt-4">
+              If you sign up for a player alert, tournament digest or
+              newsletter, we collect the email address you provide and the
+              preferences you select (for example, which player or tournament
+              you want updates about). We use this information only to send the
+              alerts or digests you requested and store it with our database
+              provider (Supabase) and our email delivery provider (Resend).
+              You can stop receiving these emails at any time using the
+              unsubscribe link included in each message or by contacting us
+              through the Contact page.
+            </p>
           </section>
 
           <section>
@@ -58,10 +69,12 @@ export default function PrivacyPolicyPage() {
               3. Analytics
             </h2>
             <p>
-              We may use analytics tools, including Google Analytics or similar
-              services, to understand how visitors use the website. Analytics
-              tools may use cookies or similar technologies to measure traffic,
-              page performance and user behavior in aggregate.
+              We use analytics tools, including Google Analytics and Vercel
+              Analytics, to understand how visitors use the website. These
+              tools record aggregate information such as pages viewed, general
+              location, device type and which links (including outbound and
+              affiliate links) are clicked, and may use cookies or similar
+              technologies to measure traffic and page performance.
             </p>
           </section>
 
@@ -128,8 +141,11 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               We do not sell personal information. Limited information may be
-              processed by analytics, advertising, hosting, security or affiliate
-              service providers as necessary to operate and improve the website.
+              processed by analytics (Google Analytics, Vercel Analytics),
+              advertising (Google AdSense), hosting (Vercel), database
+              (Supabase), email delivery (Resend), security or affiliate
+              service providers as necessary to operate the website and, where
+              you opt in, to send player alerts, digests or newsletters.
             </p>
           </section>
 

@@ -125,6 +125,9 @@ export default function AuthorPage() {
               <Link href="/how-we-source-data" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">
                 Data sources
               </Link>
+              <Link href="/contact" className="rounded-full border border-zinc-700 px-4 py-2 hover:border-emerald-300">
+                Report a correction / contact
+              </Link>
             </div>
           </article>
         </section>

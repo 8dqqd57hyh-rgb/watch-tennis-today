@@ -40,19 +40,30 @@ To build, start the local server, wait for it, and run Playwright:
 npm run test:predeploy:local
 ```
 
-## Run Against Production
+## Run Against A Preview Deployment
 
-Set `TEST_BASE_URL` to the deployed site. Playwright will not start a local server when this variable is set.
+Set `TEST_BASE_URL` to a preview or staging deployment. Playwright will not start a local server when this variable is set.
 
 ```bash
-TEST_BASE_URL=https://watchtennistoday.com npm run test:e2e
+TEST_BASE_URL=https://your-preview-url.vercel.app npm run test:e2e
 ```
 
 On Windows PowerShell:
 
 ```powershell
-$env:TEST_BASE_URL="https://watchtennistoday.com"; npm run test:e2e
+$env:TEST_BASE_URL="https://your-preview-url.vercel.app"; npm run test:e2e
 ```
+
+The Playwright configuration rejects the production hosts `watchtennistoday.com` and
+`www.watchtennistoday.com`. Production smoke monitoring should use a dedicated,
+non-destructive suite:
+
+```bash
+npm run test:e2e:prod-smoke
+```
+
+Never set `TEST_BASE_URL` to production for the normal Playwright commands. Full
+regression runs only against localhost or a non-production preview environment.
 
 ## When A Test Fails
 

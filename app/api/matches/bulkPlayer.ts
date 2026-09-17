@@ -58,7 +58,12 @@ export function apiSinglesNameMatchesPlayer(playerName: string, sideName: string
   if (targetParts.join(" ") === sideParts.join(" ")) return true;
 
   if (targetLast === sideLast) {
-    return !targetFirst || !sideFirst || targetFirst[0] === sideFirst[0];
+    if (!targetFirst || !sideFirst) return false;
+    if (targetFirst === sideFirst) return true;
+    return (
+      (isInitialToken(sideFirst) || isInitialToken(targetFirst)) &&
+      targetFirst[0] === sideFirst[0]
+    );
   }
 
   if (sideFirst === targetLast && sideLast && targetFirst) {

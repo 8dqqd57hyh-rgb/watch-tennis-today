@@ -4,7 +4,23 @@ import path from "node:path";
 import { getMatchLifecycle } from "@/app/lib/matchLifecycle";
 import { NOINDEX_ONLY_PATHS, REDIRECT_ONLY_PATHS, SITE_URL } from "@/app/lib/technicalSeo";
 
-const indexablePages = ["/", "/today", "/live-tennis", "/players", "/tournament", "/about", "/wimbledon-order-of-play"];
+const indexablePages = [
+  "/",
+  "/today",
+  "/live-tennis",
+  "/players",
+  "/tournament",
+  "/about",
+  "/wimbledon-order-of-play",
+  "/watch-tennis-in/uk",
+  "/watch-tennis-in/poland",
+  "/how-to-watch-tennis-safely-abroad",
+  "/privacy",
+  "/authors/watch-tennis-today",
+  "/player/joao-fonseca",
+  "/player/vilius-gaubas",
+  "/player/dino-prizmic",
+];
 const intentionallyNoindexPages = new Set(["/tennis-schedule-today"]);
 
 const expectedCanonicals: Record<string, string> = {
@@ -15,10 +31,20 @@ const expectedCanonicals: Record<string, string> = {
   "/tournament": "https://watchtennistoday.com/tournament",
   "/about": "https://watchtennistoday.com/about",
   "/wimbledon-order-of-play": "https://watchtennistoday.com/wimbledon-order-of-play",
+  "/watch-tennis-in/uk": "https://watchtennistoday.com/watch-tennis-in/uk",
+  "/watch-tennis-in/poland": "https://watchtennistoday.com/watch-tennis-in/poland",
+  "/how-to-watch-tennis-safely-abroad": "https://watchtennistoday.com/how-to-watch-tennis-safely-abroad",
+  "/privacy": "https://watchtennistoday.com/privacy",
+  "/authors/watch-tennis-today": "https://watchtennistoday.com/authors/watch-tennis-today",
+  "/player/joao-fonseca": "https://watchtennistoday.com/player/joao-fonseca",
+  "/player/vilius-gaubas": "https://watchtennistoday.com/player/vilius-gaubas",
+  "/player/dino-prizmic": "https://watchtennistoday.com/player/dino-prizmic",
 };
 
 const canonicalPlayerSlugCases = [
   { path: "/player/j-fonseca", canonical: "https://watchtennistoday.com/player/joao-fonseca" },
+  { path: "/player/v-gaubas", canonical: "https://watchtennistoday.com/player/vilius-gaubas" },
+  { path: "/player/d-prizmic", canonical: "https://watchtennistoday.com/player/dino-prizmic" },
   { path: "/player/swiatek-iga", canonical: "https://watchtennistoday.com/player/iga-swiatek" },
   { path: "/player/sinner-jannik", canonical: "https://watchtennistoday.com/player/jannik-sinner" },
   { path: "/player/j.-sinner", canonical: "https://watchtennistoday.com/player/jannik-sinner" },

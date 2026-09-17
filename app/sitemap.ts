@@ -56,6 +56,9 @@ const TOP_PLAYERS = new Set([
   "jelena-ostapenko",
   "elina-svitolina",
   "ha-eum-lee",
+  "joao-fonseca",
+  "vilius-gaubas",
+  "dino-prizmic",
 ]);
 
 const IMPORTANT_TOURNAMENT_KEYWORDS = [

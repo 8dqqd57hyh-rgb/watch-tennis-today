@@ -17,6 +17,7 @@
     "test:e2e:firefox": "playwright test --project=firefox",
     "test:e2e:webkit": "playwright test --project=webkit",
     "test:e2e:cross-browser": "playwright test tests/e2e/cross-browser.spec.ts",
+    "test:e2e:prod-smoke": "playwright test --config=playwright.prod.config.ts --project=prod-smoke",
     "test:predeploy": "npm run lint && npm run typecheck && npm run build && playwright test",
     "test:predeploy:local": "npm run build && npm run start & wait-on http://localhost:3000 && playwright test",
     "cy:open": "cypress open",

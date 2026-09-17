@@ -43,8 +43,10 @@ export const players = {
   "grigor-dimitrov": { name: "Grigor Dimitrov", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Finals", "Grand Slam tournaments", "Davis Cup"] },
   "alex-michelsen": { name: "Alex Michelsen", tour: "ATP", tournaments: ["ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
   "jesper-de-jong": { name: "Jesper de Jong", tour: "ATP", tournaments: ["ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
-  "joao-fonseca": { name: "Joao Fonseca", tour: "ATP", tournaments: ["ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
+  "joao-fonseca": { name: "Joao Fonseca", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
   "jakub-mensik": { name: "Jakub Mensik", tour: "ATP", tournaments: ["ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
+  "vilius-gaubas": { name: "Vilius Gaubas", tour: "ATP", tournaments: ["ATP Challenger Tour", "ATP Tour qualifying"] },
+  "dino-prizmic": { name: "Dino Prizmic", tour: "ATP", tournaments: ["ATP Masters 1000 tournaments", "ATP Tour", "Grand Slam tournaments", "Challenger tournaments"] },
 
   "iga-swiatek": { name: "Iga Swiatek", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },
   "aryna-sabalenka": { name: "Aryna Sabalenka", tour: "WTA", tournaments: ["WTA 1000 tournaments", "WTA Finals", "Grand Slam tournaments", "Billie Jean King Cup"] },

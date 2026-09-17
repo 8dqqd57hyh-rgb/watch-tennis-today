@@ -7,7 +7,6 @@ import {
 import {
   apiNameMatchesPlayer,
   apiMatchHasPlayerByContextualDoublesName,
-  apiMatchHasPlayerBySinglesName,
   apiSinglesNameMatchesPlayer,
   filterBulkApiMatches,
   filterBulkMappedMatches,
@@ -18,6 +17,7 @@ import {
   resolveMatchWinner,
 } from "@/app/lib/matchNormalization";
 import { resolveProviderMatchStatus } from "@/app/lib/matchStatus";
+import { dedupeProviderMatches, inferProviderPlayerKey, providerMatchContainsPlayer } from "@/app/lib/providerMatchIdentity";
 
 type ApiTennisMatch = {
   event_key: string;
@@ -44,6 +44,9 @@ type ApiTennisMatch = {
   tournament_name: string;
   event_live: string;
   tournament_round?: string;
+  tournament_key?: string | number | null;
+  updated_at?: string | null;
+  event_updated_at?: string | null;
   scores?: {
     score_first: string;
     score_second: string;
@@ -103,6 +106,8 @@ type MappedMatch = {
   resumeTime?: string | null;
   winner: string | null;
   winnerId: string | null;
+  player1Id?: string | null;
+  player2Id?: string | null;
   ranking1?: number | null;
   ranking2?: number | null;
   rankingSource?: string | null;
@@ -1391,7 +1396,8 @@ const dateStop = formatDate(dateStopDate);
 
     // Important: the live endpoint contains the freshest point-by-point payload.
     // Fixtures can contain the same event_key with older/limited data, so merge historical/H2H
-    // rows first and live matches last. That lets the live match object win in the Map below.
+    // rows first and live matches last. The shared identity selector also uses
+    // provider freshness fields when they are present.
     const allMatches: ApiTennisMatch[] = [...h2hRecentMatches, ...fixtureMatches, ...liveMatches];
     logMatchFilters(logFilters, "api-returned", {
       liveMatches: liveMatches.length,
@@ -1401,16 +1407,20 @@ const dateStop = formatDate(dateStopDate);
       samples: allMatches.slice(0, 20).map((match) => matchDebugLabel(match)),
     });
 
-    const uniqueMatches = Array.from(
-      new Map(allMatches.map((match) => [String(match.event_key), match])).values()
-    );
+    const uniqueMatches = dedupeProviderMatches(allMatches);
+    const authoritativePlayerKey = resolvedPlayerKey || (playerName
+      ? inferProviderPlayerKey(uniqueMatches, (name) => apiSinglesNameMatchesPlayer(playerName, name))
+      : null);
     logMatchFilters(logFilters, "after-dedupe", {
       count: uniqueMatches.length,
       removed: allMatches.length - uniqueMatches.length,
     });
 
     const exactPlayerMatches = playerName
-      ? uniqueMatches.filter((match) => apiMatchHasPlayerBySinglesName(playerName, match))
+      ? uniqueMatches.filter((match) => providerMatchContainsPlayer(match, {
+          key: authoritativePlayerKey,
+          nameMatches: (name) => apiSinglesNameMatchesPlayer(playerName, name),
+        }))
       : [];
     const exactPlayerTournaments = new Set(
       exactPlayerMatches
@@ -1421,7 +1431,10 @@ const dateStop = formatDate(dateStopDate);
       ? filterBulkApiMatches(uniqueMatches, bulkPlayerNames)
       : playerName
         ? uniqueMatches.filter((match) =>
-            apiMatchHasPlayerBySinglesName(playerName, match) ||
+            providerMatchContainsPlayer(match, {
+              key: authoritativePlayerKey,
+              nameMatches: (name) => apiSinglesNameMatchesPlayer(playerName, name),
+            }) ||
             apiMatchHasPlayerByContextualDoublesName(playerName, match, exactPlayerTournaments)
           )
         : uniqueMatches;
@@ -1483,6 +1496,8 @@ const dateStop = formatDate(dateStopDate);
           player2
         ),
         winnerId: null,
+        player1Id: match.first_player_key ? String(match.first_player_key) : null,
+        player2Id: match.second_player_key ? String(match.second_player_key) : null,
         ...(includeRankings
           ? {
               ranking1,

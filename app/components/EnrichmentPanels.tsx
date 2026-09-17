@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { RelatedContentLink } from "@/src/lib/intelligence/types";
 import type { WatchAvailability } from "@/src/lib/enrichment";
+import { hasMeaningfulValue, hasMeaningfulWatchAvailability } from "@/src/lib/enrichment/presentation";
 
 export type QuickFact = { label: string; value: string | number | null | undefined };
 
@@ -15,6 +16,9 @@ export function EnrichmentQuickFacts({
   facts: QuickFact[];
   dark?: boolean;
 }) {
+  const visibleFacts = facts.filter((fact) => hasMeaningfulValue(fact.value));
+  if (!visibleFacts.length) return null;
+
   const shell = dark
     ? "rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-white"
     : "rounded-3xl border border-zinc-200 bg-white p-6 text-zinc-950 shadow-sm";
@@ -28,7 +32,7 @@ export function EnrichmentQuickFacts({
       <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600 dark:text-green-400">{eyebrow}</p>
       <h2 className="text-2xl font-black">{title}</h2>
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {facts.filter((fact) => fact.value !== undefined && fact.value !== null && String(fact.value).trim() !== "").map((fact) => (
+        {visibleFacts.map((fact) => (
           <div key={fact.label} className={card}>
             <p className={`text-xs font-black uppercase tracking-wide ${muted}`}>{fact.label}</p>
             <p className="mt-2 text-lg font-black leading-tight">{String(fact.value)}</p>
@@ -96,6 +100,8 @@ export function EnrichmentWatchSummary({
   summary?: string;
   dark?: boolean;
 }) {
+  if (!hasMeaningfulWatchAvailability(availability)) return null;
+
   const shell = dark
     ? "rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-white"
     : "rounded-3xl border border-zinc-200 bg-white p-6 text-zinc-950 shadow-sm";
@@ -106,26 +112,28 @@ export function EnrichmentWatchSummary({
       <h2 className="text-2xl font-black">{title}</h2>
       {summary ? <p className="mt-3 text-sm leading-7 text-zinc-500 dark:text-zinc-300">{summary}</p> : null}
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
+        {availability.countries.length > 0 ? <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
           <p className="text-xs font-black uppercase text-zinc-500">Countries</p>
           <p className="mt-2 text-2xl font-black">{availability.countries.length}</p>
-        </div>
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
+        </div> : null}
+        {availability.broadcasters.length > 0 ? <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
           <p className="text-xs font-black uppercase text-zinc-500">Broadcasters</p>
           <p className="mt-2 text-2xl font-black">{availability.broadcasters.length}</p>
-        </div>
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
+        </div> : null}
+        {availability.hasFreeOption ? <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
           <p className="text-xs font-black uppercase text-zinc-500">Free route</p>
-          <p className="mt-2 text-lg font-black">{availability.hasFreeOption ? "Listed" : "Not listed"}</p>
-        </div>
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
+          <p className="mt-2 text-lg font-black">Listed</p>
+        </div> : null}
+        {availability.requiresSubscription ? <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-black">
           <p className="text-xs font-black uppercase text-zinc-500">Subscription</p>
-          <p className="mt-2 text-lg font-black">{availability.requiresSubscription ? "Usually required" : "Varies"}</p>
-        </div>
+          <p className="mt-2 text-lg font-black">Usually required</p>
+        </div> : null}
       </div>
-      <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
-        Last verified: {availability.lastVerified || "not matched yet"} · Confidence: {availability.confidence || "needs check"}
-      </p>
+      {availability.lastVerified || availability.confidence ? <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
+        {availability.lastVerified ? `Last verified: ${availability.lastVerified}` : null}
+        {availability.lastVerified && availability.confidence ? " · " : null}
+        {availability.confidence ? `Confidence: ${availability.confidence}` : null}
+      </p> : null}
     </section>
   );
 }

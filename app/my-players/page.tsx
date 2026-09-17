@@ -18,11 +18,11 @@ export const metadata: Metadata = {
 
 export default function MyPlayersPage() {
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-500">
-        <Link href="/" className="hover:text-green-700">Home</Link>
+    <main className="mx-auto min-h-screen max-w-5xl bg-black px-4 py-8 text-white">
+      <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-400">
+        <Link href="/" className="rounded-sm hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400">Home</Link>
         <span>/</span>
-        <span className="font-bold text-zinc-900">My Players</span>
+        <span className="font-bold text-zinc-300">My Players</span>
       </nav>
 
       <section className="mb-8 rounded-3xl bg-zinc-950 p-8 text-white shadow-sm">

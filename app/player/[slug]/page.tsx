@@ -6,7 +6,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
-import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
+import { EnrichmentLinkGrid, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
 import RelatedPages from "@/app/components/RelatedPages";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
@@ -19,6 +19,7 @@ import {
   getRelatedTournaments,
 } from "@/src/lib/intelligence/queries";
 import { getPlayerEnrichment } from "@/src/lib/enrichment";
+import { hasMeaningfulWatchAvailability } from "@/src/lib/enrichment/presentation";
 
 export const dynamic = "force-dynamic";
 
@@ -300,6 +301,33 @@ const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfi
     careerContext: "Hard-court tournaments and matches against more powerful opponents are useful contexts.",
     strengths: ["Consistency", "Court discipline", "Return reliability", "Calm decision-making"],
     surfaceContext: "Hard courts are especially relevant.",
+  },
+  "joao-fonseca": {
+    nationality: "Brazil",
+    biography: "Joao Fonseca is a Brazilian ATP player from Rio de Janeiro who has moved quickly from the junior ranks to full ATP Tour relevance. According to his official ATP Tour biography, he was the ITF junior world No. 1 in September 2023, won the boys' singles title at the 2023 US Open, and capped his transition to the senior tour by winning the 2024 Next Gen ATP Finals. In February 2025 he won the ATP title in Buenos Aires at age 18, becoming the youngest Brazilian ATP titlist of the Open Era, and he recorded a notable first-round win over Andrey Rublev at the 2025 Australian Open. He reached his first ATP Masters 1000 quarterfinal at the 2026 Monte-Carlo Masters. Fans search for Fonseca because his results already carry main-tour stakes rather than only prospect-watch interest, and his matches increasingly appear in ATP Tour and Masters 1000 draws alongside established top players.",
+    playingStyle: "Fonseca's breakthrough results have come from aggressive, first-strike baseline tennis, and ATP coverage of his wins has focused on his ability to take the initiative early in rallies against established tour players. This page keeps to tournament stakes and confirmed schedule context rather than unverified technical claims about his grip or backhand, since those specifics are best confirmed from official ATP match coverage.",
+    careerContext: "Fonseca is most relevant during ATP Tour and Masters 1000 events, where his 2025 Buenos Aires title, Australian Open upset win and 2026 Monte-Carlo Masters quarterfinal have raised his profile against seeded opponents. Because he is still establishing himself on tour, fans should check the official ATP draw and order of play for his current tournament rather than assuming a fixed weekly schedule.",
+    strengths: ["Next Gen ATP Finals champion (2024)", "Buenos Aires ATP title at age 18 (2025)", "Win over Andrey Rublev, 2025 Australian Open", "ATP Masters 1000 quarterfinal, Monte-Carlo 2026"],
+    surfaceContext: "Fonseca's confirmed results span outdoor hard courts (Australian Open, Next Gen Finals) and clay (Buenos Aires title, Monte-Carlo Masters), so fans should check the surface of his current tournament rather than assume a single specialty.",
+    watchReasons: ["A fast-rising ATP player with main-tour title history", "A confirmed win over an established top-tier opponent", "Increasing Masters 1000 and Grand Slam schedule relevance", "Useful page for fans tracking the next generation of ATP contenders"],
+  },
+  "vilius-gaubas": {
+    nationality: "Lithuania",
+    biography: "Vilius Gaubas is a Lithuanian tennis player and, per his official ATP Tour biography, currently Lithuania's No. 1 ranked men's singles player. He was born in Siauliai, Lithuania, and has been coached by former ATP world No. 23 Guillermo Garcia-Lopez since 2022. His ATP bio highlights his run to his first ATP Challenger Tour final, in Rome in April 2024, as a career milestone. Gaubas plays primarily on the ATP Challenger Tour while building ranking points toward more regular ATP Tour main-draw entries, and this page focuses on confirmed schedule and tournament context rather than unverified ranking or record claims. Fans following Baltic tennis and the wider European Challenger circuit are the main audience for this page, since Gaubas has not yet built the broader name recognition of established ATP Tour regulars.",
+    playingStyle: "Public reporting on Gaubas is still limited compared with established ATP Tour regulars, so this page avoids unverified claims about his shot selection or grip. The most reliable way to follow him is through his tournament draw and round-by-round schedule on the official ATP Challenger Tour site, rather than through general style descriptions that cannot be sourced back to an official profile.",
+    careerContext: "Gaubas is most relevant during ATP Challenger Tour events and any ATP Tour qualifying or main-draw appearances, since that is where his confirmed results are recorded. The ATP Challenger Tour is the main developmental tier directly below the ATP Tour, and a strong run there, like his 2024 Rome Challenger final, is usually the clearest early signal of a player's trajectory toward regular main-tour entries. Fans should check the official ATP Challenger Tour schedule and draw for his current event rather than assuming weekly main-tour scheduling.",
+    strengths: ["Lithuania's No. 1 ranked men's singles player", "First ATP Challenger Tour final, Rome 2024", "Coached by former ATP No. 23 Guillermo Garcia-Lopez", "Growing Challenger Tour and ATP qualifying schedule presence"],
+    surfaceContext: "Surface relevance depends on the specific Challenger or qualifying event; check the tournament page for current court conditions rather than assuming a fixed surface preference.",
+    watchReasons: ["Lithuania's top-ranked men's singles player", "A developing ATP Challenger Tour profile with tour-level ambitions", "Useful for fans tracking the Baltic and European Challenger circuits", "Schedule context without unverified ranking or stat claims"],
+  },
+  "dino-prizmic": {
+    nationality: "Croatia",
+    biography: "Dino Prizmic is a Croatian ATP Tour player who started at Tenis Klub Split, the Split club also associated with Goran Ivanisevic and Mario Ancic, before later moving to Zagreb. He won the boys' singles title at the 2023 French Open (Roland Garros). His breakthrough senior result came at the 2024 Rome Masters, where he defeated then-world No. 4 Novak Djokovic, his biggest career win to date. He continued to post ATP Masters 1000 results, reaching the third round at the 2025 Madrid Open with wins over Matteo Berrettini and Ben Shelton, and won ATP Challenger Tour titles in Zagreb and Bratislava during a run of five consecutive Challenger finals from May to August 2025. His official ATP Tour biography lists clay as his best surface and the forehand as his favourite shot.",
+    playingStyle: "Prizmic's confirmed results, including his Roland Garros junior title and his Masters 1000 win over Djokovic, point to a clay-honed, attacking baseline game built around his forehand, which his official ATP biography lists as his favourite shot. Fans should still confirm current form and surface fit through the official tournament draw before match time.",
+    careerContext: "Prizmic is most relevant during clay-court ATP Tour and Masters 1000 events, where his Roland Garros junior title and Rome Masters win over Djokovic carry the most context, and during ATP Challenger Tour weeks, where his 2025 Zagreb and Bratislava titles were secured. Fans should check the official ATP draw for his current tournament, since his ranking and schedule can move between main-tour and Challenger-level events.",
+    strengths: ["2023 Roland Garros boys' singles champion", "Win over Novak Djokovic, 2024 Rome Masters", "ATP Masters 1000 third round, Madrid 2025", "Two ATP Challenger Tour titles in 2025 (Zagreb, Bratislava)"],
+    surfaceContext: "Clay is Prizmic's listed best surface on his official ATP biography, which fits his Roland Garros junior title and his run to a Masters 1000 win at the clay-court Rome event.",
+    watchReasons: ["A confirmed win over a top-5 ATP player", "Grand Slam junior champion with rising senior results", "Clay-court matches carry the strongest context for his game", "Useful for fans tracking Croatia's next ATP contender after Ivanisevic, Ancic and Cilic"],
   },
 };
 
@@ -1488,23 +1516,16 @@ const playerMatches = allMatches
             </section>
           ) : null}
 
-          <div className="mb-6 grid gap-5">
-            <EnrichmentQuickFacts
-              dark
-              title={`${playerName} enriched quick facts`}
-              facts={enrichment.quickFacts.concat([
-                { label: "Career stage", value: enrichment.careerStage },
-                { label: "Current activity", value: enrichment.currentActivity },
-                { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
-              ])}
-            />
-            <EnrichmentWatchSummary
-              dark
-              title={`Where ${playerName} may be available`}
-              availability={enrichment.watchAvailability}
-              summary="This section is computed from tournament links and broadcaster intelligence, not manually duplicated on the player page."
-            />
-          </div>
+          {hasMeaningfulWatchAvailability(enrichment.watchAvailability) ? (
+            <div className="mb-6">
+              <EnrichmentWatchSummary
+                dark
+                title={`Where ${playerName} may be available`}
+                availability={enrichment.watchAvailability}
+                summary="Availability is based on the tournaments linked to this player and may vary by location."
+              />
+            </div>
+          ) : null}
 
           <section id="matches" className="mb-6 rounded-[2rem] border border-zinc-800 bg-white p-5 text-zinc-950 md:p-6">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -1771,18 +1792,10 @@ const playerMatches = allMatches
       </section>
 
       <div className="mb-8 grid gap-6">
-        <EnrichmentQuickFacts
-          title={`${playerName} enriched quick facts`}
-          facts={enrichment.quickFacts.concat([
-            { label: "Career stage", value: enrichment.careerStage },
-            { label: "Current activity", value: enrichment.currentActivity },
-            { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
-          ])}
-        />
         <EnrichmentWatchSummary
           title={`Watching options for ${playerName}`}
           availability={enrichment.watchAvailability}
-          summary="Computed from the shared enrichment layer so UI, SEO and internal links read from the same derived data."
+          summary="Availability is based on the tournaments linked to this player and may vary by location."
         />
         <EnrichmentLinkGrid
           title={`${playerName} related tennis pages`}

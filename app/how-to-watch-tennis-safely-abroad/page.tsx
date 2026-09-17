@@ -3,9 +3,9 @@ import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "How to Watch Tennis Safely Abroad | Tennis Streaming Guide",
+  title: "How to Watch Tennis Safely Abroad | Connection Safety, Subscriptions & Rights",
   description:
-    "Learn how to watch tennis safely while traveling abroad using official streaming services, secure connections and a VPN for privacy.",
+    "How to watch tennis while traveling: separating connection security, whether your existing subscription travels with you, and territorial broadcast rights, plus safe practices for public Wi-Fi.",
   alternates: { canonical: "https://watchtennistoday.com/how-to-watch-tennis-safely-abroad" },
 };
 
@@ -48,86 +48,62 @@ export default function HowToWatchTennisSafelyAbroadPage() {
 </div>
 
         <p className="text-zinc-300 text-lg leading-8 mb-8">
-          If you travel during ATP, WTA or Grand Slam tournaments, your usual
-          tennis streaming service may not work the same way abroad. This guide
-          explains how to watch tennis safely while traveling using official
-          broadcasters, secure connections and privacy tools.
+          Watching tennis while traveling raises three separate questions that
+          are easy to blur together: is your network connection safe, does
+          your existing subscription actually work in another country, and
+          does the broadcaster you want even have the rights to show the match
+          where you are. This guide keeps those three questions separate so
+          you do not end up trusting one tool (like a VPN) to solve a problem
+          it was not built for.
         </p>
-
-        <section className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 mb-10">
-          <h2 className="text-3xl font-black mb-4">
-            Recommended tool for safer tennis streaming: NordVPN
-          </h2>
-
-          <p className="text-zinc-300 leading-8 mb-6">
-            When watching tennis while traveling, NordVPN can help keep your
-            connection private, especially on hotel, airport or public Wi-Fi.
-            It can help improve privacy and connection security while using online tennis services on public networks.
-          </p>
-
-          <a
-            href={affiliateLinks.nordvpn}
-            target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
-            className="inline-block bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
-          >
-            Try NordVPN
-          </a>
-
-          <p className="text-zinc-500 text-sm mt-5">
-            Affiliate disclosure: we may earn a commission if you purchase
-            through links on this page.
-          </p>
-        </section>
 
         <section className="space-y-8 text-zinc-300 leading-8">
           <div>
             <h2 className="text-3xl text-white font-black mb-3">
-              1. Use official tennis streaming services
-            </h2>
-
-            <p>
-              Always start with official tennis broadcasters and legal streaming
-              platforms. Different countries may have different rights for ATP,
-              WTA, Grand Slam and Davis Cup coverage, so check which service is
-              available in your current location.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-3xl text-white font-black mb-3">
-              2. Avoid unsafe free streaming sites
-            </h2>
-
-            <p>
-              Free unofficial streams can be risky. They may include aggressive
-              ads, pop-ups, fake play buttons or unsafe redirects. For tennis
-              fans, official platforms are usually the safest and most reliable
-              way to watch matches.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-3xl text-white font-black mb-3">
-              3. Protect your connection on public Wi-Fi
+              1. Connection safety on public Wi-Fi
             </h2>
 
             <p>
               Hotels, airports, cafés and public transport often use shared
-              Wi-Fi networks. If you watch tennis while traveling, a VPN can add
-              an extra privacy layer for your connection.
+              Wi-Fi networks, which can expose your traffic to other people on
+              the same network. A reputable VPN can add a layer of connection
+              privacy and security on networks like these, similar to using
+              one for any other browsing or banking. This is a genuine
+              security benefit, but it is separate from whether you are
+              legally allowed to watch a given tennis broadcast.
             </p>
           </div>
 
           <div>
             <h2 className="text-3xl text-white font-black mb-3">
-              4. Check tennis access by country
+              2. Whether your existing subscription travels with you
             </h2>
 
             <p>
-              Tennis broadcasting rights change depending on where you are. Use
-              country-specific guides to understand where ATP, WTA and Grand Slam
-              matches may be available legally.
+              Streaming and pay-TV subscriptions (for example a Sky, ESPN,
+              Eurosport or Tennis TV account) are usually licensed for use in
+              the country where you signed up, and many services detect and
+              restrict access when you connect from abroad. Some providers
+              offer a limited number of days of legitimate travel access under
+              their own terms; others do not. Check your specific provider&apos;s
+              terms before you travel rather than assuming it will simply work.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-3xl text-white font-black mb-3">
+              3. Territorial broadcast rights are separate from your account
+            </h2>
+
+            <p>
+              Even with a working, permitted connection, the match you want to
+              watch may be licensed to a different broadcaster in the country
+              you are visiting than in your home country. ATP, WTA and each
+              Grand Slam sell rights on a per-territory basis, so &quot;my
+              subscription works here&quot; and &quot;my subscription has the
+              rights to this match here&quot; are not the same question. Use
+              official tournament and tour broadcaster pages to confirm rights
+              for your current location.
             </p>
 
             <Link
@@ -138,17 +114,36 @@ export default function HowToWatchTennisSafelyAbroadPage() {
             </Link>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-            <h2 className="text-3xl text-white font-black mb-4">
-              Best setup for watching tennis abroad
+          <div>
+            <h2 className="text-3xl text-white font-black mb-3">
+              4. Avoid unsafe free streaming sites
             </h2>
 
-            <ul className="list-disc pl-6 space-y-3 mb-6">
-              <li>Use an official tennis streaming service.</li>
-              <li>Check the broadcaster for your current country.</li>
-              <li>Use a private connection when watching on public Wi-Fi.</li>
-              <li>Consider NordVPN if you often travel during tennis tournaments.</li>
-            </ul>
+            <p>
+              Free unofficial streams can be risky. They may include aggressive
+              ads, pop-ups, fake play buttons or unsafe redirects. Official
+              platforms are the safest and most reliable way to watch matches,
+              even if it means going without a match that is not licensed in
+              your current location.
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+            <h2 className="text-3xl font-black mb-4">
+              A note on VPNs specifically
+            </h2>
+
+            <p className="text-zinc-300 leading-8 mb-4">
+              A VPN like NordVPN can genuinely help with connection privacy and
+              security on public or untrusted networks. It does <strong>not</strong>{" "}
+              grant you rights to a broadcast, and using one to make a
+              streaming service think you are in a different country can
+              violate that service&apos;s terms of use, even where it is not
+              illegal. We do not recommend using a VPN to bypass territorial
+              restrictions; we recommend it only as a general connection-security
+              tool, subject to your own provider&apos;s and streaming
+              service&apos;s terms.
+            </p>
 
             <a
               href={affiliateLinks.nordvpn}
@@ -156,21 +151,27 @@ export default function HowToWatchTennisSafelyAbroadPage() {
               rel="nofollow sponsored noopener noreferrer"
               className="inline-block bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
             >
-              Get NordVPN
+              See NordVPN
+            </a>
+
+            <p className="text-zinc-500 text-sm mt-5">
+              Affiliate disclosure: we may earn a commission if you purchase
+              through links on this page.
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
+            <h2 className="text-3xl text-white font-black mb-4">
+              More tennis streaming guides
+            </h2>
+
+            <a
+              href="/best-vpn-for-tennis-streaming"
+              className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
+            >
+              Privacy tools for watching tennis abroad
             </a>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
-  <h2 className="text-3xl text-white font-black mb-4">
-    More tennis streaming guides
-  </h2>
-
-  <a
-    href="/best-vpn-for-tennis-streaming"
-    className="inline-block rounded-2xl border border-zinc-700 px-6 py-4 font-bold hover:border-green-500 hover:text-green-400 transition-all"
-  >
-    Privacy Tools for Watching Tennis Abroad
-  </a>
-</div>
         </section>
       </div>
     </main>
