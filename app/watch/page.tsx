@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Where to Watch Tennis Online | Watch Tennis Today",
+  title: "Tennis Viewing Directory | Watch Tennis Today",
   description:
     "Find legal ways to watch tennis online, including live match pages, tournament coverage, TV schedules and country-specific broadcaster guides.",
   alternates: {
@@ -19,7 +19,7 @@ export default function WatchPage() {
         </Link>
 
         <h1 className="text-4xl md:text-5xl font-black mt-8">
-          Where to Watch Tennis Online
+          Tennis Viewing Directory
         </h1>
 
         <p className="text-zinc-300 mt-4 text-lg leading-relaxed">
@@ -52,7 +52,7 @@ export default function WatchPage() {
           </Link>
 
           <Link
-            href="/watch-tennis-in/poland"
+            href="/watch-tennis-in"
             className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 hover:border-zinc-600"
           >
             <h2 className="text-2xl font-bold">Watch tennis by country</h2>

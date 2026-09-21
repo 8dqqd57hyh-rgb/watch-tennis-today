@@ -1,10 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
+import { assertRegressionBaseUrlAllowed } from "./tests/e2e/config/productionSafety";
 
 const baseURL = process.env.TEST_BASE_URL || "http://localhost:3000";
 const shouldStartServer = !process.env.TEST_BASE_URL;
 
+assertRegressionBaseUrlAllowed(baseURL);
+
 export default defineConfig({
   testDir: "./tests/e2e",
+  testIgnore: /prod-smoke\.spec\.ts/,
   timeout: 30_000,
   expect: {
     timeout: 10_000,

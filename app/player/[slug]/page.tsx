@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getPlayerPageSummary, isCurrentPlayerMatch } from "@/app/lib/playerPageSummary";
+import { isFinishedMatch, inferMatchWinnerSideFromScore } from "@/app/lib/playerMatchResult";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -83,7 +85,7 @@ const PLAYER_EDITORIAL_PROFILES: Partial<Record<PlayerSlug, PlayerEditorialProfi
   },
   "alexander-zverev": {
     nationality: "Germany",
-    biography: "Alexander Zverev has been a central ATP contender for years, with Olympic gold from Tokyo 2021, ATP Finals titles and a long record of deep runs at Masters 1000 and Grand Slam level. His career is useful for tennis fans because it sits at the intersection of raw physical tools and high-pressure match management. At his best, Zverev can look almost impossible to hit through: a tall first serve, a heavy two-handed backhand, long reach in defense and the ability to play patient baseline tennis without giving up pace. His player page deserves indexable editorial context because his matches are often main-court events with real tactical stakes, especially on clay and hard courts.",
+    biography: "Alexander Zverev has been a central ATP contender for years, with Olympic gold from Tokyo 2021, ATP Finals titles and a long record of deep runs at Masters 1000 and Grand Slam level. His career is useful for tennis fans because it sits at the intersection of raw physical tools and high-pressure match management. At his best, Zverev can look almost impossible to hit through: a tall first serve, a heavy two-handed backhand, long reach in defense and the ability to play patient baseline tennis without giving up pace. When watching Zverev, follow how his serve and backhand help him hold court position, and whether his opponent can draw shorter replies from the forehand.",
     playingStyle: "Zverev's game starts with a first serve that can set up short replies or end points outright, but his backhand is the stroke that gives his baseline tennis its shape. He can absorb pace crosscourt, redirect down the line and keep depth without taking unnecessary risks. The forehand is more volatile, so fans should watch whether he is stepping through that wing or falling into defensive contact. In return games, Zverev often uses reach and depth rather than constant early aggression. When he is serving well and landing the backhand deep, opponents are forced to take bigger risks just to escape neutral rallies.",
     careerContext: "Zverev is especially important during clay swings, hard-court Masters events and Grand Slams, where his combination of serve, stamina and baseline weight can carry through long matches. His Olympic title and ATP Finals success show that he has already won in very different competitive settings: national pressure, elite round-robin fields and knockout tournaments. For viewing purposes, check surface, round and opponent style. A match against a counterpuncher tests his patience and forehand discipline; a match against a first-strike attacker tests his second serve, return depth and willingness to move forward.",
     recentForm: "Zverev's form is best evaluated through repeatable indicators rather than a single result: first-serve percentage, second-serve confidence, backhand depth and how often he takes initiative with the forehand. When those pieces align, he can control matches without playing flashy tennis. When one piece drops, especially second-serve protection, his service games can become longer and the pressure on his baseline tolerance rises.",
@@ -878,9 +880,6 @@ function formatUpdatedAt(value: Date) {
   }).format(value);
 }
 
-function sortByNewest(a: Match, b: Match) {
-  return getMatchTime(b) - getMatchTime(a);
-}
 
 function MatchSummaryCard({
   match,
@@ -933,46 +932,12 @@ function MatchSummaryCard({
 }
 
 function isLiveMatch(match: Match) {
-  return match.status?.toUpperCase() === "LIVE" && !isFinishedMatch(match);
-}
-
-function isFinishedMatch(match: Match) {
-  const normalized = match.status?.toUpperCase() || "";
-  if (["FINISHED", "ENDED", "COMPLETED", "FINAL", "RETIRED", "WALKOVER"].includes(normalized)) {
-    return true;
-  }
-
-  // Some live feeds keep a match marked LIVE after the score is already complete.
-  // A clearly completed tennis score must be treated as FINAL everywhere.
-  return Boolean(inferMatchWinnerSideFromScore(match));
+  return isCurrentPlayerMatch(match, "LIVE") && !isFinishedMatch(match);
 }
 
 function isUpcomingMatch(match: Match) {
-  const normalized = match.status?.toUpperCase() || "";
-  return ["UPCOMING", "SCHEDULED", "NOT_STARTED"].includes(normalized) || (!isLiveMatch(match) && !isFinishedMatch(match));
+  return isCurrentPlayerMatch(match, "UPCOMING") && !isFinishedMatch(match);
 }
-
-function getPlayerPageSummary(playerName: string, playerMatches: Match[]) {
-  const liveMatches = playerMatches.filter(isLiveMatch);
-  const upcomingMatches = playerMatches.filter(isUpcomingMatch);
-  const finishedMatches = playerMatches.filter(isFinishedMatch);
-  const nextMatch = liveMatches[0] || upcomingMatches[0] || playerMatches[0];
-  const tournaments = Array.from(new Set(playerMatches.map((match) => match.tournament).filter(Boolean))).slice(0, 3);
-
-  return {
-    liveMatches,
-    upcomingMatches,
-    finishedMatches,
-    nextMatch,
-    tournaments,
-    headline: liveMatches.length
-      ? `${playerName} is live now`
-      : nextMatch
-        ? `Watch ${playerName} live today`
-        : `${playerName} schedule and live stream guide`,
-  };
-}
-
 
 type PlayerFormItem = {
   match: Match;
@@ -987,25 +952,6 @@ function getPlayerSide(match: Match, playerName: string) {
   return null;
 }
 
-function parseSetScore(setScore: string) {
-  const cleaned = setScore
-    .replace(/\([^)]*\)/g, "")
-    .replace(/[–—]/g, "-")
-    .trim();
-
-  const match = cleaned.match(/(\d+)\s*-\s*(\d+)/);
-  if (!match) return null;
-
-  const first = Number.parseInt(match[1], 10);
-  const second = Number.parseInt(match[2], 10);
-
-  if (!Number.isFinite(first) || !Number.isFinite(second) || first === second) {
-    return null;
-  }
-
-  return { first, second };
-}
-
 function getWinnerSideFromWinnerField(match: Match) {
   const winner = normalizePlayerName(String(match.winner || match.winnerId || ""));
   if (!winner) return null;
@@ -1017,54 +963,6 @@ function getWinnerSideFromWinnerField(match: Match) {
   if (["2", "second", "second player", "player2", "player 2", "away", "awayplayer", "event second player", "event_second_player"].includes(winner)) return "player2";
   if (winner === player1 || player1.includes(winner) || winner.includes(player1) || doPlayerNamesMatch(match.player1, winner)) return "player1";
   if (winner === player2 || player2.includes(winner) || winner.includes(player2) || doPlayerNamesMatch(match.player2, winner)) return "player2";
-
-  return null;
-}
-
-function isCompletedTennisSet(first: number, second: number) {
-  const high = Math.max(first, second);
-  const low = Math.min(first, second);
-
-  if (high >= 6 && high - low >= 2) return true;
-  if (high === 7 && low >= 5) return true;
-
-  return false;
-}
-
-function inferMatchWinnerSideFromScore(match: Match) {
-  if (!match.score || match.score === "-") return null;
-
-  const sets = match.score
-    .split(/[,;]/)
-    .map(parseSetScore)
-    .filter((set): set is { first: number; second: number } => Boolean(set));
-
-  if (!sets.length) return null;
-
-  let player1Sets = 0;
-  let player2Sets = 0;
-  let incompleteSets = 0;
-
-  for (const set of sets) {
-    if (!isCompletedTennisSet(set.first, set.second)) {
-      incompleteSets += 1;
-      continue;
-    }
-
-    if (set.first > set.second) {
-      player1Sets += 1;
-    } else {
-      player2Sets += 1;
-    }
-  }
-
-  if (incompleteSets > 0) return null;
-  if (player1Sets === player2Sets) return null;
-
-  const requiredSets = sets.length >= 5 ? 3 : 2;
-
-  if (player1Sets >= requiredSets && player1Sets > player2Sets) return "player1";
-  if (player2Sets >= requiredSets && player2Sets > player1Sets) return "player2";
 
   return null;
 }
@@ -1250,8 +1148,6 @@ export default async function PlayerPage({
 
   const allMatches = await getMatchesForPlayer(playerName);
 
-
-
 const playerMatches = allMatches
   .filter((match) =>
     [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName)) ||
@@ -1259,14 +1155,23 @@ const playerMatches = allMatches
   )
   .sort(sortMatchesByUserIntent);
 
+  const pageSummary = getPlayerPageSummary(playerName, playerMatches, isFinishedMatch);
+  const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments } = pageSummary;
+  // Feed derived activity panels the same classified rows as the match summary.
+  // In particular, a completed score must not stay LIVE in a second panel.
+  const activityMatches = [
+    ...liveMatches.map((match) => ({ ...match, status: "LIVE" })),
+    ...upcomingMatches.map((match) => ({ ...match, status: "UPCOMING" })),
+    ...finishedMatches.map((match) => ({ ...match, status: "FINISHED" })),
+  ];
   const enrichment = getPlayerEnrichment({
     slug: pageSlug,
     name: playerName,
     tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
     tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
     surfaceStrength: canonicalSlug ? getPlayerSurfaceStrength(players[canonicalSlug]) : undefined,
-  }, { matches: playerMatches });
-  const playerNetwork = getPlayerNetwork(pageSlug, { matches: playerMatches });
+  }, { matches: activityMatches });
+  const playerNetwork = getPlayerNetwork(pageSlug, { matches: activityMatches });
   const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
   const relatedPlayers = relatedPlayerLinks
     .map((link) => link.href.split("/").pop())
@@ -1277,17 +1182,13 @@ const playerMatches = allMatches
   const relatedStreamingLinks = getRelatedStreamingServices(playerNetwork, 4);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
   const editorialProfile = getEditorialProfile(canonicalSlug, playerName, sameTourLabel);
-  const pageSummary = getPlayerPageSummary(playerName, playerMatches);
-  const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments } = pageSummary;
-  const currentTournament = tournaments[0] || finishedMatches[0]?.tournament || upcomingMatches[0]?.tournament || liveMatches[0]?.tournament || "Not listed";
+  const currentTournament = tournaments[0] || "Not listed";
   const playerForm = buildPlayerForm(playerName, playerMatches);
   const lastUpdated = new Date();
   const country = getPlayerCountry(canonicalSlug, editorialProfile);
   const ranking = getPlayerRanking(canonicalSlug);
-  const scheduledMatches = upcomingMatches
-    .filter((match) => !isLiveMatch(match) && !isFinishedMatch(match))
-    .sort(sortMatchesByUserIntent);
-  const recentResults = finishedMatches.sort(sortByNewest);
+  const scheduledMatches = upcomingMatches;
+  const recentResults = finishedMatches;
   const visibleTournaments = Array.from(
     new Set(playerMatches.map((match) => match.tournament).filter(Boolean))
   ).slice(0, 6);
@@ -1368,9 +1269,7 @@ const playerMatches = allMatches
         name: `When is ${playerName} playing next?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: nextMatch
-            ? `${playerName}'s next listed match on this page is ${nextMatch.player1} vs ${nextMatch.player2} at ${nextMatch.tournament}. Start times can change during tournaments, so fans should confirm the official order of play before the match.`
-            : `No upcoming match is currently listed for ${playerName}. Tennis schedules can change quickly because of draws, weather delays and withdrawals.`,
+          text: pageSummary.nextMatchAnswer,
         },
       },
       {
@@ -1459,7 +1358,7 @@ const playerMatches = allMatches
                   <p className="mt-1 text-3xl font-black">{liveMatches.length}</p>
                 </div>
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
-                  <p className="text-xs font-black uppercase text-zinc-500">Next opponent</p>
+                  <p className="text-xs font-black uppercase text-zinc-500">{liveMatches.length ? "Current opponent" : "Next opponent"}</p>
                   <p className="mt-1 text-lg font-black leading-tight">
                     {nextMatch ? getOpponentForPlayer(nextMatch, playerName) : "Not listed"}
                   </p>
@@ -1542,6 +1441,8 @@ const playerMatches = allMatches
               </div>
             )}
           </section>
+
+          {!nextMatch ? <p className="mb-6 text-sm text-zinc-300">No confirmed next match is listed right now. Check the tournament order of play for updates.</p> : null}
 
           <section className="mb-6 grid gap-5 md:grid-cols-[1fr_0.8fr]">
             <div className="rounded-[2rem] border border-zinc-800 bg-black p-6">
