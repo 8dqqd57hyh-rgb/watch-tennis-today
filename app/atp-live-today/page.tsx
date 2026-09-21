@@ -22,7 +22,7 @@ const featuredAtpPlayers = [
   { name: "Carlos Alcaraz", slug: "alcaraz-carlos" },
   { name: "Novak Djokovic", slug: "djokovic-novak" },
   { name: "Daniil Medvedev", slug: "medvedev-daniil" },
-  { name: "Alexander Zverev", slug: "zverev-alexander" },
+  { name: "Alexander Zverev", slug: "alexander-zverev" },
 ];
 
 export const metadata = {
