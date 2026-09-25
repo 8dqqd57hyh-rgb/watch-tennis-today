@@ -8,6 +8,10 @@ import {
   getMatchLocalDateKey,
 } from "../../app/lib/matchNormalization";
 import { getMatchStatusPresentation, groupMatchesByStatus, isLiveMatch, isSuspendedMatch, normalizeMatchStatus, resolveProviderMatchStatus } from "../../app/lib/matchStatus";
+import { playerIdentityMatches } from "../../app/lib/playerIdentity";
+import { getConfiguredProviderPlayerId } from "../../app/lib/playerIdentityMap";
+import { mapDrawEntry } from "../../app/lib/drawMatchExtraction";
+import { parseOfficialTournamentPage } from "../../app/lib/officialTournamentResolver";
 
 test.describe("match data normalization", () => {
   test("only marks actual championship finals", () => {
@@ -22,6 +26,7 @@ test.describe("match data normalization", () => {
     expect(normalizeMatchStartTime("2026-08-05T17:00:00")).toBe("2026-08-05T15:00:00.000Z");
     expect(normalizeMatchStartTime("2026-01-05T17:00:00")).toBe("2026-01-05T16:00:00.000Z");
     expect(normalizeMatchStartTime("2026-08-05T17:00:00Z")).toBe("2026-08-05T17:00:00.000Z");
+    expect(normalizeMatchStartTime("2026-08-05")).toBe("2026-08-04T22:00:00.000Z");
     expect(normalizeMatchStartTime("not-a-date")).toBeNull();
   });
 
@@ -51,6 +56,77 @@ test.describe("match data normalization", () => {
     expect(resolveProviderMatchStatus({ providerStatus: "Finished", providerLive: true, hasScore: true })).toBe("FINISHED");
     expect(resolveProviderMatchStatus({ providerStatus: "Retired", providerLive: true, hasScore: true })).toBe("RETIRED");
     expect(resolveProviderMatchStatus({ providerStatus: "mystery", hasScore: false })).toBe("UNKNOWN");
+  });
+
+  test("matches provider player aliases dynamically", () => {
+    expect(playerIdentityMatches("Andrey Rublev", "A. Rublev")).toBe(true);
+    expect(playerIdentityMatches("Andrey Rublev", "Rublev A.")).toBe(true);
+    expect(playerIdentityMatches("Andrey Rublev", "Rublev Andrey")).toBe(true);
+    expect(playerIdentityMatches("Andrey Rublev", "D. Medvedev")).toBe(false);
+  });
+
+  test("reads provider identity mappings by slug without hardcoding players", () => {
+    const previous = process.env.PLAYER_PROVIDER_ID_MAP;
+    process.env.PLAYER_PROVIDER_ID_MAP = JSON.stringify({ "andrey-rublev": { playerKey: 12345 } });
+
+    expect(getConfiguredProviderPlayerId("andrey-rublev", "Andrey Rublev")).toBe("12345");
+
+    if (previous === undefined) delete process.env.PLAYER_PROVIDER_ID_MAP;
+    else process.env.PLAYER_PROVIDER_ID_MAP = previous;
+  });
+
+  test("extracts an upcoming TBD match from a draw entry", () => {
+    const match = mapDrawEntry({
+      id: "draw-1",
+      tournament: { name: "Hangzhou Open" },
+      category: "ATP",
+      round: "R1",
+      datetime: "2026-09-25T08:00:00Z",
+      player1: { name: "Andrey Rublev", player_id: "rublev-key" },
+      player2: null,
+    }, "Andrey Rublev", 0, "rublev-key");
+
+    expect(match).toMatchObject({
+      tournament: "Hangzhou Open",
+      status: "UPCOMING",
+      player2: "TBD",
+      opponentName: "TBD",
+      round: "R1",
+    });
+  });
+
+  test("extracts tournament-level entry metadata without a fixture row", () => {
+    const match = mapDrawEntry({
+      tournament: { name: "Dynamic Open", startDate: "2026-09-25", category: "ATP 250" },
+      entryList: [{ name: "A. Rublev", player_id: "rublev-key" }],
+      surface: "Hard",
+    }, "Andrey Rublev", 0, "rublev-key");
+
+    expect(match).toMatchObject({
+      tournament: "Dynamic Open",
+      status: "UPCOMING",
+      player1: "Andrey Rublev",
+      player2: "TBD",
+      tournamentCategory: "ATP 250",
+      datetime: "2026-09-24T22:00:00.000Z",
+    });
+  });
+
+  test("extracts official tournament metadata when only the entry page has the player", () => {
+    const match = parseOfficialTournamentPage(`
+      <h1>AITO HANGZHOU OPEN</h1>
+      <p>23 - 29 September, 2026</p>
+      <p>ATP 250 event</p>
+      <h2>Who is Playing</h2>
+      <a>Andrey Rublev</a>
+    `, "Andrey Rublev", "https://www.atptour.com/en/tournaments/hangzhou/4713/overview");
+
+    expect(match).toMatchObject({
+      tournamentCategory: "ATP 250",
+      player2: "TBD",
+      status: "UPCOMING",
+      startTime: "2026-09-22T22:00:00.000Z",
+    });
   });
 
   test("keeps suspended matches explicit and outside LIVE", () => {

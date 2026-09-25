@@ -59,6 +59,8 @@ export type IntelligenceMatchSource = {
   status?: string | null;
   score?: string | null;
   startTime?: string | null;
+  datetime?: string | null;
+  scheduledAt?: string | null;
   round?: string | null;
   court?: string | null;
   surface?: string | null;

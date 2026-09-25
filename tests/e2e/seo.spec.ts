@@ -452,8 +452,11 @@ test.describe("SEO-critical page basics", () => {
     expect(response.status()).toBe(200);
     expect(html).toContain("Jannik Sinner");
     expect(html).toContain("Match center");
-    expect(html).toMatch(/Where to watch\s*(?:<!-- -->)?\s*Jannik Sinner/);
-    expect(html).toContain("Related players");
+    expect(html).toContain("Where to watch");
+    expect(html).not.toContain("Player notes");
+    expect(html).not.toContain("Entity intelligence");
+    expect(html).not.toContain("Tennis intelligence graph");
+    expect(html).not.toContain("Related players");
     expect(html).not.toContain("Sources for this player page");
     expect(html).not.toContain("About Jannik Sinner Matches and Coverage");
     expect(html).not.toContain("live stream and schedule FAQ");

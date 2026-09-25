@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPlayerPageSummary, isCurrentPlayerMatch } from "@/app/lib/playerPageSummary";
+import { getPlayerMatchStartTime, getPlayerPageSummary, isCurrentPlayerMatch } from "@/app/lib/playerPageSummary";
 import { isFinishedMatch, inferMatchWinnerSideFromScore } from "@/app/lib/playerMatchResult";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
@@ -12,15 +12,8 @@ import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from
 import RelatedPages from "@/app/components/RelatedPages";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
 import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
-import {
-  getPlayerNetwork,
-  getRelatedBroadcasters,
-  getRelatedCountries,
-  getRelatedPlayers as getGraphRelatedPlayers,
-  getRelatedStreamingServices,
-  getRelatedTournaments,
-} from "@/src/lib/intelligence/queries";
 import { getPlayerEnrichment } from "@/src/lib/enrichment";
+import { entriesForTournamentSlug } from "@/src/lib/enrichment/shared";
 
 export const dynamic = "force-dynamic";
 
@@ -343,7 +336,9 @@ type Match = {
   category: string;
   status: string;
   score: string;
-  startTime: string;
+  startTime: string | null;
+  datetime?: string | null;
+  scheduledAt?: string | null;
   winner?: string | null;
   winnerId?: string | number | null;
   round?: string;
@@ -356,6 +351,8 @@ type PlayerDataWithOptionalSeoFields = {
   rank?: string | number;
   singlesRanking?: string | number;
   worldRanking?: string | number;
+  nextTournament?: string;
+  activeTournament?: string;
 };
 
 const PLAYER_SLUGS = Object.keys(players) as PlayerSlug[];
@@ -371,7 +368,7 @@ function getStatusPriority(status: string) {
 }
 
 function getMatchTime(match: Match) {
-  const timestamp = new Date(match.startTime || "").getTime();
+  const timestamp = new Date(getPlayerMatchStartTime(match) || "").getTime();
 
   return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
 }
@@ -499,7 +496,7 @@ async function getBaseUrl() {
 
 async function getMatches(
   playerName?: string,
-  options: { daysBack?: number; daysForward?: number; formHistory?: boolean } = {}
+  options: { daysBack?: number; daysForward?: number; formHistory?: boolean; playerSlug?: string } = {}
 ): Promise<Match[]> {
   try {
     const baseUrl = await getBaseUrl();
@@ -515,6 +512,9 @@ async function getMatches(
 
     if (playerName) {
       params.set("playerName", playerName);
+      if (options.playerSlug) params.set("playerSlug", options.playerSlug);
+      params.set("_", String(Date.now()));
+      if (process.env.NODE_ENV !== "production") params.set("debug", "1");
     }
 
     const response = await fetch(`${baseUrl}/api/matches?${params.toString()}`, {
@@ -596,9 +596,9 @@ async function getArchivedMatchesForPlayerPage(playerName: string): Promise<Matc
   }
 }
 
-async function getMatchesForPlayer(playerName: string): Promise<Match[]> {
+async function getMatchesForPlayer(playerName: string, playerSlug?: string): Promise<Match[]> {
   try {
-    const playerScopedMatches = await getMatches(playerName, { daysBack: 30, daysForward: 30 });
+    const playerScopedMatches = await getMatches(playerName, { daysBack: 30, daysForward: 30, playerSlug });
 
     const scopedPlayerMatches = playerScopedMatches.filter((match) =>
       [match.player1, match.player2].some((name) => doPlayerNamesMatch(name || "", playerName))
@@ -635,7 +635,7 @@ function getMatchSlug(match: Match) {
   return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
-function formatMatchDateTime(value?: string) {
+function formatMatchDateTime(value?: string | null) {
   if (!value) return "Time to be announced";
 
   const date = new Date(value);
@@ -726,10 +726,20 @@ function doPlayerNamesMatch(candidateName: string, targetName: string): boolean 
 }
 
 function getOpponentForPlayer(match: Match, playerName: string) {
-  if (doPlayerNamesMatch(match.player1, playerName)) return match.player2;
-  if (doPlayerNamesMatch(match.player2, playerName)) return match.player1;
+  const opponent = doPlayerNamesMatch(match.player1, playerName) ? match.player2
+    : doPlayerNamesMatch(match.player2, playerName) ? match.player1
+      : `${match.player1} / ${match.player2}`;
+  return displayParticipantName(opponent);
+}
 
-  return `${match.player1} / ${match.player2}`;
+function displayParticipantName(value?: string | null) {
+  const normalizedParticipant = normalizePlayerName(value || "");
+
+  if (!normalizedParticipant || ["tbd", "tba", "unknown", "unknown player", "opponent to be confirmed"].includes(normalizedParticipant)) {
+    return "TBD";
+  }
+
+  return value || "TBD";
 }
 
 function getPlayerCountry(canonicalSlug: PlayerSlug | null, editorialProfile: PlayerEditorialProfile) {
@@ -905,7 +915,7 @@ function MatchSummaryCard({
       </div>
 
       <h3 className="text-lg font-black text-zinc-950">
-        {match.player1} vs {match.player2}
+        {displayParticipantName(match.player1)} vs {displayParticipantName(match.player2)}
       </h3>
       <p className="mt-2 text-sm leading-6 text-zinc-600">
         Opponent: {opponentSlug ? (
@@ -915,7 +925,7 @@ function MatchSummaryCard({
         ) : (
           opponent
         )}{" "}
-        · {formatMatchDateTime(match.startTime)}
+        · {formatMatchDateTime(getPlayerMatchStartTime(match))}
       </p>
       {match.score ? <p className="mt-2 text-sm font-bold text-zinc-800">Score: {match.score}</p> : null}
 
@@ -1146,7 +1156,7 @@ export default async function PlayerPage({
     permanentRedirect(`/player/${canonicalSlug}`);
   }
 
-  const allMatches = await getMatchesForPlayer(playerName);
+  const allMatches = await getMatchesForPlayer(playerName, pageSlug);
 
 const playerMatches = allMatches
   .filter((match) =>
@@ -1154,6 +1164,8 @@ const playerMatches = allMatches
     matchContainsPlayerText(match, pageSlug)
   )
   .sort(sortMatchesByUserIntent);
+
+console.log('Player Matches Data:', playerMatches);
 
   const pageSummary = getPlayerPageSummary(playerName, playerMatches, isFinishedMatch);
   const { liveMatches, upcomingMatches, finishedMatches, nextMatch, tournaments } = pageSummary;
@@ -1164,30 +1176,52 @@ const playerMatches = allMatches
     ...upcomingMatches.map((match) => ({ ...match, status: "UPCOMING" })),
     ...finishedMatches.map((match) => ({ ...match, status: "FINISHED" })),
   ];
+  const playerData = canonicalSlug ? players[canonicalSlug] as PlayerDataWithOptionalSeoFields : undefined;
   const enrichment = getPlayerEnrichment({
     slug: pageSlug,
     name: playerName,
     tour: canonicalSlug ? players[canonicalSlug].tour : undefined,
     tournaments: canonicalSlug ? players[canonicalSlug].tournaments : undefined,
     surfaceStrength: canonicalSlug ? getPlayerSurfaceStrength(players[canonicalSlug]) : undefined,
+    nextTournament: playerData?.nextTournament,
+    activeTournament: playerData?.activeTournament,
   }, { matches: activityMatches });
-  const playerNetwork = getPlayerNetwork(pageSlug, { matches: activityMatches });
-  const relatedPlayerLinks = getGraphRelatedPlayers(playerNetwork, 8);
-  const relatedPlayers = relatedPlayerLinks
-    .map((link) => link.href.split("/").pop())
-    .filter((value): value is PlayerSlug => Boolean(value && value in players));
-  const relatedTournamentLinks = getRelatedTournaments(playerNetwork, 6);
-  const relatedCountryLinks = getRelatedCountries(playerNetwork, 4);
-  const relatedBroadcasterLinks = getRelatedBroadcasters(playerNetwork, 4);
-  const relatedStreamingLinks = getRelatedStreamingServices(playerNetwork, 4);
   const sameTourLabel = canonicalSlug ? players[canonicalSlug].tour : "tennis";
+  const relatedPlayers: PlayerSlug[] = [];
   const editorialProfile = getEditorialProfile(canonicalSlug, playerName, sameTourLabel);
-  const currentTournament = tournaments[0] || "Not listed";
+  const noScheduleMessage = "No confirmed match schedule in current provider feed";
+  const currentTournament = enrichment.nextTournament || "TBD";
+  const activeBroadcastEntries = entriesForTournamentSlug(slugify(currentTournament))
+    .filter((entry, index, entries) => entries.findIndex((candidate) =>
+      `${candidate.countrySlug}:${candidate.broadcasterName}:${candidate.streamingService}` ===
+      `${entry.countrySlug}:${entry.broadcasterName}:${entry.streamingService}`
+    ) === index)
+    .slice(0, 8);
+  const fallbackMatch: Match | null = !playerMatches.length && enrichment.nextTournament && enrichment.nextMatchDate
+    ? {
+        id: `profile-fallback:${pageSlug}:${enrichment.nextMatchDate}`,
+        player1: playerName,
+        player2: enrichment.nextOpponent || "TBD",
+        tournament: enrichment.nextTournament,
+        category: sameTourLabel,
+        status: "UPCOMING",
+        score: "",
+        startTime: enrichment.nextMatchDate,
+        round: "R1",
+      }
+    : null;
+  const displayPlayerMatches = playerMatches.length ? playerMatches : fallbackMatch ? [fallbackMatch] : [];
+  const nextDisplayMatch = nextMatch || fallbackMatch;
+  const nextOpponentLabel = nextMatch
+    ? getOpponentForPlayer(nextMatch, playerName)
+    : fallbackMatch
+      ? "TBD"
+      : "TBD";
   const playerForm = buildPlayerForm(playerName, playerMatches);
   const lastUpdated = new Date();
   const country = getPlayerCountry(canonicalSlug, editorialProfile);
   const ranking = getPlayerRanking(canonicalSlug);
-  const scheduledMatches = upcomingMatches;
+  const scheduledMatches = upcomingMatches.length ? upcomingMatches : fallbackMatch ? [fallbackMatch] : [];
   const recentResults = finishedMatches;
   const visibleTournaments = Array.from(
     new Set(playerMatches.map((match) => match.tournament).filter(Boolean))
@@ -1301,8 +1335,6 @@ const playerMatches = allMatches
       list.findIndex((item) => String(item.id) === String(match.id)) === index
     );
 
-    const watchReasons = editorialProfile.watchReasons?.slice(0, 3) || [];
-
     return (
       <main className="min-h-screen bg-zinc-950 p-5 text-white md:p-8">
         <div className="mx-auto max-w-5xl">
@@ -1316,54 +1348,33 @@ const playerMatches = allMatches
 
           <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-black p-5 md:p-8">
             <div className="mb-5 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-green-400 px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                {sameTourLabel} player
-              </span>
               {country ? (
                 <span className="rounded-full border border-white/10 bg-zinc-900 px-3 py-1 text-xs font-black uppercase tracking-wide text-zinc-200">
                   {country}
                 </span>
               ) : null}
-              {ranking ? (
-                <span className="rounded-full border border-white/10 bg-zinc-900 px-3 py-1 text-xs font-black uppercase tracking-wide text-zinc-200">
-                  Ranking {ranking}
-                </span>
-              ) : null}
-              {liveMatches.length ? (
-                <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-black uppercase tracking-wide text-white animate-pulse">
-                  Live now
-                </span>
-              ) : null}
             </div>
 
-            <div className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+            <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               <div>
-                <h1 className="text-4xl font-black tracking-tight md:text-6xl">
+                <h1 className="text-4xl font-black tracking-tight md:text-5xl">
                   {playerName}
                 </h1>
-                <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300 md:text-lg">
-                  {editorialProfile.playingStyle}
-                </p>
-                <Link
-                  href="/can-i-watch"
-                  className="mt-5 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black hover:bg-emerald-300"
-                >
-                  Can I watch {playerName}?
-                </Link>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-3">
                   <p className="text-xs font-black uppercase text-zinc-500">Live matches</p>
                   <p className="mt-1 text-3xl font-black">{liveMatches.length}</p>
                 </div>
-                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
-                  <p className="text-xs font-black uppercase text-zinc-500">{liveMatches.length ? "Current opponent" : "Next opponent"}</p>
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-3">
+                  <p className="text-xs font-black uppercase text-zinc-500">Next opponent / date</p>
                   <p className="mt-1 text-lg font-black leading-tight">
-                    {nextMatch ? getOpponentForPlayer(nextMatch, playerName) : "Not listed"}
+                    {nextOpponentLabel}
                   </p>
+                  {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-500">{formatMatchDateTime(getPlayerMatchStartTime(nextDisplayMatch))}</p> : null}
                 </div>
-                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 sm:col-span-2 lg:col-span-1">
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-3 sm:col-span-2 lg:col-span-1">
                   <p className="text-xs font-black uppercase text-zinc-500">Current tournament</p>
                   <p className="mt-1 truncate text-lg font-black">{currentTournament}</p>
                 </div>
@@ -1377,7 +1388,6 @@ const playerMatches = allMatches
               <Link href="#how-to-watch" className="rounded-2xl border border-zinc-700 px-5 py-3 font-black text-white transition hover:border-green-400">
                 Where to watch
               </Link>
-              <LocalPlayerFollowButton playerName={playerName} playerSlug={pageSlug} />
             </div>
           </section>
 
@@ -1386,24 +1396,6 @@ const playerMatches = allMatches
               This player page comes from a live-data slug and has not been manually verified yet.
             </section>
           ) : null}
-
-          <div className="mb-6 grid gap-5">
-            <EnrichmentQuickFacts
-              dark
-              title={`${playerName} enriched quick facts`}
-              facts={enrichment.quickFacts.concat([
-                { label: "Career stage", value: enrichment.careerStage },
-                { label: "Current activity", value: enrichment.currentActivity },
-                { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
-              ])}
-            />
-            <EnrichmentWatchSummary
-              dark
-              title={`Where ${playerName} may be available`}
-              availability={enrichment.watchAvailability}
-              summary="This section is computed from tournament links and broadcaster intelligence, not manually duplicated on the player page."
-            />
-          </div>
 
           <section id="matches" className="mb-6 rounded-[2rem] border border-zinc-800 bg-white p-5 text-zinc-950 md:p-6">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -1431,7 +1423,7 @@ const playerMatches = allMatches
               </div>
             ) : (
               <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 text-sm leading-7 text-zinc-600">
-                <p className="font-bold text-zinc-900">No confirmed match is listed right now.</p>
+                <p className="font-bold text-zinc-900">{noScheduleMessage}</p>
                 <p className="mt-2">Check today&apos;s schedule or tournament pages for updated draws and order of play.</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link href="/live-tennis" className="rounded-xl bg-black px-3 py-2 font-bold text-white">Live tennis</Link>
@@ -1442,139 +1434,38 @@ const playerMatches = allMatches
             )}
           </section>
 
-          {!nextMatch ? <p className="mb-6 text-sm text-zinc-300">No confirmed next match is listed right now. Check the tournament order of play for updates.</p> : null}
-
-          <section className="mb-6 grid gap-5 md:grid-cols-[1fr_0.8fr]">
-            <div className="rounded-[2rem] border border-zinc-800 bg-black p-6">
-              <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-                Player notes
-              </p>
-              <h2 className="text-3xl font-black">What to know</h2>
-              <p className="mt-4 text-sm leading-7 text-zinc-300">
-                {editorialProfile.biography}
-              </p>
-              <p className="mt-4 text-sm leading-7 text-zinc-300">
-                {editorialProfile.surfaceContext}
-              </p>
+          <section id="how-to-watch" className="mb-6 rounded-[2rem] border border-zinc-800 bg-black p-5">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-green-400">Where to watch</p>
+                <h2 className="text-2xl font-black">{currentTournament} broadcasters</h2>
+              </div>
+              <Link href={`/tournament/${slugify(currentTournament)}`} className="text-sm font-bold text-green-300 hover:text-green-200">
+                Tournament page
+              </Link>
             </div>
-
-            <div className="rounded-[2rem] border border-zinc-800 bg-black p-6">
-              <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-                Strengths
-              </p>
-              <div className="grid gap-3">
-                {editorialProfile.strengths.slice(0, 5).map((strength) => (
-                  <div key={strength} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm font-bold text-zinc-200">
-                    {strength}
-                  </div>
+            {activeBroadcastEntries.length ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {activeBroadcastEntries.map((entry) => (
+                  <a
+                    key={`${entry.countrySlug}:${entry.broadcasterName}:${entry.streamingService}`}
+                    href={entry.officialUrl}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-green-400"
+                  >
+                    <p className="text-xs font-black uppercase tracking-wide text-zinc-500">{entry.countryName}</p>
+                    <p className="mt-1 font-black text-white">{entry.broadcasterName}</p>
+                    <p className="mt-1 text-sm text-zinc-400">{entry.streamingService}</p>
+                  </a>
                 ))}
               </div>
-            </div>
+            ) : (
+              <p className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400">
+                No direct broadcaster rows are mapped for this tournament yet.
+              </p>
+            )}
           </section>
-
-          {watchReasons.length ? (
-            <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-black p-6">
-              <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-                Why watch
-              </p>
-              <div className="grid gap-3 md:grid-cols-3">
-                {watchReasons.map((reason) => (
-                  <p key={reason} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm leading-6 text-zinc-300">
-                    {reason}
-                  </p>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section id="how-to-watch" className="mb-6 rounded-[2rem] border border-zinc-800 bg-black p-6">
-            <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-              Official viewing
-            </p>
-            <h2 className="text-3xl font-black">Where to watch {playerName}</h2>
-            <p className="mt-4 rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
-              Watch Tennis Today does not host or embed streams. Legal coverage depends on the tournament and your country, so confirm the official broadcaster before match time.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
-              <Link href={`/watch-player-live/${pageSlug}`} className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
-                Player live guide
-              </Link>
-              <Link href="/tennis-tv-broadcast-finder" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
-                Broadcaster finder
-              </Link>
-              <Link href="/tennis-on-tv-today" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
-                Tennis on TV today
-              </Link>
-              <Link href="/watch-tennis-in" className="rounded-full border border-zinc-700 px-4 py-2 text-zinc-200 hover:border-green-400">
-                Country guides
-              </Link>
-            </div>
-          </section>
-
-          {relatedTournamentLinks.length || relatedCountryLinks.length || relatedBroadcasterLinks.length || relatedStreamingLinks.length ? (
-            <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6">
-              <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-400">
-                Tennis intelligence graph
-              </p>
-              <h2 className="text-3xl font-black">Related tournaments and viewing routes</h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {[
-                  { title: "Related tournaments", links: relatedTournamentLinks },
-                  { title: "Where to watch", links: [...relatedCountryLinks, ...relatedBroadcasterLinks, ...relatedStreamingLinks] },
-                ].map((group) => (
-                  <div key={group.title} className="rounded-2xl border border-zinc-800 bg-black p-4">
-                    <h3 className="font-black text-white">{group.title}</h3>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {group.links.slice(0, 8).map((link) => (
-                        <Link key={link.id} href={link.href} className="rounded-full border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-200 hover:border-green-400">
-                          {link.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {relatedPlayers.length ? (
-            <section className="mb-6 rounded-[2rem] border border-zinc-800 bg-white p-6 text-zinc-950">
-              <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-green-600">
-                    Keep watching
-                  </p>
-                  <h2 className="text-3xl font-black">Related players</h2>
-                </div>
-                <Link href="/players" className="text-sm font-bold text-green-700 hover:text-green-600">
-                  All players
-                </Link>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {relatedPlayers.slice(0, 6).map((playerSlug) => {
-                  const player = players[playerSlug];
-
-                  return (
-                    <Link
-                      key={playerSlug}
-                      href={`/player/${playerSlug}`}
-                      className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 transition hover:border-green-500"
-                    >
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="font-black">{player.name}</span>
-                        <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-black text-zinc-600">
-                          {player.tour}
-                        </span>
-                      </div>
-                      <p className="text-sm leading-6 text-zinc-600">
-                        Player schedule and match coverage
-                      </p>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
         </div>
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageSchema) }} />
@@ -1647,13 +1538,14 @@ const playerMatches = allMatches
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Upcoming</p>
-              <p className="mt-1 text-3xl font-black">{upcomingMatches.length}</p>
+              <p className="mt-1 text-3xl font-black">{scheduledMatches.length}</p>
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Next match</p>
               <p className="mt-1 text-lg font-black leading-tight">
-                {nextMatch ? getOpponentForPlayer(nextMatch, playerName) : "Not listed"}
+                {nextOpponentLabel}
               </p>
+              {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-400">{formatMatchDateTime(getPlayerMatchStartTime(nextDisplayMatch))}</p> : null}
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Current tournament</p>
@@ -1676,8 +1568,8 @@ const playerMatches = allMatches
           title={`${playerName} enriched quick facts`}
           facts={enrichment.quickFacts.concat([
             { label: "Career stage", value: enrichment.careerStage },
-            { label: "Current activity", value: enrichment.currentActivity },
-            { label: "Next tournament", value: enrichment.nextTournament || "Not listed" },
+            { label: "Current activity", value: enrichment.currentActivityDisplay || enrichment.currentActivity },
+            { label: "Next tournament", value: enrichment.nextTournament || noScheduleMessage },
           ])}
         />
         <EnrichmentWatchSummary
@@ -2173,9 +2065,9 @@ const playerMatches = allMatches
           </Link>
         </div>
 
-        {playerMatches.length > 0 ? (
+        {displayPlayerMatches.length > 0 ? (
           <div className="grid gap-3">
-            {playerMatches.slice(0, 10).map((match) => {
+            {displayPlayerMatches.slice(0, 10).map((match) => {
               const live = isLiveMatch(match);
               const finished = isFinishedMatch(match);
               const opponent = getOpponentForPlayer(match, playerName);
@@ -2203,10 +2095,10 @@ const playerMatches = allMatches
                       </div>
 
                       <h3 className="text-lg font-black text-zinc-950">
-                        {match.player1} vs {match.player2}
+                        {displayParticipantName(match.player1)} vs {displayParticipantName(match.player2)}
                       </h3>
                       <p className="mt-1 text-sm text-zinc-600">
-                        Opponent/context: {opponent} · {formatMatchDateTime(match.startTime)}
+                        Opponent/context: {opponent} · {formatMatchDateTime(getPlayerMatchStartTime(match))}
                       </p>
                       {match.score ? (
                         <p className="mt-2 text-sm font-bold text-zinc-800">Score: {match.score}</p>

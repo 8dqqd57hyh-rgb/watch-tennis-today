@@ -1,15 +1,27 @@
 import { normalizeMatchStatus } from "./matchStatus";
 
-type PlayerMatch = { status: string; startTime: string; tournament: string; player1: string; player2: string };
+export type PlayerMatch = {
+  status: string;
+  startTime?: string | null;
+  datetime?: string | null;
+  scheduledAt?: string | null;
+  tournament: string;
+  player1: string;
+  player2: string;
+};
 
 // Match start time is not a feed freshness timestamp. Use the same generous
 // stale windows as /api/matches, allowing ordinary same-day schedule delays.
 const LIVE_WINDOW = 8 * 60 * 60 * 1000;
 const SCHEDULE_WINDOW = 12 * 60 * 60 * 1000;
 
+export function getPlayerMatchStartTime(match: PlayerMatch) {
+  return match.startTime || match.datetime || match.scheduledAt || null;
+}
+
 export function isCurrentPlayerMatch(match: PlayerMatch, kind: "LIVE" | "UPCOMING", now = Date.now()) {
   if (normalizeMatchStatus(match.status) !== kind) return false;
-  const start = Date.parse(match.startTime);
+  const start = Date.parse(getPlayerMatchStartTime(match) || "");
   if (!Number.isFinite(start)) return false;
   return kind === "LIVE"
     ? start <= now && start >= now - LIVE_WINDOW
@@ -22,9 +34,11 @@ export function getPlayerPageSummary<T extends PlayerMatch>(
   isFinished: (match: T) => boolean,
   now = Date.now(),
 ) {
-  const ascending = (a: T, b: T) => Date.parse(a.startTime) - Date.parse(b.startTime);
+  const ascending = (a: T, b: T) =>
+    Date.parse(getPlayerMatchStartTime(a) || "") - Date.parse(getPlayerMatchStartTime(b) || "");
   const finishedMatches = playerMatches.filter(isFinished).sort((a, b) =>
-    (Date.parse(b.startTime) || 0) - (Date.parse(a.startTime) || 0));
+    (Date.parse(getPlayerMatchStartTime(b) || "") || 0) -
+    (Date.parse(getPlayerMatchStartTime(a) || "") || 0));
   const candidates = playerMatches.filter((match) => !isFinished(match));
   const liveMatches = candidates.filter((match) => isCurrentPlayerMatch(match, "LIVE", now)).sort(ascending);
   const upcomingMatches = candidates.filter((match) => isCurrentPlayerMatch(match, "UPCOMING", now)).sort(ascending);

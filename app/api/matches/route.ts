@@ -17,12 +17,18 @@ import {
   normalizeMatchStartTime,
   resolveMatchWinner,
 } from "@/app/lib/matchNormalization";
+import { playerIdentityMatches } from "@/app/lib/playerIdentity";
+import { getConfiguredProviderPlayerId } from "@/app/lib/playerIdentityMap";
+import { extractDrawMatches } from "@/app/lib/drawMatchExtraction";
+import { resolveOfficialTournamentMatch } from "@/app/lib/officialTournamentResolver";
 import { resolveProviderMatchStatus } from "@/app/lib/matchStatus";
 
 type ApiTennisMatch = {
   event_key: string;
   event_date: string;
   event_time: string;
+  datetime?: string | null;
+  scheduledAt?: string | null;
   event_resume_date?: string | null;
   event_resume_time?: string | null;
   resume_time?: string | null;
@@ -30,6 +36,11 @@ type ApiTennisMatch = {
   not_before_time?: string | null;
   event_first_player: string;
   event_second_player: string;
+  homePlayer?: string | null;
+  awayPlayer?: string | null;
+  player1?: string | null;
+  player2?: string | null;
+  participants?: unknown;
   first_player_key?: string | number | null;
   second_player_key?: string | number | null;
   event_final_result: string;
@@ -103,11 +114,15 @@ type MappedMatch = {
   resumeTime?: string | null;
   winner: string | null;
   winnerId: string | null;
+  opponentName?: string;
+  tournamentCategory?: string;
+  datetime?: string | null;
   ranking1?: number | null;
   ranking2?: number | null;
   rankingSource?: string | null;
   watchProviders: WatchProvider[];
 };
+
 
 type ArchivedMatchRow = {
   id?: string | number | null;
@@ -122,7 +137,15 @@ type ArchivedMatchRow = {
 };
 
 
-function getMatchesCacheHeaders(matches: { status?: string | null }[], options: { realtime?: boolean } = {}) {
+function getMatchesCacheHeaders(matches: { status?: string | null }[], options: { realtime?: boolean; noStore?: boolean } = {}) {
+  if (options.noStore) {
+    return {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "CDN-Cache-Control": "no-store",
+      "Vercel-CDN-Cache-Control": "no-store",
+    };
+  }
+
   if (options.realtime || matches.some((match) => String(match.status || "").toUpperCase() === "LIVE")) {
     return {
       "Cache-Control": "public, s-maxage=25, stale-while-revalidate=25",
@@ -152,10 +175,10 @@ function shouldLogMatchFilters(searchParams: URLSearchParams) {
 
 function matchDebugLabel(match: Partial<ApiTennisMatch> & {
   id?: string;
-  player1?: string;
-  player2?: string;
-  tournament?: string;
-  status?: string;
+  player1?: string | null;
+  player2?: string | null;
+  tournament?: string | null;
+  status?: string | null;
   startTime?: string | null;
 }) {
   const id = match.event_key || match.id || "unknown-id";
@@ -260,7 +283,7 @@ async function fetchFixtureWindows(
   dateStartDate: Date,
   dateStopDate: Date,
   resolvedPlayerKey: string | null,
-  options: { formHistory?: boolean; playerName?: string | null } = {}
+  options: { formHistory?: boolean; playerName?: string | null; playerSlug?: string | null } = {}
 ) {
   const windows = buildDateWindows(
     dateStartDate,
@@ -278,7 +301,11 @@ async function fetchFixtureWindows(
         "get_fixtures",
         apiKey,
         `&date_start=${window.start}&date_stop=${window.stop}&timezone=Europe/Warsaw${
-          resolvedPlayerKey ? `&player_key=${resolvedPlayerKey}` : ""
+          resolvedPlayerKey
+            ? `&player_key=${resolvedPlayerKey}`
+            : options.playerName
+              ? `&player_name=${encodeURIComponent(options.playerName)}`
+              : ""
         }`,
         options.formHistory ? 6500 : 4500
       )
@@ -286,7 +313,17 @@ async function fetchFixtureWindows(
     options.formHistory ? 2 : 4
   );
 
-  return fixtureResponses.flatMap((response) => response);
+  const matches = fixtureResponses.flatMap((response) => response);
+  if (options.playerName) {
+    console.log("[PLAYER-MATCHES] upcoming fixtures", JSON.stringify({
+      inputSlug: options.playerSlug || null,
+      playerName: options.playerName,
+      resolvedPlayerId: resolvedPlayerKey,
+      rawMatchesCount: matches.length,
+    }));
+  }
+
+  return matches;
 }
 
 function getOpponentKeysForPlayerForm(
@@ -600,8 +637,7 @@ const hasScore = Boolean(
     providerScheduled:
       !String(match.event_status || "").trim() &&
       match.event_live === "0" &&
-      Boolean(match.event_date) &&
-      Boolean(match.event_time) &&
+      Boolean(startTime) &&
       !hasScore,
     hasScore,
     startsInFuture,
@@ -823,7 +859,12 @@ function formatScore(match: ApiTennisMatch) {
 }
 
 function getStartTime(match: ApiTennisMatch) {
-  if (!match.event_date || !match.event_time) return null;
+  if (match.datetime || match.scheduledAt) {
+    return normalizeApiDateTimeValue(match.datetime || match.scheduledAt);
+  }
+
+  if (!match.event_date) return null;
+  if (!match.event_time) return normalizeApiDateTimeValue(match.event_date);
 
   return normalizeMatchStartTime(`${match.event_date}T${match.event_time}:00`);
 }
@@ -1086,7 +1127,44 @@ async function fetchApiTennis(method: string, apiKey: string, params = "", timeo
   return Array.isArray(result) ? result : [];
 }
 
+async function fetchPlayerDrawMatches(apiKey: string, playerName: string, dateStart: string, dateStop: string, playerId?: string | null) {
+  const query = `&player_name=${encodeURIComponent(playerName)}${playerId ? `&player_key=${encodeURIComponent(playerId)}` : ""}&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw`;
+  const configuredFeeds = [process.env.TENNIS_DRAW_FEED_URL, process.env.TENNIS_ORDER_OF_PLAY_FEED_URL].filter(Boolean) as string[];
+  const providerResults = await Promise.all([
+    getUpcomingTournaments(apiKey, dateStart, dateStop),
+    fetchApiTennisResult("get_fixtures", apiKey, query, 6500),
+    fetchApiTennisResult("get_draw", apiKey, query, 6500),
+    fetchApiTennisResult("get_order_of_play", apiKey, query, 6500),
+    ...configuredFeeds.map(async (configuredUrl) => {
+      try {
+        const url = new URL(configuredUrl);
+        url.searchParams.set("playerName", playerName);
+        if (playerId) url.searchParams.set("playerId", playerId);
+        url.searchParams.set("dateStart", dateStart);
+        url.searchParams.set("dateStop", dateStop);
+        const response = await fetch(url, { cache: "no-store" });
+        return response.ok ? response.json() : null;
+      } catch {
+        return null;
+      }
+    }),
+  ]);
+
+  return extractDrawMatches(providerResults, playerName, playerId);
+}
+
+async function getUpcomingTournaments(apiKey: string, dateStart: string, dateStop: string) {
+  return fetchApiTennisResult(
+    "get_tournaments",
+    apiKey,
+    `&date_start=${dateStart}&date_stop=${dateStop}&timezone=Europe/Warsaw`,
+    6500
+  );
+}
+
 function getPlayerNameScore(apiNameRaw: string, targetNameRaw: string) {
+  if (playerIdentityMatches(targetNameRaw, apiNameRaw)) return 95;
+
   const apiParts = normalizeSearchName(apiNameRaw).split(/\s+/).filter(Boolean);
   const targetParts = normalizeSearchName(targetNameRaw).split(/\s+/).filter(Boolean);
 
@@ -1123,28 +1201,98 @@ function getPlayerNameScore(apiNameRaw: string, targetNameRaw: string) {
   return 30;
 }
 
-async function getPlayerKeyByName(apiKey: string, playerName: string) {
-  const parts = playerName.trim().split(/\s+/).filter(Boolean);
-  const lastName = parts[parts.length - 1] || playerName;
+function playerSearchCandidates(playerName: string, playerSlug?: string | null) {
+  const nameParts = normalizeSearchName(playerName).split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.at(-1) || "";
+  const slugParts = normalizeSearchName(String(playerSlug || "")).split(/\s+/).filter(Boolean);
 
-  const queryResults = await Promise.allSettled([
-    fetchApiTennis(
+  return Array.from(new Set([
+    lastName,
+    firstName && lastName ? `${firstName} ${lastName}` : "",
+    firstName && lastName ? `${lastName} ${firstName}` : "",
+    firstName && lastName ? `${lastName} ${firstName[0]}` : "",
+    ...slugParts,
+  ].filter(Boolean)));
+}
+
+function participantNames(match: ApiTennisMatch) {
+  const values: string[] = [];
+  const add = (value: unknown) => {
+    if (typeof value === "string" && value.trim()) values.push(value.trim());
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const participant = value as Record<string, unknown>;
+      add(participant.name || participant.player_name || participant.fullName || participant.label);
+    }
+  };
+
+  [
+    match.event_first_player,
+    match.event_second_player,
+    match.homePlayer,
+    match.awayPlayer,
+    match.player1,
+    match.player2,
+  ].forEach(add);
+  if (Array.isArray(match.participants)) match.participants.forEach(add);
+
+  return Array.from(new Set(values));
+}
+
+function broadScanMatches(matches: ApiTennisMatch[], playerName: string, playerSlug?: string | null) {
+  const candidates = playerSearchCandidates(playerName, playerSlug);
+  const normalizedCandidates = candidates.map((candidate) => normalizeSearchName(candidate));
+  const found = matches.filter((match) => participantNames(match).some((participant) => {
+    const normalizedParticipant = normalizeSearchName(participant);
+    return normalizedCandidates.some((candidate) =>
+      normalizedParticipant === candidate || normalizedParticipant.includes(candidate)
+    );
+  }));
+
+  const displayCandidate = playerName.trim().split(/\s+/).at(-1) || candidates.find((candidate) => candidate.length > 3) || playerName;
+  console.log(`[BroadScan] Searching ${matches.length} active tournament fixtures for candidate string: "${displayCandidate}"`);
+  console.log(`[BroadScan] Found ${found.length} matches matching player name`);
+
+  return found.map((match) => {
+    const participants = participantNames(match);
+    const playerIndex = participants.findIndex((participant) => {
+      const normalizedParticipant = normalizeSearchName(participant);
+      return normalizedCandidates.some((candidate) => normalizedParticipant === candidate || normalizedParticipant.includes(candidate));
+    });
+    const player = participants[playerIndex] || playerName;
+    const opponent = participants.find((_, index) => index !== playerIndex) || "TBD";
+
+    return {
+      ...match,
+      event_first_player: player,
+      event_second_player: opponent,
+    };
+  });
+}
+
+async function getPlayerKeyByName(apiKey: string, playerName: string, playerSlug?: string | null) {
+  const slugQuery = String(playerSlug || "").replace(/[-_]+/g, " ").trim();
+  const nameParts = playerName.trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.at(-1) || "";
+  const initialQuery = firstName && lastName ? `${lastName} ${firstName[0]}.` : "";
+  const reversedQuery = firstName && lastName ? `${lastName} ${firstName}` : "";
+  const searchQueries = Array.from(new Set([playerName.trim(), slugQuery, initialQuery, reversedQuery, lastName]).values())
+    .filter((query): query is string => Boolean(query));
+
+  const players: ApiTennisPlayer[] = [];
+  const attemptedQueries: string[] = [];
+  for (const query of searchQueries) {
+    attemptedQueries.push(query);
+    const records = await fetchApiTennis(
       "get_players",
       apiKey,
-      `&player_name=${encodeURIComponent(playerName)}`,
+      `&player_name=${encodeURIComponent(query)}`,
       9000
-    ),
-    fetchApiTennis(
-      "get_players",
-      apiKey,
-      `&player_name=${encodeURIComponent(lastName)}`,
-      9000
-    ),
-  ]);
-
-  const players = queryResults.flatMap((result) =>
-    result.status === "fulfilled" ? result.value : []
-  );
+    );
+    players.push(...records);
+    if (records.length) break;
+  }
 
   const scoredPlayers = players
     .map((player: ApiTennisPlayer) => ({
@@ -1155,8 +1303,19 @@ async function getPlayerKeyByName(apiKey: string, playerName: string) {
     .sort((left, right) => right.score - left.score);
 
   const best = scoredPlayers[0]?.player;
+  const resolvedPlayerId = best?.player_key
+    ? String(best.player_key)
+    : getConfiguredProviderPlayerId(playerSlug, playerName);
+  console.log("[PLAYER-IDENTITY]", JSON.stringify({
+    inputSlug: playerSlug || null,
+    inputName: playerName,
+    searchQueries: attemptedQueries,
+    resolvedPlayerId,
+    providerRecords: players.length,
+    source: best?.player_key ? "provider-search" : resolvedPlayerId ? "configured-map" : "unresolved",
+  }));
 
-  return best?.player_key ? String(best.player_key) : null;
+  return resolvedPlayerId;
 }
 
 async function getArchivedMatches(dateStart: string, limit = 2500) {
@@ -1280,6 +1439,7 @@ export async function GET(request: Request) {
 
   const playerKeyFromQuery = searchParams.get("playerKey");
   const playerName = searchParams.get("playerName");
+  const playerSlug = searchParams.get("playerSlug");
   const bulkPlayerParameterState = getBulkPlayerParameterState({
     hasPlayerNamesParameter: searchParams.has("playerNames"),
     playerName,
@@ -1315,7 +1475,7 @@ export async function GET(request: Request) {
 
   const resolvedPlayerKey =
     playerKeyFromQuery ||
-    (playerName ? await getPlayerKeyByName(apiKey, playerName) : null);
+    (playerName ? await getPlayerKeyByName(apiKey, playerName, playerSlug) : null);
 
 const today = new Date();
 
@@ -1375,14 +1535,16 @@ const dateStop = formatDate(dateStopDate);
       ? `&match_key=${encodeURIComponent(matchId)}&timezone=Europe/Warsaw${cacheBust}`
       : resolvedPlayerKey
         ? `&player_key=${resolvedPlayerKey}&timezone=Europe/Warsaw${cacheBust}`
-        : `&timezone=Europe/Warsaw${cacheBust}`
+        : playerName
+          ? `&player_name=${encodeURIComponent(playerName)}&timezone=Europe/Warsaw${cacheBust}`
+          : `&timezone=Europe/Warsaw${cacheBust}`
   ),
   // API-Tennis can silently return a very small slice when the fixture date range
   // is too wide. Player Form needs a real history window, so split the requested
   // range into smaller chunks and merge them. This is especially important for
   // pages like Andrey Rublev where the latest Match Center row exists but earlier
   // wins disappear from a single broad request.
-  fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey, { formHistory, playerName }),
+  fetchFixtureWindows(apiKey, dateStartDate, dateStopDate, resolvedPlayerKey, { formHistory, playerName, playerSlug }),
 ]);
 
     const h2hRecentMatches = formHistory && playerName && resolvedPlayerKey
@@ -1417,7 +1579,7 @@ const dateStop = formatDate(dateStopDate);
         .map((match) => String(match.tournament_name || "").trim())
         .filter(Boolean)
     );
-    const filteredMatches = hasBulkPlayers
+    let filteredMatches = hasBulkPlayers
       ? filterBulkApiMatches(uniqueMatches, bulkPlayerNames)
       : playerName
         ? uniqueMatches.filter((match) =>
@@ -1425,6 +1587,9 @@ const dateStop = formatDate(dateStopDate);
             apiMatchHasPlayerByContextualDoublesName(playerName, match, exactPlayerTournaments)
           )
         : uniqueMatches;
+    if (playerName && !filteredMatches.length && !hasBulkPlayers) {
+      filteredMatches = broadScanMatches(uniqueMatches, playerName, playerSlug);
+    }
     logMatchFilters(logFilters, "after-player-filter", {
       count: filteredMatches.length,
       removed: uniqueMatches.length - filteredMatches.length,
@@ -1493,6 +1658,27 @@ const dateStop = formatDate(dateStopDate);
         watchProviders: getWatchProviders(category, tournament),
       };
     });
+
+    if (mappedMatches.length === 0 && playerName) {
+      const drawMatches = await fetchPlayerDrawMatches(apiKey, playerName, dateStart, dateStop, resolvedPlayerKey);
+      mappedMatches = drawMatches;
+      logMatchFilters(logFilters, "after-player-draw-fallback", {
+        count: mappedMatches.length,
+        samples: mappedMatches.slice(0, 20).map((match) => matchDebugLabel(match)),
+      });
+    }
+
+    if (mappedMatches.length === 0 && playerName) {
+      const officialTournamentMatch = await resolveOfficialTournamentMatch(playerName);
+      if (officialTournamentMatch) {
+        mappedMatches = [officialTournamentMatch];
+        logMatchFilters(logFilters, "after-official-tournament-fallback", {
+          count: mappedMatches.length,
+          samples: mappedMatches.map((match) => matchDebugLabel(match)),
+        });
+      }
+    }
+
     logMatchFilters(logFilters, "after-map", {
       count: mappedMatches.length,
       samples: mappedMatches.slice(0, 20).map((match) => matchDebugLabel(match)),
@@ -1644,7 +1830,10 @@ const dateStop = formatDate(dateStopDate);
     });
 
     return NextResponse.json(matches, {
-      headers: getMatchesCacheHeaders(matches, { realtime: Boolean(playerName || resolvedPlayerKey || includeFinished || formHistory) }),
+      headers: getMatchesCacheHeaders(matches, {
+        realtime: Boolean(playerName || resolvedPlayerKey || includeFinished || formHistory),
+        noStore: Boolean(playerName || playerKeyFromQuery || matchId),
+      }),
     });
   } catch (error) {
   console.warn("Failed to fetch tennis matches:", error);

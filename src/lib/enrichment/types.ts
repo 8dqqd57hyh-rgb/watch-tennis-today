@@ -28,8 +28,11 @@ export type PlayerEnrichment = {
   country: string | null;
   surfaceStrengths: string[];
   currentActivity: string;
+  currentActivityDisplay?: string;
   hasUpcomingMatch: boolean;
   nextTournament: string | null;
+  nextMatchDate: string | null;
+  nextOpponent: string | null;
   recentTournament: string | null;
   watchAvailability: WatchAvailability;
   broadcastCountries: string[];

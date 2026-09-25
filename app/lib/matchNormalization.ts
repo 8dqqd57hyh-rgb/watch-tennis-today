@@ -43,8 +43,10 @@ function parseWarsawWallClock(value: string) {
 }
 
 export function normalizeMatchStartTime(value?: string | null) {
-  const text = String(value || "").trim();
+  let text = String(value || "").trim();
   if (!text || text === "-") return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) text = `${text}T00:00:00`;
 
   const hasExplicitZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text);
   const parsed = hasExplicitZone ? new Date(text) : parseWarsawWallClock(text);

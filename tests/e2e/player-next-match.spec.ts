@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { getPlayerPageSummary } from "../../app/lib/playerPageSummary";
+import { getPlayerMatchStartTime, getPlayerPageSummary, type PlayerMatch } from "../../app/lib/playerPageSummary";
 import { isFinishedMatch } from "../../app/lib/playerMatchResult";
 
 const now = Date.parse("2026-09-21T12:00:00Z");
+type TestMatch = PlayerMatch & { id: string; score: string };
 function match(id: string, status: string, hours: number, score = "") {
   return { id, status, score, startTime: new Date(now + hours * 3600000).toISOString(),
     tournament: "Test tournament", player1: "Alexander Zverev", player2: id };
 }
-const summary = (matches: ReturnType<typeof match>[]) =>
+const summary = (matches: TestMatch[]) =>
   getPlayerPageSummary("Alexander Zverev", matches, isFinishedMatch, now);
 
 test("next match is the earliest scheduled fixture regardless of input order or status spelling", () => {
@@ -55,6 +56,28 @@ test("stale and undated fixtures do not claim current activity", () => {
 
 test("ordinary schedule delays stay listed within the existing feed grace window", () => {
   expect(summary([match("delayed-start", "UPCOMING", -2)]).nextMatch?.id).toBe("delayed-start");
+});
+
+test("scheduled matches remain selectable when the opponent is TBD", () => {
+  const scheduled = {
+    ...match("tbd-opponent", "UPCOMING", 24),
+    player2: "Opponent to be confirmed",
+    tournament: "Hangzhou Open",
+  };
+
+  const result = summary([scheduled]);
+  expect(result.nextMatch?.tournament).toBe("Hangzhou Open");
+  expect(getPlayerMatchStartTime(result.nextMatch!)).toBe(scheduled.startTime);
+});
+
+test("alternate scheduled date fields qualify as upcoming matches", () => {
+  const scheduled = {
+    ...match("scheduled-at", "UPCOMING", 24),
+    startTime: null,
+    datetime: new Date(now + 24 * 3600000).toISOString(),
+  };
+
+  expect(summary([scheduled]).nextMatch?.id).toBe("scheduled-at");
 });
 
 test("unfinished sets and two-set leads in men's majors remain live", () => {
