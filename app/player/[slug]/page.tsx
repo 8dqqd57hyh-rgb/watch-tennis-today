@@ -8,6 +8,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { players, type PlayerSlug } from "@/data/players";
 import { getCanonicalPlayerSlug, matchContainsExactPlayer, normalizePlayerName, playerNameFromSlug, safeWatchPlayerLiveUrl } from "@/data/playerSlugs";
 import LocalPlayerFollowButton from "@/app/components/LocalPlayerFollowButton";
+import LocalMatchDateTime from "@/app/components/LocalMatchDateTime";
 import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
 import RelatedPages from "@/app/components/RelatedPages";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
@@ -635,19 +636,10 @@ function getMatchSlug(match: Match) {
   return slugify(`${match.player1}-vs-${match.player2}`);
 }
 
-function formatMatchDateTime(value?: string | null) {
-  if (!value) return "Time to be announced";
+function PlayerMatchDateTime({ value }: { value?: string | null }) {
+  if (!value) return <>Time to be announced</>;
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Time to be announced";
-
-  return new Intl.DateTimeFormat("en", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return <LocalMatchDateTime value={value} format="short" />;
 }
 
 function isInitialNamePart(value?: string) {
@@ -925,7 +917,7 @@ function MatchSummaryCard({
         ) : (
           opponent
         )}{" "}
-        · {formatMatchDateTime(getPlayerMatchStartTime(match))}
+        · <PlayerMatchDateTime value={getPlayerMatchStartTime(match)} />
       </p>
       {match.score ? <p className="mt-2 text-sm font-bold text-zinc-800">Score: {match.score}</p> : null}
 
@@ -1372,7 +1364,7 @@ console.log('Player Matches Data:', playerMatches);
                   <p className="mt-1 text-lg font-black leading-tight">
                     {nextOpponentLabel}
                   </p>
-                  {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-500">{formatMatchDateTime(getPlayerMatchStartTime(nextDisplayMatch))}</p> : null}
+                  {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-500"><PlayerMatchDateTime value={getPlayerMatchStartTime(nextDisplayMatch)} /></p> : null}
                 </div>
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-3 sm:col-span-2 lg:col-span-1">
                   <p className="text-xs font-black uppercase text-zinc-500">Current tournament</p>
@@ -1545,7 +1537,7 @@ console.log('Player Matches Data:', playerMatches);
               <p className="mt-1 text-lg font-black leading-tight">
                 {nextOpponentLabel}
               </p>
-              {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-400">{formatMatchDateTime(getPlayerMatchStartTime(nextDisplayMatch))}</p> : null}
+              {nextDisplayMatch ? <p className="mt-1 text-xs font-bold text-zinc-400"><PlayerMatchDateTime value={getPlayerMatchStartTime(nextDisplayMatch)} /></p> : null}
             </div>
             <div className="rounded-2xl border border-zinc-800 bg-white/5 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-zinc-400">Current tournament</p>
@@ -2026,7 +2018,7 @@ console.log('Player Matches Data:', playerMatches);
                         ) : item.opponent}
                       </p>
                       <p className="mt-1 text-sm text-zinc-600">
-                        {item.match.tournament} · {formatMatchDateTime(item.match.startTime)}
+                        {item.match.tournament} · <PlayerMatchDateTime value={item.match.startTime} />
                       </p>
                     </div>
                     <a
@@ -2098,7 +2090,7 @@ console.log('Player Matches Data:', playerMatches);
                         {displayParticipantName(match.player1)} vs {displayParticipantName(match.player2)}
                       </h3>
                       <p className="mt-1 text-sm text-zinc-600">
-                        Opponent/context: {opponent} · {formatMatchDateTime(getPlayerMatchStartTime(match))}
+                        Opponent/context: {opponent} · <PlayerMatchDateTime value={getPlayerMatchStartTime(match)} />
                       </p>
                       {match.score ? (
                         <p className="mt-2 text-sm font-bold text-zinc-800">Score: {match.score}</p>
