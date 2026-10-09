@@ -1,6 +1,18 @@
 import { expect } from "@playwright/test";
 import { test } from "./fixtures";
 
+test.describe("server-rendered email signup", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("email signup controls wait for hydration", async ({ page }) => {
+    await page.goto("/newsletter", { waitUntil: "domcontentloaded" });
+
+    const signup = page.getByTestId("email-signup");
+    await expect(signup.getByTestId("email-signup-input")).toBeDisabled();
+    await expect(signup.getByTestId("email-signup-submit")).toBeDisabled();
+  });
+});
+
 test("email subscription form validates input and submits safely", async ({ page, runtimeMonitor }) => {
   expect(runtimeMonitor.isActive()).toBe(true);
 

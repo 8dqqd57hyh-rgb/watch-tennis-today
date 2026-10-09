@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+const subscribeToHydration = () => () => undefined;
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
 
 type EmailCaptureContextType =
   | "player"
@@ -52,6 +56,11 @@ export default function EmailCapture({
   dark = false,
   compact = false,
 }: EmailCaptureProps) {
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot
+  );
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -145,13 +154,14 @@ export default function EmailCapture({
             inputMode="email"
             autoComplete="email"
             required
+            disabled={!hydrated}
             placeholder={placeholder}
             className={`${inputClass} rounded-2xl border px-5 py-4 outline-none`}
             data-testid="email-signup-input"
           />
           <button
             type="submit"
-            disabled={loading}
+            disabled={!hydrated || loading}
             className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400 disabled:opacity-60"
             data-testid="email-signup-submit"
           >
