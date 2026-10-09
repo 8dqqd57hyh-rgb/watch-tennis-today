@@ -162,7 +162,7 @@ export default function EmailCapture({
           <button
             type="submit"
             disabled={!hydrated || loading}
-            className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-all hover:bg-green-400 disabled:opacity-60"
+            className="rounded-2xl bg-green-500 px-6 py-4 font-black text-black transition-colors hover:bg-green-400 disabled:opacity-60"
             data-testid="email-signup-submit"
           >
             {loading ? "Saving..." : buttonText}
