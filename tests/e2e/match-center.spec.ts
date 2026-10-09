@@ -106,12 +106,16 @@ test.describe("AI match center helpers", () => {
   });
 
   test("protects thin or stale match pages from indexing", () => {
-    expect(isMatchPageIndexable(match())).toBe(true);
-    expect(shouldIncludeMatchInSitemap(match())).toBe(true);
-    expect(isMatchPageIndexable(match({ tournament: "" }))).toBe(false);
-    expect(isMatchPageIndexable(match({ startTime: null }))).toBe(false);
-    expect(isMatchPageIndexable(match({ startTime: "2026-06-01T13:00:00.000Z" }))).toBe(false);
-    expect(shouldIncludeMatchInSitemap(match({ status: "FINISHED" }))).toBe(false);
+    const now = Date.now();
+    const currentMatch = match({ startTime: new Date(now).toISOString() });
+    const staleStartTime = new Date(now - 61 * 24 * 60 * 60 * 1000).toISOString();
+
+    expect(isMatchPageIndexable(currentMatch)).toBe(true);
+    expect(shouldIncludeMatchInSitemap(currentMatch)).toBe(true);
+    expect(isMatchPageIndexable({ ...currentMatch, tournament: "" })).toBe(false);
+    expect(isMatchPageIndexable({ ...currentMatch, startTime: null })).toBe(false);
+    expect(isMatchPageIndexable({ ...currentMatch, startTime: staleStartTime })).toBe(false);
+    expect(shouldIncludeMatchInSitemap({ ...currentMatch, status: "FINISHED" })).toBe(false);
   });
 
   test("reuses broadcaster intelligence instead of hardcoded page data", () => {

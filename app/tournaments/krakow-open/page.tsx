@@ -308,7 +308,7 @@ export default async function KrakowOpenPage() {
           </h1>
 
           <p className="mb-8 max-w-3xl text-lg leading-8 text-zinc-300">
-            Today's order of play, match times & courts. Find the schedule, court assignments and player information
+            Today&apos;s order of play, match times & courts. Find the schedule, court assignments and player information
             for the {tournamentConfig.name} at {tournamentConfig.venue}.
           </p>
 
@@ -317,7 +317,7 @@ export default async function KrakowOpenPage() {
               href="#matches"
               className="rounded-2xl bg-blue-500 px-6 py-4 text-lg font-black text-white transition hover:bg-blue-400"
             >
-              View Today's Matches →
+              View Today&apos;s Matches →
             </a>
             <a
               href="#venue"
@@ -577,14 +577,14 @@ export default async function KrakowOpenPage() {
           <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-8">
             <div className="space-y-4 text-base leading-7 text-zinc-300">
               <p>
-                The Kraków Open 2026 is an ITF Men's World Tennis Tour M15 tournament held at KS Olsza Krakow from
-                August 17-23, 2026. The tournament features competitive men's tennis matches on clay courts in Poland's
+                The Kraków Open 2026 is an ITF Men&apos;s World Tennis Tour M15 tournament held at KS Olsza Krakow from
+                August 17-23, 2026. The tournament features competitive men&apos;s tennis matches on clay courts in Poland&apos;s
                 vibrant city.
               </p>
 
               {todayMatches.length > 0 && (
                 <p>
-                  Today's schedule includes {todayMatches.length} match{todayMatches.length !== 1 ? "es" : ""} across
+                  Today&apos;s schedule includes {todayMatches.length} match{todayMatches.length !== 1 ? "es" : ""} across
                   {uniqueCourts.length > 0 ? ` ${uniqueCourts.length} court${uniqueCourts.length !== 1 ? "s" : ""}` : ""}.
                   The first match begins at {formatMatchTime(sortedMatches[0].startTime)}.
                 </p>
@@ -603,7 +603,7 @@ export default async function KrakowOpenPage() {
               </p>
 
               <p>
-                For more information about today's matches, player details, and court assignments, explore the sections
+                For more information about today&apos;s matches, player details, and court assignments, explore the sections
                 above. Follow Watch Tennis Today for live match updates and comprehensive tennis coverage.
               </p>
             </div>
@@ -629,7 +629,7 @@ export default async function KrakowOpenPage() {
               href="/tennis-schedule-today"
               className="rounded-lg border border-zinc-700 p-6 transition hover:border-blue-500 hover:bg-blue-500/5"
             >
-              <h3 className="mb-2 font-bold">Today's Tennis Schedule</h3>
+              <h3 className="mb-2 font-bold">Today&apos;s Tennis Schedule</h3>
               <p className="text-sm text-zinc-400">Complete tennis schedule for today</p>
             </Link>
 

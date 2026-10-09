@@ -18,7 +18,7 @@ describe("EmailCapture component", { tags: ["@component"] }, () => {
   });
 
   it("submits a daily signup and shows success state", () => {
-    cy.intercept("POST", "/api/subscribe-general", { body: { ok: true } }).as("subscribe");
+    cy.intercept("POST", "/api/subscribe-general", { body: { ok: true, persisted: true } }).as("subscribe");
 
     cy.mount(<EmailCapture {...defaultProps} />);
     cy.getByTestId("email-signup-input").type("fan@example.com");

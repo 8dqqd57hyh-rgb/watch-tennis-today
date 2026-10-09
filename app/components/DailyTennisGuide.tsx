@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { getBaseUrl } from "@/app/lib/serverMatches";
 
 type LinkItem = {
   href: string;
@@ -112,20 +113,10 @@ type Match = {
   startTime: string | null;
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host");
-
-  if (!host) return "http://localhost:3000";
-
-  const protocol = host.includes("localhost") ? "http" : "https";
-
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(): Promise<Match[]> {
   try {
-    const baseUrl = await getBaseUrl();
+    const headersList = await headers();
+    const baseUrl = getBaseUrl(headersList.get("host"));
 
     const response = await fetch(`${baseUrl}/api/matches`, {
       next: { revalidate: 60 },

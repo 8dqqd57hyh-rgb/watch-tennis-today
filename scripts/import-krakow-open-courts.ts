@@ -2,7 +2,7 @@ import { batchAddCourtMappings } from "../app/lib/supabaseCourtData";
 import { krakowOpenOfficialSchedule } from "../data/krakowOpenOfficialSchedule";
 
 async function main() {
-  const rows = krakowOpenOfficialSchedule.map((row) => ({
+  const rows: Parameters<typeof batchAddCourtMappings>[0] = krakowOpenOfficialSchedule.map((row) => ({
     tournament_slug: row.tournamentSlug,
     tournament_year: row.year,
     match_date: row.date,
@@ -18,7 +18,7 @@ async function main() {
     notes: "Imported from official ITF order of play",
   }));
 
-  const count = await batchAddCourtMappings(rows as any);
+  const count = await batchAddCourtMappings(rows);
   console.log(`Imported ${count} Kraków Open court mapping rows`);
 }
 

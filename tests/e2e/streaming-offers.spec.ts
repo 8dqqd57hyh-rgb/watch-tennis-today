@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
   calculateTotalMonthlyPrice, formatStreamingPrice, isOfferExpired, isOfferStale,
-  normalizeStreamingOffer, resolveStreamingOffers, selectPreferredOffers,
-  validateStreamingOfferQuery, type StreamingDataProvider, type StreamingOffer,
+  getLocalFallbackOffers, normalizeStreamingOffer, resolveStreamingOffers, selectPreferredOffers,
+  validateStreamingOfferQuery, type StreamingDataProvider, type StreamingOffer, type StreamingOffersResponse,
 } from "../../src/data/streamingOffers";
 
 const base: StreamingOffer = {
@@ -74,22 +74,82 @@ test.describe("streaming offer data", () => {
   });
 });
 
-test("streaming API validates input and returns fallback data", async ({ request }) => {
+test("streaming API validates input and returns active normalized offers", async ({ request }) => {
   const invalid = await request.get("/api/streaming-offers?tournament=US Open&country=Poland");
   expect(invalid.status()).toBe(400);
   const response = await request.get("/api/streaming-offers?tournament=us-open&country=pl");
   expect(response.ok()).toBe(true);
-  expect(await response.json()).toMatchObject({ tournamentSlug: "us-open", countryCode: "PL", offers: [{ id: "us-open-pl-max-eurosport", totalMonthlyPrice: 44.99 }], meta: { source: "local-fallback", isFallback: true } });
+  const result: StreamingOffersResponse = await response.json();
+  expect(result).toMatchObject({
+    tournamentSlug: "us-open",
+    countryCode: "PL",
+    offers: expect.any(Array),
+    meta: {
+      source: expect.stringMatching(/^(supabase|local-fallback)$/),
+      fetchedAt: expect.any(String),
+      isFallback: expect.any(Boolean),
+      isStale: expect.any(Boolean),
+    },
+  });
+  const fetchedAt = new Date(result.meta.fetchedAt);
+  expect(Number.isNaN(fetchedAt.getTime())).toBe(false);
+  expect(result.meta.isFallback).toBe(result.meta.source === "local-fallback");
+
+  for (const offer of result.offers) {
+    expect(offer).toMatchObject({ tournamentSlug: "us-open", countryCode: "PL" });
+    expect(offer.status).not.toBe("unavailable");
+    expect(isOfferExpired(offer, fetchedAt)).toBe(false);
+    expect(offer.totalMonthlyPrice).toBe(calculateTotalMonthlyPrice(offer));
+  }
+
+  if (result.meta.isFallback) {
+    const expectedOffers = selectPreferredOffers(getLocalFallbackOffers({ tournamentSlug: "us-open", countryCode: "PL" }))
+      .filter((offer) => offer.status !== "unavailable" && !isOfferExpired(offer, fetchedAt));
+    expect(result.offers).toEqual(expectedOffers);
+  }
 });
 
-test("country page server-renders the normalized offer and source attribution", async ({ page, request }) => {
-  const html = await (await request.get("/can-i-watch/us-open/poland")).text();
-  expect(html).toContain("HBO Max");
-  expect(html).toContain("44,99");
+test("country page server-renders active offers or an explicit empty state", async ({ page, request }) => {
+  const offersResponse = await request.get("/api/streaming-offers?tournament=us-open&country=pl");
+  expect(offersResponse.ok()).toBe(true);
+  const result: StreamingOffersResponse = await offersResponse.json();
+  const response = await request.get("/can-i-watch/us-open/poland");
+  expect(response.status()).toBe(200);
+  const html = await response.text();
+  expect(html).toContain('id="streaming-offers-title"');
   await page.goto("/can-i-watch/us-open/poland", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Subscription and streaming details" })).toBeVisible();
-  await expect(page.getByText(/Choose Standard and add Kanały TV i Sport\. Your calculated monthly cost is 44,99/)).toBeVisible();
-  await expect(page.getByText("Every court is available to stream according to the reviewed coverage source.")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Check provider offer" })).toHaveAttribute("rel", "noopener noreferrer");
-  await expect(page.getByText("Sources", { exact: true })).toBeVisible();
+  const section = page.locator('section[aria-labelledby="streaming-offers-title"]');
+  await expect(section.getByRole("heading", { name: "Subscription and streaming details" })).toBeVisible();
+
+  if (result.offers.length === 0) {
+    const emptyMessage = "No confirmed broadcaster offer is available for this tournament and country yet.";
+    expect(html).toContain(emptyMessage);
+    await expect(section).toContainText(emptyMessage);
+    await expect(section.getByRole("article")).toHaveCount(0);
+    await expect(section.getByRole("link", { name: "Check provider offer" })).toHaveCount(0);
+    return;
+  }
+
+  expect(html).toContain("Check provider offer");
+  expect(html).toContain("Sources");
+  await expect(section.getByRole("article")).toHaveCount(result.offers.length);
+  if (result.meta.isFallback) {
+    await expect(section).toContainText("Showing the latest saved data while the live database is unavailable.");
+  }
+  for (const offer of result.offers) {
+    const card = section.getByRole("article").filter({
+      has: page.getByRole("heading", { name: offer.providerName, exact: true }),
+    }).first();
+    await expect(card).toBeVisible();
+    if (offer.basePlan) await expect(card).toContainText(`Choose ${offer.basePlan.name}`);
+    if (offer.sportsAddon) await expect(card).toContainText(`and add ${offer.sportsAddon.name}`);
+    const total = offer.totalMonthlyPrice === undefined ? null : formatStreamingPrice(offer.totalMonthlyPrice, offer.currency, "pl-PL");
+    await expect(card).toContainText(total ? `Your calculated monthly cost is ${total}.` : "The current price is not confirmed.");
+    if (offer.coverage?.allCourts) {
+      await expect(card).toContainText("Every court is available to stream according to the reviewed coverage source.");
+    }
+    await expect(card.getByRole("link", { name: "Check provider offer" })).toHaveAttribute("href", offer.officialUrl);
+    await expect(card.getByRole("link", { name: "Check provider offer" })).toHaveAttribute("rel", "noopener noreferrer");
+    await expect(card.getByText("Sources", { exact: true })).toBeVisible();
+  }
 });

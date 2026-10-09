@@ -24,10 +24,10 @@ export type CourtMapping = {
   player1: string;
   player2: string;
   court_number: string;
-  court_name?: string;
-  surface?: string;
-  capacity?: number;
-  round?: string;
+  court_name?: string | null;
+  surface?: string | null;
+  capacity?: number | null;
+  round?: string | null;
   notes?: string;
   source?: string;
   created_at: string;
@@ -144,7 +144,7 @@ export async function fetchAllCourtsForTournament(
 
     // Get unique court numbers
     const uniqueCourts = new Set<string>();
-    (data || []).forEach((row: any) => {
+    (data || []).forEach((row: { court_number: string | null }) => {
       if (row.court_number) {
         uniqueCourts.add(row.court_number);
       }
@@ -232,7 +232,7 @@ export async function deleteCourtMapping(
     const p2Lower = player2.toLowerCase();
 
     // Try deleting with player order 1,2
-    let { error } = await supabase
+    const { error } = await supabase
       .from("tournament_court_mappings")
       .delete()
       .eq("tournament_slug", tournamentSlug)

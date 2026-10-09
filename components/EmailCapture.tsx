@@ -100,7 +100,9 @@ export default function EmailCapture({
       });
 
       const data = await response.json();
-      if (!data.ok) throw new Error("Subscription failed");
+      if (!response.ok || data.ok !== true || data.persisted !== true) {
+        throw new Error("Subscription failed");
+      }
       setSuccess(true);
     } catch (subscriptionError) {
       console.error(subscriptionError);

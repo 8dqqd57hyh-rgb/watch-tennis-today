@@ -65,9 +65,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Best-effort persistence. If the optional table has not been created yet,
-    // do not break the user-facing signup flow; report the warning in logs so it
-    // can be wired during production setup.
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("Email subscription storage is not configured.");
+      return NextResponse.json(
+        { ok: false, persisted: false, message: "Subscription storage is unavailable" },
+        { status: 503 }
+      );
+    }
+
     const { error: databaseError } = await supabaseAdmin
       .from("email_subscriptions")
       .upsert(
@@ -83,7 +88,11 @@ export async function POST(request: Request) {
       );
 
     if (databaseError) {
-      console.warn("Email subscription database warning:", databaseError.message);
+      console.error("Email subscription database error:", databaseError.message);
+      return NextResponse.json(
+        { ok: false, persisted: false, message: "Could not save subscription" },
+        { status: 500 }
+      );
     }
 
     if (process.env.RESEND_API_KEY) {
@@ -108,7 +117,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      persisted: !databaseError,
+      persisted: true,
     });
   } catch (error) {
     console.error("General subscription error:", error);

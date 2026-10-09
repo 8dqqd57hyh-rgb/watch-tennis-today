@@ -22,7 +22,7 @@ export default function MyPlayersPage() {
       <nav className="mb-6 flex flex-wrap gap-2 text-sm text-zinc-500">
         <Link href="/" className="hover:text-green-700">Home</Link>
         <span>/</span>
-        <span className="font-bold text-zinc-900">My Players</span>
+        <span className="font-bold text-zinc-300">My Players</span>
       </nav>
 
       <section className="mb-8 rounded-3xl bg-zinc-950 p-8 text-white shadow-sm">

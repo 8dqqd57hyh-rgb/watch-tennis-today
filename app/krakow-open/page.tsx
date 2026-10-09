@@ -191,12 +191,12 @@ export default function KrakowOpenPage() {
             >
               Find broadcasts
             </a>
-            <a
+            <Link
               href="/watch-tennis-in/poland"
               className="rounded-2xl border border-zinc-700 px-6 py-4 text-lg font-bold transition hover:border-blue-500"
             >
               Watch in Poland
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -240,7 +240,7 @@ export default function KrakowOpenPage() {
 
                 <p className="rounded-lg bg-blue-950/40 p-4 text-zinc-300">
                   📍 <strong>Getting there:</strong> The Krakow Racket Club is accessible by public
-                  transport and has parking facilities. Krakow's John Paul II International Airport
+                  transport and has parking facilities. Krakow&apos;s John Paul II International Airport
                   is approximately 11 km from the venue.
                 </p>
               </div>
@@ -320,7 +320,7 @@ export default function KrakowOpenPage() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 inline-block h-2 w-2 rounded-full bg-blue-500 flex-shrink-0"></span>
-                <span>Explore Krakow's historic Old Town nearby</span>
+                <span>Explore Krakow&apos;s historic Old Town nearby</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 inline-block h-2 w-2 rounded-full bg-blue-500 flex-shrink-0"></span>

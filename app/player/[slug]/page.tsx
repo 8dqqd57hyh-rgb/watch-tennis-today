@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getPlayerMatchStartTime, getPlayerPageSummary, isCurrentPlayerMatch } from "@/app/lib/playerPageSummary";
+import { getBaseUrl } from "@/app/lib/serverMatches";
 import { isFinishedMatch, inferMatchWinnerSideFromScore } from "@/app/lib/playerMatchResult";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
@@ -479,28 +480,13 @@ export async function generateMetadata({
   };
 }
 
-async function getBaseUrl() {
-  const headersList = await headers();
-
-  const host = headersList.get("host");
-
-  if (!host) {
-    return "http://localhost:3000";
-  }
-
-  const protocol = host.includes("localhost")
-    ? "http"
-    : "https";
-
-  return `${protocol}://${host}`;
-}
-
 async function getMatches(
   playerName?: string,
   options: { daysBack?: number; daysForward?: number; formHistory?: boolean; playerSlug?: string } = {}
 ): Promise<Match[]> {
   try {
-    const baseUrl = await getBaseUrl();
+    const headersList = await headers();
+    const baseUrl = getBaseUrl(headersList.get("host"));
     const params = new URLSearchParams({
       includeFinished: "1",
       daysBack: String(Math.min(options.daysBack ?? 30, 30)),
@@ -1383,6 +1369,13 @@ console.log('Player Matches Data:', playerMatches);
             </div>
           </section>
 
+          <div className="mb-6">
+            <LocalPlayerFollowButton
+              playerName={playerName}
+              playerSlug={pageSlug}
+            />
+          </div>
+
           {!isVerifiedPlayer ? (
             <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm leading-7 text-yellow-100">
               This player page comes from a live-data slug and has not been manually verified yet.
@@ -1855,12 +1848,6 @@ console.log('Player Matches Data:', playerMatches);
         </div>
       </section>
 
-      <div className="mb-8">
-        <LocalPlayerFollowButton
-          playerName={playerName}
-          playerSlug={pageSlug}
-        />
-      </div>
       {playerMatches.some(isLiveMatch) ? (
   <section className="mb-8 rounded-2xl border border-red-500 bg-red-500/10 p-6">
     <div className="flex flex-wrap items-center gap-3 mb-4">

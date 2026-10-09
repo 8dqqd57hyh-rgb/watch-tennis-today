@@ -40,11 +40,15 @@ test("complete scores override stale live and upcoming labels", () => {
   expect(result.finishedMatches).toHaveLength(2);
 });
 
-for (const status of ["CANCELLED", "CANCELED", "SUSPENDED", "POSTPONED", "UNKNOWN", "EXPIRED", "RETIRED", "WALKOVER"]) {
+for (const status of ["CANCELLED", "CANCELED", "SUSPENDED", "POSTPONED", "EXPIRED", "RETIRED", "WALKOVER"]) {
   test(`${status} is never advertised as the next match`, () => {
     expect(summary([match("unavailable", status, 1)]).nextMatch).toBeUndefined();
   });
 }
+
+test("future UNKNOWN fixtures remain visible as the next match", () => {
+  expect(summary([match("provider-status-missing", "UNKNOWN", 24)]).nextMatch?.id).toBe("provider-status-missing");
+});
 
 test("stale and undated fixtures do not claim current activity", () => {
   const rows = [match("stale-live", "LIVE", -9), match("stale-scheduled", "UPCOMING", -13),

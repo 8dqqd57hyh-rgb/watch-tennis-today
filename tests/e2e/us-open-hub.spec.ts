@@ -1,13 +1,11 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("US Open hub and current homepage banner are reachable", async ({ page }) => {
-  await page.goto("/");
-  const banner = page.getByTestId("us-open-spotlight");
-  await expect(banner.getByRole("heading", { name: "Follow the US Open live" })).toBeVisible();
-  await banner.getByRole("link", { name: "US Open hub" }).click();
+test("US Open hub is reachable independently of seasonal homepage banners", async ({ page }) => {
+  const response = await page.goto("/us-open");
+  expect(response?.status()).toBe(200);
   await expect(page).toHaveURL(/\/us-open$/);
-  await expect(page.getByRole("heading", { level: 1, name: /US Open 2026: Live Matches/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /US Open \d{4}: Live Matches/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Current tournament snapshot" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Live now" })).toBeVisible();
 });

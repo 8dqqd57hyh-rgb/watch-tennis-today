@@ -168,6 +168,18 @@ function formatTime(value?: string) {
   });
 }
 
+function normalizeDashboardStatus(match: Match): Match {
+  if (match.status.toUpperCase() !== "UNKNOWN" || !match.startTime) return match;
+
+  const startTime = new Date(match.startTime).getTime();
+  if (Number.isNaN(startTime)) return match;
+
+  return {
+    ...match,
+    status: startTime > Date.now() ? "UPCOMING" : "FINISHED",
+  };
+}
+
 export default function MyPlayersClient() {
   const [followedPlayers, setFollowedPlayers] = useState<FollowedPlayer[]>(() => readFollowedPlayers());
   const [matches, setMatches] = useState<Match[]>([]);
@@ -203,7 +215,7 @@ export default function MyPlayersClient() {
           ttlMs: 60_000,
         });
 
-        setMatches(safeMatches as Match[]);
+        setMatches((safeMatches as Match[]).map(normalizeDashboardStatus));
         return safeMatches;
       } catch (error) {
         console.error(error);
@@ -295,7 +307,7 @@ export default function MyPlayersClient() {
         <h2 className="mb-3 text-3xl font-black text-zinc-950">
           Follow players to build your tennis feed
         </h2>
-        <p className="mb-6 max-w-2xl leading-7 text-zinc-600">
+        <p className="mb-6 max-w-2xl leading-7 text-zinc-700">
           Open any player page and tap “Follow player”. Your choices are stored on this device,
           so visitors get a useful dashboard without creating an account.
         </p>
@@ -348,15 +360,15 @@ export default function MyPlayersClient() {
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="rounded-2xl border border-zinc-200 p-3">
               <p className="text-2xl font-black text-red-600">{liveCount}</p>
-              <p className="text-xs font-bold uppercase text-zinc-500">Live</p>
+              <p className="text-xs font-bold uppercase text-zinc-700">Live</p>
             </div>
             <div className="rounded-2xl border border-zinc-200 p-3">
               <p className="text-2xl font-black text-zinc-950">{upcomingCount}</p>
-              <p className="text-xs font-bold uppercase text-zinc-500">Next</p>
+              <p className="text-xs font-bold uppercase text-zinc-700">Next</p>
             </div>
             <div className="rounded-2xl border border-zinc-200 p-3">
               <p className="text-2xl font-black text-zinc-950">{resultCount}</p>
-              <p className="text-xs font-bold uppercase text-zinc-500">Results</p>
+              <p className="text-xs font-bold uppercase text-zinc-700">Results</p>
             </div>
           </div>
         </div>
@@ -404,7 +416,7 @@ export default function MyPlayersClient() {
 Auto-refreshes every minute. Live and upcoming matches are shown first, with recent results underneath.
             </p>
           </div>
-          <Link href="/watch-tennis-live-today" className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-green-400 hover:bg-green-50">
+          <Link href="/watch-tennis-live-today" className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-black text-zinc-900 hover:border-green-400 hover:bg-green-50">
             All live tennis →
           </Link>
         </div>
@@ -439,10 +451,10 @@ Auto-refreshes every minute. Live and upcoming matches are shown first, with rec
                   <Link href={`/watch/${getMatchSlug(match)}`} className="rounded-xl bg-black px-4 py-2 text-sm font-black text-white hover:bg-zinc-800">
                     Open match →
                   </Link>
-                  <Link href={`/player/${match.followedPlayer.slug}`} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-green-400 hover:bg-white">
+                  <Link href={`/player/${match.followedPlayer.slug}`} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black text-zinc-900 hover:border-green-400 hover:bg-white">
                     Player page →
                   </Link>
-                  <Link href="/where-to-watch-french-open" className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black hover:border-green-400 hover:bg-white">
+                  <Link href="/where-to-watch-french-open" className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-black text-zinc-900 hover:border-green-400 hover:bg-white">
                     Where to watch →
                   </Link>
                 </div>

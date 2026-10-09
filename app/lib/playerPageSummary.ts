@@ -20,9 +20,18 @@ export function getPlayerMatchStartTime(match: PlayerMatch) {
 }
 
 export function isCurrentPlayerMatch(match: PlayerMatch, kind: "LIVE" | "UPCOMING", now = Date.now()) {
-  if (normalizeMatchStatus(match.status) !== kind) return false;
+  const normalizedStatus = normalizeMatchStatus(match.status);
   const start = Date.parse(getPlayerMatchStartTime(match) || "");
   if (!Number.isFinite(start)) return false;
+
+  // Some provider fixture rows have a future start time but no usable status.
+  // Keep those rows visible as the next match instead of showing TBD.
+  if (normalizedStatus === "UNKNOWN" && kind === "UPCOMING") {
+    return start >= now;
+  }
+
+  if (normalizedStatus !== kind) return false;
+
   return kind === "LIVE"
     ? start <= now && start >= now - LIVE_WINDOW
     : start >= now - SCHEDULE_WINDOW;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCanonicalPlayerSlug, looksLikeClearlyInvalidPlayerSlug } from "./data/playerSlugs";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
   const pluralPlayerPathMatch = request.nextUrl.pathname.match(/^\/players\/(.+)$/);
   const watchPlayerLiveMatch = request.nextUrl.pathname.match(/^\/watch-player-live\/(.+)$/);

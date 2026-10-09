@@ -33,6 +33,14 @@ function normalizeMatches(data: unknown): ClientMatch[] {
     return (data as { matches: ClientMatch[] }).matches;
   }
 
+  if (
+    data &&
+    typeof data === "object" &&
+    Array.isArray((data as { value?: unknown }).value)
+  ) {
+    return (data as { value: ClientMatch[] }).value;
+  }
+
   return [];
 }
 
