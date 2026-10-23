@@ -15,8 +15,6 @@ import {
   type MatchCenterMatch,
 } from "@/src/lib/matchCenter";
 export const revalidate = 3600;
-const EDITORIAL_LAST_MODIFIED = new Date("2026-07-30T00:00:00.000Z");
-const ENTITY_LAST_MODIFIED = new Date("2026-07-01T00:00:00.000Z");
 
 type Match = {
   id: string;
@@ -303,7 +301,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return buildSitemapEntry({
       path,
-      lastModified: livePages.includes(path) ? now : EDITORIAL_LAST_MODIFIED,
+      ...(livePages.includes(path) ? { lastModified: now } : {}),
       changeFrequency: livePages.includes(path) ? "hourly" : "weekly",
       priority: path === "" ? 1 : 0.9,
     });
@@ -317,7 +315,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((path) =>
     buildSitemapEntry({
       path,
-      lastModified: path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? now : EDITORIAL_LAST_MODIFIED,
+      ...(path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? { lastModified: now } : {}),
       changeFrequency: path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? "hourly" : "weekly",
       priority: 0.9,
     })
@@ -327,14 +325,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // AdSense quality: include only manually reviewed country guides.
   const broadcasterPages: MetadataRoute.Sitemap = getUniqueBroadcasters().map((broadcaster) => ({
     url: `https://watchtennistoday.com/broadcaster/${broadcaster.slug}`,
-    lastModified: ENTITY_LAST_MODIFIED,
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
 
   const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
     url: `https://watchtennistoday.com/watch-tennis-in/${country}`,
-    lastModified: ENTITY_LAST_MODIFIED,
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
@@ -342,7 +338,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const canIWatchPages: MetadataRoute.Sitemap = CURATED_CAN_I_WATCH_PATHS.flatMap((path) => {
     const entry = buildSitemapEntry({
       path,
-      lastModified: ENTITY_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.78,
     });
@@ -377,14 +372,13 @@ const uniquePlayers = [
     ...dynamicPlayers,
   ]),
 ]
-  // AdSense quality: player URLs enter the sitemap only when the page has a
-  // substantial editorial profile and is eligible for indexing.
-  .filter((player) => ADSENSE_INDEXABLE_PLAYER_SLUGS.has(player))
+  // Players in current important matches are indexable (see shouldIndexPlayerPage);
+  // other top players need a reviewed editorial profile.
+  .filter((player) => ADSENSE_INDEXABLE_PLAYER_SLUGS.has(player) || dynamicPlayers.includes(player))
   .slice(0, 120);
 
   const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
     url: `https://watchtennistoday.com/player/${player}`,
-    lastModified: ENTITY_LAST_MODIFIED,
     changeFrequency: "daily" as const,
     priority: canonicalTopPlayers.includes(player) ? 0.9 : 0.75,
   }));
@@ -406,7 +400,6 @@ const uniquePlayers = [
   const tournamentPages: MetadataRoute.Sitemap = stableTournamentDetailSlugs.map(
     (tournament) => ({
       url: `https://watchtennistoday.com/tournament/${tournament}`,
-      lastModified: ENTITY_LAST_MODIFIED,
       changeFrequency: uniqueTournaments.includes(tournament) ? ("daily" as const) : ("monthly" as const),
       priority: stableTournamentHubSlugs.includes(tournament) ? 0.86 : 0.9,
     })
@@ -414,9 +407,6 @@ const uniquePlayers = [
 
   const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
     url: `https://watchtennistoday.com/match/${matchSlug(match)}`,
-    lastModified: match.startTime
-  ? new Date(match.startTime)
-  : now,
     changeFrequency: "hourly" as const,
     priority: 0.9,
   }));
@@ -433,7 +423,6 @@ const frenchOpenPages = [
 
   const guidePages: MetadataRoute.Sitemap = publishedGuideArticles.map((article) => ({
     url: `https://watchtennistoday.com/guides/${article.slug}`,
-    lastModified: EDITORIAL_LAST_MODIFIED,
     changeFrequency: "monthly" as const,
     priority: 0.86,
   }));
@@ -450,7 +439,6 @@ const frenchOpenPages = [
   ...matchPages,
   ...frenchOpenPages.map((page) => buildSitemapEntry({
     path: page,
-    lastModified: EDITORIAL_LAST_MODIFIED,
     changeFrequency: "daily",
     priority: 0.9,
   })),

@@ -42,8 +42,7 @@ function hasMeaningfulPlayer(value?: string | null) {
   return Boolean(
     player &&
     !INVALID_ENTITY.test(player) &&
-    !/[\/&+]/.test(player) &&
-    !/(^|\s)\p{L}\.(?=\s|$)/u.test(player)
+    !/[\/&+]/.test(player)
   );
 }
 
@@ -59,7 +58,8 @@ export function shouldIndexMatch(match: MatchSeoInput, now = new Date()) {
   if (!hasMeaningfulPlayer(match.player1) || !hasMeaningfulPlayer(match.player2) || !tournament) {
     return false;
   }
-  if (/LIVE|SUSPENDED|DELAYED/.test(status)) return false;
+  // LIVE stays indexable: "X vs Y live stream" is the main search demand.
+  if (/SUSPENDED|DELAYED/.test(status)) return false;
   if (/CANCEL|POSTPON|ABANDON|WALKOVER/.test(status)) return false;
   if (!isEligibleCompetition(category, tournament)) return false;
 
@@ -70,9 +70,10 @@ export function shouldIndexMatch(match: MatchSeoInput, now = new Date()) {
     return Boolean(slug && POPULAR_PLAYER_SLUGS.has(slug));
   });
   const majorEvent = isGrandSlam(tournament);
+  const isMainTour = /^(?:ATP|WTA)$/i.test(category);
 
   if (!(hasProvider || hasUniqueContext || majorEvent)) return false;
-  if (!(hasPopularPlayer || majorEvent)) return false;
+  if (!(hasPopularPlayer || majorEvent || isMainTour)) return false;
 
   if (!match.startTime) return false;
   const timestamp = new Date(match.startTime).getTime();

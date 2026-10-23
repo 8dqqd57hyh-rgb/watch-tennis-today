@@ -136,7 +136,7 @@ export function shouldIncludeInSitemap(path: string) {
 
 export function buildSitemapEntry({
   path,
-  lastModified = new Date(),
+  lastModified,
   changeFrequency = "weekly",
   priority = 0.7,
 }: SitemapEntryInput): MetadataRoute.Sitemap[number] | null {
@@ -144,7 +144,7 @@ export function buildSitemapEntry({
 
   return {
     url: canonicalUrl(path),
-    lastModified,
+    ...(lastModified ? { lastModified } : {}),
     changeFrequency,
     priority,
   };

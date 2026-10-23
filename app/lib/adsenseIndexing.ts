@@ -43,6 +43,7 @@ export type IndexablePlayerInput = {
   surfaceContext?: string | null;
   surfacePreferences?: string | null;
   watchReasons?: string[] | null;
+  hasRecentProMatches?: boolean;
 };
 
 export type IndexableTournamentInput = {
@@ -82,6 +83,8 @@ export function shouldIndexGeneratedPage(input: IndexableGeneratedPageInput) {
 }
 
 export function shouldIndexPlayerPage(input: IndexablePlayerInput) {
+  // Players in a current ATP/WTA/Challenger match have live content and real search demand.
+  if (input.hasRecentProMatches) return true;
   if (!input.canonicalSlug) return false;
   if (!ADSENSE_INDEXABLE_PLAYER_SLUGS.has(input.canonicalSlug)) return false;
 

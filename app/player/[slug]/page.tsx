@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getPlayerMatchStartTime, getPlayerPageSummary, isCurrentPlayerMatch } from "@/app/lib/playerPageSummary";
-import { getBaseUrl } from "@/app/lib/serverMatches";
+import { getBaseUrl, getServerMatchesWindow } from "@/app/lib/serverMatches";
 import { isFinishedMatch, inferMatchWinnerSideFromScore } from "@/app/lib/playerMatchResult";
 import { canonicalUrl, robotsFor } from "@/app/lib/technicalSeo";
 import Link from "next/link";
@@ -13,7 +13,7 @@ import LocalMatchDateTime from "@/app/components/LocalMatchDateTime";
 import { EnrichmentLinkGrid, EnrichmentQuickFacts, EnrichmentWatchSummary } from "@/app/components/EnrichmentPanels";
 import RelatedPages from "@/app/components/RelatedPages";
 import { supabaseAdmin as supabase } from "@/app/lib/supabaseAdmin";
-import { shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
+import { ADSENSE_INDEXABLE_PLAYER_SLUGS, shouldIndexPlayerPage } from "@/app/lib/adsenseIndexing";
 import { getPlayerEnrichment } from "@/src/lib/enrichment";
 import { entriesForTournamentSlug } from "@/src/lib/enrichment/shared";
 
@@ -390,11 +390,28 @@ function getPlayerSlugByName(name: string) {
   );
 }
 
-function isIndexablePlayerSlug(slug: string) {
+async function hasRecentProMatches(playerName: string) {
+  const matches = await getServerMatchesWindow({
+    revalidateSeconds: 300,
+    includeFinished: true,
+    daysBack: 3,
+    daysForward: 3,
+  });
+
+  return matches.some((match) =>
+    /^(?:ATP|WTA|CHALLENGER)$/i.test(String(match.category || "")) &&
+    ![match.player1, match.player2].some((name) => /[\/&+]/.test(String(name || ""))) &&
+    [match.player1, match.player2].some((name) => doPlayerNamesMatch(String(name || ""), playerName))
+  );
+}
+
+async function isIndexablePlayerSlug(slug: string, playerName: string) {
   const canonicalSlug = getCanonicalPlayerSlug(slug);
   const profile = canonicalSlug ? PLAYER_EDITORIAL_PROFILES[canonicalSlug] : null;
+  const isWhitelisted = Boolean(canonicalSlug && ADSENSE_INDEXABLE_PLAYER_SLUGS.has(canonicalSlug));
 
   return shouldIndexPlayerPage({
+    hasRecentProMatches: isWhitelisted ? false : await hasRecentProMatches(playerName),
     canonicalSlug,
     biography: profile?.biography,
     playingStyle: profile?.playingStyle,
@@ -444,7 +461,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const { canonicalSlug, playerName, pageSlug } = getPlayerDisplay(slug);
-  const indexable = isIndexablePlayerSlug(slug);
+  const indexable = await isIndexablePlayerSlug(slug, playerName);
   const enrichment = getPlayerEnrichment({
     slug: pageSlug,
     name: playerName,

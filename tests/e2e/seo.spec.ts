@@ -231,6 +231,41 @@ test.describe("SEO-critical page basics", () => {
     expect(urls).not.toContain("https://watchtennistoday.com/can-i-watch/iga-swiatek/poland");
   });
 
+  test("sitemap XML stays within protocol limits and lists unique canonical site URLs", async ({ request }) => {
+    const response = await request.get("/sitemap.xml", { failOnStatusCode: false });
+    const xml = await response.text();
+    const urls = Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g), (match) => match[1]);
+    const lastModifiedValues = Array.from(xml.matchAll(/<lastmod>(.*?)<\/lastmod>/g), (match) => match[1]);
+    const urlEntries = Array.from(xml.matchAll(/<url>([\s\S]*?)<\/url>/g), (match) => match[1]);
+
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toMatch(/xml/i);
+    expect(xml).toMatch(/^<\?xml\s+version="1\.0"\s+encoding="UTF-8"/);
+    expect(xml).toContain("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+    expect(xml.trimEnd()).toMatch(/<\/urlset>$/);
+    expect(urls.length).toBeGreaterThan(0);
+    expect(urls.length).toBeLessThanOrEqual(50_000);
+    expect(Buffer.byteLength(xml, "utf8")).toBeLessThanOrEqual(50 * 1024 * 1024);
+    expect(xml.match(/<url>/g)?.length).toBe(urls.length);
+    expect(new Set(urls).size).toBe(urls.length);
+    const aboutEntry = urlEntries.find((entry) => entry.includes(`<loc>${SITE_URL}/about</loc>`));
+    expect(aboutEntry).toBeDefined();
+    expect(aboutEntry).not.toContain("<lastmod>");
+
+    for (const location of urls) {
+      const url = new URL(location);
+      expect(url.origin).toBe(SITE_URL);
+      expect(url.search).toBe("");
+      expect(url.hash).toBe("");
+      expect(url.pathname === "/" || !url.pathname.endsWith("/")).toBe(true);
+    }
+
+    for (const lastModified of lastModifiedValues) {
+      expect(Number.isNaN(Date.parse(lastModified))).toBe(false);
+      expect(new Date(lastModified).getTime()).toBeLessThanOrEqual(Date.now() + 60_000);
+    }
+  });
+
   test("sitemap excludes redirect-only and noindex-only paths", async ({ request }) => {
     const response = await request.get("/sitemap.xml", { failOnStatusCode: false });
     const xml = await response.text();
