@@ -11,6 +11,29 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Email Subscriptions
+
+Configure server-only `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Apply
+`docs/sql/email-subscriptions.sql` before using general email signup; the script
+enables RLS. `RESEND_API_KEY` enables signup emails and is required for player
+alerts and digests.
+
+Set `EMAIL_UNSUBSCRIBE_SECRET` to a stable, high-entropy secret of at least 32
+bytes before sending emails. If omitted, unsubscribe tokens use the Supabase
+service-role key. Changing the effective secret invalidates links in previously
+sent emails. Never expose either secret through a `NEXT_PUBLIC_` variable.
+
+New signup emails, player alerts and digests include an encrypted unsubscribe
+link and one-click headers. Opening a link does not change subscriptions; a
+confirmation or mail-client POST is required. General opt-out marks all general
+subscriptions for that email `unsubscribed`. Player opt-out sets all player
+subscriptions for that email to `confirmed=false`, excluding them from both
+player senders. These two email categories are independent.
+
+Messages sent before this feature was deployed do not contain unsubscribe links.
+Tests use mocked storage and email APIs; never run subscription write tests on
+production.
+
 ## Quality Architecture
 
 The project keeps the existing Playwright tests and adds a Cypress suite shaped like a senior QA automation project: reusable commands, deterministic fixtures, component tests, network failure coverage, tagged execution and CI reporting.

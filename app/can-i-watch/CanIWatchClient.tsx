@@ -58,12 +58,12 @@ export default function CanIWatchClient({ countries }: { countries: CountryOptio
         </label>
 
         <label className="block">
-          <span className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Player or tournament</span>
+          <span className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">Tournament or players</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             list="can-i-watch-options"
-            placeholder="Wimbledon, Iga Swiatek, Carlos Alcaraz..."
+            placeholder="Wimbledon, Alcaraz vs Sinner, Iga Swiatek..."
             className="mt-2 w-full rounded-2xl border border-zinc-700 bg-black px-4 py-3 font-bold text-white"
           />
           <datalist id="can-i-watch-options">
@@ -78,7 +78,7 @@ export default function CanIWatchClient({ countries }: { countries: CountryOptio
             href={`/can-i-watch/${querySlug}/${selectedCountry?.slug ?? countrySlug}`}
             className="w-full rounded-2xl bg-emerald-400 px-5 py-3 text-center font-black text-black hover:bg-emerald-300"
           >
-            Open SEO page
+            Open full page
           </Link>
         </div>
       </div>

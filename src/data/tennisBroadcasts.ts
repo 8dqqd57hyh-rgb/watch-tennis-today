@@ -11,6 +11,8 @@
  * matching countryCode in data/broadcastFinder.ts only if the country guide
  * should exist as a browsable page.
  */
+import { players } from "@/data/players";
+
 export type TennisTournamentId =
   | "australian-open"
   | "roland-garros"
@@ -1078,19 +1080,44 @@ function tournamentMatchesQuery(entry: TennisBroadcastEntry, query: string) {
   );
 }
 
+const knownPlayerTours: Record<string, TennisTournamentId[]> = (() => {
+  const map: Record<string, TennisTournamentId[]> = { ...popularPlayerTourMap };
+
+  for (const [slug, player] of Object.entries(players)) {
+    const tours: TennisTournamentId[] = [player.tour === "WTA" ? "wta-tour" : "atp-tour"];
+    const lastName = slug.split("-").slice(1).join("-");
+    map[slug] ??= tours;
+    if (lastName) map[lastName] ??= tours;
+  }
+
+  return map;
+})();
+
+// Accepts single names or match-style queries such as "Alcaraz vs Sinner".
 function playerTourIds(query: string) {
-  return popularPlayerTourMap[normalizePlayerName(query)] ?? [];
+  const parts = [
+    query,
+    ...query.split(/\s+(?:vs\.?|v\.?|versus|and|&|-|–)\s+|[,/]/i),
+    ...normalizeCoverageQuery(query).split(/-(?:vs|v|versus|and)-/),
+  ];
+  const tours = new Set<TennisTournamentId>();
+
+  for (const part of parts) {
+    for (const tour of knownPlayerTours[normalizeCoverageQuery(part)] ?? []) tours.add(tour);
+  }
+
+  return Array.from(tours);
 }
 
 export function findBroadcasts(country: string, query: string) {
+  const countryEntries = tennisBroadcasts.filter((entry) => countryMatches(entry, country));
+  const tournamentEntries = countryEntries.filter((entry) => tournamentMatchesQuery(entry, query));
+
+  // A named tournament's own rights take priority over general tour coverage.
+  if (tournamentEntries.length > 0) return tournamentEntries;
+
   const playerTours = playerTourIds(query);
-
-  return tennisBroadcasts.filter((entry) => {
-    if (!countryMatches(entry, country)) return false;
-    if (tournamentMatchesQuery(entry, query)) return true;
-
-    return playerTours.includes(entry.tournamentId);
-  });
+  return countryEntries.filter((entry) => playerTours.includes(entry.tournamentId));
 }
 
 export function findBroadcastsForPlayer(country: string, player: string) {
@@ -1132,18 +1159,7 @@ export function getCanIWatchQueryOptions() {
     type: "tournament" as const,
   }));
 
-  const playerOptions = [
-    "Carlos Alcaraz",
-    "Iga Swiatek",
-    "Jannik Sinner",
-    "Novak Djokovic",
-    "Coco Gauff",
-    "Aryna Sabalenka",
-    "Daniil Medvedev",
-    "Alexander Zverev",
-    "Holger Rune",
-    "Jessica Pegula",
-  ].map((label) => ({
+  const playerOptions = Object.values(players).map(({ name: label }) => ({
     label,
     slug: normalizeCoverageQuery(label),
     type: "player" as const,

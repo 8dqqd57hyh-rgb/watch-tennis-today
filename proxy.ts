@@ -4,12 +4,11 @@ import { getCanonicalPlayerSlug, looksLikeClearlyInvalidPlayerSlug } from "./dat
 export function proxy(request: NextRequest) {
   const playerPathMatch = request.nextUrl.pathname.match(/^\/player\/(.+)$/);
   const pluralPlayerPathMatch = request.nextUrl.pathname.match(/^\/players\/(.+)$/);
-  const watchPlayerLiveMatch = request.nextUrl.pathname.match(/^\/watch-player-live\/(.+)$/);
 
   if (pluralPlayerPathMatch) {
     const firstSegment = pluralPlayerPathMatch[1].split("/").filter(Boolean)[0];
 
-    if (!["atp", "wta", "live-now"].includes(firstSegment || "")) {
+    if (!["atp", "wta"].includes(firstSegment || "")) {
       const requestedSlug = decodeURIComponent(pluralPlayerPathMatch[1] || "")
         .split("/")
         .filter(Boolean)
@@ -53,33 +52,6 @@ export function proxy(request: NextRequest) {
 
     if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
       return NextResponse.next();
-    }
-  }
-
-  if (watchPlayerLiveMatch) {
-    const requestedSlug = decodeURIComponent(watchPlayerLiveMatch[1] || "")
-      .split("/")
-      .filter(Boolean)
-      .join("-")
-      .replace(/-+/g, "-")
-      .replace(/^[-.]+|[-.]+$/g, "");
-
-    const url = request.nextUrl.clone();
-
-    if (watchPlayerLiveMatch[1].includes("/") && requestedSlug) {
-      url.pathname = `/watch-player-live/${requestedSlug}`;
-      return NextResponse.redirect(url, 308);
-    }
-
-    const canonicalPlayerSlug = getCanonicalPlayerSlug(requestedSlug);
-    if (canonicalPlayerSlug && canonicalPlayerSlug !== requestedSlug) {
-      url.pathname = `/watch-player-live/${canonicalPlayerSlug}`;
-      return NextResponse.redirect(url, 308);
-    }
-
-    if (looksLikeClearlyInvalidPlayerSlug(requestedSlug)) {
-      url.pathname = "/players/live-now";
-      return NextResponse.redirect(url, 308);
     }
   }
 

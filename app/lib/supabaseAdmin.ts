@@ -8,6 +8,7 @@ type SupabaseMockBuilder = {
   select: (...args: unknown[]) => SupabaseMockBuilder;
   insert: (...args: unknown[]) => SupabaseMockResult;
   upsert: (...args: unknown[]) => SupabaseMockResult;
+  update: (...args: unknown[]) => SupabaseMockBuilder;
   eq: (...args: unknown[]) => SupabaseMockBuilder;
   gte: (...args: unknown[]) => SupabaseMockBuilder;
   in: (...args: unknown[]) => SupabaseMockBuilder;
@@ -26,6 +27,7 @@ function createBuildTimeSupabaseMock() {
   builder.select = () => builder;
   builder.insert = () => emptyResult;
   builder.upsert = () => emptyResult;
+  builder.update = () => builder;
   builder.eq = () => builder;
   builder.gte = () => builder;
   builder.in = () => builder;

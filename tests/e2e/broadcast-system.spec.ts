@@ -33,10 +33,6 @@ import {
   getRelatedTournaments,
   getTournamentNetwork,
 } from "../../src/lib/intelligence/queries";
-import {
-  buildBroadcastResearchCsv,
-  getBroadcastResearchSummary,
-} from "../../app/lib/broadcastResearch";
 
 const grandSlamIds = ["australian-open", "roland-garros", "wimbledon", "us-open"];
 
@@ -82,24 +78,6 @@ async function expectMetaContent(page: Page, selector: string, expected: string 
 }
 
 test.describe("tennis broadcaster database", () => {
-  test("builds a reusable research summary and CSV from normalized records", () => {
-    const records = getNormalizedBroadcastRecords();
-    const summary = getBroadcastResearchSummary(records);
-    const csv = buildBroadcastResearchCsv(records);
-
-    expect(summary).toMatchObject({
-      recordCount: 72,
-      countryCount: 12,
-      tournamentCount: 6,
-      latestVerified: "2026-06-21",
-    });
-    expect(summary.broadcasterCount).toBeGreaterThan(0);
-    expect(csv.split("\r\n")).toHaveLength(records.length + 1);
-    expect(csv).toContain('"record_id","country_code"');
-    expect(csv).toContain('"poland:wimbledon:polsat:polsat-box-go-or-current-polsat-sports-access"');
-    expect(csv).toContain('"https://www.wimbledon.com/en_GB/about/tv_coverage"');
-  });
-
   test("stores Grand Slams separately from ATP and WTA rows", () => {
     const usaEntries = getCountryBroadcastEntries("US");
     const usaGrandSlams = usaEntries.filter((entry) => entry.eventType === "grand_slam");
@@ -424,28 +402,6 @@ test.describe("broadcaster UI", () => {
     await expect(page.getByText("Tennis Channel monthly subscription: USD 11.99/month before taxes and fees")).toBeVisible();
     await expect(page.getByText(/Last verified: 2026-06-21/).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /Who shows the Grand Slams in United States/i })).toBeVisible();
-  });
-
-  test("cost calculator uses country services and separates unknown prices", async ({ page }) => {
-    await page.goto("/tennis-streaming-cost-calculator", { waitUntil: "domcontentloaded" });
-
-    await expect(page.getByRole("heading", { name: "Monthly total" })).toBeVisible();
-    await page.locator("select").first().selectOption("US");
-    await page.getByRole("checkbox", { name: /^Tennis Channel app/ }).click();
-    await page.getByRole("checkbox", { name: /ESPN platforms/ }).click();
-
-    await expect(page.getByText("$11.99", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("No stable monthly price stored")).toBeVisible();
-    await expect(page.getByText("ESPN platforms", { exact: true }).first()).toBeVisible();
-  });
-
-  test("service picker recommends services for selected tournament groups", async ({ page }) => {
-    await page.goto("/tennis-streaming-service-picker", { waitUntil: "domcontentloaded" });
-
-    await expect(page.getByRole("heading", { name: /Recommended services for United States/i })).toBeVisible();
-    await expect(page.getByText("Tennis Channel app").first()).toBeVisible();
-    await expect(page.getByText("ESPN platforms").first()).toBeVisible();
-    await expect(page.getByText("$11.99/month").first()).toBeVisible();
   });
 });
 

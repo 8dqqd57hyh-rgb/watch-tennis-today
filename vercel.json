@@ -1,12 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/send-player-alerts",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/update-tournament-calendar",
-      "schedule": "0 6 * * *"
-    }
-  ]
-}
+{}

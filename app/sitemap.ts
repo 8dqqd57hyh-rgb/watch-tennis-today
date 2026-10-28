@@ -1,446 +1,65 @@
 import type { MetadataRoute } from "next";
-import { players } from "@/data/players";
-import { getCanonicalPlayerSlug, verifiedPlayersFromMatchSide } from "@/data/playerSlugs";
-import { publishedGuideArticles } from "@/app/guides/articles";
 import { ADSENSE_INDEXABLE_BROADCAST_COUNTRIES } from "@/data/broadcastFinder";
-import { stableTournamentHubSlugs } from "@/data/tournamentHubs";
 import { ADSENSE_INDEXABLE_PLAYER_SLUGS } from "@/app/lib/adsenseIndexing";
 import { buildSitemapEntry, uniqueSitemapEntries } from "@/app/lib/technicalSeo";
 import { CURATED_CAN_I_WATCH_PATHS } from "@/app/lib/canIWatchSeo";
 import { WIMBLEDON_COUNTRY_SLUGS } from "@/app/lib/wimbledonCountryGuides";
 import { getUniqueBroadcasters } from "@/src/data/tennisBroadcasts";
-import {
-  getMatchSlug as getMatchCenterSlug,
-  shouldIncludeMatchInSitemap,
-  type MatchCenterMatch,
-} from "@/src/lib/matchCenter";
-export const revalidate = 3600;
 
-type Match = {
-  id: string;
-  player1: string;
-  player2: string;
-  tournament: string;
-  category?: string;
-  status?: string;
-  startTime?: string;
-};
+export const revalidate = 86400;
 
-const TOP_PLAYERS = new Set([
-  "jannik-sinner",
-  "carlos-alcaraz",
-  "novak-djokovic",
-  "daniil-medvedev",
-  "alexander-zverev",
-  "andrey-rublev",
-  "taylor-fritz",
-  "alex-de-minaur",
-  "stefanos-tsitsipas",
-  "casper-ruud",
-  "jack-draper",
-  "jesper-de-jong",
-  "matteo-berrettini",
-  "holger-rune",
-  "iga-swiatek",
-  "aryna-sabalenka",
-  "coco-gauff",
-  "elena-rybakina",
-  "jessica-pegula",
-  "madison-keys",
-  "jasmine-paolini",
-  "emma-navarro",
-  "mirra-andreeva",
-  "naomi-osaka",
-  "jelena-ostapenko",
-  "elina-svitolina",
-  "ha-eum-lee",
-]);
-
-const IMPORTANT_TOURNAMENT_KEYWORDS = [
-  "atp-rome",
-  "wta-rome",
-  "rome",
-  "roland-garros",
-  "french-open",
-  "wimbledon",
-  "us-open",
-  "australian-open",
-  "indian-wells",
-  "miami",
-  "madrid",
-  "monte-carlo",
-  "cincinnati",
-  "canada",
-  "paris",
-  "doha",
-  "dubai",
-  "stuttgart",
-  "halle",
-  "queens",
-  "tokyo",
-  "beijing",
-  "shanghai",
-  "wta-finals",
-  "atp-finals",
-];
-
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/,/g, "")
-    .replace(/\//g, "-")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function splitPlayers(name: string) {
-  return verifiedPlayersFromMatchSide(name);
-}
-
-function containsBadPlaceholder(text: string) {
-  const slug = slugify(text);
-
-  if (/qf\d+/i.test(slug)) return true;
-  if (/r\d+p\d+/i.test(slug)) return true;
-
-  return false;
-}
-
-function hasTooManyInitials(text: string) {
-  const slug = slugify(text);
-  const parts = slug.split("-");
-
-  return parts.some((part) => part.length === 1);
-}
-
-function isGoodPlayerName(name: string) {
-  if (containsBadPlaceholder(name)) return false;
-  if (hasTooManyInitials(name)) return false;
-
-  const slug = slugify(name);
-
-  if (!slug) return false;
-  if (slug.length < 6) return false;
-
-  const blocked = [
-    "q",
-    "qualifier",
-    "bye",
-    "tbd",
-    "unknown",
-  ];
-
-  if (blocked.includes(slug)) return false;
-
-  const parts = name
-    .trim()
-    .split(" ")
-    .filter(Boolean);
-
-  if (parts.length < 2) return false;
-
-  return true;
-}
-
-function isImportantTournament(tournament: string) {
-  const slug = slugify(tournament);
-
-  if (!slug) return false;
-  if (slug.includes("utr-ptt")) return false;
-  if (slug.includes("itf")) return false;
-
-  return IMPORTANT_TOURNAMENT_KEYWORDS.some((keyword) =>
-    slug.includes(keyword)
-  );
-}
-
-function isImportantMatch(match: Match) {
-  const allPlayers = [
-    ...splitPlayers(match.player1),
-    ...splitPlayers(match.player2),
-  ];
-
-  if (!allPlayers.every(isGoodPlayerName)) {
-    return false;
-  }
-  if (
-  match.player1.includes("/") ||
-  match.player2.includes("/")
-) {
-  return false;
-}
-
-  const players = allPlayers.map(slugify);
-
-  const hasTopPlayer = players.some((player) => TOP_PLAYERS.has(player));
-  const hasImportantTournament = isImportantTournament(match.tournament);
-  const isLive =
-  match.status?.toUpperCase() === "LIVE";
-const category = match.category?.toUpperCase();
-
-const isAtpOrWta =
-  category === "ATP" ||
-  category === "WTA";
-
-  return isLive || hasTopPlayer || hasImportantTournament || isAtpOrWta;
-}
-
-function matchSlug(match: Match) {
-  return getMatchCenterSlug(match);
-}
-
-async function getMatches(): Promise<Match[]> {
-  // Avoid live API calls while Vercel is collecting metadata/routes.
-  // Dynamic match URLs are discoverable from the app itself; the sitemap keeps
-  // stable SEO pages only so deployments do not stall on external data.
-  return [];
-}
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const matches = await getMatches();
-  const now = new Date();
-
-
-  const staticPages = [
-    "",
-    "/today",
-    "/live-tennis",
-    "/live-tennis-upsets",
-    "/who-plays-tennis-today",
-    "/tennis-watchlist-today",
-    "/tennis-spoiler-free-scores",
-    "/tennis-time-zone-converter",
-    "/players",
-    "/players/atp",
-    "/players/wta",
-    "/tv-schedule/iga-swiatek",
-    "/best-tennis-players",
-    "/tennis-calendar",
-    "/tennis-tournaments",
-    "/analysis",
-    "/tennis-resources",
-    "/newsletter",
-    "/advertise",
-    "/media-kit",
-    "/watch-tennis-in",
-    "/french-open",
-    "/french-open-guide",
-    "/watch",
-    "/affiliate-disclosure",
-    "/authors/watch-tennis-today",
-    "/guides",
-    "/tennis-guides",
-    "/tennis-glossary",
-    "/tennis-court-surfaces",
-    "/tennis-tv-broadcast-finder",
-    "/broadcasters",
-    "/tennis-tv-not-working",
-    "/tennis-streaming-services",
-    "/tennis-streaming-checklist",
-    "/tennis-streaming-cost-calculator",
-    "/tennis-streaming-service-picker",
-    "/tennis-live-alerts",
-    "/watch-tennis-abroad",
-    "/where-to-watch-wimbledon",
-    "/wimbledon-live",
-    "/wimbledon-schedule",
-    "/wimbledon-order-of-play",
-    "/wimbledon-draw",
-    "/wimbledon-prize-money",
-    "/wimbledon-results",
-    "/wimbledon-qualifying",
-    "/wimbledon-qualifying-live",
-    "/tennis-on-tv-today",
-    "/tennis-tv-schedule-today",
-    "/watch-tennis-live-today",
-    "/coverage-graph",
-    "/tournaments/krakow-open",
-    "/how-to-watch-tennis-without-cable",
-    "/how-to-watch-tennis-safely-abroad",
-    "/how-to-watch-tennis-legally",
-    "/tennis-scoring-explained",
-    "/atp-wta-rankings-explained",
-    "/tennis-tournament-levels-guide",
-    "/how-to-choose-tennis-streaming-service",
-    "/tennis-schedule-terms-explained",
-    "/official-tennis-broadcasters-guide",
-    "/tennis-live-scores-explained",
-    "/grand-slam-tv-rights-explained",
-    "/grand-slam-live",
-    "/grand-slams",
-    "/content-guidelines",
-    "/about",
-    "/contact",
-     "/privacy",
-    "/terms",
-    "/cookie-policy",
-"/editorial-policy",
-    "/how-we-source-data",
-    "/research/tennis-broadcast-access-report",
-"/how-we-verify-streams",
-    "/tennis-streaming-rights-explained",
-    "/disclaimer",
-    "/tournament",
-    "/wimbledon",
-    "/us-open",
-    "/australian-open",
-    "/french-open-order-of-play",
-    "/watch-tennis-online",
-    "/watch-alcaraz-live",
-    "/watch-djokovic-live",
-    "/watch-sinner-live",
-    "/why-trust-watch-tennis-today",
-    "/tennis-streaming",
-    "/can-i-watch",
-    "/start-here",
-    "/best-ways-to-watch-tennis-online",
-    ...WIMBLEDON_COUNTRY_SLUGS.map((country) => `/how-to-watch-wimbledon-in-${country}`),
-  ].map((path) => {
-    const livePages = ["", "/live-tennis", "/live-tennis-upsets", "/today"];
-
-    return buildSitemapEntry({
-      path,
-      ...(livePages.includes(path) ? { lastModified: now } : {}),
-      changeFrequency: livePages.includes(path) ? "hourly" : "weekly",
-      priority: path === "" ? 1 : 0.9,
-    });
-  });
-
-  const polishPages = [
-    "/pl/dzisiaj",
-    "/pl/tenis-na-zywo",
-    "/pl/kto-gra-dzisiaj-w-tenisa",
-    "/pl/gdzie-ogladac-tenis-w-polsce",
-  ].map((path) =>
-    buildSitemapEntry({
-      path,
-      ...(path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? { lastModified: now } : {}),
-      changeFrequency: path === "/pl/dzisiaj" || path === "/pl/tenis-na-zywo" ? "hourly" : "weekly",
-      priority: 0.9,
-    })
-  );
-
-
-  // AdSense quality: include only manually reviewed country guides.
-  const broadcasterPages: MetadataRoute.Sitemap = getUniqueBroadcasters().map((broadcaster) => ({
-    url: `https://watchtennistoday.com/broadcaster/${broadcaster.slug}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.82,
-  }));
-
-  const countryPages: MetadataRoute.Sitemap = Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) => ({
-    url: `https://watchtennistoday.com/watch-tennis-in/${country}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.82,
-  }));
-
-  const canIWatchPages: MetadataRoute.Sitemap = CURATED_CAN_I_WATCH_PATHS.flatMap((path) => {
-    const entry = buildSitemapEntry({
-      path,
-      changeFrequency: "monthly",
-      priority: 0.78,
-    });
-
-    return entry ? [entry] : [];
-  });
-
-
-  const importantMatches = matches.filter((match) =>
-    isImportantMatch(match) && shouldIncludeMatchInSitemap(match as MatchCenterMatch)
-  );
-
-  const dynamicPlayers = [
-    ...new Set(
-      importantMatches
-        .flatMap((match) => [
-          ...splitPlayers(match.player1),
-          ...splitPlayers(match.player2),
-        ])
-        .map(getCanonicalPlayerSlug)
-        .filter((slug): slug is keyof typeof players => Boolean(slug))
-    ),
-  ];
-
-  const canonicalTopPlayers = Array.from(TOP_PLAYERS)
-    .map(getCanonicalPlayerSlug)
-    .filter((slug): slug is keyof typeof players => Boolean(slug));
-
-const uniquePlayers = [
-  ...new Set([
-    ...canonicalTopPlayers,
-    ...dynamicPlayers,
-  ]),
-]
-  // Players in current important matches are indexable (see shouldIndexPlayerPage);
-  // other top players need a reviewed editorial profile.
-  .filter((player) => ADSENSE_INDEXABLE_PLAYER_SLUGS.has(player) || dynamicPlayers.includes(player))
-  .slice(0, 120);
-
-  const playerPages: MetadataRoute.Sitemap = uniquePlayers.map((player) => ({
-    url: `https://watchtennistoday.com/player/${player}`,
-    changeFrequency: "daily" as const,
-    priority: canonicalTopPlayers.includes(player) ? 0.9 : 0.75,
-  }));
-
-
-  const uniqueTournaments = [
-    ...new Set(
-      matches
-        .filter((match) => isImportantTournament(match.tournament))
-        .map((match) => slugify(match.tournament))
-        .filter(Boolean)
-    ),
-  ];
-
-  const stableTournamentDetailSlugs = Array.from(
-    new Set([...stableTournamentHubSlugs, ...uniqueTournaments])
-  );
-
-  const tournamentPages: MetadataRoute.Sitemap = stableTournamentDetailSlugs.map(
-    (tournament) => ({
-      url: `https://watchtennistoday.com/tournament/${tournament}`,
-      changeFrequency: uniqueTournaments.includes(tournament) ? ("daily" as const) : ("monthly" as const),
-      priority: stableTournamentHubSlugs.includes(tournament) ? 0.86 : 0.9,
-    })
-  );
-
-  const matchPages: MetadataRoute.Sitemap = importantMatches.map((match) => ({
-    url: `https://watchtennistoday.com/match/${matchSlug(match)}`,
-    changeFrequency: "hourly" as const,
-    priority: 0.9,
-  }));
-
-// Add evergreen French Open / Roland Garros related pages only. Results, live
-// snapshots and recap URLs are excluded after the event window.
-const frenchOpenPages = [
-  "/watch-french-open-online",
+const staticPaths = [
+  "",
+  "/can-i-watch",
+  "/watch",
+  "/watch-tennis-in",
+  "/broadcasters",
+  "/where-to-watch-wimbledon",
   "/where-to-watch-french-open",
+  "/watch-french-open-online",
+  "/how-to-watch-french-open-in-usa",
+  "/how-to-watch-tennis-legally",
+  "/how-to-watch-tennis-safely-abroad",
+  "/how-to-watch-tennis-without-cable",
+  "/official-tennis-broadcasters-guide",
+  "/tennis-tv-broadcast-finder",
+  "/tennis-streaming-services",
+  "/best-ways-to-watch-tennis-online",
+  "/watch-tennis-online",
+  "/watch-tennis-abroad",
+  "/players",
+  "/players/atp",
+  "/players/wta",
+  "/newsletter",
+  "/pl/gdzie-ogladac-tenis-w-polsce",
+  "/about",
+  "/contact",
+  "/privacy",
+  "/cookie-policy",
+  "/terms",
+  "/disclaimer",
+  "/affiliate-disclosure",
+  "/editorial-policy",
+  "/content-guidelines",
+  ...WIMBLEDON_COUNTRY_SLUGS.map((country) => `/how-to-watch-wimbledon-in-${country}`),
 ];
 
-  // AdSense quality: comparison detail pages are intentionally excluded because
-  // they are templated affiliate/comparison pages and are marked noindex.
-
-  const guidePages: MetadataRoute.Sitemap = publishedGuideArticles.map((article) => ({
-    url: `https://watchtennistoday.com/guides/${article.slug}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.86,
-  }));
-
- return uniqueSitemapEntries([
-  ...staticPages,
-  ...polishPages,
-  ...countryPages,
-  ...canIWatchPages,
-  ...broadcasterPages,
-  ...guidePages,
-  ...playerPages,
-  ...tournamentPages,
-  ...matchPages,
-  ...frenchOpenPages.map((page) => buildSitemapEntry({
-    path: page,
-    changeFrequency: "daily",
-    priority: 0.9,
-  })),
-]);
+export default function sitemap(): MetadataRoute.Sitemap {
+  return uniqueSitemapEntries([
+    ...staticPaths.map((path) =>
+      buildSitemapEntry({ path, changeFrequency: "weekly", priority: path === "" ? 1 : 0.9 }),
+    ),
+    ...Array.from(ADSENSE_INDEXABLE_BROADCAST_COUNTRIES).map((country) =>
+      buildSitemapEntry({ path: `/watch-tennis-in/${country}`, changeFrequency: "monthly", priority: 0.82 }),
+    ),
+    ...CURATED_CAN_I_WATCH_PATHS.map((path) =>
+      buildSitemapEntry({ path, changeFrequency: "monthly", priority: 0.78 }),
+    ),
+    ...getUniqueBroadcasters().map((broadcaster) =>
+      buildSitemapEntry({ path: `/broadcaster/${broadcaster.slug}`, changeFrequency: "monthly", priority: 0.82 }),
+    ),
+    ...Array.from(ADSENSE_INDEXABLE_PLAYER_SLUGS).map((slug) =>
+      buildSitemapEntry({ path: `/player/${slug}`, changeFrequency: "monthly", priority: 0.75 }),
+    ),
+  ]);
 }

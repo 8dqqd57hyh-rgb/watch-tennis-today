@@ -4,6 +4,7 @@ import { normalizeEmail, isValidEmail } from "@/app/lib/emailValidation";
 import { escapeHtml } from "@/app/lib/escapeHtml";
 import { checkSubscriptionRateLimit } from "@/app/lib/rateLimit";
 import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
+import { createEmailUnsubscribeMessage } from "@/app/lib/emailUnsubscribe";
 
 const ALLOWED_CONTEXT_TYPES = new Set([
   "daily",
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const unsubscribe = process.env.RESEND_API_KEY ? createEmailUnsubscribeMessage(email, "general") : null;
     const { error: databaseError } = await supabaseAdmin
       .from("email_subscriptions")
       .upsert(
@@ -95,13 +97,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (process.env.RESEND_API_KEY) {
+    if (process.env.RESEND_API_KEY && unsubscribe) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const baseUrl = getBaseUrl();
       await resend.emails.send({
         from: "Watch Tennis Today <onboarding@resend.dev>",
         to: email,
         subject: "🎾 You are signed up for useful tennis updates",
+        headers: unsubscribe.headers,
         html: `
           <div style="font-family:Arial,sans-serif;padding:24px;line-height:1.6;color:#111;">
             <h1 style="margin:0 0 16px;">You are signed up</h1>
@@ -110,6 +113,7 @@ export async function POST(request: Request) {
             <p><strong>Related page:</strong> ${escapeHtml(contextValue)}</p>
             <p>We focus on legal viewing guidance, match schedules and useful tennis reminders. We do not send links to unofficial streams.</p>
             <p><a href="${baseUrl}/newsletter-confirmation" style="display:inline-block;padding:12px 18px;background:#111;color:#fff;border-radius:8px;text-decoration:none;">View subscription details</a></p>
+            ${unsubscribe.html}
           </div>
         `,
       });

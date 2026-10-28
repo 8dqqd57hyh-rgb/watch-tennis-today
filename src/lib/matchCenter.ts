@@ -220,31 +220,6 @@ export function parseMatchSlug(slug: string): ParsedMatchSlug | null {
   };
 }
 
-export async function findMatchBySlug(slug: string, matches?: MatchCenterMatch[]) {
-  const parsed = parseMatchSlug(slug);
-  if (!parsed) return null;
-
-  const source: MatchCenterMatch[] =
-    matches ??
-    (await (await import("@/app/lib/serverMatches")).getServerMatchesWindow({
-      includeFinished: true,
-      includeRankings: true,
-      daysBack: 3,
-      daysForward: 14,
-      revalidateSeconds: 60,
-      timeoutMs: 12000,
-    }) as MatchCenterMatch[]);
-
-  const expected = new Set([parsed.playerOneSlug, parsed.playerTwoSlug]);
-
-  return (
-    source.find((match) => {
-      const slugs = [getCanonicalPlayerSlug(match.player1) || playerSlug(match.player1), getCanonicalPlayerSlug(match.player2) || playerSlug(match.player2)];
-      return slugs.every((item) => expected.has(item));
-    }) || null
-  );
-}
-
 export function fallbackMatchFromSlug(slug: string): MatchCenterMatch | null {
   const parsed = parseMatchSlug(slug);
   if (!parsed) return null;

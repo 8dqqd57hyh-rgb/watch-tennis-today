@@ -17,6 +17,8 @@ create table if not exists public.email_subscriptions (
   )
 );
 
+alter table public.email_subscriptions enable row level security;
+
 create index if not exists email_subscriptions_context_idx
   on public.email_subscriptions (context_type, context_value);
 
