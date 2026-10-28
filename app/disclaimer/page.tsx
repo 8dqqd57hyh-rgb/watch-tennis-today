@@ -9,7 +9,6 @@ export const metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
 export default function DisclaimerPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -85,10 +84,9 @@ export default function DisclaimerPage() {
               Affiliate disclosure
             </h2>
             <p>
-              Some links may be affiliate links. If a user clicks an affiliate
-              link and makes a purchase, Watch Tennis Today may earn a commission
-              at no additional cost to the user. Affiliate relationships do not
-              change the goal of helping users find legal tennis viewing options.
+              Watch Tennis Today does not use affiliate links or display
+              advertisements, and does not earn a commission from links to
+              broadcasters or other services.
             </p>
 
             <a

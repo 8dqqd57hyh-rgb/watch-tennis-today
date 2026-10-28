@@ -76,10 +76,10 @@ export default function FrenchOpenStreamingDecision({
           data-track-id="french_open_decision_nordvpn"
           data-track-position="affiliate"
           target="_blank"
-          rel="nofollow sponsored noopener noreferrer"
+          rel="nofollow noopener noreferrer"
           className="rounded-2xl border border-emerald-500/30 bg-black px-5 py-4 text-center font-black text-white transition hover:border-emerald-300"
         >
-          View VPN deal
+          Visit NordVPN
         </a>
       </div>
 
@@ -103,7 +103,7 @@ export default function FrenchOpenStreamingDecision({
       ) : null}
 
       <p className="mt-4 text-xs leading-6 text-zinc-500">
-        Affiliate disclosure: we may earn a commission from qualifying purchases. Watch Tennis Today does not host unauthorized streams or advise bypassing broadcaster terms.
+        We do not earn money from links on this page. Watch Tennis Today does not host unauthorized streams or advise bypassing broadcaster terms.
       </p>
     </section>
   );

@@ -7,7 +7,6 @@ import { EnrichmentQuickFacts } from "@/app/components/EnrichmentPanels";
 import { buildArticleAuthorSchema, buildOrganizationSchema } from "@/data/authorProfile";
 import { getStreamingEnrichment } from "@/src/lib/enrichment";
 
-export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Best Tennis Streaming Services Compared | Legal TV & Online Options",
   description:
@@ -298,7 +297,7 @@ export default function TennisStreamingServicesPage() {
           <a
             href={affiliateLinks.nordvpn}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="mt-5 inline-flex rounded-full bg-neutral-950 px-6 py-3 font-black text-white hover:bg-neutral-800"
           >
             View VPN option →

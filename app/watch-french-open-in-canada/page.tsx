@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Watch French Open in Canada | Watch Tennis Today",
   description:

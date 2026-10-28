@@ -3,13 +3,12 @@ import Link from "next/link";
 export const metadata = {
   title: "Contact | Watch Tennis Today",
   description:
-    "Contact Watch Tennis Today for corrections, broadcaster updates, advertising questions or general feedback.",
+    "Contact Watch Tennis Today for corrections, broadcaster updates or general feedback.",
   alternates: {
     canonical: "https://watchtennistoday.com/contact",
   },
 };
 
-export const dynamic = "force-dynamic";
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -37,7 +36,6 @@ export default function ContactPage() {
               <li>Incorrect broadcaster or streaming information</li>
               <li>Outdated match, tournament or schedule details</li>
               <li>Country-specific tennis viewing updates</li>
-              <li>Advertising or sponsorship questions</li>
               <li>General website feedback</li>
             </ul>
           </div>

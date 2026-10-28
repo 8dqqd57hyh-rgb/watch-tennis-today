@@ -32,7 +32,7 @@ export default function LegalStreamingOptions({ country = "global", title = "Leg
             <article key={partner.name} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
               <h3 className="font-black text-zinc-950">
                 {href ? (
-                  <a href={href} rel="sponsored nofollow noopener" target="_blank" className="hover:text-green-700">
+                  <a href={href} rel="nofollow noopener" target="_blank" className="hover:text-green-700">
                     {partner.name}
                   </a>
                 ) : partner.name}

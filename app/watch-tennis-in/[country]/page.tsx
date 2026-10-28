@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -526,9 +525,9 @@ export default async function CountryPage({
             <div className="mt-6 grid gap-3">
               <Link href="/watch-tennis-abroad" className="rounded-2xl bg-white px-5 py-3 text-center font-black text-black">Watch tennis abroad guide</Link>
               <Link href="/best-vpn-for-tennis-streaming" className="rounded-2xl border border-emerald-400/40 px-5 py-3 text-center font-black text-white hover:border-emerald-300">Best VPN for tennis</Link>
-              <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow sponsored noopener noreferrer" className="rounded-2xl border border-zinc-700 px-5 py-3 text-center font-black text-white hover:border-emerald-300">View VPN deal</a>
+              <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow noopener noreferrer" className="rounded-2xl border border-zinc-700 px-5 py-3 text-center font-black text-white hover:border-emerald-300">Visit NordVPN</a>
             </div>
-            <p className="mt-4 text-xs text-zinc-500">Affiliate disclosure: we may earn a commission from qualifying purchases.</p>
+            <p className="mt-4 text-xs text-zinc-500">We do not earn money from links on this page.</p>
           </div>
         </section>
 

@@ -105,7 +105,7 @@ export default function BroadcastFinder() {
               <a
                 href={affiliateLinks.nordvpn}
                 target="_blank"
-                rel="nofollow sponsored noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="block rounded-2xl bg-emerald-400 px-4 py-3 text-center font-black text-black hover:bg-emerald-300"
               >
                 Check VPN option →

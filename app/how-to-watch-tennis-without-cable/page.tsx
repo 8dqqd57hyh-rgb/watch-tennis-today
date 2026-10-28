@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "How to Watch Tennis Without Cable | Legal Streaming Guide",
   description:
@@ -68,7 +67,7 @@ export default function HowToWatchTennisWithoutCablePage() {
           <Link href="/watch" className="rounded-full bg-emerald-500 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-400">
             Find where to watch
           </Link>
-          <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow sponsored noopener noreferrer" className="rounded-full border border-emerald-300 px-5 py-3 text-sm font-bold text-neutral-900 hover:bg-white">
+          <a href={affiliateLinks.nordvpn} target="_blank" rel="nofollow noopener noreferrer" className="rounded-full border border-emerald-300 px-5 py-3 text-sm font-bold text-neutral-900 hover:bg-white">
             Check VPN option
           </a>
         </div>

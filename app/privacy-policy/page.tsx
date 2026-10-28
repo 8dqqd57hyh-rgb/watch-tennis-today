@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Privacy Policy | Watch Tennis Today",
   description: "Privacy Policy for Watch Tennis Today.",

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "How to Watch Tennis Safely Abroad | Tennis Streaming Guide",
   description:
@@ -68,15 +67,14 @@ export default function HowToWatchTennisSafelyAbroadPage() {
           <a
             href={affiliateLinks.nordvpn}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="inline-block bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
           >
             Try NordVPN
           </a>
 
           <p className="text-zinc-500 text-sm mt-5">
-            Affiliate disclosure: we may earn a commission if you purchase
-            through links on this page.
+            We do not earn money from links on this page.
           </p>
         </section>
 
@@ -153,7 +151,7 @@ export default function HowToWatchTennisSafelyAbroadPage() {
             <a
               href={affiliateLinks.nordvpn}
               target="_blank"
-              rel="nofollow sponsored noopener noreferrer"
+              rel="nofollow noopener noreferrer"
               className="inline-block bg-green-500 text-black font-black px-6 py-4 rounded-2xl hover:bg-green-400 transition-all"
             >
               Get NordVPN

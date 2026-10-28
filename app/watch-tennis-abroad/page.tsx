@@ -4,7 +4,6 @@ import RevenueConversionPanel from "@/app/components/RevenueConversionPanel";
 import RelatedMoneyLinks from "@/app/components/RelatedMoneyLinks";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
-export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "How to Watch Tennis Abroad Safely | Official TV & VPN Guide",
   description:
@@ -130,13 +129,13 @@ export default function WatchTennisAbroadPage() {
           <a
             href={affiliateLinks.nordvpn}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="inline-flex rounded-full bg-emerald-400 px-6 py-3 font-black text-black hover:bg-emerald-300"
           >
-            View VPN Deal
+            Visit NordVPN
           </a>
           <p className="mt-3 text-xs text-zinc-500">
-            Affiliate disclosure: we may earn a commission if you buy through this link.
+            We do not earn money from links on this page.
           </p>
         </section>
 

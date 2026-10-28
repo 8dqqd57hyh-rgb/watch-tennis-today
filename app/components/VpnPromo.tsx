@@ -30,14 +30,14 @@ export default function VpnPromo({
         data-track-id="vpn_promo_nordvpn_cta"
         data-track-position="primary"
         target="_blank"
-        rel="nofollow sponsored noopener noreferrer"
+        rel="nofollow noopener noreferrer"
         className="inline-flex rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-300"
       >
         View VPN Options
       </a>
 
       <p className="mt-3 text-xs text-zinc-500">
-        Affiliate disclosure: we may earn a commission if you buy through this link.
+        We do not earn money from links on this page.
       </p>
     </section>
   );

@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
 
 const principles = [
   "We do not host, embed or distribute live tennis streams.",

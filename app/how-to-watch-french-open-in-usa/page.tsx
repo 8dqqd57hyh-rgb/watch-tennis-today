@@ -3,7 +3,6 @@ import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "How to Watch French Open in USA | TV Channel & Streaming Guide",
   description:
@@ -90,7 +89,7 @@ export default function Page() {
               <a
                 href={affiliateLinks.nordvpn}
                 target="_blank"
-                rel="nofollow sponsored noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
               >
                 Try NordVPN
@@ -105,8 +104,7 @@ export default function Page() {
             </div>
 
             <p className="text-zinc-500 text-sm mt-5">
-              Affiliate disclosure: we may earn a commission if you purchase
-              through links on this page.
+              We do not earn money from links on this page.
             </p>
           </section>
 

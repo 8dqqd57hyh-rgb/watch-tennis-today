@@ -59,10 +59,10 @@ export default function PolishWhereToWatchTennisInPolandPage() {
   const entries = getCountryBroadcastEntries(POLAND_CODE, tournamentIds);
 
   return (
-    <main className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
+    <main lang="pl" className="min-h-screen bg-black px-6 py-10 text-white md:px-10">
       <div className="mx-auto max-w-6xl">
-        <Link href="/pl/dzisiaj" className="text-sm font-bold text-zinc-400 hover:text-white">
-          ← Tenis dzisiaj
+        <Link href="/" className="text-sm font-bold text-zinc-400 hover:text-white">
+          ← Strona główna
         </Link>
 
         <section className="mt-8 rounded-[2rem] border border-zinc-800 bg-zinc-950 p-8 md:p-10">

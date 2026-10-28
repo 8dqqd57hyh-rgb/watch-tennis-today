@@ -1,7 +1,6 @@
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "You’re Subscribed | Watch Tennis Today",
   description:
@@ -86,7 +85,7 @@ export default function NewsletterConfirmationPage() {
               <a
                 href={affiliateLinks.nordvpn}
                 target="_blank"
-                rel="nofollow sponsored noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="bg-green-500 text-black px-6 py-4 rounded-2xl font-black hover:bg-green-400 transition-all"
               >
                 Try NordVPN
@@ -101,8 +100,7 @@ export default function NewsletterConfirmationPage() {
             </div>
 
             <p className="mt-5 text-sm text-zinc-500">
-              Affiliate disclosure: we may earn a commission if you purchase
-              through links on this page.
+              We do not earn money from links on this page.
             </p>
           </section>
         </article>

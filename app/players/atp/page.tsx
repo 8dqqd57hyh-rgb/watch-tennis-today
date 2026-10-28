@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "ATP Players",
   description: "ATP tennis players, live schedules, rankings and tournament coverage.",

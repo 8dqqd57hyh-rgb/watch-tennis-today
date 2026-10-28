@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "WTA Players",
   description: "WTA tennis players, schedules, rankings and match coverage.",

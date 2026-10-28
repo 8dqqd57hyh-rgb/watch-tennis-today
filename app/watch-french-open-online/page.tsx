@@ -1,6 +1,5 @@
 import { affiliateLinks } from "@/app/lib/affiliateLinks";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Watch French Open Online 2026 | Roland Garros Streaming Guide",
   description:
@@ -101,14 +100,14 @@ export default function WatchFrenchOpenOnlinePage() {
           <a
             href={affiliateLinks.nordvpn}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="inline-flex rounded-2xl bg-green-500 px-6 py-4 font-black text-black hover:bg-green-400 transition-all"
           >
             Try NordVPN →
           </a>
 
           <p className="mt-4 text-sm text-zinc-500">
-            Affiliate disclosure: we may earn a commission from links on this page.
+            We do not earn money from links on this page.
           </p>
         </section>
 

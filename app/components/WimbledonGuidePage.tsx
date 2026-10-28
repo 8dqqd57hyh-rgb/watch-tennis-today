@@ -305,7 +305,7 @@ export default function WimbledonGuidePage({
                     <a
                       href={option.href}
                       target="_blank"
-                      rel={option.href === affiliateLinks.nordvpn ? "nofollow sponsored noopener noreferrer" : "noopener noreferrer"}
+                      rel={option.href === affiliateLinks.nordvpn ? "nofollow noopener noreferrer" : "noopener noreferrer"}
                       className="text-emerald-700 underline-offset-4 hover:underline"
                     >
                       {option.services}
@@ -335,7 +335,7 @@ export default function WimbledonGuidePage({
           <a
             href={affiliateLinks.nordvpn}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-black hover:bg-emerald-300"
           >
             Check VPN option

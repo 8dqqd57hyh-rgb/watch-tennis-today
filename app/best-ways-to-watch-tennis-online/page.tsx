@@ -9,7 +9,6 @@ import EmailSignup from "@/app/components/EmailSignup";
 import VpnPromo from "@/app/components/VpnPromo";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
 const countries = [
   ["Poland", "/watch-tennis-in/poland"],
   ["UK", "/watch-tennis-in/uk"],

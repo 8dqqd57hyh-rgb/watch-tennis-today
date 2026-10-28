@@ -1,7 +1,6 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import { getCanonicalPlayerSlug } from "@/data/playerSlugs";
 
-export const dynamic = "force-dynamic";
 
 export default async function LegacyPluralPlayerPage({
   params,

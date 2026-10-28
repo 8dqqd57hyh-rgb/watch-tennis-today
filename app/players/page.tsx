@@ -2,7 +2,6 @@ import Link from "next/link";
 import RelatedPages from "@/app/components/RelatedPages";
 import { safePlayerUrl } from "@/data/playerSlugs";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Players Directory",
   description: "Browse ATP and WTA player profiles, schedules, rankings and live match information.",

@@ -3,13 +3,12 @@ import Link from "next/link";
 export const metadata = {
   title: "Cookie Policy | Watch Tennis Today",
   description:
-    "Cookie Policy for Watch Tennis Today, including analytics, advertising, affiliate links and browser cookie controls.",
+    "Cookie Policy for Watch Tennis Today, including analytics and browser cookie controls.",
   alternates: {
     canonical: "https://watchtennistoday.com/cookie-policy",
   },
 };
 
-export const dynamic = "force-dynamic";
 export default function CookiePolicyPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -40,8 +39,8 @@ export default function CookiePolicyPage() {
             </h2>
             <p>
               Watch Tennis Today may use cookies and similar technologies for
-              website functionality, analytics, advertising, affiliate tracking,
-              performance measurement and security.
+              website functionality, analytics, performance measurement and
+              security.
             </p>
           </section>
 
@@ -62,10 +61,8 @@ export default function CookiePolicyPage() {
               4. Advertising cookies
             </h2>
             <p>
-              Advertising partners, including Google AdSense where applicable,
-              may use cookies or similar technologies to serve ads, measure ad
-              performance, prevent fraud and personalize advertising where
-              permitted by law and user settings.
+              Watch Tennis Today does not display advertisements and does not
+              use advertising cookies.
             </p>
           </section>
 
@@ -74,10 +71,8 @@ export default function CookiePolicyPage() {
               5. Affiliate cookies
             </h2>
             <p>
-              Some external affiliate partners may use cookies or tracking
-              technologies to recognize referrals from this website. These
-              cookies are controlled by the relevant third-party partner and are
-              subject to their own policies.
+              Watch Tennis Today does not use affiliate links or affiliate
+              tracking cookies.
             </p>
           </section>
 
@@ -87,8 +82,7 @@ export default function CookiePolicyPage() {
             </h2>
             <p>
               You can control or delete cookies through your browser settings.
-              You may also be able to manage advertising personalization through
-              Google or other advertising partner settings. Disabling cookies may
+              Disabling cookies may
               affect some website features.
             </p>
           </section>

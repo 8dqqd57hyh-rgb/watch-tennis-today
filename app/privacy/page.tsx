@@ -3,13 +3,12 @@ import Link from "next/link";
 export const metadata = {
   title: "Privacy Policy | Watch Tennis Today",
   description:
-    "Privacy Policy for Watch Tennis Today, including analytics, advertising, cookies, affiliate links and external websites.",
+    "Privacy Policy for Watch Tennis Today, including analytics, cookies and external websites.",
   alternates: {
   canonical: "https://watchtennistoday.com/privacy",
 },
 };
 
-export const dynamic = "force-dynamic";
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
@@ -32,9 +31,9 @@ export default function PrivacyPolicyPage() {
               1. Overview
             </h2>
             <p>
-              Watch Tennis Today provides tennis schedules, live match
-              information, broadcaster guides, tournament pages and links to
-              official or external streaming services. This Privacy Policy
+              Watch Tennis Today helps visitors find official tennis
+              broadcasters and streaming services by country, tournament and
+              player. This Privacy Policy
               explains how information may be collected and used when you visit
               this website.
             </p>
@@ -70,13 +69,8 @@ export default function PrivacyPolicyPage() {
               4. Advertising
             </h2>
             <p>
-              Watch Tennis Today may display advertisements through Google
-              AdSense or other advertising partners. Google and other vendors may
-              use cookies, device identifiers or similar technologies to serve ads,
-              measure ad performance, limit repeated ads, personalize advertising
-              where permitted and prevent invalid activity or fraud. Google may use
-              advertising cookies to help serve ads based on a visitor&apos;s prior visits
-              to this website or other websites.
+              Watch Tennis Today does not display advertisements and does not
+              use advertising cookies.
             </p>
           </section>
 
@@ -86,12 +80,10 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               Cookies are small files stored on your device. They may be used
-              for analytics, advertising, performance measurement, affiliate
-              attribution and basic website functionality. You can control or
+              for analytics, performance measurement and basic website
+              functionality. You can control or
               disable cookies through your browser settings, but some website
-              features may not work as expected. You can also manage how Google
-              uses information for ads through Google&apos;s ad settings and related
-              privacy controls available from Google.
+              features may not work as expected.
             </p>
           </section>
 
@@ -100,12 +92,10 @@ export default function PrivacyPolicyPage() {
               6. Affiliate links
             </h2>
             <p>
-              Some links on Watch Tennis Today may be affiliate links. If you
-              click an affiliate link or purchase through it, we may earn a
-              commission at no additional cost to you. Affiliate partners may
-              track referrals according to their own privacy policies. Affiliate
-              relationships do not change our editorial rule: we do not claim to
-              host tennis streams and we point readers toward legal viewing options.
+              Watch Tennis Today does not use affiliate links and does not earn
+              commissions from links to broadcasters or other services. We
+              point readers toward legal viewing options and do not host tennis
+              streams.
             </p>
           </section>
 
@@ -115,7 +105,7 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               This website may link to third-party broadcasters, streaming
-              services, tournament websites, affiliate partners and other
+              services, tournament websites and other
               external resources. We are not responsible for the privacy
               practices, content, pricing or availability of external websites.
               Please review their policies before using those services.
@@ -128,7 +118,7 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               We do not sell personal information. Limited information may be
-              processed by analytics, advertising, hosting, security or affiliate
+              processed by analytics, hosting or security
               service providers as necessary to operate and improve the website.
             </p>
           </section>
@@ -139,12 +129,8 @@ export default function PrivacyPolicyPage() {
               9. Your choices
             </h2>
             <p>
-              You can adjust cookie preferences in your browser, use available
-              device privacy controls and manage personalized advertising choices
-              through Google ad settings. You can learn more about how Google
-              uses information from sites and apps that use its services at
-              policies.google.com/technologies/partner-sites, and you can manage
-              Google ad personalization at adssettings.google.com. If you are in
+              You can adjust cookie preferences in your browser and use available
+              device privacy controls. If you are in
               a region with additional privacy rights, you may contact us through
               the Contact page with a privacy-related request.
             </p>

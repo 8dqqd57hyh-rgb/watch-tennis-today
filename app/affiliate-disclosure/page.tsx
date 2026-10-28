@@ -1,25 +1,24 @@
 export const metadata = {
   title: "Affiliate Disclosure | Watch Tennis Today",
   description:
-    "Affiliate disclosure for Watch Tennis Today. Learn how we may earn commissions from links on our website.",
+    "Affiliate disclosure for Watch Tennis Today: we do not use affiliate links or earn commissions.",
   alternates: { canonical: "https://watchtennistoday.com/affiliate-disclosure" },
 };
 
-export const dynamic = "force-dynamic";
 export default function AffiliateDisclosurePage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 text-zinc-100">
       <h1 className="text-3xl font-bold mb-6">Affiliate Disclosure</h1>
 
       <p className="mb-4 text-zinc-300">
-        Watch Tennis Today may contain affiliate links. This means we may earn a
-        commission if you click a link and purchase a product or service.
+        Watch Tennis Today does not use affiliate links and does not display
+        advertisements. We do not earn a commission when you click a link to a
+        broadcaster, streaming service or other provider.
       </p>
 
       <p className="mb-4 text-zinc-300">
-        This does not cost you anything extra. It helps support the site and
-        allows us to keep publishing tennis schedules, live match guides, and
-        streaming information.
+        The site is supported by optional donations, which never affect which
+        services we list.
       </p>
 
       <p className="mb-4 text-zinc-300">

@@ -4,7 +4,6 @@ import AuthorBox from "@/app/components/AuthorBox";
 import BreadcrumbSchema from "@/app/components/BreadcrumbSchema";
 import JsonLd from "@/app/components/JsonLd";
 
-export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Tennis Newsletter | Live Match Alerts & Streaming Updates",
   description:
