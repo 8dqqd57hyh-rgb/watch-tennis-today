@@ -55,23 +55,10 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  const range = requestHeaders.get("range");
-
-  if (range && !range.toLowerCase().startsWith("bytes=")) {
-    requestHeaders.delete("range");
-  }
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  return NextResponse.next();
 }
 
+// Limited to player URLs so static pages are served without invoking a function.
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
-  ],
+  matcher: ["/player/:path+", "/players/:path+"],
 };
